@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 12
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Vutils", "Vutils.vcxproj", "{6322FF62-00A6-4386-B7EC-6802BB5A22E0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		MD|x64 = MD|x64
+		MD|x86 = MD|x86
+		MDd|x64 = MDd|x64
+		MDd|x86 = MDd|x86
+		MT|x64 = MT|x64
+		MT|x86 = MT|x86
+		MTd|x64 = MTd|x64
+		MTd|x86 = MTd|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MD|x64.ActiveCfg = MD|x64
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MD|x64.Build.0 = MD|x64
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MD|x86.ActiveCfg = MD|Win32
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MD|x86.Build.0 = MD|Win32
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MDd|x64.ActiveCfg = MDd|x64
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MDd|x64.Build.0 = MDd|x64
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MDd|x86.ActiveCfg = MDd|Win32
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MDd|x86.Build.0 = MDd|Win32
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MT|x64.ActiveCfg = MT|x64
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MT|x64.Build.0 = MT|x64
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MT|x86.ActiveCfg = MT|Win32
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MT|x86.Build.0 = MT|Win32
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MTd|x64.ActiveCfg = MDd|x64
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MTd|x64.Build.0 = MDd|x64
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MTd|x86.ActiveCfg = MTd|Win32
+		{6322FF62-00A6-4386-B7EC-6802BB5A22E0}.MTd|x86.Build.0 = MTd|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
