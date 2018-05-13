@@ -27,7 +27,6 @@ It helps your programming go easier, faster and simpler.
 	* Library
 	* Socket
 	* API Hooking
-	* File
 	* Service
 	* File Mapping
 	* INI File
