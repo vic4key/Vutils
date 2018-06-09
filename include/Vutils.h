@@ -50,6 +50,7 @@
 /* Header Inclusions */
 
 #include <Windows.h>
+#include <winsvc.h>
 #include <ctime>
 #include <string>
 #include <vector>
