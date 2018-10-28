@@ -94,20 +94,7 @@
 // Internal Buffer Handler
 // Copyright (c) 2009-2017 Tsuda Kageyu
 
-namespace IBH
-{
-#if defined(_M_X64) || defined(__x86_64__)
-#define MEMORY_SLOT_SIZE 64
-#else
-#define MEMORY_SLOT_SIZE 32
-#endif
-
-VOID   InitializeBuffer();
-VOID   UninitializeBuffer();
-LPVOID AllocateBuffer(LPVOID pOrigin);
-VOID   FreeBuffer(LPVOID pBuffer);
-BOOL   IsExecutableAddress(LPVOID pAddress);
-}
+#include VU_3RD_INCL(MH/include/buffer.h)
 
 /* ------------------------------------------ Hacker Disassembler Engine ------------------------------------------- */
 
