@@ -89,13 +89,6 @@
 #pragma comment(lib, "ws2_32")
 #endif // _MSC_VER
 
-/* -------------------------------------------- Internal Buffer Handler -------------------------------------------- */
-
-// Internal Buffer Handler
-// Copyright (c) 2009-2017 Tsuda Kageyu
-
-#include VU_3RD_INCL(MH/include/buffer.h)
-
 /* ------------------------------------------ Hacker Disassembler Engine ------------------------------------------- */
 
 // Hacker Disassembler Engine 32/64 C

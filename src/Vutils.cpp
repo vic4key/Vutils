@@ -29,6 +29,10 @@
 #endif
 #endif // VU_SOCKET_ENABLED
 
+// Internal Buffer Handler
+// Copyright (c) 2009-2017 Tsuda Kageyu
+#include VU_3RD_INCL(MH/include/buffer.h)
+
 #ifdef _MSC_VER
 #pragma warning(disable: 4661) /* : no suitable definition provided for explicit template instantiation request. */
 #endif
