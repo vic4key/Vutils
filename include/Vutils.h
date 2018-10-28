@@ -47,6 +47,16 @@
 #define VU_GUID_ENABLED
 #endif
 
+/* Macros for Header Inclusion of Third Party Libraries */
+
+#define VU_STRINGIZE_EX(s) #s
+#define VU_STRINGIZE(s) VU_STRINGIZE_EX(s)
+
+#define VU_CONCAT_EX(a, b) a ## b
+#define VU_CONCAT(a, b) VU_CONCAT_EX(a, b)
+
+#define VU_3RD_INCL(s) VU_STRINGIZE(VU_CONCAT(../third-parties/, s))
+
 /* Header Inclusions */
 
 #include <Windows.h>
@@ -83,7 +93,6 @@
 
 // Internal Buffer Handler
 // Copyright (c) 2009-2017 Tsuda Kageyu
-// Tsuda Kageyu, Thank You So Much
 
 namespace IBH
 {
@@ -104,255 +113,18 @@ BOOL   IsExecutableAddress(LPVOID pAddress);
 
 // Hacker Disassembler Engine 32/64 C
 // Copyright (c) 2008-2009, Vyacheslav Patkov
-// Vyacheslav Patkov, Thank You So Much
+// Modified the HDE source code to make it compatible with modern C++ and usable both 32-bit & 64-bit version together
 
-namespace HDE32
-{
-const uint32_t F_MODRM         = 0x00000001;
-const uint32_t F_SIB           = 0x00000002;
-const uint32_t F_IMM8          = 0x00000004;
-const uint32_t F_IMM16         = 0x00000008;
-const uint32_t F_IMM32         = 0x00000010;
-const uint32_t F_DISP8         = 0x00000020;
-const uint32_t F_DISP16        = 0x00000040;
-const uint32_t F_DISP32        = 0x00000080;
-const uint32_t F_RELATIVE      = 0x00000100;
-const uint32_t F_2IMM16        = 0x00000800;
-const uint32_t F_ERROR         = 0x00001000;
-const uint32_t F_ERROR_OPCODE  = 0x00002000;
-const uint32_t F_ERROR_LENGTH  = 0x00004000;
-const uint32_t F_ERROR_LOCK    = 0x00008000;
-const uint32_t F_ERROR_OPERAND = 0x00010000;
-const uint32_t F_PREFIX_REPNZ  = 0x01000000;
-const uint32_t F_PREFIX_REPX   = 0x02000000;
-const uint32_t F_PREFIX_REP    = 0x03000000;
-const uint32_t F_PREFIX_66     = 0x04000000;
-const uint32_t F_PREFIX_67     = 0x08000000;
-const uint32_t F_PREFIX_LOCK   = 0x10000000;
-const uint32_t F_PREFIX_SEG    = 0x20000000;
-const uint32_t F_PREFIX_ANY    = 0x3f000000;
+#include VU_3RD_INCL(HDE/include/hde32.h)
+#include VU_3RD_INCL(HDE/include/table32.h)
+#include VU_3RD_INCL(HDE/include/hde64.h)
+#include VU_3RD_INCL(HDE/include/table64.h)
 
-// ---
-
-const uint8_t PREFIX_SEGMENT_CS   = 0x2e;
-const uint8_t PREFIX_SEGMENT_SS   = 0x36;
-const uint8_t PREFIX_SEGMENT_DS   = 0x3e;
-const uint8_t PREFIX_SEGMENT_ES   = 0x26;
-const uint8_t PREFIX_SEGMENT_FS   = 0x64;
-const uint8_t PREFIX_SEGMENT_GS   = 0x65;
-const uint8_t PREFIX_LOCK         = 0xf0;
-const uint8_t PREFIX_REPNZ        = 0xf2;
-const uint8_t PREFIX_REPX         = 0xf3;
-const uint8_t PREFIX_OPERAND_SIZE = 0x66;
-const uint8_t PREFIX_ADDRESS_SIZE = 0x67;
-
-//---
-
-const uint8_t C_NONE    = 0x00;
-const uint8_t C_MODRM   = 0x01;
-const uint8_t C_IMM8    = 0x02;
-const uint8_t C_IMM16   = 0x04;
-const uint8_t C_IMM_P66 = 0x10;
-const uint8_t C_REL8    = 0x20;
-const uint8_t C_REL32   = 0x40;
-const uint8_t C_GROUP   = 0x80;
-const uint8_t C_ERROR   = 0xff;
-
-// ---
-
-const uint8_t PRE_ANY  = 0x00;
-const uint8_t PRE_NONE = 0x01;
-const uint8_t PRE_F2   = 0x02;
-const uint8_t PRE_F3   = 0x04;
-const uint8_t PRE_66   = 0x08;
-const uint8_t PRE_67   = 0x10;
-const uint8_t PRE_LOCK = 0x20;
-const uint8_t PRE_SEG  = 0x40;
-const uint8_t PRE_ALL  = 0xff;
-
-// ---
-
-const uint32_t DELTA_OPCODES      = 0x4a;
-const uint32_t DELTA_FPU_REG      = 0xf1;
-const uint32_t DELTA_FPU_MODRM    = 0xf8;
-const uint32_t DELTA_PREFIXES     = 0x130;
-const uint32_t DELTA_OP_LOCK_OK   = 0x1a1;
-const uint32_t DELTA_OP2_LOCK_OK  = 0x1b9;
-const uint32_t DELTA_OP_ONLY_MEM  = 0x1cb;
-const uint32_t DELTA_OP2_ONLY_MEM = 0x1da;
-
-// ---
-
-typedef struct
-{
-  uint8_t len;
-  uint8_t p_rep;
-  uint8_t p_lock;
-  uint8_t p_seg;
-  uint8_t p_66;
-  uint8_t p_67;
-  uint8_t opcode;
-  uint8_t opcode2;
-  uint8_t modrm;
-  uint8_t modrm_mod;
-  uint8_t modrm_reg;
-  uint8_t modrm_rm;
-  uint8_t sib;
-  uint8_t sib_scale;
-  uint8_t sib_index;
-  uint8_t sib_base;
-  union
-  {
-    uint8_t imm8;
-    uint16_t imm16;
-    uint32_t imm32;
-  } imm;
-  union
-  {
-    uint8_t disp8;
-    uint16_t disp16;
-    uint32_t disp32;
-  } disp;
-  uint32_t flags;
-} hde32s, tagHDE;
-}
-
-namespace HDE64
-{
-const uint32_t F_MODRM         = 0x00000001;
-const uint32_t F_SIB           = 0x00000002;
-const uint32_t F_IMM8          = 0x00000004;
-const uint32_t F_IMM16         = 0x00000008;
-const uint32_t F_IMM32         = 0x00000010;
-const uint32_t F_IMM64         = 0x00000020;
-const uint32_t F_DISP8         = 0x00000040;
-const uint32_t F_DISP16        = 0x00000080;
-const uint32_t F_DISP32        = 0x00000100;
-const uint32_t F_RELATIVE      = 0x00000200;
-const uint32_t F_ERROR         = 0x00001000;
-const uint32_t F_ERROR_OPCODE  = 0x00002000;
-const uint32_t F_ERROR_LENGTH  = 0x00004000;
-const uint32_t F_ERROR_LOCK    = 0x00008000;
-const uint32_t F_ERROR_OPERAND = 0x00010000;
-const uint32_t F_PREFIX_REPNZ  = 0x01000000;
-const uint32_t F_PREFIX_REPX   = 0x02000000;
-const uint32_t F_PREFIX_REP    = 0x03000000;
-const uint32_t F_PREFIX_66     = 0x04000000;
-const uint32_t F_PREFIX_67     = 0x08000000;
-const uint32_t F_PREFIX_LOCK   = 0x10000000;
-const uint32_t F_PREFIX_SEG    = 0x20000000;
-const uint32_t F_PREFIX_REX    = 0x40000000;
-const uint32_t F_PREFIX_ANY    = 0x7f000000;
-
-// ---
-
-const uint8_t PREFIX_SEGMENT_CS   = 0x2e;
-const uint8_t PREFIX_SEGMENT_SS   = 0x36;
-const uint8_t PREFIX_SEGMENT_DS   = 0x3e;
-const uint8_t PREFIX_SEGMENT_ES   = 0x26;
-const uint8_t PREFIX_SEGMENT_FS   = 0x64;
-const uint8_t PREFIX_SEGMENT_GS   = 0x65;
-const uint8_t PREFIX_LOCK         = 0xf0;
-const uint8_t PREFIX_REPNZ        = 0xf2;
-const uint8_t PREFIX_REPX         = 0xf3;
-const uint8_t PREFIX_OPERAND_SIZE = 0x66;
-const uint8_t PREFIX_ADDRESS_SIZE = 0x67;
-
-// ---
-
-const uint8_t C_NONE    = 0x00;
-const uint8_t C_MODRM   = 0x01;
-const uint8_t C_IMM8    = 0x02;
-const uint8_t C_IMM16   = 0x04;
-const uint8_t C_IMM_P66 = 0x10;
-const uint8_t C_REL8    = 0x20;
-const uint8_t C_REL32   = 0x40;
-const uint8_t C_GROUP   = 0x80;
-const uint8_t C_ERROR   = 0xff;
-
-// ---
-
-const uint8_t PRE_ANY  = 0x00;
-const uint8_t PRE_NONE = 0x01;
-const uint8_t PRE_F2   = 0x02;
-const uint8_t PRE_F3   = 0x04;
-const uint8_t PRE_66   = 0x08;
-const uint8_t PRE_67   = 0x10;
-const uint8_t PRE_LOCK = 0x20;
-const uint8_t PRE_SEG  = 0x40;
-const uint8_t PRE_ALL  = 0xff;
-
-// ---
-
-const uint32_t DELTA_OPCODES      = 0x4a;
-const uint32_t DELTA_FPU_REG      = 0xfd;
-const uint32_t DELTA_FPU_MODRM    = 0x104;
-const uint32_t DELTA_PREFIXES     = 0x13c;
-const uint32_t DELTA_OP_LOCK_OK   = 0x1ae;
-const uint32_t DELTA_OP2_LOCK_OK  = 0x1c6;
-const uint32_t DELTA_OP_ONLY_MEM  = 0x1d8;
-const uint32_t DELTA_OP2_ONLY_MEM = 0x1e7;
-
-// ---
-
-typedef struct
-{
-  uint8_t len;
-  uint8_t p_rep;
-  uint8_t p_lock;
-  uint8_t p_seg;
-  uint8_t p_66;
-  uint8_t p_67;
-  uint8_t rex;
-  uint8_t rex_w;
-  uint8_t rex_r;
-  uint8_t rex_x;
-  uint8_t rex_b;
-  uint8_t opcode;
-  uint8_t opcode2;
-  uint8_t modrm;
-  uint8_t modrm_mod;
-  uint8_t modrm_reg;
-  uint8_t modrm_rm;
-  uint8_t sib;
-  uint8_t sib_scale;
-  uint8_t sib_index;
-  uint8_t sib_base;
-  union
-  {
-    uint8_t imm8;
-    uint16_t imm16;
-    uint32_t imm32;
-    uint64_t imm64;
-  } imm;
-  union
-  {
-    uint8_t disp8;
-    uint16_t disp16;
-    uint32_t disp32;
-  } disp;
-  uint32_t flags;
-} hde64s, tagHDE;
-}
-
-#ifdef __cplusplus
-extern "C"
-{
-unsigned int hde32_disasm(const void* code, HDE32::hde32s* hs);
-unsigned int hde64_disasm(const void* code, HDE64::hde64s* hs);
-}
+#if defined(_M_X64) || defined(__x86_64__)
+  namespace HDE = HDE64;
+#else
+  namespace HDE = HDE32;
 #endif
-
-namespace HDE
-{
-#ifdef _WIN64
-typedef HDE64::hde64s tagHDE;
-#define HDEDisasm(code, hs) hde64_disasm(code, hs)
-#else  // _WIN32
-typedef HDE32::hde32s tagHDE;
-#define HDEDisasm(code, hs) hde32_disasm(code, hs)
-#endif // _WIN64
-};
 
 /* --------------------------------------------- Vutils Declarations ----------------------------------------------- */
 
