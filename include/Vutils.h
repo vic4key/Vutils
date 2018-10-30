@@ -51,11 +51,7 @@
 
 #define VU_STRINGIZE_EX(s) #s
 #define VU_STRINGIZE(s) VU_STRINGIZE_EX(s)
-
-#define VU_CONCAT_EX(a, b) a ## b
-#define VU_CONCAT(a, b) VU_CONCAT_EX(a, b)
-
-#define VU_3RD_INCL(s) VU_STRINGIZE(VU_CONCAT(../third-parties/, s))
+#define VU_3RD_INCL(s)  VU_STRINGIZE(../third-parties/s)
 
 /* Header Inclusions */
 

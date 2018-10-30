@@ -101,10 +101,6 @@ typedef struct {
 
 #pragma pack(pop)
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* __cdecl */
 unsigned int hde64_disasm(const void *code, hde64s *hs);
 
@@ -112,10 +108,6 @@ static unsigned int Disasemble(const void *code, hde64s *hs)
 {
   return hde64_disasm(code, hs);
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 } // HDE64
 

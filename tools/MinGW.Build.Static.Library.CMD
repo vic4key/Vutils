@@ -7,6 +7,7 @@ SET VU_DIR=..
 SET VU_INCLUDE=%VU_DIR%\include
 SET VU_SRC=%VU_DIR%\src
 SET VU_LIB=%VU_DIR%\lib
+SET VU_3RD=%VU_DIR%\third-parties
 
 ECHO *** %VU_NAME% static library for MinGW ***
 
@@ -52,15 +53,19 @@ ECHO.
 
 ECHO [+] Compiling	-^> OK
 
-G++ -c -std=c++0x %LIBS% -I%VU_INCLUDE% %VU_SRC%\%VU_NAME%.cpp -o %VU_NAME%.o
+G++ -c -std=c++0x %LIBS% -I%VU_INCLUDE% ^
+	%VU_3RD%\MH\src\buffer.cpp ^
+	%VU_3RD%\HDE\src\hde32.cpp ^
+	%VU_3RD%\HDE\src\hde64.cpp ^
+	%VU_SRC%\%VU_NAME%.cpp
 
 ECHO [+] Linking	-^> OK
 
-AR rcs %VU_LIB%\lib%VU_NAME%.a %VU_NAME%.o
+AR rcs %VU_LIB%\lib%VU_NAME%.a *.o
 
 ECHO [+] Cleaning	-^> OK
 
-DEL %VU_NAME%.o
+DEL *.o
 
 ECHO [+] Building	-^> OK
 
