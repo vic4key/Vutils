@@ -291,20 +291,20 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="3rdparty\HDE\include\hde32.h" />
+    <ClInclude Include="3rdparty\HDE\include\hde64.h" />
+    <ClInclude Include="3rdparty\HDE\include\table32.h" />
+    <ClInclude Include="3rdparty\HDE\include\table64.h" />
+    <ClInclude Include="3rdparty\MH\include\buffer.h" />
     <ClInclude Include="include\Boob.h" />
     <ClInclude Include="include\Vu.h" />
     <ClInclude Include="include\Vutils.h" />
-    <ClInclude Include="third-parties\HDE\include\hde32.h" />
-    <ClInclude Include="third-parties\HDE\include\hde64.h" />
-    <ClInclude Include="third-parties\HDE\include\table32.h" />
-    <ClInclude Include="third-parties\HDE\include\table64.h" />
-    <ClInclude Include="third-parties\MH\include\buffer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="3rdparty\HDE\src\hde32.cpp" />
+    <ClCompile Include="3rdparty\HDE\src\hde64.cpp" />
+    <ClCompile Include="3rdparty\MH\src\buffer.cpp" />
     <ClCompile Include="src\Vutils.cpp" />
-    <ClCompile Include="third-parties\HDE\src\hde32.cpp" />
-    <ClCompile Include="third-parties\HDE\src\hde64.cpp" />
-    <ClCompile Include="third-parties\MH\src\buffer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

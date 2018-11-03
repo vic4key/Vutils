@@ -7,7 +7,7 @@ SET VU_DIR=..
 SET VU_INCLUDE=%VU_DIR%\include
 SET VU_SRC=%VU_DIR%\src
 SET VU_LIB=%VU_DIR%\lib
-SET VU_3RD=%VU_DIR%\third-parties
+SET VU_3RD=%VU_DIR%\3rdparty
 
 ECHO *** %VU_NAME% static library for MinGW ***
 

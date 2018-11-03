@@ -13,23 +13,23 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\third-paties">
-      <UniqueIdentifier>{d3e142ce-b8ec-410c-82a0-f5b8bdf3e2b8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\third-parties">
       <UniqueIdentifier>{a43ff491-36a1-4967-8296-a7d7fa32667f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\third-paties\HDE">
-      <UniqueIdentifier>{ddb1ec06-92b4-4b97-8be0-e3e20e27f466}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\third-parties\HDE">
       <UniqueIdentifier>{3efc726d-f4f2-41a8-a7c7-4fdd16161c4a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\third-paties\MH">
-      <UniqueIdentifier>{4a5d5114-7c60-4399-8089-38ca0ca9184d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\third-parties\MH">
       <UniqueIdentifier>{eb0e3882-c0ce-4589-86c9-944f7725577d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\3rdparty">
+      <UniqueIdentifier>{d3e142ce-b8ec-410c-82a0-f5b8bdf3e2b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\3rdparty\HDE">
+      <UniqueIdentifier>{ddb1ec06-92b4-4b97-8be0-e3e20e27f466}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\3rdparty\MH">
+      <UniqueIdentifier>{4a5d5114-7c60-4399-8089-38ca0ca9184d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,33 +45,33 @@
     <ClInclude Include="include\Boob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="third-parties\HDE\include\table64.h">
-      <Filter>Header Files\third-paties\HDE</Filter>
+    <ClInclude Include="3rdparty\HDE\include\hde32.h">
+      <Filter>Header Files\3rdparty\HDE</Filter>
     </ClInclude>
-    <ClInclude Include="third-parties\HDE\include\table32.h">
-      <Filter>Header Files\third-paties\HDE</Filter>
+    <ClInclude Include="3rdparty\HDE\include\hde64.h">
+      <Filter>Header Files\3rdparty\HDE</Filter>
     </ClInclude>
-    <ClInclude Include="third-parties\HDE\include\hde64.h">
-      <Filter>Header Files\third-paties\HDE</Filter>
+    <ClInclude Include="3rdparty\HDE\include\table32.h">
+      <Filter>Header Files\3rdparty\HDE</Filter>
     </ClInclude>
-    <ClInclude Include="third-parties\HDE\include\hde32.h">
-      <Filter>Header Files\third-paties\HDE</Filter>
+    <ClInclude Include="3rdparty\HDE\include\table64.h">
+      <Filter>Header Files\3rdparty\HDE</Filter>
     </ClInclude>
-    <ClInclude Include="third-parties\MH\include\buffer.h">
-      <Filter>Header Files\third-paties\MH</Filter>
+    <ClInclude Include="3rdparty\MH\include\buffer.h">
+      <Filter>Header Files\3rdparty\MH</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Vutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="third-parties\HDE\src\hde32.cpp">
+    <ClCompile Include="3rdparty\HDE\src\hde32.cpp">
       <Filter>Source Files\third-parties\HDE</Filter>
     </ClCompile>
-    <ClCompile Include="third-parties\HDE\src\hde64.cpp">
+    <ClCompile Include="3rdparty\HDE\src\hde64.cpp">
       <Filter>Source Files\third-parties\HDE</Filter>
     </ClCompile>
-    <ClCompile Include="third-parties\MH\src\buffer.cpp">
+    <ClCompile Include="3rdparty\MH\src\buffer.cpp">
       <Filter>Source Files\third-parties\MH</Filter>
     </ClCompile>
   </ItemGroup>
