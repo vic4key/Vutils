@@ -124,35 +124,35 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MDd|Win32'">
-    <OutDir>$(ProjectDir)lib\$(Platform)\</OutDir>
+    <OutDir>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\</OutDir>
     <TargetName>$(ProjectName)-$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MTd|Win32'">
-    <OutDir>$(ProjectDir)lib\$(Platform)\</OutDir>
+    <OutDir>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\</OutDir>
     <TargetName>$(ProjectName)-$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MD|Win32'">
-    <OutDir>$(ProjectDir)lib\$(Platform)\</OutDir>
+    <OutDir>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\</OutDir>
     <TargetName>$(ProjectName)-$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MT|Win32'">
-    <OutDir>$(ProjectDir)lib\$(Platform)\</OutDir>
+    <OutDir>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\</OutDir>
     <TargetName>$(ProjectName)-$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MDd|x64'">
-    <OutDir>$(ProjectDir)lib\$(Platform)\</OutDir>
+    <OutDir>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\</OutDir>
     <TargetName>$(ProjectName)-$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MTd|x64'">
-    <OutDir>$(ProjectDir)lib\$(Platform)\</OutDir>
+    <OutDir>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\</OutDir>
     <TargetName>$(ProjectName)-$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MD|x64'">
-    <OutDir>$(ProjectDir)lib\$(Platform)\</OutDir>
+    <OutDir>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\</OutDir>
     <TargetName>$(ProjectName)-$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MT|x64'">
-    <OutDir>$(ProjectDir)lib\$(Platform)\</OutDir>
+    <OutDir>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\</OutDir>
     <TargetName>$(ProjectName)-$(Configuration)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MDd|Win32'">

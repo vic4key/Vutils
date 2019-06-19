@@ -63,6 +63,10 @@
 #include <memory>
 #include <cstdint>
 
+#ifdef WIN32_LEAN_AND_MEAN
+#include <winsock.h>
+#endif // WIN32_LEAN_AND_MEAN
+
 /* Vutils options */
 
 // MSVC
