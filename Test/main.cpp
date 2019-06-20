@@ -113,7 +113,7 @@ int _tmain(int argc, _TCHAR* argv[])
   /*vu::Box(vu::GetConsoleWindowHandle(), _T("I'm %s. I'm %d years old."), _T("Vic P"), 26);
   vu::Msg(_T("I'm %s. I'm %d years old."), _T("Vic P"), 26);
 
-  std::tcout << vu::Format(_T("I'm %s. I'm %d years old. (A)"), _T("Vic P"), 26) << std::endl;
+  std::tcout << vu::Fmt(_T("I'm %s. I'm %d years old. (A)"), _T("Vic P"), 26) << std::endl;
 
   std::tcout  << vu::LowerString(_T("I Love You")) << std::endl;
   std::tcout << vu::UpperString(_T("I Love You")) << std::endl;
@@ -303,8 +303,8 @@ int _tmain(int argc, _TCHAR* argv[])
   MessageBoxA(vu::GetConsoleWindowHandle(), "The second message.", "A", MB_OK);
   MessageBoxW(vu::GetConsoleWindowHandle(), L"The second message.", L"W", MB_OK);*/
 
-  // CIniFile
-  /*vu::CIniFile ini(vu::GetCurFilePath() + _T(".ini"));
+  // CINIFileA
+  /*vu::CINIFileA ini(vu::GetCurFilePath() + _T(".ini"));
 
   ini.SetCurrentSection(_T("Section"));
 

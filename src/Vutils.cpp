@@ -2160,6 +2160,8 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash)
 
 #ifdef VU_GUID_ENABLED
 
+#define NONE
+
 #ifdef __MINGW32__
 typedef unsigned char __RPC_FAR * RPC_CSTR;
 #if defined(RPC_USE_NATIVE_WCHAR) && defined(_NATIVE_WCHAR_T_DEFINED)
@@ -3776,18 +3778,18 @@ ulong vuapi CFileMappingW::GetFileSize()
 
 /* --- Group : INI File --- */
 
-CIniFileA::CIniFileA(const std::string& FilePath)
+CINIFileA::CINIFileA(const std::string& FilePath)
 {
   m_FilePath = FilePath;
 }
 
-CIniFileA::CIniFileA(const std::string& FilePath, const std::string& Section)
+CINIFileA::CINIFileA(const std::string& FilePath, const std::string& Section)
 {
   m_FilePath = FilePath;
   m_Section  = Section;
 }
 
-void CIniFileA::ValidFilePath()
+void CINIFileA::ValidFilePath()
 {
   if (m_FilePath.empty())
   {
@@ -3798,19 +3800,19 @@ void CIniFileA::ValidFilePath()
   }
 }
 
-void CIniFileA::SetCurrentFilePath(const std::string& FilePath)
+void CINIFileA::SetCurrentFilePath(const std::string& FilePath)
 {
   m_FilePath = FilePath;
 }
 
-void CIniFileA::SetCurrentSection(const std::string& Section)
+void CINIFileA::SetCurrentSection(const std::string& Section)
 {
   m_Section = Section;
 }
 
 // Long-Read
 
-std::vector<std::string> vuapi CIniFileA::ReadSectionNames(ulong ulMaxSize)
+std::vector<std::string> vuapi CINIFileA::ReadSectionNames(ulong ulMaxSize)
 {
   std::vector<std::string> l;
   l.clear();
@@ -3838,7 +3840,7 @@ std::vector<std::string> vuapi CIniFileA::ReadSectionNames(ulong ulMaxSize)
   return l;
 }
 
-std::vector<std::string> vuapi CIniFileA::ReadSection(const std::string& Section, ulong ulMaxSize)
+std::vector<std::string> vuapi CINIFileA::ReadSection(const std::string& Section, ulong ulMaxSize)
 {
   std::vector<std::string> l;
   l.clear();
@@ -3866,7 +3868,7 @@ std::vector<std::string> vuapi CIniFileA::ReadSection(const std::string& Section
   return l;
 }
 
-int vuapi CIniFileA::ReadInteger(const std::string& Section, const std::string& Key, int Default)
+int vuapi CINIFileA::ReadInteger(const std::string& Section, const std::string& Key, int Default)
 {
   this->ValidFilePath();
   uint result = GetPrivateProfileIntA(Section.c_str(), Key.c_str(), Default, m_FilePath.c_str());
@@ -3874,7 +3876,7 @@ int vuapi CIniFileA::ReadInteger(const std::string& Section, const std::string& 
   return result;
 }
 
-bool vuapi CIniFileA::ReadBool(const std::string& Section, const std::string& Key, bool Default)
+bool vuapi CINIFileA::ReadBool(const std::string& Section, const std::string& Key, bool Default)
 {
   this->ValidFilePath();
   bool result = (GetPrivateProfileIntA(Section.c_str(), Key.c_str(), Default, m_FilePath.c_str()) == 1 ? true : false);
@@ -3882,7 +3884,7 @@ bool vuapi CIniFileA::ReadBool(const std::string& Section, const std::string& Ke
   return result;
 }
 
-float vuapi CIniFileA::ReadFloat(const std::string& Section, const std::string& Key, float Default)
+float vuapi CINIFileA::ReadFloat(const std::string& Section, const std::string& Key, float Default)
 {
   const std::string sDefault = NumberToStringA(Default);
   char lpszResult[MAX_SIZE];
@@ -3898,7 +3900,7 @@ float vuapi CIniFileA::ReadFloat(const std::string& Section, const std::string& 
   return (float)atof(lpszResult);
 }
 
-std::string vuapi CIniFileA::ReadString(
+std::string vuapi CINIFileA::ReadString(
   const std::string& Section,
   const std::string& Key,
   const std::string& Default
@@ -3937,7 +3939,7 @@ std::string vuapi CIniFileA::ReadString(
   return s;
 }
 
-std::unique_ptr<uchar[]> vuapi CIniFileA::ReadStruct(const std::string& Section, const std::string& Key, ulong ulSize)
+std::unique_ptr<uchar[]> vuapi CINIFileA::ReadStruct(const std::string& Section, const std::string& Key, ulong ulSize)
 {
   std::unique_ptr<uchar[]> p(new uchar [ulSize]);
   if (p == nullptr)
@@ -3960,39 +3962,39 @@ std::unique_ptr<uchar[]> vuapi CIniFileA::ReadStruct(const std::string& Section,
 
 // Short-Read
 
-std::vector<std::string> vuapi CIniFileA::ReadSection(ulong ulMaxSize)
+std::vector<std::string> vuapi CINIFileA::ReadSection(ulong ulMaxSize)
 {
   return this->ReadSection(m_Section, ulMaxSize);
 }
 
-int vuapi CIniFileA::ReadInteger(const std::string& Key, int Default)
+int vuapi CINIFileA::ReadInteger(const std::string& Key, int Default)
 {
   return this->ReadInteger(m_Section, Key, Default);
 }
 
-bool vuapi CIniFileA::ReadBool(const std::string& Key, bool Default)
+bool vuapi CINIFileA::ReadBool(const std::string& Key, bool Default)
 {
   return this->ReadBool(m_Section, Key, Default);
 }
 
-float vuapi CIniFileA::ReadFloat(const std::string& Key, float Default)
+float vuapi CINIFileA::ReadFloat(const std::string& Key, float Default)
 {
   return this->ReadFloat(m_Section, Key, Default);
 }
 
-std::string vuapi CIniFileA::ReadString(const std::string& Key, const std::string& Default)
+std::string vuapi CINIFileA::ReadString(const std::string& Key, const std::string& Default)
 {
   return this->ReadString(m_Section, Key, Default);
 }
 
-std::unique_ptr<uchar[]> vuapi CIniFileA::ReadStruct(const std::string& Key, ulong ulSize)
+std::unique_ptr<uchar[]> vuapi CINIFileA::ReadStruct(const std::string& Key, ulong ulSize)
 {
   return this->ReadStruct(m_Section, Key, ulSize);
 }
 
 // Long-Write
 
-bool vuapi CIniFileA::WriteInteger(const std::string& Section, const std::string& Key, int Value)
+bool vuapi CINIFileA::WriteInteger(const std::string& Section, const std::string& Key, int Value)
 {
   this->ValidFilePath();
   const std::string s = NumberToStringA(Value);
@@ -4001,7 +4003,7 @@ bool vuapi CIniFileA::WriteInteger(const std::string& Section, const std::string
   return result;
 }
 
-bool vuapi CIniFileA::WriteBool(const std::string& Section, const std::string& Key, bool Value)
+bool vuapi CINIFileA::WriteBool(const std::string& Section, const std::string& Key, bool Value)
 {
   this->ValidFilePath();
   const std::string s(Value ? "1" : "0");
@@ -4010,7 +4012,7 @@ bool vuapi CIniFileA::WriteBool(const std::string& Section, const std::string& K
   return result;
 }
 
-bool vuapi CIniFileA::WriteFloat(const std::string& Section, const std::string& Key, float Value)
+bool vuapi CINIFileA::WriteFloat(const std::string& Section, const std::string& Key, float Value)
 {
   this->ValidFilePath();
   const std::string s = NumberToStringA(Value);
@@ -4019,7 +4021,7 @@ bool vuapi CIniFileA::WriteFloat(const std::string& Section, const std::string& 
   return result;
 }
 
-bool vuapi CIniFileA::WriteString(const std::string& Section, const std::string& Key, const std::string& Value)
+bool vuapi CINIFileA::WriteString(const std::string& Section, const std::string& Key, const std::string& Value)
 {
   this->ValidFilePath();
   bool result = (WritePrivateProfileStringA(Section.c_str(), Key.c_str(), Value.c_str(), m_FilePath.c_str()) != 0);
@@ -4027,7 +4029,7 @@ bool vuapi CIniFileA::WriteString(const std::string& Section, const std::string&
   return result;
 }
 
-bool vuapi CIniFileA::WriteStruct(const std::string& Section, const std::string& Key, void* pStruct, ulong ulSize)
+bool vuapi CINIFileA::WriteStruct(const std::string& Section, const std::string& Key, void* pStruct, ulong ulSize)
 {
   this->ValidFilePath();
   bool result = (WritePrivateProfileStructA(Section.c_str(), Key.c_str(), pStruct, ulSize, m_FilePath.c_str()) != 0);
@@ -4037,39 +4039,39 @@ bool vuapi CIniFileA::WriteStruct(const std::string& Section, const std::string&
 
 // Short-Write
 
-bool vuapi CIniFileA::WriteInteger(const std::string& Key, int Value)
+bool vuapi CINIFileA::WriteInteger(const std::string& Key, int Value)
 {
   return this->WriteInteger(m_Section, Key, Value);
 }
 
-bool vuapi CIniFileA::WriteBool(const std::string& Key, bool Value)
+bool vuapi CINIFileA::WriteBool(const std::string& Key, bool Value)
 {
   return this->WriteBool(m_Section, Key, Value);
 }
 
-bool vuapi CIniFileA::WriteFloat(const std::string& Key, float Value)
+bool vuapi CINIFileA::WriteFloat(const std::string& Key, float Value)
 {
   return this->WriteFloat(m_Section, Key, Value);
 }
 
-bool vuapi CIniFileA::WriteString(const std::string& Key, const std::string& Value)
+bool vuapi CINIFileA::WriteString(const std::string& Key, const std::string& Value)
 {
   return this->WriteString(m_Section, Key, Value);
 }
 
-bool vuapi CIniFileA::WriteStruct(const std::string& Key, void* pStruct, ulong ulSize)
+bool vuapi CINIFileA::WriteStruct(const std::string& Key, void* pStruct, ulong ulSize)
 {
   return this->WriteStruct(m_Section, Key, pStruct, ulSize);
 }
 
-CIniFileW::CIniFileW(const std::wstring& FilePath)
+CINIFileW::CINIFileW(const std::wstring& FilePath)
 {
   m_FilePath = FilePath;
 
   m_LastErrorCode = ERROR_SUCCESS;
 }
 
-CIniFileW::CIniFileW(const std::wstring& FilePath, const std::wstring& Section)
+CINIFileW::CINIFileW(const std::wstring& FilePath, const std::wstring& Section)
 {
   m_FilePath = FilePath;
   m_Section  = Section;
@@ -4077,7 +4079,7 @@ CIniFileW::CIniFileW(const std::wstring& FilePath, const std::wstring& Section)
   m_LastErrorCode = ERROR_SUCCESS;
 }
 
-void CIniFileW::ValidFilePath()
+void CINIFileW::ValidFilePath()
 {
   if (m_FilePath.empty())
   {
@@ -4088,19 +4090,19 @@ void CIniFileW::ValidFilePath()
   }
 }
 
-void CIniFileW::SetCurrentFilePath(const std::wstring& FilePath)
+void CINIFileW::SetCurrentFilePath(const std::wstring& FilePath)
 {
   m_FilePath = FilePath;
 }
 
-void CIniFileW::SetCurrentSection(const std::wstring& Section)
+void CINIFileW::SetCurrentSection(const std::wstring& Section)
 {
   m_Section = Section;
 }
 
 // Long-Read
 
-std::vector<std::wstring> vuapi CIniFileW::ReadSectionNames(ulong ulMaxSize)
+std::vector<std::wstring> vuapi CINIFileW::ReadSectionNames(ulong ulMaxSize)
 {
   std::vector<std::wstring> l;
   l.clear();
@@ -4128,7 +4130,7 @@ std::vector<std::wstring> vuapi CIniFileW::ReadSectionNames(ulong ulMaxSize)
   return l;
 }
 
-std::vector<std::wstring> vuapi CIniFileW::ReadSection(const std::wstring& Section, ulong ulMaxSize)
+std::vector<std::wstring> vuapi CINIFileW::ReadSection(const std::wstring& Section, ulong ulMaxSize)
 {
   std::vector<std::wstring> l;
   l.clear();
@@ -4156,7 +4158,7 @@ std::vector<std::wstring> vuapi CIniFileW::ReadSection(const std::wstring& Secti
   return l;
 }
 
-int vuapi CIniFileW::ReadInteger(const std::wstring& Section, const std::wstring& Key, int Default)
+int vuapi CINIFileW::ReadInteger(const std::wstring& Section, const std::wstring& Key, int Default)
 {
   this->ValidFilePath();
   int result = GetPrivateProfileIntW(Section.c_str(), Key.c_str(), Default, m_FilePath.c_str());
@@ -4164,7 +4166,7 @@ int vuapi CIniFileW::ReadInteger(const std::wstring& Section, const std::wstring
   return result;
 }
 
-bool vuapi CIniFileW::ReadBool(const std::wstring& Section, const std::wstring& Key, bool Default)
+bool vuapi CINIFileW::ReadBool(const std::wstring& Section, const std::wstring& Key, bool Default)
 {
   this->ValidFilePath();
   bool result = (GetPrivateProfileIntW(Section.c_str(), Key.c_str(), Default, m_FilePath.c_str()) == 1 ? true : false);
@@ -4172,7 +4174,7 @@ bool vuapi CIniFileW::ReadBool(const std::wstring& Section, const std::wstring& 
   return result;
 }
 
-float vuapi CIniFileW::ReadFloat(const std::wstring& Section, const std::wstring& Key, float Default)
+float vuapi CINIFileW::ReadFloat(const std::wstring& Section, const std::wstring& Key, float Default)
 {
   this->ValidFilePath();
 
@@ -4197,7 +4199,7 @@ float vuapi CIniFileW::ReadFloat(const std::wstring& Section, const std::wstring
   return (float)atof(s.c_str());
 }
 
-std::wstring vuapi CIniFileW::ReadString(
+std::wstring vuapi CINIFileW::ReadString(
   const std::wstring& Section,
   const std::wstring& Key,
   const std::wstring& Default
@@ -4235,7 +4237,7 @@ std::wstring vuapi CIniFileW::ReadString(
   return s;
 }
 
-std::unique_ptr<uchar[]> vuapi CIniFileW::ReadStruct(
+std::unique_ptr<uchar[]> vuapi CINIFileW::ReadStruct(
   const std::wstring& Section,
   const std::wstring& Key,
   ulong ulSize
@@ -4262,39 +4264,39 @@ std::unique_ptr<uchar[]> vuapi CIniFileW::ReadStruct(
 
 // Short-Read
 
-std::vector<std::wstring> vuapi CIniFileW::ReadSection(ulong ulMaxSize)
+std::vector<std::wstring> vuapi CINIFileW::ReadSection(ulong ulMaxSize)
 {
   return this->ReadSection(m_Section, ulMaxSize);
 }
 
-int vuapi CIniFileW::ReadInteger(const std::wstring& Key, int Default)
+int vuapi CINIFileW::ReadInteger(const std::wstring& Key, int Default)
 {
   return this->ReadInteger(m_Section, Key, Default);
 }
 
-bool vuapi CIniFileW::ReadBool(const std::wstring& Key, bool Default)
+bool vuapi CINIFileW::ReadBool(const std::wstring& Key, bool Default)
 {
   return this->ReadBool(m_Section, Key, Default);
 }
 
-float vuapi CIniFileW::ReadFloat(const std::wstring& Key, float Default)
+float vuapi CINIFileW::ReadFloat(const std::wstring& Key, float Default)
 {
   return this->ReadFloat(m_Section, Key, Default);
 }
 
-std::wstring vuapi CIniFileW::ReadString(const std::wstring& Key, const std::wstring& Default)
+std::wstring vuapi CINIFileW::ReadString(const std::wstring& Key, const std::wstring& Default)
 {
   return this->ReadString(m_Section, Key, Default);
 }
 
-std::unique_ptr<uchar[]> vuapi CIniFileW::ReadStruct(const std::wstring& Key, ulong ulSize)
+std::unique_ptr<uchar[]> vuapi CINIFileW::ReadStruct(const std::wstring& Key, ulong ulSize)
 {
   return this->ReadStruct(m_Section, Key, ulSize);
 }
 
 // Long-Write
 
-bool vuapi CIniFileW::WriteInteger(const std::wstring& Section, const std::wstring& Key, int Value)
+bool vuapi CINIFileW::WriteInteger(const std::wstring& Section, const std::wstring& Key, int Value)
 {
   this->ValidFilePath();
   const std::wstring s = NumberToStringW(Value);
@@ -4303,14 +4305,14 @@ bool vuapi CIniFileW::WriteInteger(const std::wstring& Section, const std::wstri
   return result;
 }
 
-bool vuapi CIniFileW::WriteBool(const std::wstring& Section, const std::wstring& Key, bool Value)
+bool vuapi CINIFileW::WriteBool(const std::wstring& Section, const std::wstring& Key, bool Value)
 {
   this->ValidFilePath();
   const std::wstring s(Value ? L"1" : L"0");
   return (WritePrivateProfileStringW(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
 }
 
-bool vuapi CIniFileW::WriteFloat(const std::wstring& Section, const std::wstring& Key, float Value)
+bool vuapi CINIFileW::WriteFloat(const std::wstring& Section, const std::wstring& Key, float Value)
 {
   this->ValidFilePath();
   const std::wstring s = NumberToStringW(Value);
@@ -4319,7 +4321,7 @@ bool vuapi CIniFileW::WriteFloat(const std::wstring& Section, const std::wstring
   return result;
 }
 
-bool vuapi CIniFileW::WriteString(const std::wstring& Section, const std::wstring& Key, const std::wstring& Value)
+bool vuapi CINIFileW::WriteString(const std::wstring& Section, const std::wstring& Key, const std::wstring& Value)
 {
   this->ValidFilePath();
   bool result = (WritePrivateProfileStringW(Section.c_str(), Key.c_str(), Value.c_str(), m_FilePath.c_str()) != 0);
@@ -4327,7 +4329,7 @@ bool vuapi CIniFileW::WriteString(const std::wstring& Section, const std::wstrin
   return result;
 }
 
-bool vuapi CIniFileW::WriteStruct(
+bool vuapi CINIFileW::WriteStruct(
   const std::wstring& Section,
   const std::wstring& Key,
   void* pStruct,
@@ -4342,27 +4344,27 @@ bool vuapi CIniFileW::WriteStruct(
 
 // Short-Write
 
-bool vuapi CIniFileW::WriteInteger(const std::wstring& Key, int Value)
+bool vuapi CINIFileW::WriteInteger(const std::wstring& Key, int Value)
 {
   return this->WriteInteger(m_Section.c_str(), Key.c_str(), Value);
 }
 
-bool vuapi CIniFileW::WriteBool(const std::wstring& Key, bool Value)
+bool vuapi CINIFileW::WriteBool(const std::wstring& Key, bool Value)
 {
   return this->WriteBool(m_Section.c_str(), Key.c_str(), Value);
 }
 
-bool vuapi CIniFileW::WriteFloat(const std::wstring& Key, float Value)
+bool vuapi CINIFileW::WriteFloat(const std::wstring& Key, float Value)
 {
   return this->WriteFloat(m_Section.c_str(), Key.c_str(), Value);
 }
 
-bool vuapi CIniFileW::WriteString(const std::wstring& Key, const std::wstring& Value)
+bool vuapi CINIFileW::WriteString(const std::wstring& Key, const std::wstring& Value)
 {
   return this->WriteString(m_Section.c_str(), Key.c_str(), Value);
 }
 
-bool vuapi CIniFileW::WriteStruct(const std::wstring& Key, void* pStruct, ulong ulSize)
+bool vuapi CINIFileW::WriteStruct(const std::wstring& Key, void* pStruct, ulong ulSize)
 {
   return this->WriteStruct(m_Section.c_str(), Key.c_str(), pStruct, ulSize);
 }

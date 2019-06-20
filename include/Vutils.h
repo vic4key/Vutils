@@ -184,8 +184,6 @@ namespace vu
 #endif // _UNICODE
 #endif // _T
 
-#define NONE
-
 #ifndef MAXPATH
 #define MAXPATH MAX_PATH
 #endif
@@ -748,16 +746,16 @@ typedef enum _SOCKET_PROTOCOL
 #define MSG_INTERRUPT   0x10
 #define MSG_PARTIAL     0x8000
 
-typedef enum _SOCKET_MESSAGE
+typedef enum _SOCKET_FLAG
 {
-  SM_NONE      = 0,
-  SM_OOB       = MSG_OOB,
-  SM_PEEK      = MSG_PEEK,
-  SM_DONTROUTE = MSG_DONTROUTE,
-  SM_WAITALL   = MSG_WAITALL,
-  SM_PARTIAL   = MSG_PARTIAL,
-  SM_INTERRUPT = MSG_INTERRUPT,
-  SM_MAXIOVLEN = MSG_MAXIOVLEN,
+  SF_NONE      = 0,
+  SF_OOB       = MSG_OOB,
+  SF_PEEK      = MSG_PEEK,
+  SF_DONTROUTE = MSG_DONTROUTE,
+  SF_WAITALL   = MSG_WAITALL,
+  SF_PARTIAL   = MSG_PARTIAL,
+  SF_INTERRUPT = MSG_INTERRUPT,
+  SF_MAXIOVLEN = MSG_MAXIOVLEN,
 } eSocketMessage;
 
 typedef enum _SHUTDOWN_FLAG
@@ -1097,7 +1095,7 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 /* --- Group : Misc Working --- */
 #define GetEnviroment GetEnviromentW
 /* --- Group : String Formatting --- */
-#define Format FormatW
+#define Fmt FormatW
 #define Msg MsgW
 #define Box BoxW
 #define LastError LastErrorW
@@ -1127,7 +1125,7 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 /* --- Group : Misc Working --- */
 #define GetEnviroment GetEnviromentA
 /* --- Group : String Formatting --- */
-#define Format FormatA
+#define Fmt FormatA
 #define Msg MsgA
 #define Box BoxA
 #define LastError LastErrorA
@@ -1418,12 +1416,12 @@ public:
   VUResult vuapi Accept(TSocketInfomation& SocketInformation);
   VUResult vuapi Connect(const TAccessPoint& AccessPoint);
   VUResult vuapi Connect(const std::string& Address, ushort usPort);
-  IResult vuapi Send(const char* lpData, int iLength, eSocketMessage SocketMessage = SM_NONE);
-  IResult vuapi Send(const CBinary& Data, eSocketMessage SocketMessage = SM_NONE);
-  IResult vuapi Send(const SOCKET socket, const char* lpData, int iLength, eSocketMessage SocketMessage = SM_NONE);
-  IResult vuapi Recv(char* lpData, int iLength, eSocketMessage SocketMessage = SM_NONE);
-  IResult vuapi Recv(CBinary& Data, eSocketMessage SocketMessage = SM_NONE);
-  IResult vuapi Recv(SOCKET socket, char* lpData, int iLength, eSocketMessage SocketMessage = SM_NONE);
+  IResult vuapi Send(const char* lpData, int iLength, eSocketMessage SocketMessage = SF_NONE);
+  IResult vuapi Send(const CBinary& Data, eSocketMessage SocketMessage = SF_NONE);
+  IResult vuapi Send(const SOCKET socket, const char* lpData, int iLength, eSocketMessage SocketMessage = SF_NONE);
+  IResult vuapi Recv(char* lpData, int iLength, eSocketMessage SocketMessage = SF_NONE);
+  IResult vuapi Recv(CBinary& Data, eSocketMessage SocketMessage = SF_NONE);
+  IResult vuapi Recv(SOCKET socket, char* lpData, int iLength, eSocketMessage SocketMessage = SF_NONE);
   IResult vuapi SendTo(const char* lpData, int iLength, TSocketInfomation& SocketInformation);
   IResult vuapi SendTo(const CBinary& Data, TSocketInfomation& SocketInformation);
   IResult vuapi RecvFrom(char* lpData, int iLength, TSocketInfomation& SocketInformation);
@@ -1833,7 +1831,7 @@ public:
 
 /* --- Group : INI File --- */
 
-class CIniFileA : public CLastError
+class CINIFileA : public CLastError
 {
 private:
   std::string m_FilePath;
@@ -1842,10 +1840,10 @@ private:
   void ValidFilePath();
 
 public:
-  CIniFileA() {};
-  CIniFileA(const std::string& FilePath);
-  CIniFileA(const std::string& FilePath, const std::string& Section);
-  virtual ~CIniFileA() {};
+  CINIFileA() {};
+  CINIFileA(const std::string& FilePath);
+  CINIFileA(const std::string& FilePath, const std::string& Section);
+  virtual ~CINIFileA() {};
 
   void SetCurrentFilePath(const std::string& FilePath);
   void SetCurrentSection(const std::string& Section);
@@ -1880,7 +1878,7 @@ public:
   bool vuapi WriteStruct(const std::string& Key, void* pStruct, ulong ulSize);
 };
 
-class CIniFileW : public CLastError
+class CINIFileW : public CLastError
 {
 private:
   std::wstring m_FilePath;
@@ -1889,10 +1887,10 @@ private:
   void ValidFilePath();
 
 public:
-  CIniFileW() {};
-  CIniFileW(const std::wstring& FilePath);
-  CIniFileW(const std::wstring& FilePath, const std::wstring& Section);
-  virtual ~CIniFileW() {};
+  CINIFileW() {};
+  CINIFileW(const std::wstring& FilePath);
+  CINIFileW(const std::wstring& FilePath, const std::wstring& Section);
+  virtual ~CINIFileW() {};
 
   void SetCurrentFilePath(const std::wstring& FilePath);
   void SetCurrentSection(const std::wstring& Section);
@@ -2197,7 +2195,7 @@ private:
 #define CFile CFileW
 #define CLibrary CLibraryW
 #define CFileMapping CFileMappingW
-#define CIniFile CIniFileW
+#define CINIFile CINIFileW
 #define CRegistry CRegistryW
 #define CPEFileT CPEFileTW
 #else
@@ -2207,7 +2205,7 @@ private:
 #define CFile CFileA
 #define CLibrary CLibraryA
 #define CFileMapping CFileMappingA
-#define CIniFile CIniFileA
+#define CINIFile CIniFileA
 #define CRegistry CRegistryA
 #define CPEFileT CPEFileTA
 #endif
