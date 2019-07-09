@@ -643,45 +643,54 @@ typedef enum _WOW64
   WOW64_YES   = 1,
 } eWow64;
 
-// CCatFile
+// CFileSystem
 
-typedef enum _FILE_MODE_FLAGS
+typedef enum _FS_MODE_FLAGS
 {
   FM_CREATENEW = 1,    // CREATE_NEW         = 1,
   FM_CREATEALWAY,      // CREATE_ALWAYS      = 2,
   FM_OPENEXISTING,     // OPEN_EXISTING      = 3,
   FM_OPENALWAYS,       // OPEN_ALWAYS        = 4,
   FM_TRUNCATEEXISTING, // TRUNCATE_EXISTING  = 5,
-} eFileModeFlags;
+} eFSModeFlags;
 
-typedef enum _FILE_ATTRIBUTE_FLAGS
+typedef enum _FS_ATTRIBUTE_FLAGS
 {
-  FA_UNKNOWN       = 0X00000000,
-  FA_READONLY      = 0X00000001,   // FILE_ATTRIBUTE_READONLY             = $00000001;
-  FA_HIDDEN        = 0X00000002,   // FILE_ATTRIBUTE_HIDDEN               = $00000002;
-  FA_SYSTEM        = 0X00000004,   // FILE_ATTRIBUTE_SYSTEM               = $00000004;
-  FA_DIRECTORY     = 0X00000010,   // FILE_ATTRIBUTE_DIRECTORY            = $00000010;
-  FA_ARCHIVE       = 0X00000020,   // FILE_ATTRIBUTE_ARCHIVE              = $00000020;
-  FA_DEVICE        = 0X00000040,   // FILE_ATTRIBUTE_DEVICE               = $00000040;
-  FA_NORMAL        = 0X00000080,   // FILE_ATTRIBUTE_NORMAL               = $00000080;
-  FA_TEMPORARY     = 0X00000100,   // FILE_ATTRIBUTE_TEMPORARY            = $00000100;
-  FA_SPARSEFILE    = 0X00000200,   // FILE_ATTRIBUTE_SPARSE_FILE          = $00000200;
-  FA_REPARSEPOINT  = 0X00000400,   // FILE_ATTRIBUTE_REPARSE_POINT        = $00000400;
-  FA_COMPRESSED    = 0X00000800,   // FILE_ATTRIBUTE_COMPRESSED           = $00000800;
-  FA_OFFLINE       = 0X00001000,   // FILE_ATTRIBUTE_OFFLINE              = $00001000;
-  FANOTCONTENTINDEXED = 0X00002000,// FILE_ATTRIBUTE_NOT_CONTENT_INDEXED  = $00002000;
-  FAENCRYPTED      = 0X00004000,   // FILE_ATTRIBUTE_ENCRYPTED           = $00004000;
-} eFileAttributeFlags;
+  FA_UNKNOWN       = 0x00000000,
+  FA_READONLY      = 0x00000001,   // FILE_ATTRIBUTE_READONLY             = $00000001;
+  FA_HIDDEN        = 0x00000002,   // FILE_ATTRIBUTE_HIDDEN               = $00000002;
+  FA_SYSTEM        = 0x00000004,   // FILE_ATTRIBUTE_SYSTEM               = $00000004;
+  FA_DIRECTORY     = 0x00000010,   // FILE_ATTRIBUTE_DIRECTORY            = $00000010;
+  FA_ARCHIVE       = 0x00000020,   // FILE_ATTRIBUTE_ARCHIVE              = $00000020;
+  FA_DEVICE        = 0x00000040,   // FILE_ATTRIBUTE_DEVICE               = $00000040;
+  FA_NORMAL        = 0x00000080,   // FILE_ATTRIBUTE_NORMAL               = $00000080;
+  FA_TEMPORARY     = 0x00000100,   // FILE_ATTRIBUTE_TEMPORARY            = $00000100;
+  FA_SPARSEFILE    = 0x00000200,   // FILE_ATTRIBUTE_SPARSE_FILE          = $00000200;
+  FA_REPARSEPOINT  = 0x00000400,   // FILE_ATTRIBUTE_REPARSE_POINT        = $00000400;
+  FA_COMPRESSED    = 0x00000800,   // FILE_ATTRIBUTE_COMPRESSED           = $00000800;
+  FA_OFFLINE       = 0x00001000,   // FILE_ATTRIBUTE_OFFLINE              = $00001000;
+  FANOTCONTENTINDEXED = 0x00002000,// FILE_ATTRIBUTE_NOT_CONTENT_INDEXED  = $00002000;
+  FAENCRYPTED      = 0x00004000,   // FILE_ATTRIBUTE_ENCRYPTED           = $00004000;
+} eFSAttributeFlags;
 
-typedef enum _FILE_SHARE_FLAGS
+typedef enum _FS_SHARE_FLAGS
 {
-  FS_NONE       = 0X00000000,
-  FS_READ       = 0X00000001,
-  FS_WRITE      = 0X00000002,
-  FS_DELETE     = 0X00000004,
+  FS_NONE       = 0x00000000,
+  FS_READ       = 0x00000001,
+  FS_WRITE      = 0x00000002,
+  FS_DELETE     = 0x00000004,
   FS_READWRITE  = FS_READ | FS_WRITE,
   FS_ALLACCESS  = FS_READ | FS_WRITE | FS_DELETE,
-} eFileShareFlags;
+} eFSShareFlags;
+
+typedef enum _FS_GENERIC_FLAGS
+{
+  FG_ALL        = GENERIC_ALL,
+  FG_EXECUTE    = GENERIC_EXECUTE,
+  FG_WRITE      = GENERIC_WRITE,
+  FG_READ       = GENERIC_READ,
+  FG_READWRITE  = GENERIC_READ | GENERIC_WRITE,
+} eFSGenericFlags;
 
 typedef enum _MOVE_METHOD_FLAGS
 {
@@ -690,19 +699,10 @@ typedef enum _MOVE_METHOD_FLAGS
   MM_END     = FILE_END,
 } eMoveMethodFlags;
 
-typedef enum _FILE_GENERIC_FLAGS
-{
-  FG_ALL        = GENERIC_ALL,
-  FG_EXECUTE    = GENERIC_EXECUTE,
-  FG_WRITE      = GENERIC_WRITE,
-  FG_READ       = GENERIC_READ,
-  FG_READWRITE  = GENERIC_READ | GENERIC_WRITE,
-} eFileGenericFlags;
-
 // CESocket
 
-#define AF_IRDA   26
-#define AF_INET6  23
+#define AF_IRDA  26
+#define AF_INET6 23
 
 typedef enum _SOCKET_AF
 {
@@ -1544,11 +1544,11 @@ public:
 
 /* --- Group : File Working --- */
 
-class CFileX : public CLastError
+class CFileSystemX : public CLastError
 {
 public:
-  CFileX() {};
-  virtual ~CFileX();
+  CFileSystemX() {};
+  virtual ~CFileSystemX();
   virtual bool vuapi IsFileHandleValid(HANDLE fileHandle);
   virtual bool vuapi IsReady();
   virtual ulong vuapi GetFileSize();
@@ -1575,50 +1575,50 @@ private:
   ulong m_ReadSize, m_WroteSize;
 };
 
-class CFileA: public CFileX
+class CFileSystemA: public CFileSystemX
 {
 public:
-  CFileA() {};
-  CFileA(
+  CFileSystemA() {};
+  CFileSystemA(
     const std::string& FilePath,
-    eFileModeFlags fmFlag,
-    eFileGenericFlags fgFlag   = FG_READWRITE,
-    eFileShareFlags fsFlag     = FS_ALLACCESS,
-    eFileAttributeFlags faFlag = FA_NORMAL
+    eFSModeFlags fmFlag,
+    eFSGenericFlags fgFlag   = FG_READWRITE,
+    eFSShareFlags fsFlag     = FS_ALLACCESS,
+    eFSAttributeFlags faFlag = FA_NORMAL
   );
-  virtual ~CFileA() {};
+  virtual ~CFileSystemA() {};
   bool vuapi Init(
     const std::string& FilePath,
-    eFileModeFlags fmFlag,
-    eFileGenericFlags fgFlag   = FG_READWRITE,
-    eFileShareFlags fsFlag     = FS_ALLACCESS,
-    eFileAttributeFlags faFlag = FA_NORMAL
+    eFSModeFlags fmFlag,
+    eFSGenericFlags fgFlag   = FG_READWRITE,
+    eFSShareFlags fsFlag     = FS_ALLACCESS,
+    eFSAttributeFlags faFlag = FA_NORMAL
   );
   const std::string vuapi ReadFileAsString(bool forceBOM = true);
   static const std::string vuapi QuickReadFileAsString(const std::string& FilePath, bool forceBOM = true);
 };
 
-class CFileW: public CFileX
+class CFileSystemW: public CFileSystemX
 {
 public:
-  CFileW() {};
-  CFileW(
+  CFileSystemW() {};
+  CFileSystemW(
     const std::wstring& FilePath,
-    eFileModeFlags fmFlag,
-    eFileGenericFlags fgFlag   = FG_READWRITE,
-    eFileShareFlags fsFlag     = FS_ALLACCESS,
-    eFileAttributeFlags faFlag = FA_NORMAL
+    eFSModeFlags fmFlag,
+    eFSGenericFlags fgFlag   = FG_READWRITE,
+    eFSShareFlags fsFlag     = FS_ALLACCESS,
+    eFSAttributeFlags faFlag = FA_NORMAL
   );
-  virtual ~CFileW() {};
+  virtual ~CFileSystemW() {};
   bool vuapi Init(
     const std::wstring& FilePath,
-    eFileModeFlags fmFlag,
-    eFileGenericFlags fgFlag = FG_READWRITE,
-    eFileShareFlags fsFlag   = FS_ALLACCESS,
-    eFileAttributeFlags faFlag = FA_NORMAL
+    eFSModeFlags fmFlag,
+    eFSGenericFlags fgFlag = FG_READWRITE,
+    eFSShareFlags fsFlag   = FS_ALLACCESS,
+    eFSAttributeFlags faFlag = FA_NORMAL
   );
-  const std::wstring vuapi ReadFileAsString(bool forceBOM = true);
-  static const std::wstring vuapi QuickReadFileAsString(const std::wstring& FilePath, bool forceBOM = true);
+  const std::wstring vuapi ReadAsString(bool forceBOM = true);
+  static const std::wstring vuapi QuickReadAsString(const std::wstring& FilePath, bool forceBOM = true);
 };
 
 /* --- Group : Service Working --- */
@@ -1734,10 +1734,10 @@ public:
   VUResult vuapi Init(
     bool bMapFile = false,
     const std::string& FileName = "",
-    eFileGenericFlags fgFlag = eFileGenericFlags::FG_ALL,
-    eFileShareFlags fsFlag = eFileShareFlags::FS_ALLACCESS,
-    eFileModeFlags fmFlag = eFileModeFlags::FM_OPENEXISTING,
-    eFileAttributeFlags faFlag = eFileAttributeFlags::FA_NORMAL
+    eFSGenericFlags fgFlag = eFSGenericFlags::FG_ALL,
+    eFSShareFlags fsFlag = eFSShareFlags::FS_ALLACCESS,
+    eFSModeFlags fmFlag = eFSModeFlags::FM_OPENEXISTING,
+    eFSAttributeFlags faFlag = eFSAttributeFlags::FA_NORMAL
   );
 
   /**
@@ -1792,10 +1792,10 @@ public:
   VUResult vuapi Init(
     bool bMapFile = false,
     const std::wstring FileName = L"",
-    eFileGenericFlags fgFlag = eFileGenericFlags::FG_ALL,
-    eFileShareFlags fsFlag = eFileShareFlags::FS_ALLACCESS,
-    eFileModeFlags fmFlag = eFileModeFlags::FM_OPENEXISTING,
-    eFileAttributeFlags faFlag = eFileAttributeFlags::FA_NORMAL
+    eFSGenericFlags fgFlag = eFSGenericFlags::FG_ALL,
+    eFSShareFlags fsFlag = eFSShareFlags::FS_ALLACCESS,
+    eFSModeFlags fmFlag = eFSModeFlags::FM_OPENEXISTING,
+    eFSAttributeFlags faFlag = eFSAttributeFlags::FA_NORMAL
   );
 
   /**
@@ -2192,8 +2192,8 @@ private:
 #define CGUID CGUIDW
 #define CDynHook CDynHookW
 #define CService CServiceW
-#define CFile CFileW
 #define CLibrary CLibraryW
+#define CFileSystem CFileSystemW
 #define CFileMapping CFileMappingW
 #define CINIFile CINIFileW
 #define CRegistry CRegistryW
@@ -2202,8 +2202,8 @@ private:
 #define CGUID CGUIDA
 #define CDynHook CDynHookA
 #define CService CServiceA
-#define CFile CFileA
 #define CLibrary CLibraryA
+#define CFileSystem CFileSystemA
 #define CFileMapping CFileMappingA
 #define CINIFile CIniFileA
 #define CRegistry CRegistryA

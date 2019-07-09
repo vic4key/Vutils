@@ -3461,10 +3461,10 @@ bool CFileMappingA::IsValidHandle(HANDLE Handle)
 VUResult vuapi CFileMappingA::Init(
   bool bMapFile,
   const std::string& FileName,
-  eFileGenericFlags fgFlag,
-  eFileShareFlags fsFlag,
-  eFileModeFlags fmFlag,
-  eFileAttributeFlags faFlag
+  eFSGenericFlags fgFlag,
+  eFSShareFlags fsFlag,
+  eFSModeFlags fmFlag,
+  eFSAttributeFlags faFlag
 )
 {
   if ((m_MapFile = bMapFile))
@@ -3631,10 +3631,10 @@ bool CFileMappingW::IsValidHandle(HANDLE Handle)
 VUResult vuapi CFileMappingW::Init(
   bool bMapFile,
   const std::wstring FileName,
-  eFileGenericFlags fgFlag,
-  eFileShareFlags fsFlag,
-  eFileModeFlags fmFlag,
-  eFileAttributeFlags faFlag
+  eFSGenericFlags fgFlag,
+  eFSShareFlags fsFlag,
+  eFSModeFlags fmFlag,
+  eFSAttributeFlags faFlag
 )
 {
   if ((m_MapFile = bMapFile))
@@ -5641,12 +5641,12 @@ const CStopWatch::TDuration CStopWatch::Duration()
 
 /* --- Group : File Working --- */
 
-CFileX::~CFileX()
+CFileSystemX::~CFileSystemX()
 {
   this->Close();
 }
 
-bool vuapi CFileX::IsFileHandleValid(HANDLE fileHandle)
+bool vuapi CFileSystemX::IsFileHandleValid(HANDLE fileHandle)
 {
   if (!fileHandle || fileHandle == INVALID_HANDLE_VALUE)
   {
@@ -5656,12 +5656,12 @@ bool vuapi CFileX::IsFileHandleValid(HANDLE fileHandle)
   return true;
 }
 
-bool vuapi CFileX::IsReady()
+bool vuapi CFileSystemX::IsReady()
 {
   return this->IsFileHandleValid(m_FileHandle);
 }
 
-bool vuapi CFileX::Read(
+bool vuapi CFileSystemX::Read(
   ulong ulOffset,
   void* Buffer,
   ulong ulSize,
@@ -5680,7 +5680,7 @@ bool vuapi CFileX::Read(
   return true;
 }
 
-bool vuapi CFileX::Read(void* Buffer, ulong ulSize)
+bool vuapi CFileSystemX::Read(void* Buffer, ulong ulSize)
 {
   BOOL result = ReadFile(m_FileHandle, Buffer, ulSize, (LPDWORD)&m_ReadSize, NULL);
   if (!result && ulSize != m_ReadSize)
@@ -5692,7 +5692,7 @@ bool vuapi CFileX::Read(void* Buffer, ulong ulSize)
   return true;
 }
 
-bool vuapi CFileX::Write(
+bool vuapi CFileSystemX::Write(
   ulong ulOffset,
   const void* cBuffer,
   ulong ulSize,
@@ -5711,7 +5711,7 @@ bool vuapi CFileX::Write(
   return true;
 }
 
-bool vuapi CFileX::Write(const void* cBuffer, ulong ulSize)
+bool vuapi CFileSystemX::Write(const void* cBuffer, ulong ulSize)
 {
   BOOL result = WriteFile(m_FileHandle, cBuffer, ulSize, (LPDWORD)&m_WroteSize, NULL);
   if (!result && ulSize != m_WroteSize)
@@ -5723,7 +5723,7 @@ bool vuapi CFileX::Write(const void* cBuffer, ulong ulSize)
   return true;
 }
 
-bool vuapi CFileX::Seek(ulong ulOffset, eMoveMethodFlags mmFlag)
+bool vuapi CFileSystemX::Seek(ulong ulOffset, eMoveMethodFlags mmFlag)
 {
   if (!this->IsFileHandleValid(m_FileHandle))
   {
@@ -5737,7 +5737,7 @@ bool vuapi CFileX::Seek(ulong ulOffset, eMoveMethodFlags mmFlag)
   return (result != INVALID_SET_FILE_POINTER);
 }
 
-ulong vuapi CFileX::GetFileSize()
+ulong vuapi CFileSystemX::GetFileSize()
 {
   if (!this->IsFileHandleValid(m_FileHandle))
   {
@@ -5751,7 +5751,7 @@ ulong vuapi CFileX::GetFileSize()
   return result;
 }
 
-bool vuapi CFileX::IOControl(
+bool vuapi CFileSystemX::IOControl(
   ulong ulControlCode,
   void* lpSendBuffer,
   ulong ulSendSize,
@@ -5777,7 +5777,7 @@ bool vuapi CFileX::IOControl(
   return result;
 }
 
-bool vuapi CFileX::Close()
+bool vuapi CFileSystemX::Close()
 {
   if (!this->IsFileHandleValid(m_FileHandle))
   {
@@ -5794,7 +5794,7 @@ bool vuapi CFileX::Close()
   return true;
 }
 
-const CBinary vuapi CFileX::ReadContent()
+const CBinary vuapi CFileSystemX::ReadContent()
 {
   CBinary pContent(0);
 
@@ -5816,23 +5816,23 @@ const CBinary vuapi CFileX::ReadContent()
 
 // A
 
-CFileA::CFileA(
+CFileSystemA::CFileSystemA(
   const std::string& FilePath,
-  eFileModeFlags fmFlag,
-  eFileGenericFlags fgFlag,
-  eFileShareFlags fsFlag,
-  eFileAttributeFlags faFlag
+  eFSModeFlags fmFlag,
+  eFSGenericFlags fgFlag,
+  eFSShareFlags fsFlag,
+  eFSAttributeFlags faFlag
 )
 {
   this->Init(FilePath, fmFlag, fgFlag, fsFlag, faFlag);
 }
 
-bool vuapi CFileA::Init(
+bool vuapi CFileSystemA::Init(
   const std::string& FilePath,
-  eFileModeFlags fmFlag,
-  eFileGenericFlags fgFlag,
-  eFileShareFlags fsFlag,
-  eFileAttributeFlags faFlag
+  eFSModeFlags fmFlag,
+  eFSGenericFlags fgFlag,
+  eFSShareFlags fsFlag,
+  eFSAttributeFlags faFlag
 )
 {
   m_FileHandle = CreateFileA(FilePath.c_str(), fgFlag, fsFlag, NULL, fmFlag, faFlag, NULL);
@@ -5845,7 +5845,7 @@ bool vuapi CFileA::Init(
   return true;
 }
 
-const std::string vuapi CFileA::ReadFileAsString(bool forceBOM)
+const std::string vuapi CFileSystemA::ReadFileAsString(bool forceBOM)
 {
   std::string result("");
 
@@ -5871,9 +5871,9 @@ const std::string vuapi CFileA::ReadFileAsString(bool forceBOM)
   return result;
 }
 
-const std::string vuapi CFileA::QuickReadFileAsString(const std::string& FilePath, bool forceBOM)
+const std::string vuapi CFileSystemA::QuickReadFileAsString(const std::string& FilePath, bool forceBOM)
 {
-  CFileA file(FilePath, vu::eFileModeFlags::FM_OPENEXISTING);
+  CFileSystemA file(FilePath, vu::eFSModeFlags::FM_OPENEXISTING);
   auto result = file.ReadFileAsString(forceBOM);
   file.Close();
   return result;
@@ -5881,23 +5881,23 @@ const std::string vuapi CFileA::QuickReadFileAsString(const std::string& FilePat
 
 // W
 
-CFileW::CFileW(
+CFileSystemW::CFileSystemW(
   const std::wstring& FilePath,
-  eFileModeFlags fmFlag,
-  eFileGenericFlags fgFlag,
-  eFileShareFlags fsFlag,
-  eFileAttributeFlags faFlag
+  eFSModeFlags fmFlag,
+  eFSGenericFlags fgFlag,
+  eFSShareFlags fsFlag,
+  eFSAttributeFlags faFlag
 )
 {
   this->Init(FilePath, fmFlag, fgFlag, fsFlag, faFlag);
 }
 
-bool vuapi CFileW::Init(
+bool vuapi CFileSystemW::Init(
   const std::wstring& FilePath,
-  eFileModeFlags fmFlag,
-  eFileGenericFlags fgFlag,
-  eFileShareFlags fsFlag,
-  eFileAttributeFlags faFlag
+  eFSModeFlags fmFlag,
+  eFSGenericFlags fgFlag,
+  eFSShareFlags fsFlag,
+  eFSAttributeFlags faFlag
 )
 {
   m_FileHandle = CreateFileW(FilePath.c_str(), fgFlag, fsFlag, NULL, fmFlag, faFlag, NULL);
@@ -5910,7 +5910,7 @@ bool vuapi CFileW::Init(
   return true;
 }
 
-const std::wstring vuapi CFileW::ReadFileAsString(bool forceBOM)
+const std::wstring vuapi CFileSystemW::ReadAsString(bool forceBOM)
 {
   std::wstring result(L"");
 
@@ -5936,10 +5936,10 @@ const std::wstring vuapi CFileW::ReadFileAsString(bool forceBOM)
   return result;
 }
 
-const std::wstring vuapi CFileW::QuickReadFileAsString( const std::wstring& FilePath, bool forceBOM)
+const std::wstring vuapi CFileSystemW::QuickReadAsString( const std::wstring& FilePath, bool forceBOM)
 {
-  CFileW file(FilePath, vu::eFileModeFlags::FM_OPENEXISTING);
-  auto result = file.ReadFileAsString(forceBOM);
+  CFileSystemW file(FilePath, vu::eFSModeFlags::FM_OPENEXISTING);
+  auto result = file.ReadAsString(forceBOM);
   file.Close();
   return result;
 }

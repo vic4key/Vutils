@@ -237,7 +237,7 @@ int _tmain(int argc, _TCHAR* argv[])
   //   return 1;
   // }
 
-  // vu::CFileA src7z;
+  // vu::CFileSystemA src7z;
   // src7z.Init("5MB.zip", vu::eFileModeFlags::FM_CREATEALWAY);
   // if (src7z.IsReady())
   // {
@@ -541,9 +541,9 @@ int _tmain(int argc, _TCHAR* argv[])
     std::cout << std::endl;
   }*/
 
-  // CFile
+  // CFileSystem
   /*const std::tstring FILE_NAME = _T("Test.txt");
-  vu::CFile file;
+  vu::CFileSystem file;
 
   std::string s = "This is a test string";
   file.Init(FILE_NAME, vu::FM_CREATEALWAY);
