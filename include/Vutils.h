@@ -62,6 +62,7 @@
 #include <vector>
 #include <memory>
 #include <cstdint>
+#include <functional>
 
 #ifdef WIN32_LEAN_AND_MEAN
 #include <winsock.h>
@@ -427,7 +428,7 @@ struct TPEHeaderT
   ulong  AddressOfEntryPoint;
   ulong  BaseOfCode;
   ulong  BaseOfData; // Non-exist for 64-bit
-  T  ImageBase;
+  T      ImageBase;
   ulong  SectionAlignment;
   ulong  FileAlignment;
   ushort MajorOperatingSystemVersion;
@@ -535,64 +536,6 @@ typedef TPEHeaderT<T> *PTPEHeaderT;*/
 typedef TPEHeaderT<ulong32> TPEHeader32, *PPEHeader32;
 typedef TPEHeaderT<ulong64> TPEHeader64, *PPEHeader64;
 
-typedef struct _PROCESSENTRY32A
-{
-  DWORD   dwSize;
-  DWORD   cntUsage;
-  DWORD   th32ProcessID;          // this process
-  ULONG   th32DefaultHeapID;
-  DWORD   th32ModuleID;           // associated exe
-  DWORD   cntThreads;
-  DWORD   th32ParentProcessID;    // this process's parent process
-  LONG    pcPriClassBase;         // Base priority of process's threads
-  DWORD   dwFlags;
-  CHAR    szExeFile[MAX_PATH];    // Path
-} TProcessEntry32A, *PProcessEntry32A;
-
-typedef struct _PROCESSENTRY32W
-{
-  DWORD   dwSize;
-  DWORD   cntUsage;
-  DWORD   th32ProcessID;          // this process
-  ULONG th32DefaultHeapID;
-  DWORD   th32ModuleID;           // associated exe
-  DWORD   cntThreads;
-  DWORD   th32ParentProcessID;    // this process's parent process
-  LONG    pcPriClassBase;         // Base priority of process's threads
-  DWORD   dwFlags;
-  WCHAR   szExeFile[MAX_PATH];    // Path
-} TProcessEntry32W, *PProcessEntry32W;
-
-#define MAX_MODULE_NAME32 255
-
-typedef struct _MODULEENTRY32A
-{
-  DWORD   dwSize;
-  DWORD   th32ModuleID;       // This module
-  DWORD   th32ProcessID;      // owning process
-  DWORD   GlblcntUsage;       // Global usage count on the module
-  DWORD   ProccntUsage;       // Module usage count in th32ProcessID's context
-  BYTE  * modBaseAddr;        // Base address of module in th32ProcessID's context
-  DWORD   modBaseSize;        // Size in bytes of module starting at modBaseAddr
-  HMODULE hModule;            // The hModule of this module in th32ProcessID's context
-  char    szModule[MAX_MODULE_NAME32 + 1];
-  char    szExePath[MAX_PATH];
-} TModuleEntry32A, *PModuleEntry32A;
-
-typedef struct _MODULEENTRY32W
-{
-  DWORD   dwSize;
-  DWORD   th32ModuleID;       // This module
-  DWORD   th32ProcessID;      // owning process
-  DWORD   GlblcntUsage;       // Global usage count on the module
-  DWORD   ProccntUsage;       // Module usage count in th32ProcessID's context
-  BYTE  * modBaseAddr;        // Base address of module in th32ProcessID's context
-  DWORD   modBaseSize;        // Size in bytes of module starting at modBaseAddr
-  HMODULE hModule;            // The hModule of this module in th32ProcessID's context
-  WCHAR   szModule[MAX_MODULE_NAME32 + 1];
-  WCHAR   szExePath[MAX_PATH];
-} TModuleEntry32W, *PModuleEntry32W;
-
 /* The common types (32-bit & 64-bit)  */
 
 #ifdef _WIN64
@@ -698,6 +641,22 @@ typedef enum _MOVE_METHOD_FLAGS
   MM_CURRENT = FILE_CURRENT,
   MM_END     = FILE_END,
 } eMoveMethodFlags;
+
+typedef struct _FS_OBJECT_A
+{
+  std::string Directory;
+  std::string Name;
+  int64 Size;
+  ulong Attributes;
+} TFSObjectA;
+
+typedef struct _FS_OBJECT_W
+{
+  std::wstring Directory;
+  std::wstring Name;
+  int64 Size;
+  ulong Attributes;
+} TFSObjectW;
 
 // CESocket
 
@@ -1089,7 +1048,7 @@ std::wstring vuapi GetCurrentFilePathW();
 std::string vuapi GetCurrentDirectoryA(bool bIncludeSlash = true);
 std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 
-/*-------------------- The definition of common Function(s) which compatible both ANSI & UNICODE -------------------*/
+/*--------------------- The definition of common function(s) which compatible both ANSI & UNICODE -------------------*/
 
 #ifdef _UNICODE
 /* --- Group : Misc Working --- */
@@ -1596,6 +1555,11 @@ public:
   );
   const std::string vuapi ReadFileAsString(bool forceBOM = true);
   static const std::string vuapi QuickReadFileAsString(const std::string& FilePath, bool forceBOM = true);
+  static bool Iterate(
+    const std::string& Path,
+    const std::string& Pattern,
+    const std::function<bool(const TFSObjectA& FSObject)> fnCallback
+  );
 };
 
 class CFileSystemW: public CFileSystemX
@@ -1619,6 +1583,11 @@ public:
   );
   const std::wstring vuapi ReadAsString(bool forceBOM = true);
   static const std::wstring vuapi QuickReadAsString(const std::wstring& FilePath, bool forceBOM = true);
+  static bool Iterate(
+    const std::wstring& Path,
+    const std::wstring& Pattern,
+    const std::function<bool(const TFSObjectW& FSObject)> fnCallback
+  );
 };
 
 /* --- Group : Service Working --- */
@@ -2186,7 +2155,15 @@ private:
   CFileMappingW m_FileMap;
 };
 
-/*--------------------- The definition of common Class(es) which compatible both ANSI & UNICODE --------------------*/
+/*-------------------- The definition of common structure(s) which compatible both ANSI & UNICODE -------------------*/
+
+#ifdef _UNICODE
+#define TFSObject TFSObjectW
+#else
+#define TFSObject TFSObjectA
+#endif
+
+/*---------------------- The definition of common Class(es) which compatible both ANSI & UNICODE --------------------*/
 
 #ifdef _UNICODE
 #define CGUID CGUIDW

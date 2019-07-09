@@ -555,7 +555,13 @@ int _tmain(int argc, _TCHAR* argv[])
   file.Read(&D, sizeof(D));
   file.Close();
 
-  std::tcout << _T("D = ") << D << std::endl;*/
+  std::tcout << _T("D = ") << D << std::endl;
+
+  vu::CFileSystem::Iterate(_T("C:\\Intel\\Logs"), _T("*.*"), [](const vu::TFSObject& FSObject) -> bool
+  {
+    std::tcout << FSObject.Directory << _T(" | ") << FSObject.Name << _T(" | ") << FSObject.Size << std::endl;
+    return true;
+  });*/
 
   // CFileMapping
   /*vu::CFileMapping fm;

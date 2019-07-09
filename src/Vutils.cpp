@@ -46,7 +46,7 @@ const std::string  VU_TITLE_BOXA =  "Vutils";
 const std::wstring VU_TITLE_BOXW = L"Vutils";
 const size_t MAX_SIZE = MAXBYTE;
 
-/* Additional definations */
+/* Additional definitions */
 
 #ifndef PSAPI_VERSION
 #define LIST_MODULES_32BIT    0x01
@@ -54,6 +54,64 @@ const size_t MAX_SIZE = MAXBYTE;
 #define LIST_MODULES_ALL      0x03
 #define LIST_MODULES_DEFAULT  0x04
 #endif
+
+typedef struct _PROCESSENTRY32A
+{
+  DWORD   dwSize;
+  DWORD   cntUsage;
+  DWORD   th32ProcessID;          // this process
+  ULONG   th32DefaultHeapID;
+  DWORD   th32ModuleID;           // associated exe
+  DWORD   cntThreads;
+  DWORD   th32ParentProcessID;    // this process's parent process
+  LONG    pcPriClassBase;         // Base priority of process's threads
+  DWORD   dwFlags;
+  CHAR    szExeFile[MAX_PATH];    // Path
+} TProcessEntry32A, *PProcessEntry32A;
+
+typedef struct _PROCESSENTRY32W
+{
+  DWORD   dwSize;
+  DWORD   cntUsage;
+  DWORD   th32ProcessID;          // this process
+  ULONG   th32DefaultHeapID;
+  DWORD   th32ModuleID;           // associated exe
+  DWORD   cntThreads;
+  DWORD   th32ParentProcessID;    // this process's parent process
+  LONG    pcPriClassBase;         // Base priority of process's threads
+  DWORD   dwFlags;
+  WCHAR   szExeFile[MAX_PATH];    // Path
+} TProcessEntry32W, *PProcessEntry32W;
+
+#define MAX_MODULE_NAME32 255
+
+typedef struct _MODULEENTRY32A
+{
+  DWORD   dwSize;
+  DWORD   th32ModuleID;       // This module
+  DWORD   th32ProcessID;      // owning process
+  DWORD   GlblcntUsage;       // Global usage count on the module
+  DWORD   ProccntUsage;       // Module usage count in th32ProcessID's context
+  BYTE  * modBaseAddr;        // Base address of module in th32ProcessID's context
+  DWORD   modBaseSize;        // Size in bytes of module starting at modBaseAddr
+  HMODULE hModule;            // The hModule of this module in th32ProcessID's context
+  char    szModule[MAX_MODULE_NAME32 + 1];
+  char    szExePath[MAX_PATH];
+} TModuleEntry32A, *PModuleEntry32A;
+
+typedef struct _MODULEENTRY32W
+{
+  DWORD   dwSize;
+  DWORD   th32ModuleID;       // This module
+  DWORD   th32ProcessID;      // owning process
+  DWORD   GlblcntUsage;       // Global usage count on the module
+  DWORD   ProccntUsage;       // Module usage count in th32ProcessID's context
+  BYTE  * modBaseAddr;        // Base address of module in th32ProcessID's context
+  DWORD   modBaseSize;        // Size in bytes of module starting at modBaseAddr
+  HMODULE hModule;            // The hModule of this module in th32ProcessID's context
+  WCHAR   szModule[MAX_MODULE_NAME32 + 1];
+  WCHAR   szExePath[MAX_PATH];
+} TModuleEntry32W, *PModuleEntry32W;
 
 // Error code based on range
 #define ErrorCode(code) (ECBase + code)
@@ -5879,6 +5937,63 @@ const std::string vuapi CFileSystemA::QuickReadFileAsString(const std::string& F
   return result;
 }
 
+bool CFileSystemA::Iterate(
+  const std::string& Path,
+  const std::string& Pattern,
+  const std::function<bool(const TFSObjectA& FSObject)> fnCallback)
+{
+  auto thePathSlash = vu::TrimStringA(Path);
+  if (thePathSlash.empty())
+  {
+    return false;
+  }
+
+  if (thePathSlash.back() != '\\' && thePathSlash.back() != '/')
+  {
+    thePathSlash += "\\";
+  }
+
+  auto thePathPattern = thePathSlash + Pattern;
+
+  WIN32_FIND_DATAA theWDF = { 0 };
+
+  auto hFind = FindFirstFileA(thePathPattern.c_str(), &theWDF);
+  if (INVALID_HANDLE_VALUE == hFind)
+  {
+    return false;
+  }
+
+  TFSObjectA theFileObject;
+  theFileObject.Directory = thePathSlash;
+
+  LARGE_INTEGER theFileSize = { 0 };
+
+  do
+  {
+    if (theWDF.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+    {
+      theFileSize.LowPart  = 0;
+      theFileSize.HighPart = 0;
+    }
+    else
+    {
+      theFileSize.LowPart  = theWDF.nFileSizeLow;
+      theFileSize.HighPart = theWDF.nFileSizeHigh;
+    }
+    theFileObject.Size = theFileSize.QuadPart;
+    theFileObject.Attributes = theWDF.dwFileAttributes;
+    theFileObject.Name = theWDF.cFileName;
+    if (!fnCallback(theFileObject))
+    {
+      break;
+    }
+  } while (FindNextFileA(hFind, &theWDF) != FALSE);
+
+  FindClose(hFind);
+
+  return true;
+}
+
 // W
 
 CFileSystemW::CFileSystemW(
@@ -5942,6 +6057,60 @@ const std::wstring vuapi CFileSystemW::QuickReadAsString( const std::wstring& Fi
   auto result = file.ReadAsString(forceBOM);
   file.Close();
   return result;
+}
+
+bool CFileSystemW::Iterate(
+  const std::wstring& Path,
+  const std::wstring& Pattern,
+  const std::function<bool(const TFSObjectW& FSObject)> fnCallback)
+{
+  auto thePathSlash = vu::TrimStringW(Path);
+  if (thePathSlash.empty())
+  {
+    return false;
+  }
+
+  if (thePathSlash.back() != L'\\' && thePathSlash.back() != L'/')
+  {
+    thePathSlash += L"\\";
+  }
+
+  auto thePathPattern = thePathSlash + Pattern;
+
+  WIN32_FIND_DATAW theWDF = { 0 };
+
+  auto hFind = FindFirstFileW(thePathPattern.c_str(), &theWDF);
+  if (INVALID_HANDLE_VALUE == hFind)
+  {
+    return false;
+  }
+
+  TFSObjectW theFileObject;
+  theFileObject.Directory = thePathSlash;
+
+  LARGE_INTEGER theFileSize = { 0 };
+
+  do
+  {
+    if (theWDF.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+    {
+      theFileSize.LowPart  = 0;
+      theFileSize.HighPart = 0;
+    }
+    else
+    {
+      theFileSize.LowPart  = theWDF.nFileSizeLow;
+      theFileSize.HighPart = theWDF.nFileSizeHigh;
+    }
+    theFileObject.Size = theFileSize.QuadPart;
+    theFileObject.Attributes = theWDF.dwFileAttributes;
+    theFileObject.Name = theWDF.cFileName;
+    fnCallback(theFileObject);
+  } while (FindNextFileW(hFind, &theWDF) != FALSE);
+
+  FindClose(hFind);
+
+  return true;
 }
 
 /* --- Group : Service Working --- */
