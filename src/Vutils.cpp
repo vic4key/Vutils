@@ -910,10 +910,7 @@ std::string vuapi LastErrorA(ulong ulErrorCode)
   );
 
   std::string s(lpszErrorMessage);
-  if (s.length() != 0)
-  {
-    s.erase(s.length() - 1);
-  }
+  s = vu::TrimStringA(s);
 
   return s;
 }
@@ -938,10 +935,7 @@ std::wstring vuapi LastErrorW(ulong ulErrorCode)
   );
 
   std::wstring s(lpwszErrorMessage);
-  if (s.length() != 0)
-  {
-    s.erase(s.length() - 1);
-  }
+  s = vu::TrimStringW(s);
 
   return s;
 }
@@ -1570,93 +1564,130 @@ eWow64 vuapi IsWow64(ulong ulPID)
   return (bWow64 ? WOW64_YES : WOW64_NO);
 }
 
-bool vuapi RPM(HANDLE hProcess, void* lpAddress, void* lpBuffer, SIZE_T ulSize)
+bool vuapi RPM(const HANDLE hProcess, const void* lpAddress, void* lpBuffer, const SIZE_T ulSize, const bool force)
 {
-  ulong ulOldProtect = 0;
+  ulong  ulOldProtect = 0;
   SIZE_T ulRead = 0;
 
-  VirtualProtectEx(hProcess, lpAddress, ulSize, PAGE_EXECUTE_READWRITE, &ulOldProtect);
+  if (force) VirtualProtectEx(hProcess, LPVOID(lpAddress), ulSize, PAGE_EXECUTE_READWRITE, &ulOldProtect);
 
-  ReadProcessMemory(hProcess, (const void*)lpAddress, lpBuffer, ulSize, &ulRead);
+  auto ret = ReadProcessMemory(hProcess, lpAddress, lpBuffer, ulSize, &ulRead);
+  const auto theLastError = ret != FALSE ? ERROR_SUCCESS : GetLastError();
 
-  VirtualProtectEx(hProcess, lpAddress, ulSize, ulOldProtect, &ulOldProtect);
+  if (force) VirtualProtectEx(hProcess, LPVOID(lpAddress), ulSize, ulOldProtect, &ulOldProtect);
 
-  if (ulRead != ulSize)
-  {
-    return false;
-  }
-
-  return true;
+  SetLastError(theLastError);
+  return ulRead == ulSize;
 }
 
-bool vuapi RPM(ulong ulPID, void* lpAddress, void* lpBuffer, SIZE_T ulSize)
+bool vuapi RPMEX(
+  const eXBit bit,
+  const HANDLE Handle,
+  const void* lpAddress,
+  void* lpBuffer,
+  const SIZE_T ulSize,
+  const bool force,
+  const SIZE_T nOffsets,
+  ...)
 {
-  ulong ulOldProtect = 0;
-  SIZE_T ulRead = 0;
+  va_list args;
+  va_start(args, nOffsets);
+  std::vector<vu::ulong> offsets;
+  for (size_t i = 0; i < nOffsets; i++) offsets.push_back(va_arg(args, vu::ulong));
+  va_end(args);
 
-  if (!ulPID)
+  bool result = true;
+
+  if (offsets.empty())
   {
-    return false;
+    result = RPM(Handle, LPVOID(lpAddress), lpBuffer, ulSize, force);
+  }
+  else
+  {
+    auto Address = ulonglong(lpAddress);
+
+    for (size_t i = 0; i < nOffsets; i++)
+    {
+      bool isoffset = i < nOffsets - 1;
+      result &= RPM(
+        Handle,
+        LPCVOID(Address + offsets.at(i)),
+        isoffset ? LPVOID(&Address) : lpBuffer,
+        isoffset ? bit : ulSize,
+        force
+      );
+      if (!result) break;
+    }
   }
 
-  HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ulPID);
-  if (!hProcess)
-  {
-    return false;
-  }
-
-  RPM(hProcess, lpAddress, lpBuffer, ulSize);
-
-  CloseHandle(hProcess);
-
-  if (ulRead != ulSize)
-  {
-    return false;
-  }
-
-  return true;
+  return result;
 }
 
-bool vuapi WPM(HANDLE hProcess, void* lpAddress, const void* lpcBuffer, SIZE_T ulSize)
+bool vuapi WPM(
+  const HANDLE hProcess,
+  const void* lpAddress,
+  const void* lpcBuffer,
+  const SIZE_T ulSize,
+  const bool force)
 {
   ulong ulOldProtect = 0;
   SIZE_T ulWritten = 0;
 
-  VirtualProtectEx(hProcess, lpAddress, ulSize, PAGE_EXECUTE_READWRITE, &ulOldProtect);
+  if (force) VirtualProtectEx(hProcess, LPVOID(lpAddress), ulSize, PAGE_EXECUTE_READWRITE, &ulOldProtect);
 
-  WriteProcessMemory(hProcess, lpAddress, lpcBuffer, ulSize, &ulWritten);
+  auto ret = WriteProcessMemory(hProcess, LPVOID(lpAddress), lpcBuffer, ulSize, &ulWritten);
+  const auto theLastError = ret != FALSE ? ERROR_SUCCESS : GetLastError();
 
-  VirtualProtectEx(hProcess, lpAddress, ulSize, ulOldProtect, &ulOldProtect);
+  if (force) VirtualProtectEx(hProcess, LPVOID(lpAddress), ulSize, ulOldProtect, &ulOldProtect);
 
-  if (ulWritten != ulSize)
-  {
-    return false;
-  }
-
-  return true;
+  SetLastError(theLastError);
+  return ulWritten == ulSize;
 }
 
-bool vuapi WPM(ulong ulPID, void* lpAddress, const void* lpcBuffer, SIZE_T ulSize)
+bool vuapi WPMEX(
+  const eXBit bit,
+  const HANDLE Handle,
+  const void* lpAddress,
+  const void* lpBuffer,
+  const SIZE_T ulSize,
+  const bool force,
+  const SIZE_T nOffsets,
+  ...)
 {
-  ulong ulOldProtect = 0;
-  SIZE_T ulWritten = 0;
+  va_list args;
+  va_start(args, nOffsets);
+  std::vector<ulong> offsets;
+  for (size_t i = 0; i < nOffsets; i++) offsets.push_back(va_arg(args, ulong));
+  va_end(args);
 
-  HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ulPID);
-  if (!hProcess)
+  bool result = true;
+
+  if (offsets.empty())
   {
-    return false;
+    result = WPM(Handle, LPVOID(lpAddress), lpBuffer, ulSize, force);
+  }
+  else
+  {
+    auto Address = ulonglong(lpAddress);
+
+    for (size_t i = 0; i < nOffsets; i++)
+    {
+      bool isoffset = i < nOffsets - 1;
+      if (isoffset)
+      {
+        result &= RPM(
+          Handle, LPCVOID(Address + offsets.at(i)), LPVOID(&Address), bit, force);
+      }
+      else
+      {
+        result &= WPM(
+          Handle, LPCVOID(Address + offsets.at(i)), lpBuffer, ulSize, force);
+      }
+      if (!result) break;
+    }
   }
 
-  WPM(hProcess, lpAddress, lpcBuffer, ulSize);
-
-  CloseHandle(hProcess);
-
-  if (ulWritten != ulSize)
-  {
-    return false;
-  }
-
-  return true;
+  return result;
 }
 
 ulong vuapi GetParentPID(ulong ulChildPID)

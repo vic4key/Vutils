@@ -586,6 +586,12 @@ typedef enum _WOW64
   WOW64_YES   = 1,
 } eWow64;
 
+typedef enum _XBit
+{
+  x86 = 4,
+  x64 = 8,
+} eXBit;
+
 // CFileSystem
 
 typedef enum _FS_MODE_FLAGS
@@ -933,36 +939,6 @@ std::wstring vuapi GetEnviromentW(const std::wstring EnvName);
 
 /* --- Group : Math Working --- */
 
-template <typename T>
-T operator&(T a, T b)
-{
-  return (T)((int)a & (int)b);
-}
-
-template <typename T>
-T operator|(T a, T b)
-{
-  return (T)((int)a | (int)b);
-}
-
-template <typename T>
-T operator^(T a, T b)
-{
-  return (T)((int)a ^ (int)b);
-}
-
-template <typename T>
-T operator!(T a)
-{
-  return (T)(!(int)a);
-}
-
-template <typename T>
-T operator~(T a)
-{
-  return (T)(~(int)a);
-}
-
 bool vuapi IsFlagOn(ulongptr ulFlags, ulongptr ulFlag);
 intptr vuapi GCD(ulongptr count, ...); // UCLN
 intptr vuapi LCM(ulongptr count, ...); // BCNN
@@ -1026,10 +1002,40 @@ std::string vuapi PIDToNameA(ulong ulPID);
 std::wstring vuapi PIDToNameW(ulong ulPID);
 HMODULE vuapi RemoteGetModuleHandleA(ulong ulPID, const std::string& ModuleName); // Not complete
 HMODULE vuapi RemoteGetModuleHandleW(ulong ulPID, const std::wstring& ModuleName);
-bool vuapi RPM(HANDLE hProcess, void* lpAddress, void* lpBuffer, SIZE_T ulSize);
-bool vuapi RPM(ulong ulPID, void* lpAddress, void* lpBuffer, SIZE_T ulSize);
-bool vuapi WPM(HANDLE hProcess, void* lpAddress, const void* lpcBuffer, SIZE_T ulSize);
-bool vuapi WPM(ulong ulPID, void* lpAddress, const void* lpcBuffer, SIZE_T ulSize);
+bool vuapi RPM(
+  const HANDLE hProcess,
+  const void* lpAddress,
+  void* lpBuffer,
+  const SIZE_T ulSize,
+  const bool force = false
+);
+bool vuapi RPMEX(
+  const eXBit bit,
+  const HANDLE Handle,
+  const void* lpAddress,
+  void* lpBuffer,
+  const SIZE_T ulSize,
+  const bool force = false,
+  const SIZE_T nOffsets = 0,
+  ...
+);
+bool vuapi WPM(
+  const HANDLE hProcess,
+  const void* lpAddress,
+  const void* lpcBuffer,
+  const SIZE_T ulSize,
+  const bool force = false
+);
+bool vuapi WPMEX(
+  const eXBit bit,
+  const HANDLE Handle,
+  const void* lpAddress,
+  const void* lpBuffer,
+  const SIZE_T ulSize,
+  const bool force = false,
+  const SIZE_T nOffsets = 0,
+  ...
+);
 
 /* --- Group : File/Directory Working --- */
 
