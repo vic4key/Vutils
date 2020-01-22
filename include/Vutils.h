@@ -5,7 +5,7 @@
 /*  Type:     C++ Library for MSVC++/C++MinGW/C++Builder  */
 /*  Author:   Vic P. aka vic4key                          */
 /*  Mail:     vic4key[at]gmail.com                        */
-/*  Blog:     http://viclab.biz/                          */
+/*  Website:  https://vic.onl/                            */
 /**********************************************************/
 
 #ifndef VUTILS_H
