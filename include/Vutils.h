@@ -912,12 +912,12 @@ typedef enum _TRIM_STRING
 typedef enum _ENCODING_TYPE
 {
   ET_UNKNOWN      = -1,
-  ET_UTF8         = 0, /* aka ANSI */
-  ET_UTF8_BOM     = 1, /* EF BB BF */
-  ET_UTF16_LE     = 2,
-  ET_UTF16_BE     = 3,
-  ET_UTF16_LE_BOM = 4, /* FF FE */
-  ET_UTF16_BE_BOM = 5, /* FE FF */
+  ET_UTF8         = 0, // "ANSI/UTF-8", "ANSI/UTF-8"
+  ET_UTF8_BOM     = 1, // "UTF-8 BOM", "UTF-8 BOM"
+  ET_UTF16_LE     = 2, // "Unicode", "UTF-16 Little Endian"
+  ET_UTF16_BE     = 3, // "Unicode BE", "UTF-16 Big Endian"
+  ET_UTF16_LE_BOM = 4, // "Unicode BOM", "UTF-16 Little Endian BOM"
+  ET_UTF16_BE_BOM = 5, // "Unicode BE BOM", "UTF-16 Big Endian BOM"
 } eEncodingType;
 
 /* ------------------------------------------------ Public Macro(s) ------------------------------------------------ */
@@ -1559,8 +1559,8 @@ public:
     eFSShareFlags fsFlag     = FS_ALLACCESS,
     eFSAttributeFlags faFlag = FA_NORMAL
   );
-  const std::string vuapi ReadFileAsString(bool forceBOM = true);
-  static const std::string vuapi QuickReadFileAsString(const std::string& FilePath, bool forceBOM = true);
+  const std::string vuapi ReadFileAsString(bool removeBOM = true);
+  static const std::string vuapi QuickReadAsString(const std::string& FilePath, bool forceBOM = true);
   static bool Iterate(
     const std::string& Path,
     const std::string& Pattern,
@@ -1587,8 +1587,8 @@ public:
     eFSShareFlags fsFlag   = FS_ALLACCESS,
     eFSAttributeFlags faFlag = FA_NORMAL
   );
-  const std::wstring vuapi ReadAsString(bool forceBOM = true);
-  static const std::wstring vuapi QuickReadAsString(const std::wstring& FilePath, bool forceBOM = true);
+  const std::wstring vuapi ReadAsString(bool removeBOM = true);
+  static const std::wstring vuapi QuickReadAsString(const std::wstring& FilePath, bool removeBOM = true);
   static bool Iterate(
     const std::wstring& Path,
     const std::wstring& Pattern,

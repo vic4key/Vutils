@@ -1124,51 +1124,43 @@ std::wstring vuapi FormatDateTimeW(const time_t t, const std::wstring Format)
 }
 
 #ifndef CHAR_BIT
-#define CHAR_BIT      8         // number of bits in a char
-#define SCHAR_MIN   (-128)      // minimum signed char value
-#define SCHAR_MAX     127       // maximum signed char value
-#define UCHAR_MAX     0xff      // maximum unsigned char value
+#define CHAR_BIT      8    // number of bits in a char
+#define SCHAR_MIN   (-128) // minimum signed char value
+#define SCHAR_MAX     127  // maximum signed char value
+#define UCHAR_MAX     255  // maximum unsigned char value
 #endif
 
 eEncodingType vuapi DetermineEncodingType(const void* Data, const size_t size)
 {
-  if (Data == nullptr || size == 0) return eEncodingType::ET_UTF8; /* Default fo empty file */
+  if (Data == nullptr || size == 0) return eEncodingType::ET_UNKNOWN;
 
   auto p = (uchar*)Data;
 
-  if (size > 0)
+  if (size == 1)
   {
-    if (size == 1)   /* UTF-8 */
-    {
-      if (p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) return eEncodingType::ET_UTF8_BOM;
-    }
-    else
-    {
-      {
-        /* UTF-8 BOM */
-        if ((size >= 3) && (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)) return eEncodingType::ET_UTF8_BOM;
-      }
-      {
-        /* UTF16 */
-        if ((size >= 4) &&
-           ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && (p[1] == 0x00)) &&
-           ((p[2] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && (p[3] == 0x00)) &&
-           (true)
-        ) return eEncodingType::ET_UTF16_LE;
-      }
-      {
-        /* UTF16 BOM */
-        if (p[0] == 0xFF && p[1] == 0xFE) return eEncodingType::ET_UTF16_LE_BOM;
-        if (p[0] == 0xFE && p[1] == 0xFF) return eEncodingType::ET_UTF16_BE_BOM;
-      }
-      {
-        /* UTF-8 */
-        if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && (p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX))
-        {
-          return eEncodingType::ET_UTF8;
-        }
-      }
-    }
+    /* UTF-8 */
+    if (p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) return eEncodingType::ET_UTF8_BOM;
+  }
+
+  if (size >= 2)
+  {
+    /* UTF-8 BOM */
+    if ((size >= 3) && (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)) return eEncodingType::ET_UTF8_BOM;
+
+    /* UTF-16 LE */
+    if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && p[1] == 0x00) return eEncodingType::ET_UTF16_LE;
+
+    /* UTF-16 BE */
+    if ((p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX) && p[0] == 0x00) return eEncodingType::ET_UTF16_BE;
+
+    /* UTF-16 LE BOM */
+    if (p[0] == 0xFF && p[1] == 0xFE) return eEncodingType::ET_UTF16_LE_BOM;
+
+    /* UTF-16 BE BOM */
+    if (p[0] == 0xFE && p[1] == 0xFF) return eEncodingType::ET_UTF16_BE_BOM;
+
+    /* UTF-8 */
+    if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && (p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX)) return eEncodingType::ET_UTF8;
   }
 
   return eEncodingType::ET_UNKNOWN;
@@ -5934,25 +5926,23 @@ bool vuapi CFileSystemA::Init(
   return true;
 }
 
-const std::string vuapi CFileSystemA::ReadFileAsString(bool forceBOM)
+const std::string vuapi CFileSystemA::ReadFileAsString(bool removeBOM)
 {
   std::string result("");
 
   auto pContent = this->ReadContent();
   auto p = (char*)pContent.GetpData();
 
-  auto encodingType = DetermineEncodingType(pContent.GetpData(), pContent.GetSize());
-  if (encodingType == eEncodingType::ET_UTF8 || encodingType == eEncodingType::ET_UTF8_BOM)
-  {
-    if (forceBOM && encodingType == eEncodingType::ET_UTF8_BOM)
-    {
-      p += 3; /* remove BOM */
-    }
-  }
-  else   /* Invalid encoding type */
+  auto encoding = DetermineEncodingType(pContent.GetpData(), pContent.GetSize());
+  if (encoding == eEncodingType::ET_UNKNOWN)
   {
     assert(0);
     return result;
+  }
+
+  if (removeBOM && encoding == eEncodingType::ET_UTF8_BOM)
+  {
+    p += 3; /* remove BOM */
   }
 
   result.assign(p);
@@ -5960,11 +5950,10 @@ const std::string vuapi CFileSystemA::ReadFileAsString(bool forceBOM)
   return result;
 }
 
-const std::string vuapi CFileSystemA::QuickReadFileAsString(const std::string& FilePath, bool forceBOM)
+const std::string vuapi CFileSystemA::QuickReadAsString(const std::string& FilePath, bool removeBOM)
 {
   CFileSystemA file(FilePath, vu::eFSModeFlags::FM_OPENEXISTING);
-  auto result = file.ReadFileAsString(forceBOM);
-  file.Close();
+  auto result = file.ReadFileAsString(removeBOM);
   return result;
 }
 
@@ -6056,25 +6045,23 @@ bool vuapi CFileSystemW::Init(
   return true;
 }
 
-const std::wstring vuapi CFileSystemW::ReadAsString(bool forceBOM)
+const std::wstring vuapi CFileSystemW::ReadAsString(bool removeBOM)
 {
   std::wstring result(L"");
 
   auto pContent = this->ReadContent();
   auto p = (wchar*)pContent.GetpData();
 
-  auto encodingType = DetermineEncodingType(pContent.GetpData(), pContent.GetSize());
-  if (encodingType == eEncodingType::ET_UTF16_LE || encodingType == eEncodingType::ET_UTF16_LE_BOM)
-  {
-    if (forceBOM && encodingType == eEncodingType::ET_UTF16_LE_BOM)
-    {
-      p = (wchar*)((char*)pContent.GetpData() + 2); /* remove BOM */
-    }
-  }
-  else /* Invalid encoding type */
+  auto encoding = DetermineEncodingType(pContent.GetpData(), pContent.GetSize());
+  if (encoding == eEncodingType::ET_UNKNOWN)
   {
     assert(0);
     return result;
+  }
+
+  if (removeBOM && (encoding == eEncodingType::ET_UTF16_LE_BOM || encoding == eEncodingType::ET_UTF16_BE_BOM))
+  {
+    p = (wchar*)((char*)pContent.GetpData() + 2); /* remove BOM */
   }
 
   result.assign(p);
@@ -6082,11 +6069,10 @@ const std::wstring vuapi CFileSystemW::ReadAsString(bool forceBOM)
   return result;
 }
 
-const std::wstring vuapi CFileSystemW::QuickReadAsString( const std::wstring& FilePath, bool forceBOM)
+const std::wstring vuapi CFileSystemW::QuickReadAsString(const std::wstring& FilePath, bool removeBOM)
 {
   CFileSystemW file(FilePath, vu::eFSModeFlags::FM_OPENEXISTING);
-  auto result = file.ReadAsString(forceBOM);
-  file.Close();
+  auto result = file.ReadAsString(removeBOM);
   return result;
 }
 

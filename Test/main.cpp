@@ -8,10 +8,9 @@ G++ main.cpp -std=c++0x -lVutils -DVU_SOCKET_ENABLED -lws2_32 -DVU_GUID_ENABLED 
 
 // #include "stdafx.h"
 
-/*
-#ifdef _UNICODE
-#undef _UNICODE
-#endif*/
+// #ifdef _UNICODE
+// #undef _UNICODE
+// #endif
 
 #include <Windows.h>
 #include <tchar.h>
@@ -23,6 +22,7 @@ G++ main.cpp -std=c++0x -lVutils -DVU_SOCKET_ENABLED -lws2_32 -DVU_GUID_ENABLED 
 #include <limits>
 #include <algorithm>
 #include <iostream>
+#include <iomanip>
 
 // Remove min & max macros
 #ifdef min
@@ -105,7 +105,7 @@ int _tmain(int argc, _TCHAR* argv[])
   printf("Encoding: ANSI\n");
 #endif // _UNICODE
 
-  // Seperate
+  // Separate
   std::cout << std::endl;
   std::tcout << _T("--- *.* ---") << std::endl;
 
@@ -155,7 +155,40 @@ int _tmain(int argc, _TCHAR* argv[])
 
   if (!PIDs.empty()) {
   std::tcout  << vu::PIDToName(*PIDs.begin()) << std::endl;
-  }*/
+  }
+
+  static std::wstring LES[] = { // List Encoding Short
+	  L"ANSI/UTF-8", L"UTF-8 BOM",
+    L"Unicode", L"Unicode BE",
+    L"Unicode BOM", L"Unicode BE BOM"
+  };
+
+  static std::wstring LEL[] = { // List Encoding Long
+	  L"ANSI/UTF-8", L"UTF-8 BOM",
+    L"UTF-16 Little Endian", L"UTF-16 Big Endian",
+    L"UTF-16 Little Endian BOM", L"UTF-16 Big Endian BOM"
+  };
+
+  vu::CFileSystem::Iterate(_T("E:\\path\\to\\example"), _T("*.txt"), [](const vu::TFSObject& FSObject) -> bool
+  {
+    auto filePath = FSObject.Directory + FSObject.Name;
+    vu::CFileSystem fs(filePath, vu::eFSModeFlags::FM_OPENEXISTING);
+    auto data = fs.ReadContent();
+
+    auto result = vu::DetermineEncodingType(data.GetpData(), data.GetSize());
+    auto es = result == -1 ? L"Unknown" : LES[result];
+    auto el = result == -1 ? L"Unknown" : LEL[result];
+    std::wcout
+      << std::left
+      << std::setw(15) << es
+      << " | "
+      << std::setw(25) << el
+      << " | "
+      << FSObject.Name.c_str()
+      << std::endl;
+
+    return true;
+  });*/
 
   // Data Type Information
   /*std::tcout << (FundamentalTypeIsSigned(vu::UIntPtr) ? _T("Signed") : _T("Unsigned")) << std::endl;
@@ -543,19 +576,20 @@ int _tmain(int argc, _TCHAR* argv[])
 
   // CFileSystem
   /*const std::tstring FILE_NAME = _T("Test.txt");
-  vu::CFileSystem file;
 
-  std::string s = "This is a test string";
-  file.Init(FILE_NAME, vu::FM_CREATEALWAY);
-  file.Write(s.c_str(), (vu::ulong)s.length());
-  file.Close();
+  {
+    std::string s = "This is a test string";
+    vu::CFileSystem file(FILE_NAME, vu::FM_CREATEALWAY);
+    file.Write(s.c_str(), (vu::ulong)s.length());
+  }
 
-  char D[MAXBYTE] = {0};
-  file.Init(FILE_NAME, vu::FM_OPENEXISTING);
-  file.Read(&D, sizeof(D));
-  file.Close();
+  {
+    char D[MAXBYTE] = { 0 };
+    vu::CFileSystem file(FILE_NAME, vu::FM_OPENEXISTING);
+    file.Read(&D, sizeof(D));
 
-  std::tcout << _T("D = ") << D << std::endl;
+    std::tcout << _T("D = ") << D << std::endl;
+  }
 
   vu::CFileSystem::Iterate(_T("C:\\Intel\\Logs"), _T("*.*"), [](const vu::TFSObject& FSObject) -> bool
   {
