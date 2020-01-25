@@ -11,6 +11,7 @@
 #include <TlHelp32.h>
 #include <cstdio>
 #include <cassert>
+#include <csignal>
 #include <algorithm>
 
 #ifdef VU_GUID_ENABLED
@@ -1142,16 +1143,21 @@ eEncodingType vuapi DetermineEncodingType(const void* Data, const size_t size)
     if (p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) return eEncodingType::ET_UTF8_BOM;
   }
 
-  if (size >= 2)
+  signal(SIGSEGV, [](int signal)
+  {
+    throw signal;
+  });
+
+  try
   {
     /* UTF-8 BOM */
-    if ((size >= 3) && (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)) return eEncodingType::ET_UTF8_BOM;
+    if (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF) return eEncodingType::ET_UTF8_BOM;
 
-    /* UTF-16 LE */
-    if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && p[1] == 0x00) return eEncodingType::ET_UTF16_LE;
+    /* UTF-32 LE BOM */
+    if (p[0] == 0xFF && p[1] == 0xFE && p[2] == 0x00 && p[3] == 0x00) return eEncodingType::ET_UTF32_LE_BOM;
 
-    /* UTF-16 BE */
-    if ((p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX) && p[0] == 0x00) return eEncodingType::ET_UTF16_BE;
+    /* UTF-32 BE BOM */
+    if (p[0] == 0x00 && p[1] == 0x00 && p[2] == 0xFE && p[3] == 0xFF) return eEncodingType::ET_UTF32_BE_BOM;
 
     /* UTF-16 LE BOM */
     if (p[0] == 0xFF && p[1] == 0xFE) return eEncodingType::ET_UTF16_LE_BOM;
@@ -1159,8 +1165,18 @@ eEncodingType vuapi DetermineEncodingType(const void* Data, const size_t size)
     /* UTF-16 BE BOM */
     if (p[0] == 0xFE && p[1] == 0xFF) return eEncodingType::ET_UTF16_BE_BOM;
 
+    /* UTF-16 LE */
+    if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && p[1] == 0x00) return eEncodingType::ET_UTF16_LE;
+
+    /* UTF-16 BE */
+    if ((p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX) && p[0] == 0x00) return eEncodingType::ET_UTF16_BE;
+
     /* UTF-8 */
     if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && (p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX)) return eEncodingType::ET_UTF8;
+  }
+  catch (int)
+  {
+    return eEncodingType::ET_UNKNOWN;
   }
 
   return eEncodingType::ET_UNKNOWN;

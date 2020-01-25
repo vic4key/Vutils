@@ -160,13 +160,15 @@ int _tmain(int argc, _TCHAR* argv[])
   static std::wstring LES[] = { // List Encoding Short
 	  L"ANSI/UTF-8", L"UTF-8 BOM",
     L"Unicode", L"Unicode BE",
-    L"Unicode BOM", L"Unicode BE BOM"
+    L"Unicode BOM", L"Unicode BE BOM",
+    L"UTF-32 LE BOM", L"UTF-32 BE BOM"
   };
 
   static std::wstring LEL[] = { // List Encoding Long
 	  L"ANSI/UTF-8", L"UTF-8 BOM",
     L"UTF-16 Little Endian", L"UTF-16 Big Endian",
-    L"UTF-16 Little Endian BOM", L"UTF-16 Big Endian BOM"
+    L"UTF-16 Little Endian BOM", L"UTF-16 Big Endian BOM",
+    L"UTF-32 Little Endian BOM", L"UTF-32 Big Endian BOM"
   };
 
   vu::CFileSystem::Iterate(_T("E:\\path\\to\\example"), _T("*.txt"), [](const vu::TFSObject& FSObject) -> bool
