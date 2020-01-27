@@ -553,7 +553,7 @@ protected:
 /**
  * The singleton class for inheritance.
  * Eg. class CObject : public vu::CSingletonT<CObject> {}
- * CObject::Instance()->Method();
+ * CObject::Instance().Method();
  */
 template<typename T>
 class CSingletonT
@@ -568,14 +568,14 @@ public:
   {
   }
 
-  static T* Instance()
+  static T& Instance()
   {
     if (m_pInstance == nullptr)
     {
       CSingletonT<T>::m_pInstance = new T();
     }
 
-    return m_pInstance;
+    return *m_pInstance;
   }
 
   static void Destroy()
