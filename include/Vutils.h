@@ -90,23 +90,6 @@
 #pragma comment(lib, "ws2_32")
 #endif // _MSC_VER
 
-/* ------------------------------------------ Hacker Disassembler Engine ------------------------------------------- */
-
-// Hacker Disassembler Engine 32/64 C
-// Copyright (c) 2008-2009, Vyacheslav Patkov
-// Modified the HDE source code to make it compatible with modern C++ and usable both 32-bit & 64-bit version together
-
-#include VU_3RD_INCL(HDE/include/hde32.h)
-#include VU_3RD_INCL(HDE/include/table32.h)
-#include VU_3RD_INCL(HDE/include/hde64.h)
-#include VU_3RD_INCL(HDE/include/table64.h)
-
-#if defined(_M_X64) || defined(__x86_64__)
-  namespace HDE = HDE64;
-#else
-  namespace HDE = HDE32;
-#endif
-
 /* --------------------------------------------- Vutils Declarations ----------------------------------------------- */
 
 /* TCHAR equivalents of STL string and stream classes */
@@ -1420,39 +1403,39 @@ public:
 #define VU_ATTACH_API(O, M, F) O.APIAttach(_T( # M ), _T( # F ), (void*)&Hfn ## F, (void**)&pfn ## F)
 #define VU_DETACH_API(O, M, F) O.APIDetach(_T( # M ), _T( # F ), (void**)&pfn ## F)
 
+typedef enum _MEMORY_ADDRESS_TYPE
+{
+  MAT_NONE = 0,
+  MAT_8    = 1,
+  MAT_16   = 2,
+  MAT_32   = 3,
+  MAT_64   = 4,
+} eMemoryAddressType;
+
+typedef struct _MEMORY_INSTRUCTION
+{
+  ulong Offset;   // Offset of the current instruction.
+  ulong Position; // Position of the memory address in the current instruction.
+  eMemoryAddressType MemoryAddressType;
+  union           // Memory Instruction value.
+  {
+    uchar   A8;
+    ushort  A16;
+    ulong   A32;
+    ulong64 A64;
+  } MAO;
+  union           // Memory Instruction value.
+  {
+    uchar   A8;
+    ushort  A16;
+    ulong   A32;
+    ulong64 A64;
+  } MAN;
+} TMemoryInstruction;
+
 class CDynHookX
 {
 protected:
-  typedef enum _MEMORY_ADDRESS_TYPE
-  {
-    MAT_NONE = 0,
-    MAT_8    = 1,
-    MAT_16   = 2,
-    MAT_32   = 3,
-    MAT_64   = 4,
-  } eMemoryAddressType;
-
-  typedef struct _MEMORY_INSTRUCTION
-  {
-    ulong Offset;   // Offset of the current instruction.
-    ulong Position; // Position of the memory address in the current instruction.
-    eMemoryAddressType MemoryAddressType;
-    union           // Memory Instruction value.
-    {
-      uchar   A8;
-      ushort  A16;
-      ulong   A32;
-      ulong64 A64;
-    } MAO;
-    union           // Memory Instruction value.
-    {
-      uchar   A8;
-      ushort  A16;
-      ulong   A32;
-      ulong64 A64;
-    } MAN;
-  } TMemoryInstruction;
-
   typedef struct _REDIRECT
   {
     ushort   JMP;
@@ -1475,18 +1458,8 @@ public:
   CDynHookX() : m_Hooked(false) {};
   virtual ~CDynHookX() {};
 
-  ulongptr vuapi JumpLength(ulongptr ulSrcAddress, ulongptr ulDestAddress, ulongptr ulInstSize);
   bool vuapi Attach(void* pProc, void* pHookProc, void** pOldProc);
   bool vuapi Detach(void* pProc, void** pOldProc);
-
-private:
-  /**
-   * To handle the memory instruction.
-   * @param[in] hde     The HDE struct of the current instruction.
-   * @param[in] offset  The offset of current instruction. From the head of the current function.
-   * @return  True if current instruction is a memory struction, False if it is not.
-   */
-  bool vuapi HandleMemoryInstruction(const HDE::tagHDE& hde, const ulong offset);
 };
 
 class CDynHookA: public CDynHookX

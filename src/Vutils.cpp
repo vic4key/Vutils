@@ -34,6 +34,21 @@
 // Copyright (c) 2009-2017 Tsuda Kageyu
 #include VU_3RD_INCL(MH/include/buffer.h)
 
+// Hacker Disassembler Engine 32/64 C
+// Copyright (c) 2008-2009, Vyacheslav Patkov
+// Modified the HDE source code to make it compatible with modern C++ and usable both 32-bit & 64-bit version together
+
+#include VU_3RD_INCL(HDE/include/hde32.h)
+#include VU_3RD_INCL(HDE/include/table32.h)
+#include VU_3RD_INCL(HDE/include/hde64.h)
+#include VU_3RD_INCL(HDE/include/table64.h)
+
+#if defined(_M_X64) || defined(__x86_64__)
+namespace HDE = HDE64;
+#else
+namespace HDE = HDE32;
+#endif
+
 #ifdef _MSC_VER
 #pragma warning(disable: 4661) /* : no suitable definition provided for explicit template instantiation request. */
 #endif
@@ -3214,12 +3229,18 @@ bool vuapi CSocket::BytesToIP(const TSocketInfomation& SocketInformation)
 
 /* --- Group : API Hooking --- */
 
-ulongptr vuapi CDynHookX::JumpLength(ulongptr ulSrcAddress, ulongptr ulDestAddress, ulongptr ulInstSize)
-{
-  return (ulDestAddress - ulSrcAddress - ulInstSize);
-}
-
-bool vuapi CDynHookX::HandleMemoryInstruction(const HDE::tagHDE& hde, const ulong offset)
+/**
+ * To handle the memory instruction.
+ * @param[in]  hde          The HDE struct of the current instruction.
+ * @param[in]  offset       The offset of current instruction. From the head of the current function.
+ * @param[out] instructions List instructions.
+ * @return  True if current instruction is a memory struction, False if it is not.
+ */
+bool vuapi GetAssembleInstruction(
+  const HDE::tagHDE& hde,
+  const ulong offset,
+  std::vector<TMemoryInstruction>& instructions
+)
 {
   ulong ulPosDisp = 0;
   TMemoryInstruction mi = {0};
@@ -3227,12 +3248,12 @@ bool vuapi CDynHookX::HandleMemoryInstruction(const HDE::tagHDE& hde, const ulon
 
   // http://wiki.osdev.org/X86-64_Instruction_Encoding
 
-  /*if (IsFlagOn(hde.flags, HDE::F_MODRM)) {  // ModR/M exists
-    // ModR/M
-  }
-  else if (IsFlagOn(hde.flags, HDE::F_SIB)) {   // SIB exists
-    // SIB
-  }*/
+  // if (IsFlagOn(hde.flags, HDE::F_MODRM)) {  // ModR/M exists
+  //   // ModR/M
+  // }
+  // else if (IsFlagOn(hde.flags, HDE::F_SIB)) {   // SIB exists
+  //   // SIB
+  // }
 
   // Now, only ModR/M.
   if (!IsFlagOn(hde.flags, HDE::F_MODRM))
@@ -3249,7 +3270,7 @@ bool vuapi CDynHookX::HandleMemoryInstruction(const HDE::tagHDE& hde, const ulon
   {
   case 0: // MOD = b00
     if ((hde.modrm_rm >= 0 && hde.modrm_rm <= 3) || // {AX, BX, CX, DX}
-        (hde.modrm_rm >= 6 && hde.modrm_rm <= 11)     // {SI, DI, R8, R9, R10, R11}
+        (hde.modrm_rm >= 6 && hde.modrm_rm <= 11)   // {SI, DI, R8, R9, R10, R11}
        )   // [R/M]
     {
       // ...
@@ -3333,7 +3354,7 @@ bool vuapi CDynHookX::HandleMemoryInstruction(const HDE::tagHDE& hde, const ulon
   if (bFoundRelative)
   {
     mi.Offset = offset;
-    m_ListMemoryInstruction.push_back(mi);
+    instructions.push_back(mi);
   }
 
   result = true;
@@ -3368,7 +3389,7 @@ bool vuapi CDynHookX::Attach(void* pProc, void* pHookProc, void** pOldProc)
     }
     else
     {
-      this->HandleMemoryInstruction(hde, iTrampolineSize);
+      GetAssembleInstruction(hde, iTrampolineSize, m_ListMemoryInstruction);
     }
 
     iTrampolineSize += hde.len;
