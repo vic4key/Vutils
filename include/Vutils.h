@@ -2048,6 +2048,7 @@ public:
   T vuapi Offset2RVA(T Offset, bool InCache = true);
 
   const std::vector<PSectionHeader>& vuapi GetSetionHeaders(bool InCache = true);
+
   const std::vector<PImportDescriptor>& vuapi GetImportDescriptors(bool InCache = true);
   const std::vector<TImportModule> vuapi GetImportModules(bool InCache = true);
   const std::vector<TImportFunctionT<T>> vuapi GetImportFunctions(bool InCache = true); // Didn't include import by index
