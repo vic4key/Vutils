@@ -300,7 +300,7 @@ int _tmain(int argc, _TCHAR* argv[])
   std::tcout << _T("Socket -> Close -> Success") << std::endl;*/
 
   // CDynHook
-  vu::CDynHook API[2];
+  /*vu::CDynHook API[2];
 
   if (!VU_ATTACH_API(API[0], user32.dll, MessageBoxA))
   {
@@ -336,7 +336,7 @@ int _tmain(int argc, _TCHAR* argv[])
   std::cout << "API::DETACH -> MessageBoxW -> Success" << std::endl;
 
   MessageBoxA(vu::GetConsoleWindowHandle(), "The second message.", "A", MB_OK);
-  MessageBoxW(vu::GetConsoleWindowHandle(), L"The second message.", L"W", MB_OK);
+  MessageBoxW(vu::GetConsoleWindowHandle(), L"The second message.", L"W", MB_OK);*/
 
   // CINIFileA
   /*vu::CINIFileA ini(vu::GetCurFilePath() + _T(".ini"));
