@@ -30,6 +30,14 @@
 #endif
 #endif // VU_SOCKET_ENABLED
 
+ /**
+  * Macros for Header Inclusion of Third Party Libraries
+  */
+
+#define VU_STRINGIZE_EX(s) #s
+#define VU_STRINGIZE(s) VU_STRINGIZE_EX(s)
+#define VU_3RD_INCL(s)  VU_STRINGIZE(../3rdparty/s)
+
 // Internal Buffer Handler
 // Copyright (c) 2009-2017 Tsuda Kageyu
 #include VU_3RD_INCL(MH/include/buffer.h)
@@ -60,6 +68,7 @@ namespace vu
 
 const std::string  VU_TITLE_BOXA =  "Vutils";
 const std::wstring VU_TITLE_BOXW = L"Vutils";
+
 const size_t MAX_SIZE = MAXBYTE;
 
 /* Additional definitions */
@@ -2751,6 +2760,8 @@ void* vuapi CLibraryW::QuickGetProcAddress(const std::wstring& ModuleName, const
 /* --- Group : Socket --- */
 
 #ifdef VU_SOCKET_ENABLED
+
+const std::string VU_LOCALHOST = "127.0.0.1";
 
 CSocket::CSocket()
 {
