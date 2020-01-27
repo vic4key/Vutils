@@ -23,6 +23,7 @@ G++ main.cpp -std=c++0x -lVutils -DVU_SOCKET_ENABLED -lws2_32 -DVU_GUID_ENABLED 
 #include <algorithm>
 #include <iostream>
 #include <iomanip>
+#include <cassert>
 
 // Remove min & max macros
 #ifdef min
@@ -640,8 +641,8 @@ int _tmain(int argc, _TCHAR* argv[])
   }*/
 
   // CPEFile
-  /*// vu::CPEFileT<vu::pe32> pe(_T("C:\\Program Files\\Process Hacker 2\\x86\\ProcessHacker.exe"));
-  vu::CPEFileT<vu::pe64> pe(_T("C:\\Program Files\\Process Hacker 2\\ProcessHacker.exe"));
+  /*vu::CPEFileT<vu::pe32> pe(_T("C:\\Program Files\\Process Hacker 2\\x86\\ProcessHacker.exe"));
+  // vu::CPEFileT<vu::pe64> pe(_T("C:\\Program Files\\Process Hacker 2\\ProcessHacker.exe"));
 
   vu::VUResult result = pe.Parse();
   if (result != vu::VU_OK)
@@ -668,7 +669,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
   SEPERATOR()
 
-  auto sections = pe.GetSetionHeaderList();
+  auto sections = pe.GetSetionHeaders();
   if (sections.size() == 0)
   {
     std::tcout << _T("PE -> GetSetionHeaderList -> Failure") << vu::LastError() << std::endl;
@@ -690,26 +691,13 @@ int _tmain(int argc, _TCHAR* argv[])
   SEPERATOR()
 
   auto pPEHeader = pe.GetpPEHeader();
-  if (pPEHeader == nullptr)
-  {
-    std::tcout << _T("PE -> pPEHeader -> NULL") << std::endl;
-    return 1;
-  }
+  assert(pPEHeader != nullptr);
 
-  std::cout << std::hex << pe.Offset2RVA(0x001A02FF) << std::endl;
-  std::cout << std::hex << pe.RVA2Offset(0x001AA4FF) << std::endl;
+  std::cout << std::hex << pe.Offset2RVA(0x00113a92) << std::endl;
+  std::cout << std::hex << pe.RVA2Offset(0x00115292) << std::endl;
 
-  if (true)
-  {
-    return 0;
-  }
-
-  auto IIDs = pe.GetImportDescriptorList();
-  if (IIDs.size() == 0)
-  {
-    std::tcout << _T("PE -> GetImportDescriptorList -> Failure") << vu::LastError() << std::endl;
-    return 1;
-  }
+  auto IIDs = pe.GetImportDescriptors();
+  assert(!IIDs.empty());
 
   for (auto IID: IIDs)
   {
@@ -724,47 +712,39 @@ int _tmain(int argc, _TCHAR* argv[])
 
   SEPERATOR()
 
-  auto DLLs = pe.GetDLLInfoList();
-  if (DLLs.size() == 0)
-  {
-    std::tcout << _T("PE -> GetDLLList -> Failure") << vu::LastError() << std::endl;
-    return 1;
-  }
+  auto modules = pe.GetImportModules();
+  assert(!modules.empty());
 
-  for (auto DLL: DLLs)
+  for (auto e: modules)
   {
-    printf("%08X, '%s'\n", DLL.IIDID, DLL.Name.c_str());
+    printf("%08X, '%s'\n", e.IIDID, e.Name.c_str());
   }
 
   SEPERATOR()
 
-  auto fns = pe.GetFunctionInfoList();
-  if (fns.size() == 0)
-  {
-    std::tcout << _T("PE -> GetFunctionInfoList -> Failure") << vu::LastError() << std::endl;
-    return 1;
-  }
+  auto funtions = pe.GetImportFunctions();
+  assert(!funtions.empty());
 
-  for (auto e : fns)
-  {
-    auto s = vu::FormatA("IIDID = %08X, Hint = %04X, '%s'", e.IIDID, e.Hint, e.Name.c_str());
-    std::cout << s << std::endl;
-  }
+  // for (auto e : funtions)
+  // {
+  //   auto s = vu::FormatA("IIDID = %08X, Hint = %04X, '%s'", e.IIDID, e.Hint, e.Name.c_str());
+  //   std::cout << s << std::endl;
+  // }
 
-  SEPERATOR()
+  // SEPERATOR()
 
-  auto DLL = pe.FindImportedDLL("KERNEL32.DLL");
-  if (DLL.Name != "")
+  auto pModule = pe.FindImportModule("KERNEL32.DLL");
+  if (pModule != nullptr)
   {
-    printf("%08X, '%s'\n", DLL.IIDID, DLL.Name.c_str());
+    printf("%08X, '%s'\n", pModule->IIDID, pModule->Name.c_str());
   }
 
   SEPERATOR()
 
-  auto fn = pe.FindImportedFunction("GetLastError");
-  if (fn.RVA != 0)
+  auto pfn = pe.FindImportFunction("GetLastError");
+  if (pfn != nullptr)
   {
-    printf("%08X, %04X, '%s'\n", fn.IIDID, fn.Hint, fn.Name.c_str());
+    printf("%08X, %04X, '%s'\n", pfn->IIDID, pfn->Hint, pfn->Name.c_str());
   }*/
 
   // CGUID

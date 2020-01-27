@@ -257,9 +257,6 @@ typedef UINT_PTR            UIntPtr;
 typedef LONG_PTR            LongPtr;
 typedef ULONG_PTR           ULongPtr;
 
-typedef unsigned int        pe32;
-typedef unsigned __int64    pe64;
-
 typedef CRITICAL_SECTION    TCriticalSection, *PCriticalSection;
 
 typedef struct _SERVICE_STATUS TServiceStatus;
@@ -1739,16 +1736,14 @@ private:
 
 const ulong MAX_IDD = IMAGE_NUMBEROF_DIRECTORY_ENTRIES;
 
+typedef ulong32  pe32;
+typedef ulong64  pe64;
+
 typedef IMAGE_DOS_HEADER TDosHeader, *PDosHeader;
-
 typedef IMAGE_FILE_HEADER TFileHeader, *PFileHeader;
-
 typedef _IMAGE_SECTION_HEADER TSectionHeader, *PSectionHeader;
-
 typedef IMAGE_IMPORT_BY_NAME TImportByName, *PImportByName;
-
 typedef IMAGE_IMPORT_DESCRIPTOR TImportDescriptor, *PImportDescriptor;
-
 typedef IMAGE_DATA_DIRECTORY TDataDirectory, *PDataDirectory;
 
 // IMAGE_OPTIONAL_HEADER
@@ -2011,17 +2006,17 @@ typedef struct
   ulong IIDID;
   std::string Name;
   PImportDescriptor pIID;
-} TExIID, *PExIID;
+} TExIID;
 
 typedef struct
 {
   ulong IIDID;
   std::string Name;
   //ulong NumberOfFuctions;
-} TDLLInfo, *PDLLInfo;
+} TImportModule;
 
 template<typename T>
-struct TFunctionInfoT
+struct TImportFunctionT
 {
   ulong IIDID;
   std::string Name;
@@ -2030,8 +2025,8 @@ struct TFunctionInfoT
   T RVA;
 };
 
-typedef TFunctionInfoT<ulong32> TFunctionInfo32;
-typedef TFunctionInfoT<ulong64> TFunctionInfo64;
+typedef TImportFunctionT<ulong32> TFunctionInfo32;
+typedef TImportFunctionT<ulong64> TFunctionInfo64;
 
 typedef enum _IMPORTED_FUNCTION_FIND_BY
 {
@@ -2049,21 +2044,22 @@ public:
   void* vuapi GetpBase();
   TPEHeaderT<T>* vuapi GetpPEHeader();
 
-  T vuapi RVA2Offset(T RVA);
-  T vuapi Offset2RVA(T Offset);
+  T vuapi RVA2Offset(T RVA, bool InCache = true);
+  T vuapi Offset2RVA(T Offset, bool InCache = true);
 
-  std::vector<PSectionHeader>& vuapi GetSetionHeaderList(bool Reget = false);
-  std::vector<PImportDescriptor>& vuapi GetImportDescriptorList(bool Reget = false);
-  virtual std::vector<TExIID>& vuapi GetExIIDList();
-  virtual std::vector<TDLLInfo> vuapi GetDLLInfoList(bool Reget = false);
-  virtual std::vector<TFunctionInfoT<T>> vuapi GetFunctionInfoList(bool Reget = false); // Didn't include import by index
-  virtual TDLLInfo vuapi FindImportedDLL(const std::string& DLLName);
-  virtual TFunctionInfoT<T> vuapi FindImportedFunction(const std::string& FunctionName);
-  virtual TFunctionInfoT<T> vuapi FindImportedFunction(const ushort FunctionHint);
-  virtual TFunctionInfoT<T> vuapi FindImportedFunction(
-    const TFunctionInfoT<T>& FunctionInfo,
-    eImportedFunctionFindMethod Method
-  );
+  const std::vector<PSectionHeader>& vuapi GetSetionHeaders(bool InCache = true);
+  const std::vector<PImportDescriptor>& vuapi GetImportDescriptors(bool InCache = true);
+  const std::vector<TImportModule> vuapi GetImportModules(bool InCache = true);
+  const std::vector<TImportFunctionT<T>> vuapi GetImportFunctions(bool InCache = true); // Didn't include import by index
+
+  const TImportModule* vuapi FindImportModule(const std::string& ModuleName, bool InCache = true);
+
+  const TImportFunctionT<T>* vuapi FindImportFunction(const std::string& FunctionName, bool InCache = true);
+  const TImportFunctionT<T>* vuapi FindImportFunction(const ushort FunctionHint, bool InCache = true);
+  const TImportFunctionT<T>* vuapi FindImportFunction(
+    const TImportFunctionT<T>& ImportFunction,
+    eImportedFunctionFindMethod Method,
+    bool InCache = true);
 
 protected:
   bool m_Initialized;
@@ -2076,10 +2072,15 @@ protected:
 private:
   T m_OrdinalFlag;
 
-  std::vector<PSectionHeader> m_SectionHeaderList;
-  std::vector<PImportDescriptor> m_ImportDescriptorList;
-  std::vector<TExIID> m_ExIDDList;
-  std::vector<TFunctionInfoT<T>> m_FunctionInfoList;
+  std::vector<TExIID> m_ExIDDs;
+
+  std::vector<PSectionHeader> m_SectionHeaders;
+  std::vector<PImportDescriptor>  m_ImportDescriptors;
+  std::vector<TImportModule> m_ImportModules;
+  std::vector<TImportFunctionT<T>>  m_ImportFunctions;
+
+protected:
+  const std::vector<TExIID>& vuapi GetExIIDs(bool InCache = true);
 };
 
 template <typename T>
