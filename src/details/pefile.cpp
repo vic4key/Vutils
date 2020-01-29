@@ -443,12 +443,7 @@ CPEFileTA<T>::~CPEFileTA()
 template<typename T>
 VUResult vuapi CPEFileTA<T>::Parse(const std::string& PEFilePath)
 {
-  if (PEFilePath.length() != 0)
-  {
-    m_FilePath = PEFilePath;
-  }
-
-  if (m_FilePath.length() == 0)
+  if (m_FilePath.empty())
   {
     return 1;
   }
@@ -458,51 +453,46 @@ VUResult vuapi CPEFileTA<T>::Parse(const std::string& PEFilePath)
     return 2;
   }
 
-  if (m_FileMap.Init(true, m_FilePath) != vu::VU_OK)
+  if (m_FileMap.CreateWithinFile(m_FilePath) != vu::VU_OK)
   {
     return 3;
-  }
-
-  if (m_FileMap.Create("", m_FileMap.GetFileSize()) != vu::VU_OK)
-  {
-    return 4;
   }
 
   CPEFileTX<T>::m_pBase = m_FileMap.View();
   if (CPEFileTX<T>::m_pBase == nullptr)
   {
-    return 5;
+    return 4;
   }
 
   CPEFileTX<T>::m_pDosHeader = (PDosHeader)CPEFileTX<T>::m_pBase;
   if (CPEFileTX<T>::m_pDosHeader == nullptr)
   {
-    return 6;
+    return 5;
   }
 
   CPEFileTX<T>::m_pPEHeader = (TPEHeaderT<T>*)((ulong64)CPEFileTX<T>::m_pBase + CPEFileTX<T>::m_pDosHeader->e_lfanew);
   if (CPEFileTX<T>::m_pPEHeader == nullptr)
   {
-    return 7;
+    return 6;
   }
 
   if (sizeof(T) == sizeof(pe32))
   {
     if (CPEFileTX<T>::m_pPEHeader->Magic != IMAGE_NT_OPTIONAL_HDR32_MAGIC)
     {
-      return 8; // Used wrong type data for the current PE file
+      return 7; // Used wrong type data for the current PE file
     }
   }
   else if (sizeof(T) == sizeof(pe64))
   {
     if (CPEFileTX<T>::m_pPEHeader->Magic != IMAGE_NT_OPTIONAL_HDR64_MAGIC)
     {
-      return 8; // Used wrong type data for the current PE file
+      return 7; // Used wrong type data for the current PE file
     }
   }
   else
   {
-    return 9; // The curent type data was not supported
+    return 8; // The curent type data was not supported
   }
 
   CPEFileTX<T>::m_Initialized = true;
@@ -535,14 +525,9 @@ CPEFileTW<T>::~CPEFileTW()
 }
 
 template<typename T>
-VUResult vuapi CPEFileTW<T>::Parse(const std::wstring& PEFilePath)
+VUResult vuapi CPEFileTW<T>::Parse()
 {
-  if (PEFilePath.length() != 0)
-  {
-    m_FilePath = PEFilePath;
-  }
-
-  if (m_FilePath.length() == 0)
+  if (m_FilePath.empty())
   {
     return 1;
   }
@@ -552,51 +537,46 @@ VUResult vuapi CPEFileTW<T>::Parse(const std::wstring& PEFilePath)
     return 2;
   }
 
-  if (m_FileMap.Init(true, m_FilePath) != vu::VU_OK)
+  if (m_FileMap.CreateWithinFile(m_FilePath) != vu::VU_OK)
   {
     return 3;
-  }
-
-  if (m_FileMap.Create(L"", m_FileMap.GetFileSize()) != vu::VU_OK)
-  {
-    return 4;
   }
 
   CPEFileTX<T>::m_pBase = m_FileMap.View();
   if (CPEFileTX<T>::m_pBase == nullptr)
   {
-    return 5;
+    return 4;
   }
 
   CPEFileTX<T>::m_pDosHeader = (PDosHeader)CPEFileTX<T>::m_pBase;
   if (CPEFileTX<T>::m_pDosHeader == nullptr)
   {
-    return 6;
+    return 5;
   }
 
   CPEFileTX<T>::m_pPEHeader = (TPEHeaderT<T>*)((ulong64)CPEFileTX<T>::m_pBase + CPEFileTX<T>::m_pDosHeader->e_lfanew);
   if (CPEFileTX<T>::m_pPEHeader == nullptr)
   {
-    return 7;
+    return 6;
   }
 
   if (sizeof(T) == sizeof(pe32))
   {
     if (CPEFileTX<T>::m_pPEHeader->Magic != IMAGE_NT_OPTIONAL_HDR32_MAGIC)
     {
-      return 8; // Used wrong type data for the current PE file
+      return 7; // Used wrong type data for the current PE file
     }
   }
   else if (sizeof(T) == sizeof(pe64))
   {
     if (CPEFileTX<T>::m_pPEHeader->Magic != IMAGE_NT_OPTIONAL_HDR64_MAGIC)
     {
-      return 8; // Used wrong type data for the current PE file
+      return 7; // Used wrong type data for the current PE file
     }
   }
   else
   {
-    return 9; // The curent type data was not supported
+    return 8; // The curent type data was not supported
   }
 
   CPEFileTX<T>::m_Initialized = true;

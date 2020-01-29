@@ -1387,27 +1387,45 @@ private:
  * File Mapping
  */
 
-class CFileMappingA : public CLastError
+class CFileMappingX : public CLastError
 {
-private:
-  bool m_HasInit;
-  bool m_MapFile;
+public:
+  CFileMappingX();
+  virtual ~CFileMappingX();
+
+  void* vuapi View(
+    ulong ulDesiredAccess = FILE_MAP_ALL_ACCESS,
+    ulong ulMaxFileOffsetLow = 0,
+    ulong ulMaxFileOffsetHigh = 0,
+    ulong ulNumberOfBytesToMap = 0 // The mapping extends from the specified offset to the end of the file mapping.
+  );
+
+  ulong vuapi GetFileSize();
+  void vuapi Close();
+
+protected:
+  bool IsValidHandle(HANDLE Handle);
+
+protected:
   HANDLE m_FileHandle;
   HANDLE m_MapHandle;
   void* m_pData;
+};
 
-  bool IsValidHandle(HANDLE Handle);
+/**
+ * CFileMappingA
+ */
 
+class CFileMappingA : public CFileMappingX
+{
 public:
   CFileMappingA();
   virtual ~CFileMappingA();
 
-  /**
-   * bMapFile: Is View Within a File or Named Shared Memory ?
-   */
-  VUResult vuapi Init(
-    bool bMapFile = false,
-    const std::string& FileName = "",
+  VUResult vuapi CreateWithinFile(
+    const std::string& FileName,
+    ulong ulMaxSizeLow  = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
+    ulong ulMaxSizeHigh = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
     eFSGenericFlags fgFlag = eFSGenericFlags::FG_ALL,
     eFSShareFlags fsFlag = eFSShareFlags::FS_ALLACCESS,
     eFSModeFlags fmFlag = eFSModeFlags::FM_OPENEXISTING,
@@ -1415,57 +1433,42 @@ public:
   );
 
   /**
-   * With View Within a File:  MapName: Must be empty (not NULL).
-   * With Named Shared Memory: MapName: Eg: `Local/Global\\MyFileMappingObject`.
-   * ulMaxSizeLow : The low-order of the maximum size of the file mapping object.
+   * The mapping name object, eg. Global\\FileMappingObject, Local\\FileMappingObject, etc.
+   * More detail at https://docs.microsoft.com/en-us/windows/win32/termserv/kernel-object-namespaces
    */
-  VUResult vuapi Create(
-    const std::string& MapName,
-    ulong ulMaxSizeLow,
-    ulong ulMaxSizeHigh = 0 // The file mapping object is equal to the current size of the file.
+  VUResult vuapi CreateNamedSharedMemory(
+    const std::string& MappingName,
+    ulong ulMaxSizeLow, // The mapping size for file mapping object.
+    ulong ulMaxSizeHigh = 0,
+    ulong ulProtect = PAGE_EXECUTE_READWRITE
   );
 
   /**
    * Just for Named Shared Memory.
-   * MapName: Eg: `Local/Global\\MyFileMappingObject`.
+   * The mapping name object, eg. Global\\FileMappingObject, Local\\FileMappingObject, etc.
+   * More detail at https://docs.microsoft.com/en-us/windows/win32/termserv/kernel-object-namespaces
    */
-  VUResult vuapi Open(const std::string& MapName, bool bInheritHandle = false);
-
-  /**
-   * With View Within a File, it can not be NULL.
-   * With Named Shared Memory, it will be the size.
-   */
-  void* vuapi View(
-    ulong ulMaxFileOffsetLow   = 0,
-    ulong ulMaxFileOffsetHigh  = 0,
-    ulong ulNumberOfBytesToMap = 0 // The mapping extends from the specified offset to the end of the file mapping.
+  VUResult vuapi Open(
+    const std::string& MappingName,
+    ulong ulDesiredAccess = FILE_MAP_ALL_ACCESS,
+    bool bInheritHandle = false
   );
-
-  ulong vuapi GetFileSize();
-  void vuapi Close();
 };
 
-class CFileMappingW : public CLastError
+/**
+ * CFileMappingW
+ */
+
+class CFileMappingW : public CFileMappingX
 {
-private:
-  bool m_HasInit;
-  bool m_MapFile;
-  HANDLE m_FileHandle;
-  HANDLE m_MapHandle;
-  void* m_pData;
-
-  bool IsValidHandle(HANDLE Handle);
-
 public:
   CFileMappingW();
   virtual ~CFileMappingW();
 
-  /**
-   * bMapFile: Is View Within a File or Named Shared Memory ?
-   */
-  VUResult vuapi Init(
-    bool bMapFile = false,
-    const std::wstring FileName = L"",
+  VUResult vuapi CreateWithinFile(
+    const std::wstring& FileName,
+    ulong ulMaxSizeLow  = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
+    ulong ulMaxSizeHigh = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
     eFSGenericFlags fgFlag = eFSGenericFlags::FG_ALL,
     eFSShareFlags fsFlag = eFSShareFlags::FS_ALLACCESS,
     eFSModeFlags fmFlag = eFSModeFlags::FM_OPENEXISTING,
@@ -1473,34 +1476,26 @@ public:
   );
 
   /**
-   * With View Within a File:  MapName: Must be empty (not NULL).
-   * With Named Shared Memory: MapName: Eg: `Local/Global\\MyFileMappingObject`.
-   * ulMaxSizeLow : The low-order of the maximum size of the file mapping object.
+   * The mapping name object, eg. Global\\FileMappingObject, Local\\FileMappingObject, etc.
+   * More detail at https://docs.microsoft.com/en-us/windows/win32/termserv/kernel-object-namespaces
    */
-  VUResult vuapi Create(
-    const std::wstring& MapName,
-    ulong ulMaxSizeLow,
-    ulong ulMaxSizeHigh = 0 // The file mapping object is equal to the current size of the file.
+  VUResult vuapi CreateNamedSharedMemory(
+    const std::wstring& MappingName,
+    ulong ulMaxSizeLow, // The mapping size for file mapping object.
+    ulong ulMaxSizeHigh = 0,
+    ulong ulProtect = PAGE_EXECUTE_READWRITE
   );
 
   /**
    * Just for Named Shared Memory.
-   * MapName: Eg: `Local/Global\\MyFileMappingObject`.
+   * The mapping name object, eg. Global\\FileMappingObject, Local\\FileMappingObject, etc.
+   * More detail at https://docs.microsoft.com/en-us/windows/win32/termserv/kernel-object-namespaces
    */
-  VUResult vuapi Open(const std::wstring& MapName, bool bInheritHandle = false);
-
-  /**
-   * With View Within a File, it can not be NULL.
-   * With Named Shared Memory, it will be the size
-   */
-  void* vuapi View(
-    ulong ulMaxFileOffsetLow   = 0,
-    ulong ulMaxFileOffsetHigh  = 0,
-    ulong ulNumberOfBytesToMap = 0 // The mapping extends from the specified offset to the end of the file mapping.
+  VUResult vuapi Open(
+    const std::wstring& MappingName,
+    ulong ulDesiredAccess = FILE_MAP_ALL_ACCESS,
+    bool bInheritHandle = false
   );
-
-  ulong vuapi GetFileSize();
-  void vuapi Close();
 };
 
 /**
@@ -2207,7 +2202,7 @@ public:
   CPEFileTW(const std::wstring& PEFilePath);
   ~CPEFileTW();
 
-  VUResult vuapi Parse(const std::wstring& PEFilePath = L"");
+  VUResult vuapi Parse();
 
 private:
   std::wstring m_FilePath;

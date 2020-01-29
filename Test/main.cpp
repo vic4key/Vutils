@@ -602,28 +602,16 @@ int _tmain(int argc, _TCHAR* argv[])
 
   void* p = nullptr;
 
-  if (fm.Init() != vu::VU_OK)
-  {
-    std::tcout << _T("Init -> Failed") << vu::LastError(fm.GetLastErrorCode()) << std::endl;
-  }
-  if (fm.Create(_T("Global\\Sample"), KB) != vu::VU_OK)
-  {
-    std::tcout << _T("Create -> Failed") << vu::LastError(fm.GetLastErrorCode()) << std::endl;
-  }
-  p = fm.View();
-  if (p == nullptr)
-  {
-    std::tcout << _T("View -> Failed") << vu::LastError(fm.GetLastErrorCode()) << std::endl;
-  }
+  // if (fm.CreateNamedSharedMemory(_T("Global\\Sample"), KB) != vu::VU_OK)
+  // {
+  //   std::tcout << _T("Create -> Failed") << vu::LastError(fm.GetLastErrorCode()) << std::endl;
+  // }
 
-  if (fm.Init(true, _T("C:\\Intel\\Logs\\IntelGFX.log")) != vu::VU_OK)
-  {
-    std::tcout << _T("Init -> Failed ") << vu::LastError(fm.GetLastErrorCode()) << std::endl;
-  }
-  if (fm.Create(_T(""), fm.GetFileSize()) != vu::VU_OK)
+  if (fm.CreateWithinFile(_T("C:\\Intel\\Logs\\IntelGFX.log")) != vu::VU_OK)
   {
     std::tcout << _T("Create -> Failed ") << vu::LastError(fm.GetLastErrorCode()) << std::endl;
   }
+
   p = fm.View();
   if (p == nullptr)
   {
@@ -632,9 +620,20 @@ int _tmain(int argc, _TCHAR* argv[])
 
   std::tcout << std::hex << _T("File Mapping at ") << p << std::endl;
 
-  if (p != nullptr && fm.GetFileSize() != -1)
+  if (p != nullptr)
   {
-    vu::HexDump(p, fm.GetFileSize());
+    if (fm.GetFileSize() != -1)
+    {
+      vu::HexDump(p, fm.GetFileSize());
+    }
+    else
+    {
+      std::tcout << _T("Waiting for a communication then enter ...") << std::endl; getch();
+      std::cout << (char*)p << std::endl;
+
+      *(vu::ulong*)p = 0x48474645; // EFGH
+      std::tcout << _T("Wrote data to file mapping object") << std::endl; getch();
+    }
   }*/
 
   // CPEFile
@@ -645,11 +644,11 @@ int _tmain(int argc, _TCHAR* argv[])
   if (result != vu::VU_OK)
   {
     std::tstring s;
-    if (result == 8)
+    if (result == 7)
     {
       s = _T(" (Used wrong type data for the current PE file format)");
     }
-    if (result == 9)
+    if (result == 8)
     {
       s = _T(" (The curent type data was not supported)");
     }

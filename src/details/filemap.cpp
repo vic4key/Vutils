@@ -9,344 +9,286 @@
 namespace vu
 {
 
-CFileMappingA::CFileMappingA()
-{
-  m_HasInit = false;
-  m_MapFile = false;
+/**
+ * CFileMappingX
+ */
 
+CFileMappingX::CFileMappingX()
+{
   m_pData = nullptr;
-  m_MapHandle  = INVALID_HANDLE_VALUE;
+
+  m_MapHandle = INVALID_HANDLE_VALUE;
   m_FileHandle = INVALID_HANDLE_VALUE;
 
   m_LastErrorCode = ERROR_SUCCESS;
+}
+
+CFileMappingX::~CFileMappingX()
+{
+  this->Close();
+}
+
+bool CFileMappingX::IsValidHandle(HANDLE Handle)
+{
+  return (Handle != nullptr && Handle != INVALID_HANDLE_VALUE);
+}
+
+void* vuapi CFileMappingX::View(
+  ulong ulDesiredAccess,
+  ulong ulMaxFileOffsetLow,
+  ulong ulMaxFileOffsetHigh,
+  ulong ulNumberOfBytesToMap
+)
+{
+  if (!this->IsValidHandle(m_MapHandle))
+  {
+    return nullptr;
+  }
+
+  m_pData = MapViewOfFile(
+    m_MapHandle,
+    ulDesiredAccess,
+    ulMaxFileOffsetHigh,
+    ulMaxFileOffsetLow,
+    ulNumberOfBytesToMap
+  );
+
+  m_LastErrorCode = GetLastError();
+
+  return m_pData;
+}
+
+void vuapi CFileMappingX::Close()
+{
+  if (m_pData != nullptr)
+  {
+    UnmapViewOfFile(m_pData);
+    m_pData = nullptr;
+  }
+
+  if (this->IsValidHandle(m_MapHandle))
+  {
+    CloseHandle(m_MapHandle);
+    m_MapHandle = INVALID_HANDLE_VALUE;
+  }
+
+  if (this->IsValidHandle(m_FileHandle))
+  {
+    CloseHandle(m_FileHandle);
+    m_FileHandle = INVALID_HANDLE_VALUE;
+  }
+}
+
+ulong vuapi CFileMappingX::GetFileSize()
+{
+  if (!this->IsValidHandle(m_FileHandle))
+  {
+    return INVALID_FILE_SIZE;
+  }
+
+  ulong result = ::GetFileSize(m_FileHandle, nullptr);
+
+  m_LastErrorCode = GetLastError();
+
+  return result;
+}
+
+/**
+ * CFileMappingA
+ */
+
+CFileMappingA::CFileMappingA() : CFileMappingX()
+{
 }
 
 CFileMappingA::~CFileMappingA()
 {
-  this->Close();
 }
 
-bool CFileMappingA::IsValidHandle(HANDLE Handle)
-{
-  return (Handle != nullptr && Handle != INVALID_HANDLE_VALUE);
-}
-
-VUResult vuapi CFileMappingA::Init(
-  bool bMapFile,
+VUResult vuapi CFileMappingA::CreateWithinFile(
   const std::string& FileName,
+  ulong ulMaxSizeLow,
+  ulong ulMaxSizeHigh,
   eFSGenericFlags fgFlag,
   eFSShareFlags fsFlag,
   eFSModeFlags fmFlag,
   eFSAttributeFlags faFlag
 )
 {
-  if ((m_MapFile = bMapFile))
+  if (FileName.empty())
   {
-    if (FileName.empty())
-    {
-      return 1;
-    }
-
-    m_FileHandle = CreateFileA(FileName.c_str(), fgFlag, fsFlag, NULL, fmFlag, faFlag, 0);
-
-    m_LastErrorCode = GetLastError();
-
-    if (!this->IsValidHandle(m_FileHandle))
-    {
-      return 2;
-    }
+    return 1;
   }
 
-  m_HasInit = true;
+  m_FileHandle = CreateFileA(FileName.c_str(), fgFlag, fsFlag, NULL, fmFlag, faFlag, 0);
+
+  m_LastErrorCode = GetLastError();
+
+  if (!this->IsValidHandle(m_FileHandle))
+  {
+    return 2;
+  }
+
+  auto ret = CreateNamedSharedMemory("", ulMaxSizeLow, ulMaxSizeHigh);
+  if (ret != VU_OK)
+  {
+    return ret;
+  }
 
   return VU_OK;
 }
 
-VUResult vuapi CFileMappingA::Create(const std::string& MapName, ulong ulMaxSizeLow, ulong ulMaxSizeHigh)
+VUResult vuapi CFileMappingA::CreateNamedSharedMemory(
+  const std::string& MappingName,
+  ulong ulMaxSizeLow,
+  ulong ulMaxSizeHigh,
+  ulong ulProtect
+)
 {
-  if (!m_MapFile)
+  if (!this->IsValidHandle(m_FileHandle) && MappingName.empty())
   {
-    if (MapName.empty())
-    {
-      return 1;
-    }
-  }
-
-  if (!m_HasInit || (m_MapFile && !this->IsValidHandle(m_FileHandle)))
-  {
-    return 2;
+    return 1;
   }
 
   m_MapHandle = CreateFileMappingA(
     m_FileHandle,
-    NULL,
-    PAGE_READWRITE,
+    nullptr,
+    ulProtect,
     ulMaxSizeHigh,
     ulMaxSizeLow,
-    (m_MapFile ? NULL : MapName.c_str())
+    MappingName.empty() ? nullptr : MappingName.c_str()
   );
 
   m_LastErrorCode = GetLastError();
 
   if (!this->IsValidHandle(m_MapHandle))
-  {
-    return 3;
-  }
-
-  return VU_OK;
-}
-
-VUResult vuapi CFileMappingA::Open(const std::string& MapName, bool bInheritHandle)
-{
-  if (!m_MapFile)
-  {
-    return 1;
-  }
-
-  if (MapName.empty())
   {
     return 2;
   }
 
-  m_MapHandle = OpenFileMappingA(FILE_MAP_ALL_ACCESS, bInheritHandle, MapName.c_str());
+  return VU_OK;
+}
+
+VUResult vuapi CFileMappingA::Open(
+  const std::string& MappingName,
+  ulong ulDesiredAccess,
+  bool bInheritHandle
+)
+{
+  if (MappingName.empty())
+  {
+    return 1;
+  }
+
+  m_MapHandle = OpenFileMappingA(FILE_MAP_ALL_ACCESS, bInheritHandle, MappingName.c_str());
 
   m_LastErrorCode = GetLastError();
 
   if (!this->IsValidHandle(m_MapHandle))
   {
-    return 3;
+    return 2;
   }
 
   return VU_OK;
 }
 
-void* vuapi CFileMappingA::View(
-  ulong ulMaxFileOffsetLow,
-  ulong ulMaxFileOffsetHigh,
-  ulong ulNumberOfBytesToMap
-)
+/**
+ * CFileMappingW
+ */
+
+CFileMappingW::CFileMappingW() : CFileMappingX()
 {
-  if (!this->IsValidHandle(m_MapHandle))
-  {
-    return nullptr;
-  }
-
-  m_pData = MapViewOfFile(
-    m_MapHandle,
-    FILE_MAP_ALL_ACCESS,
-    ulMaxFileOffsetHigh,
-    ulMaxFileOffsetLow,
-    ulNumberOfBytesToMap
-  );
-
-  m_LastErrorCode = GetLastError();
-
-  return m_pData;
-}
-
-void vuapi CFileMappingA::Close()
-{
-  if (m_pData != nullptr)
-  {
-    UnmapViewOfFile(m_pData);
-    m_pData = nullptr;
-  }
-
-  if (this->IsValidHandle(m_MapHandle))
-  {
-    CloseHandle(m_MapHandle);
-    m_MapHandle = INVALID_HANDLE_VALUE;
-  }
-
-  if (m_MapFile && this->IsValidHandle(m_FileHandle))
-  {
-    CloseHandle(m_FileHandle);
-    m_FileHandle = INVALID_HANDLE_VALUE;
-  }
-}
-
-ulong vuapi CFileMappingA::GetFileSize()
-{
-  if (m_MapFile && !this->IsValidHandle(m_FileHandle))
-  {
-    return INVALID_FILE_SIZE;
-  }
-
-  ulong result = ::GetFileSize(m_FileHandle, NULL);
-
-  m_LastErrorCode = GetLastError();
-
-  return result;
-}
-
-CFileMappingW::CFileMappingW()
-{
-  m_HasInit = false;
-  m_MapFile = false;
-
-  m_pData = nullptr;
-  m_MapHandle  = INVALID_HANDLE_VALUE;
-  m_FileHandle = INVALID_HANDLE_VALUE;
-
-  m_LastErrorCode = ERROR_SUCCESS;
 }
 
 CFileMappingW::~CFileMappingW()
 {
-  this->Close();
 }
 
-bool CFileMappingW::IsValidHandle(HANDLE Handle)
-{
-  return (Handle != nullptr && Handle != INVALID_HANDLE_VALUE);
-}
-
-VUResult vuapi CFileMappingW::Init(
-  bool bMapFile,
-  const std::wstring FileName,
+VUResult vuapi CFileMappingW::CreateWithinFile(
+  const std::wstring& FileName,
+  ulong ulMaxSizeLow,
+  ulong ulMaxSizeHigh,
   eFSGenericFlags fgFlag,
   eFSShareFlags fsFlag,
   eFSModeFlags fmFlag,
   eFSAttributeFlags faFlag
 )
 {
-  if ((m_MapFile = bMapFile))
-  {
-    if (FileName.empty())
-    {
-      return 1;
-    }
-
-    m_FileHandle = CreateFileW(FileName.c_str(), fgFlag, fsFlag, NULL, fmFlag, faFlag, 0);
-
-    m_LastErrorCode = GetLastError();
-
-    if (!this->IsValidHandle(m_FileHandle))
-    {
-      return 2;
-    }
-  }
-
-  m_HasInit = true;
-
-  return VU_OK;
-}
-
-VUResult vuapi CFileMappingW::Create(const std::wstring& MapName, ulong ulMaxSizeLow, ulong ulMaxSizeHigh)
-{
-  if (!m_MapFile)
-  {
-    if (MapName.empty())
-    {
-      return 1;
-    }
-  }
-
-  if (!m_HasInit || (m_MapFile && !this->IsValidHandle(m_FileHandle)))
-  {
-    return 2;
-  }
-
-  m_MapHandle = CreateFileMappingW(
-    m_FileHandle,
-    NULL,
-    PAGE_READWRITE,
-    ulMaxSizeHigh,
-    ulMaxSizeLow,
-    (m_MapFile ? NULL : MapName.c_str())
-  );
-
-  m_LastErrorCode = GetLastError();
-
-  if (!this->IsValidHandle(m_MapHandle))
-  {
-    return 3;
-  }
-
-  return VU_OK;
-}
-
-VUResult vuapi CFileMappingW::Open(const std::wstring& MapName, bool bInheritHandle)
-{
-  if (!m_MapFile)
+  if (FileName.empty())
   {
     return 1;
   }
 
-  if (MapName.empty())
+  m_FileHandle = CreateFileW(FileName.c_str(), fgFlag, fsFlag, NULL, fmFlag, faFlag, 0);
+
+  m_LastErrorCode = GetLastError();
+
+  if (!this->IsValidHandle(m_FileHandle))
   {
     return 2;
   }
 
-  m_MapHandle = OpenFileMappingW(FILE_MAP_ALL_ACCESS, bInheritHandle, MapName.c_str());
-
-  m_LastErrorCode = GetLastError();
-
-  if (!this->IsValidHandle(m_MapHandle))
+  auto ret = CreateNamedSharedMemory(L"", ulMaxSizeLow, ulMaxSizeHigh);
+  if (ret != VU_OK)
   {
-    return 3;
+    return ret;
   }
 
   return VU_OK;
 }
 
-void* vuapi CFileMappingW::View(
-  ulong ulMaxFileOffsetLow,
-  ulong ulMaxFileOffsetHigh,
-  ulong ulNumberOfBytesToMap
+VUResult vuapi CFileMappingW::CreateNamedSharedMemory(
+  const std::wstring& MappingName,
+  ulong ulMaxSizeLow,
+  ulong ulMaxSizeHigh,
+  ulong ulProtect
 )
 {
-  if (!this->IsValidHandle(m_MapHandle))
+  if (!this->IsValidHandle(m_FileHandle) && MappingName.empty())
   {
-    return nullptr;
+    return 1;
   }
 
-  m_pData = MapViewOfFile(
-    m_MapHandle,
-    FILE_MAP_ALL_ACCESS,
-    ulMaxFileOffsetHigh,
-    ulMaxFileOffsetLow,
-    ulNumberOfBytesToMap
+  m_MapHandle = CreateFileMappingW(
+    m_FileHandle,
+    nullptr,
+    ulProtect,
+    ulMaxSizeHigh,
+    ulMaxSizeLow,
+    MappingName.empty() ? nullptr : MappingName.c_str()
   );
 
   m_LastErrorCode = GetLastError();
 
-  return m_pData;
+  if (!this->IsValidHandle(m_MapHandle))
+  {
+    return 2;
+  }
+
+  return VU_OK;
 }
 
-void vuapi CFileMappingW::Close()
+VUResult vuapi CFileMappingW::Open(
+  const std::wstring& MappingName,
+  ulong ulDesiredAccess,
+  bool bInheritHandle
+)
 {
-  if (m_pData != nullptr)
+  if (MappingName.empty())
   {
-    UnmapViewOfFile(m_pData);
-    m_pData = nullptr;
+    return 1;
   }
 
-  if (this->IsValidHandle(m_MapHandle))
-  {
-    CloseHandle(m_MapHandle);
-    m_MapHandle = INVALID_HANDLE_VALUE;
-  }
-
-  if (m_MapFile && this->IsValidHandle(m_FileHandle))
-  {
-    CloseHandle(m_FileHandle);
-    m_FileHandle = INVALID_HANDLE_VALUE;
-  }
-}
-
-ulong vuapi CFileMappingW::GetFileSize()
-{
-  if (m_MapFile && !this->IsValidHandle(m_FileHandle))
-  {
-    return INVALID_FILE_SIZE;
-  }
-
-  ulong result = ::GetFileSize(m_FileHandle, NULL);
+  m_MapHandle = OpenFileMappingW(FILE_MAP_ALL_ACCESS, bInheritHandle, MappingName.c_str());
 
   m_LastErrorCode = GetLastError();
 
-  return result;
+  if (!this->IsValidHandle(m_MapHandle))
+  {
+    return 2;
+  }
+
+  return VU_OK;
 }
 
 } // namespace vu
