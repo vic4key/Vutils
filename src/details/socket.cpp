@@ -1,7 +1,7 @@
 /**
- * @file   misc.cpp
+ * @file   socket.cpp
  * @author Vic P.
- * @brief  Implementation for Miscellaneous
+ * @brief  Implementation for Socket
  */
 
 #include "Vutils.h"

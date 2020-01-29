@@ -1,5 +1,5 @@
 /**
- * @file   ini.cpp
+ * @file   inifile.cpp
  * @author Vic P.
  * @brief  Implementation for INI File
  */

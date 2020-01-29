@@ -1,5 +1,5 @@
 /**
- * @file   format.cpp
+ * @file   strfmt.cpp
  * @author Vic P.
  * @brief  Implementation for String Format
  */

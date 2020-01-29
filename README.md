@@ -20,7 +20,7 @@ It helps your programming go easier, faster and simpler.
 # Features
 
 * Classes
-	* File
+	* File System
 	* Process
 	* GUID
 	* Binary
@@ -58,8 +58,7 @@ Belows are the IDE/Compiler that supported C++ 11.
 
 # License
 
-Copyright (c) Vic P.
-Fully free but please have a look at [`LICENSE.md`](LICENSE.md) file for more details.
+Released under the [MIT](LICENSE.TXT) license
 
 # Installation
 
@@ -83,14 +82,14 @@ Fully free but please have a look at [`LICENSE.md`](LICENSE.md) file for more de
 
 * Build
 	* For `Microsoft Visual Studio C++`
-		* \<NA\>
+		* N/A
 	* For `MinGW`
 		* Insert `-lVutils` for linking.
 		* If enabled `SOCKET`, insert `-DVU_SOCKET_ENABLED -lws2_32` for linking.
 		* If enabled `GUID`, insert `-DVU_GUID_ENABLED -lrpcrt4` for linking.
 		* Eg. `G++ main.cpp -std=c++0x -lVutils -DVU_SOCKET_ENABLED -lws2_32 -DVU_GUID_ENABLED -lrpcrt4 -o Test.exe`
 	* For `C++ Builder`
-		* \<NA\>
+		* N/A
 
 * More detail in [`INSTALL.md`](INSTALL.md)
 

@@ -119,9 +119,6 @@
     <ClCompile Include="src\details\filemap.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
-    <ClCompile Include="src\details\ini.cpp">
-      <Filter>Source Files\details</Filter>
-    </ClCompile>
     <ClCompile Include="src\details\registry.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
@@ -144,6 +141,9 @@
       <Filter>Source Files\details</Filter>
     </ClCompile>
     <ClCompile Include="src\details\filesys.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\inifile.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
   </ItemGroup>

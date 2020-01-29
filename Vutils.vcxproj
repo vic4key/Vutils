@@ -323,7 +323,7 @@
     <ClCompile Include="src\details\filesys.cpp" />
     <ClCompile Include="src\details\strfmt.cpp" />
     <ClCompile Include="src\details\guid.cpp" />
-    <ClCompile Include="src\details\ini.cpp" />
+    <ClCompile Include="src\details\inifile.cpp" />
     <ClCompile Include="src\details\lazy.cpp" />
     <ClCompile Include="src\details\library.cpp" />
     <ClCompile Include="src\details\math.cpp" />
