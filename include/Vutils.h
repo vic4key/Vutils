@@ -60,14 +60,13 @@
 
 #ifdef WIN32_LEAN_AND_MEAN
 #ifdef VU_SOCKET_ENABLED
+#ifndef _WINSOCKAPI_
+#include <WinSock2.h>
+#else
 #include <winsock.h>
+#endif // _WINSOCKAPI_
 #endif // VU_SOCKET_ENABLED
 #endif // WIN32_LEAN_AND_MEAN
-
-#ifdef VU_SOCKET_ENABLED
-#include <winsock.h>
-#pragma comment(lib, "ws2_32")
-#endif // VU_SOCKET_ENABLED
 
 /* Vutils Options */
 
@@ -90,7 +89,7 @@
 #pragma warning(disable: 4996)
 #endif // _MSC_VER
 
-/* --------------------------------------------- Vutils Declarations ----------------------------------------------- */
+/* ---------------------------------------- Vutils Declarations ------------------------------------------ */
 
 /* TCHAR equivalents of STL string and stream classes */
 
@@ -265,22 +264,30 @@ typedef struct _SERVICE_STATUS TServiceStatus;
 
 const VUResult VU_OK  = 0;
 
-/* ---------------------------------------------- Public Function(s) ----------------------------------------------- */
+const size_t MAX_SIZE = MAXBYTE;
 
-/* --- Group : Misc Working --- */
+/* ----------------------------------------- Public Function(s) ------------------------------------------ */
+
+/**
+ * Misc Working
+ */
 
 bool vuapi IsAdministrator();
 std::string vuapi  GetEnviromentA(const std::string EnvName);
 std::wstring vuapi GetEnviromentW(const std::wstring EnvName);
 
-/* --- Group : Math Working --- */
+/**
+ * Math Working
+ */
 
 bool vuapi IsFlagOn(ulongptr ulFlags, ulongptr ulFlag);
 intptr vuapi GCD(ulongptr count, ...); // UCLN
 intptr vuapi LCM(ulongptr count, ...); // BCNN
 void vuapi HexDump(const void* Data, int Size);
 
-/* --- Group : String Formatting --- */
+/**
+ * String Formatting
+ */
 
 typedef enum _ENCODING_TYPE
 {
@@ -313,7 +320,9 @@ std::string vuapi DateTimeToStringA(const time_t t);
 std::wstring vuapi DateTimeToStringW(const time_t t);
 eEncodingType vuapi DetermineEncodingType(const void* Data, const size_t size);
 
-/* --- Group : String Working --- */
+/**
+ * String Working
+ */
 
 typedef enum _TRIM_STRING
 {
@@ -328,14 +337,28 @@ std::string vuapi UpperStringA(const std::string& String);
 std::wstring vuapi UpperStringW(const std::wstring& String);
 std::string vuapi ToStringA(const std::wstring& String);
 std::wstring vuapi ToStringW(const std::string& String);
-std::vector<std::string> vuapi SplitStringA(const std::string& String, const std::string& Seperate);
-std::vector<std::wstring> vuapi SplitStringW(const std::wstring& lpcwszString, const std::wstring& Seperate);
+std::vector<std::string> vuapi SplitStringA(
+  const std::string& String,
+  const std::string& Seperate
+);
+std::vector<std::wstring> vuapi SplitStringW(
+  const std::wstring& lpcwszString,
+  const std::wstring& Seperate
+);
 std::vector<std::string> vuapi MultiStringToListA(const char* lpcszMultiString);
 std::vector<std::wstring> vuapi MultiStringToListW(const wchar* lpcwszMultiString);
 std::unique_ptr<char[]> vuapi ListToMultiStringA(const std::vector<std::string>& StringList);
 std::unique_ptr<wchar[]> vuapi ListToMultiStringW(const std::vector<std::wstring>& StringList);
-std::string vuapi LoadResourceStringA(const UINT uID, HINSTANCE ModuleHandle = nullptr, const std::string& ModuleName = "");
-std::wstring vuapi LoadResourceStringW(const UINT uID, HINSTANCE ModuleHandle = nullptr, const std::wstring& ModuleName = L"");
+std::string vuapi LoadResourceStringA(
+  const UINT uID,
+  HINSTANCE ModuleHandle = nullptr,
+  const std::string& ModuleName = ""
+);
+std::wstring vuapi LoadResourceStringW(
+  const UINT uID,
+  HINSTANCE ModuleHandle = nullptr,
+  const std::wstring& ModuleName = L""
+);
 std::string vuapi TrimStringA(
   const std::string& String,
   const eTrimType& TrimType = eTrimType::TS_BOTH,
@@ -347,7 +370,9 @@ std::wstring vuapi TrimStringW(
   const std::wstring& TrimChars = L" \t\n\r\f\v"
 );
 
-/* --- Group : Process Working --- */
+/**
+ * Process Working
+ */
 
 typedef enum _XBit
 {
@@ -386,8 +411,14 @@ typedef enum _PROCESSOR_ARCHITECTURE
 HWND vuapi GetConsoleWindowHandle();
 eProcessorArchitecture GetProcessorArchitecture();
 eWow64 vuapi IsWow64(ulong ulPID = (ulong)-1); /* -1: Error, 0: False, 1: True */
-std::vector<ulong> vuapi NameToPIDA(const std::string& ProcessName, ulong ulMaxProcessNumber = MAX_NPROCESSES);
-std::vector<ulong> vuapi NameToPIDW(const std::wstring& ProcessName, ulong ulMaxProcessNumber = MAX_NPROCESSES);
+std::vector<ulong> vuapi NameToPIDA(
+  const std::string& ProcessName,
+  ulong ulMaxProcessNumber = MAX_NPROCESSES
+);
+std::vector<ulong> vuapi NameToPIDW(
+  const std::wstring& ProcessName,
+  ulong ulMaxProcessNumber = MAX_NPROCESSES
+);
 std::string vuapi PIDToNameA(ulong ulPID);
 std::wstring vuapi PIDToNameW(ulong ulPID);
 HMODULE vuapi RemoteGetModuleHandleA(ulong ulPID, const std::string& ModuleName); // Not complete
@@ -427,7 +458,9 @@ bool vuapi WPMEX(
   ...
 );
 
-/* --- Group : File/Directory Working --- */
+/**
+ * File/Directory Working
+ */
 
 bool vuapi IsDirectoryExistsA(const std::string& Directory);
 bool vuapi IsDirectoryExistsW(const std::wstring& Directory);
@@ -444,19 +477,19 @@ std::wstring vuapi GetCurrentFilePathW();
 std::string vuapi GetCurrentDirectoryA(bool bIncludeSlash = true);
 std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 
-/*--------------------- The definition of common function(s) which compatible both ANSI & UNICODE -------------------*/
+/*---------------- The definition of common function(s) which compatible both ANSI & UNICODE --------------*/
 
 #ifdef _UNICODE
-/* --- Group : Misc Working --- */
+/* Misc Working */
 #define GetEnviroment GetEnviromentW
-/* --- Group : String Formatting --- */
+/* String Formatting */
 #define Fmt FormatW
 #define Msg MsgW
 #define Box BoxW
 #define LastError LastErrorW
 #define DateTimeToString DateTimeToStringW
 #define FormatDateTime FormatDateTimeW
-/* --- Group : String Working --- */
+/* String Working */
 #define LowerString LowerStringW
 #define UpperString UpperStringW
 #define SplitString SplitStringW
@@ -464,11 +497,11 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 #define ListToMultiString ListToMultiStringW
 #define LoadResourceString LoadResourceStringW
 #define TrimString TrimStringW
-/* --- Group : Process Working --- */
+/* Process Working */
 #define NameToPID NameToPIDW
 #define PIDToName PIDToNameW
 #define RemoteGetModuleHandle RemoteGetModuleHandleW
-/* --- Group : File/Directory Working --- */
+/* File/Directory Working */
 #define IsDirectoryExists IsDirectoryExistsW
 #define IsFileExists IsFileExistsW
 #define FileType FileTypeW
@@ -477,27 +510,27 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 #define GetCurrentFilePath GetCurrentFilePathW
 #define GetCurDirectory GetCurrentDirectoryW
 #else
-/* --- Group : Misc Working --- */
+/* Misc Working */
 #define GetEnviroment GetEnviromentA
-/* --- Group : String Formatting --- */
+/* String Formatting */
 #define Fmt FormatA
 #define Msg MsgA
 #define Box BoxA
 #define LastError LastErrorA
 #define DateTimeToString DateTimeToStringA
 #define FormatDateTime FormatDateTimeA
-/* --- Group : String Working --- */
+/* String Working */
 #define LowerString LowerStringA
 #define UpperString UpperStringA
 #define SplitString SplitStringA
 #define MultiStringToList MultiStringToListA
 #define LoadResourceString LoadResourceStringA
 #define TrimString TrimStringA
-/* --- Group : Process Working --- */
+/* Process Working */
 #define NameToPID NameToPIDA
 #define PIDToName PIDToNameA
 #define RemoteGetModuleHandle RemoteGetModuleHandleA
-/* --- Group : File/Directory Working --- */
+/* File/Directory Working */
 #define IsDirectoryExists IsDirectoryExistsA
 #define IsFileExists IsFileExistsA
 #define FileType FileTypeA
@@ -507,7 +540,7 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 #define GetCurDirectory GetCurrentDirectoryA
 #endif
 
-/* ------------------------------------------------ Public Class(es) ----------------------------------------------- */
+/* ------------------------------------------- Public Class(es) ------------------------------------------ */
 
 class CLastError
 {
@@ -545,7 +578,9 @@ protected:
   ulong m_LastErrorCode;
 };
 
-/* --- Group : Singleton --- */
+/**
+ * Singleton
+ */
 
 /**
  * The singleton class for inheritance.
@@ -591,7 +626,9 @@ protected:
 template<typename T>
 T* CSingletonT<T>::m_pInstance = nullptr;
 
-/* --- Group : GUID --- */
+/**
+ * GUID
+ */
 
 #ifdef VU_GUID_ENABLED
 
@@ -655,7 +692,9 @@ public:
 
 #endif // VU_GUID_ENABLED
 
-/* --- Group : Binary --- */
+/**
+ * Binary
+ */
 
 class CBinary
 {
@@ -683,7 +722,9 @@ private:
   ulong m_UsedSize;
 };
 
-/* --- Group : Library --- */
+/**
+ * Library
+ */
 
 /**
  * @brief Gets a function in a module by name.
@@ -731,7 +772,9 @@ private:
   std::wstring m_ModuleName, m_ProcName;
 };
 
-/* --- Group : Socket --- */
+/**
+ * Socket
+ */
 
 #ifdef VU_SOCKET_ENABLED
 
@@ -857,7 +900,9 @@ public:
 
 #endif // VU_SOCKET_ENABLED
 
-/* --- Group : API Hooking --- */
+/**
+ * API Hooking
+ */
 
  /**
  * @brief Hook/Unhook a function in a module by name.
@@ -936,8 +981,16 @@ public:
   CDynHookA() {};
   virtual ~CDynHookA() {};
 
-  bool vuapi APIAttach(const std::string& ModuleName, const std::string& ProcName, void* lpHookProc, void** lpOldProc);
-  bool vuapi APIDetach(const std::string& ModuleName, const std::string& ProcName, void** lpOldProc);
+  bool vuapi APIAttach(
+    const std::string& ModuleName,
+    const std::string& ProcName,
+    void* lpHookProc, void** lpOldProc
+  );
+  bool vuapi APIDetach(
+    const std::string& ModuleName,
+    const std::string& ProcName,
+    void** lpOldProc
+  );
 };
 
 class CDynHookW: public CDynHookX
@@ -946,11 +999,22 @@ public:
   CDynHookW() {};
   virtual ~CDynHookW() {};
 
-  bool vuapi APIAttach(const std::wstring& ModuleName, const std::wstring& ProcName, void* lpHookProc, void** lpOldProc);
-  bool vuapi APIDetach(const std::wstring& ModuleName, const std::wstring& ProcName, void** lpOldProc);
+  bool vuapi APIAttach(
+    const std::wstring& ModuleName,
+    const std::wstring& ProcName,
+    void* lpHookProc,
+    void** lpOldProc
+  );
+  bool vuapi APIDetach(
+    const std::wstring& ModuleName,
+    const std::wstring& ProcName,
+    void** lpOldProc
+  );
 };
 
-/* --- Group : File Working --- */
+/**
+ * File System
+ */
 
 typedef enum _FS_MODE_FLAGS
 {
@@ -1032,10 +1096,20 @@ public:
   virtual ulong vuapi GetFileSize();
   virtual const CBinary vuapi ReadContent();
   virtual bool vuapi Read(void* Buffer, ulong ulSize);
-  virtual bool vuapi Read(ulong ulOffset, void* Buffer, ulong ulSize, eMoveMethodFlags mmFlag = MM_BEGIN);
+  virtual bool vuapi Read(
+    ulong ulOffset,
+    void* Buffer,
+    ulong ulSize,
+    eMoveMethodFlags mmFlag = MM_BEGIN
+  );
 
   virtual bool vuapi Write(const void* cBuffer, ulong ulSize);
-  virtual bool vuapi Write(ulong ulOffset, const void* cBuffer, ulong ulSize, eMoveMethodFlags mmFlag = MM_BEGIN);
+  virtual bool vuapi Write(
+    ulong ulOffset,
+    const void* cBuffer,
+    ulong ulSize,
+    eMoveMethodFlags mmFlag = MM_BEGIN
+  );
   virtual bool vuapi Seek(ulong ulOffset, eMoveMethodFlags mmFlag);
   virtual bool vuapi IOControl(
     ulong ulControlCode,
@@ -1073,7 +1147,10 @@ public:
     eFSAttributeFlags faFlag = FA_NORMAL
   );
   const std::string vuapi ReadFileAsString(bool removeBOM = true);
-  static const std::string vuapi QuickReadAsString(const std::string& FilePath, bool forceBOM = true);
+  static const std::string vuapi QuickReadAsString(
+    const std::string& FilePath,
+    bool forceBOM = true
+  );
   static bool Iterate(
     const std::string& Path,
     const std::string& Pattern,
@@ -1101,7 +1178,10 @@ public:
     eFSAttributeFlags faFlag = FA_NORMAL
   );
   const std::wstring vuapi ReadAsString(bool removeBOM = true);
-  static const std::wstring vuapi QuickReadAsString(const std::wstring& FilePath, bool removeBOM = true);
+  static const std::wstring vuapi QuickReadAsString(
+    const std::wstring& FilePath,
+    bool removeBOM = true
+  );
   static bool Iterate(
     const std::wstring& Path,
     const std::wstring& Pattern,
@@ -1109,7 +1189,9 @@ public:
   );
 };
 
-/* --- Group : Service Working --- */
+/**
+ * Service Working
+ */
 
 typedef enum _SERVICE_ACCESS_TYPE
 {
@@ -1301,7 +1383,9 @@ private:
   std::wstring m_ServiceFilePath;
 };
 
-/* --- Group : File Mapping --- */
+/**
+ * File Mapping
+ */
 
 class CFileMappingA : public CLastError
 {
@@ -1419,7 +1503,9 @@ public:
   void vuapi Close();
 };
 
-/* --- Group : INI File --- */
+/**
+ * INI File
+ */
 
 class CINIFileA : public CLastError
 {
@@ -1515,7 +1601,9 @@ public:
   bool vuapi WriteStruct(const std::wstring& Key, void* pStruct, ulong ulSize);
 };
 
-/* --- Group : Registry --- */
+/**
+ * Registry
+ */
 
 // Refer to winreg.h
 // Reserved Key Handles.
@@ -1692,7 +1780,9 @@ public:
 protected:
 };
 
-/* --- Group : Critical Section --- */
+/**
+ * Critical Section
+ */
 
 class CCriticalSection
 {
@@ -1711,7 +1801,9 @@ public:
   TCriticalSection& vuapi GetCurrentSection();
 };
 
-/* --- Group : Stop Watch --- */
+/**
+ * Stop Watch
+ */
 
 class CStopWatch
 {
@@ -1732,7 +1824,9 @@ private:
   std::vector<std::clock_t> m_DeltaHistory;
 };
 
-/* --- Group : PE File --- */
+/**
+ * PE File
+ */
 
 const ulong MAX_IDD = IMAGE_NUMBEROF_DIRECTORY_ENTRIES;
 
@@ -2055,8 +2149,14 @@ public:
 
   const TImportModule* vuapi FindImportModule(const std::string& ModuleName, bool InCache = true);
 
-  const TImportFunctionT<T>* vuapi FindImportFunction(const std::string& FunctionName, bool InCache = true);
-  const TImportFunctionT<T>* vuapi FindImportFunction(const ushort FunctionHint, bool InCache = true);
+  const TImportFunctionT<T>* vuapi FindImportFunction(
+    const std::string& FunctionName,
+    bool InCache = true
+  );
+  const TImportFunctionT<T>* vuapi FindImportFunction(
+    const ushort FunctionHint,
+    bool InCache = true
+  );
   const TImportFunctionT<T>* vuapi FindImportFunction(
     const TImportFunctionT<T>& ImportFunction,
     eImportedFunctionFindMethod Method,
@@ -2114,7 +2214,7 @@ private:
   CFileMappingW m_FileMap;
 };
 
-/*-------------------- The definition of common structure(s) which compatible both ANSI & UNICODE -------------------*/
+/*--------------- The definition of common structure(s) which compatible both ANSI & UNICODE --------------*/
 
 #ifdef _UNICODE
 #define TFSObject TFSObjectW
@@ -2122,7 +2222,7 @@ private:
 #define TFSObject TFSObjectA
 #endif
 
-/*---------------------- The definition of common Class(es) which compatible both ANSI & UNICODE --------------------*/
+/*----------------- The definition of common Class(es) which compatible both ANSI & UNICODE ---------------*/
 
 #ifdef _UNICODE
 #define CGUID CGUIDW

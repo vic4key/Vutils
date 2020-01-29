@@ -140,10 +140,11 @@ int _tmain(int argc, _TCHAR* argv[])
   std::cout  << vu::ToStringA(L"THIS IS A WIDE STRING") << std::endl;
   std::wcout << vu::ToStringW("THIS IS AN ANSI STRING") << std::endl;
 
+  std::tcout << _T("Enviroment `PATH`") << std::endl;
   std::tstring envValue = vu::GetEnviroment(_T("PATH"));
   auto env = vu::SplitString(envValue, _T(";"));
   for (auto e: env) {
-    std::tcout << e << std::endl;
+    std::tcout << '\t' << e << std::endl;
   }
 
   std::vector<vu::ulong> PIDs;
@@ -193,12 +194,9 @@ int _tmain(int argc, _TCHAR* argv[])
     return true;
   });*/
 
-  // Data Type Information
-  /*std::tcout << (FundamentalTypeIsSigned(vu::UIntPtr) ? _T("Signed") : _T("Unsigned")) << std::endl;
-  std::tcout << (FundamentalTypeIsExact(vu::UIntPtr) ? _T("Exact") : _T("Non-Exact")) << std::endl;
-  std::tcout << FundamentalTypeGetDigits(vu::UIntPtr) << std::endl;
-  std::tcout << std::hex << FundamentalTypeGetLowest(vu::UIntPtr) << std::endl;
-  std::tcout << std::hex << FundamentalTypeGetHighest(vu::UIntPtr) << std::endl;*/
+  // Math
+  /*std::cout << "GCD : " << vu::GCD(3, 9, 27, 81) << std::endl;
+  std::cout << "LCM : " << vu::LCM(3, 9, 27, 81) << std::endl;*/
 
   // File/Directory
   /*const std::tstring FILE_DIR  =  _T("C:\\Intel\\Logs\\");
@@ -240,15 +238,14 @@ int _tmain(int argc, _TCHAR* argv[])
   const std::string REQ_HOST = "ipv4.download.thinkbroadband.com";
   std::string REQ_CONTENT;
   REQ_CONTENT.clear();
-  REQ_CONTENT.append("GET /5MB.zip\r\n");
-  REQ_CONTENT.append("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,* / *;q=0.8\r\n");
-  REQ_CONTENT.append("Accept-Encoding: gzip, deflate\r\n");
-  REQ_CONTENT.append("Accept-Language: en-US,en;q=0.5\r\n");
-  REQ_CONTENT.append("Connection: keep-alive\r\n");
-  REQ_CONTENT.append("DNT: 1\r\n");
+  REQ_CONTENT.append("GET /5MB.zip HTTP/1.1\r\n");
   REQ_CONTENT.append("Host: ipv4.download.thinkbroadband.com\r\n");
+  REQ_CONTENT.append("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0\r\n");
+  REQ_CONTENT.append("Accept-Language: en-US,en;q=0.5\r\n");
+  REQ_CONTENT.append("Accept-Encoding: gzip, deflate\r\n");
+  REQ_CONTENT.append("DNT: 1\r\n");
+  REQ_CONTENT.append("Connection: keep-alive\r\n");
   REQ_CONTENT.append("Upgrade-Insecure-Requests: 1\r\n");
-  REQ_CONTENT.append("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:59.0) Gecko/20100101 Firefox/59.0\r\n");
   REQ_CONTENT.append("\r\n");
 
   if (socket.Socket(vu::SAF_INET, vu::ST_STREAM) != vu::VU_OK)
@@ -267,30 +264,30 @@ int _tmain(int argc, _TCHAR* argv[])
 
   std::tcout << _T("Socket -> Connect -> Success") << std::endl;
 
-  // if (socket.Send(REQ_CONTENT.data(), int(REQ_CONTENT.length())) == SOCKET_ERROR)
-  // {
-  //   std::tcout << _T("Socket -> Send -> Failed") << std::endl;
-  //   return 1;
-  // }
+  if (socket.Send(REQ_CONTENT.data(), int(REQ_CONTENT.length())) == SOCKET_ERROR)
+  {
+    std::tcout << _T("Socket -> Send -> Failed") << std::endl;
+    return 1;
+  }
 
-  // vu::CFileSystemA src7z;
-  // src7z.Init("5MB.zip", vu::eFileModeFlags::FM_CREATEALWAY);
-  // if (src7z.IsReady())
-  // {
-  //   vu::CBinary D(1024);
-  //   vu::IResult N = -1, nRecvBytes = 0;
-  //   do
-  //   {
-  //     N = socket.Recv(D);
-  //     if (N > 0)
-  //     {
-  //       src7z.Write(D.GetpData(), D.GetUsedSize());
-  //       nRecvBytes += N;
-  //     }
-  //   }
-  //   while (N > 0);
-  //   src7z.Close();
-  // }
+  {
+    vu::CFileSystemA src7z("5MB.zip", vu::eFSModeFlags::FM_CREATEALWAY);
+    if (src7z.IsReady())
+    {
+      vu::CBinary D(1024);
+      vu::IResult N = -1, nRecvBytes = 0;
+      do
+      {
+        N = socket.Recv(D);
+        if (N > 0)
+        {
+          src7z.Write(D.GetpData(), D.GetUsedSize());
+          nRecvBytes += N;
+        }
+      }
+      while (N > 0);
+    }
+  }
 
   if (!socket.Close())
   {
@@ -340,7 +337,7 @@ int _tmain(int argc, _TCHAR* argv[])
   MessageBoxW(vu::GetConsoleWindowHandle(), L"The second message.", L"W", MB_OK);*/
 
   // CINIFileA
-  /*vu::CINIFileA ini(vu::GetCurFilePath() + _T(".ini"));
+  /*vu::CINIFile ini(vu::GetCurrentFilePath() + _T(".ini"));
 
   ini.SetCurrentSection(_T("Section"));
 
@@ -404,7 +401,7 @@ int _tmain(int argc, _TCHAR* argv[])
   }*/
 
   // CRegistry
-  /*vu::CRegistry reg(vu::HKLM, _T("SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting")/ *_T("SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting")* /);
+  /*vu::CRegistry reg(vu::HKLM, _T("SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting")); // _T("SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\Windows Error Reporting")
   if (!reg.KeyExists())
   {
     std::tcout << _T("Reg -> Exist -> Failed") << vu::LastError(reg.GetLastErrorCode()) << std::endl;
@@ -455,13 +452,13 @@ int _tmain(int argc, _TCHAR* argv[])
 
   std::tcout << std::endl;
 
-  / *reg.WriteBinary(_T("RegBinary"), (void*)_T("1234567890"), 10 * sizeof(vu::tchar));
+  reg.WriteBinary(_T("RegBinary"), (void*)_T("1234567890"), 10 * sizeof(vu::tchar));
   std::tcout << _T("RegBinary\t") << (vu::tchar*)reg.ReadBinary(_T("RegBinary"), nullptr).get() << std::endl;
 
   reg.WriteBool(_T("RegBool"), true);
   std::tcout << _T("RegBool\t") << reg.ReadBool(_T("RegBool"), false) << std::endl;
 
-  reg.WriteExpandString(_T("RegExpandString"), _T("%CatEngine%"));
+  reg.WriteExpandString(_T("RegExpandString"), _T("%TMP%"));
   std::tcout << _T("RegExpandString\t") << reg.ReadExpandString(_T("RegExpandString"), _T("")) << std::endl;
 
   reg.WriteFloat(_T("RegFloat"), 16.09F);
@@ -483,7 +480,7 @@ int _tmain(int argc, _TCHAR* argv[])
   }
 
   reg.WriteString(_T("RegString"), _T("This is a string"));
-  std::tcout << _T("RegString\t") << reg.ReadString(_T("RegString"), _T("")) << std::endl;* /
+  std::tcout << _T("RegString\t") << reg.ReadString(_T("RegString"), _T("")) << std::endl;
 
   if (!reg.CloseKey())
   {

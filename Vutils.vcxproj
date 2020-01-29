@@ -307,11 +307,34 @@
     <ClInclude Include="include\Boob.h" />
     <ClInclude Include="include\Vu.h" />
     <ClInclude Include="include\Vutils.h" />
+    <ClInclude Include="src\details\defs.h" />
+    <ClInclude Include="src\details\strfmt.h" />
+    <ClInclude Include="src\details\lazy.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdparty\HDE\src\hde32.cpp" />
     <ClCompile Include="3rdparty\HDE\src\hde64.cpp" />
     <ClCompile Include="3rdparty\MH\src\buffer.cpp" />
+    <ClCompile Include="src\details\binary.cpp" />
+    <ClCompile Include="src\details\crisec.cpp" />
+    <ClCompile Include="src\details\apihook.cpp" />
+    <ClCompile Include="src\details\filedir.cpp" />
+    <ClCompile Include="src\details\filemap.cpp" />
+    <ClCompile Include="src\details\filesys.cpp" />
+    <ClCompile Include="src\details\strfmt.cpp" />
+    <ClCompile Include="src\details\guid.cpp" />
+    <ClCompile Include="src\details\ini.cpp" />
+    <ClCompile Include="src\details\lazy.cpp" />
+    <ClCompile Include="src\details\library.cpp" />
+    <ClCompile Include="src\details\math.cpp" />
+    <ClCompile Include="src\details\misc.cpp" />
+    <ClCompile Include="src\details\pefile.cpp" />
+    <ClCompile Include="src\details\process.cpp" />
+    <ClCompile Include="src\details\registry.cpp" />
+    <ClCompile Include="src\details\service.cpp" />
+    <ClCompile Include="src\details\socket.cpp" />
+    <ClCompile Include="src\details\stopwatch.cpp" />
+    <ClCompile Include="src\details\string.cpp" />
     <ClCompile Include="src\Vutils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

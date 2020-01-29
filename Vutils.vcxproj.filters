@@ -31,6 +31,9 @@
     <Filter Include="Source Files\3rdparties\MH">
       <UniqueIdentifier>{eb0e3882-c0ce-4589-86c9-944f7725577d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\details">
+      <UniqueIdentifier>{b7faa85e-455c-4a29-8984-ab3b362fd066}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -60,6 +63,15 @@
     <ClInclude Include="3rdparty\MH\include\buffer.h">
       <Filter>Header Files\3rdparty\MH</Filter>
     </ClInclude>
+    <ClInclude Include="src\details\lazy.h">
+      <Filter>Source Files\details</Filter>
+    </ClInclude>
+    <ClInclude Include="src\details\defs.h">
+      <Filter>Source Files\details</Filter>
+    </ClInclude>
+    <ClInclude Include="src\details\strfmt.h">
+      <Filter>Source Files\details</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Vutils.cpp">
@@ -73,6 +85,66 @@
     </ClCompile>
     <ClCompile Include="3rdparty\MH\src\buffer.cpp">
       <Filter>Source Files\3rdparties\MH</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\misc.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\lazy.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\math.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\string.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\process.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\filedir.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\guid.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\binary.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\library.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\socket.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\filemap.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\ini.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\registry.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\crisec.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\stopwatch.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\service.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\pefile.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\apihook.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\strfmt.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\filesys.cpp">
+      <Filter>Source Files\details</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
