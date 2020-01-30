@@ -55,7 +55,7 @@ bool vuapi CSocket::IsSocketValid(SOCKET socket)
   return true;
 }
 
-VUResult vuapi CSocket::Socket(eSocketAF SocketAF, eSocketType SocketType, eSocketProtocol SocketProtocol)
+VUResult vuapi CSocket::Socket(eSocketAF Family, eSocketType Type, eSocketProtocol Protocol)
 {
   if (WSAStartup(MAKEWORD(2, 2), &m_WSAData) != 0)
   {
@@ -63,13 +63,13 @@ VUResult vuapi CSocket::Socket(eSocketAF SocketAF, eSocketType SocketType, eSock
     return 1;
   }
 
-  m_Socket = socket(SocketAF, SocketType, SocketProtocol);
+  m_Socket = socket(Family, Type, Protocol);
   if (!this->IsSocketValid(m_Socket))
   {
     return 2;
   }
 
-  m_Server.sin_family = SocketAF;
+  m_Server.sin_family = Family;
 
   return VU_OK;
 }

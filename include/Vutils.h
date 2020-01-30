@@ -38,7 +38,7 @@
 // VU_SOCKET_ENABLED
 // VU_GUID_ENABLED
 
-// The belows are default enabled for only MSVC and C++ Builder. For MinGW, see detail at README.md :
+// Default enabled for only MSVC and C++ Builder. For MinGW, see detail at README.md or INSTALL.md.
 // - The Socket(class CSocket)
 // - The Globally/Universally Unique Identifier aka GUID (class CGUID)
 
@@ -89,7 +89,7 @@
 #pragma warning(disable: 4996)
 #endif // _MSC_VER
 
-/* ---------------------------------------- Vutils Declarations ------------------------------------------ */
+/* ----------------------------------- Vutils Declarations -------------------------------------- */
 
 /* TCHAR equivalents of STL string and stream classes */
 
@@ -266,7 +266,7 @@ const VUResult VU_OK  = 0;
 
 const size_t MAX_SIZE = MAXBYTE;
 
-/* ----------------------------------------- Public Function(s) ------------------------------------------ */
+/* ------------------------------------ Public Function(s) -------------------------------------- */
 
 /**
  * Misc Working
@@ -413,7 +413,7 @@ std::vector<ulong> vuapi NameToPIDW(
 );
 std::string vuapi PIDToNameA(ulong ulPID);
 std::wstring vuapi PIDToNameW(ulong ulPID);
-HMODULE vuapi RemoteGetModuleHandleA(ulong ulPID, const std::string& ModuleName); // Not complete
+HMODULE vuapi RemoteGetModuleHandleA(ulong ulPID, const std::string& ModuleName); // TODO: Uncompleted.
 HMODULE vuapi RemoteGetModuleHandleW(ulong ulPID, const std::wstring& ModuleName);
 bool vuapi RPM(
   const HANDLE hProcess,
@@ -469,7 +469,7 @@ std::wstring vuapi GetCurrentFilePathW();
 std::string vuapi GetCurrentDirectoryA(bool bIncludeSlash = true);
 std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 
-/*---------------- The definition of common function(s) which compatible both ANSI & UNICODE --------------*/
+/*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
 
 #ifdef _UNICODE
 /* Misc Working */
@@ -532,7 +532,7 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 #define GetCurDirectory GetCurrentDirectoryA
 #endif
 
-/* ------------------------------------------- Public Class(es) ------------------------------------------ */
+/* -------------------------------------- Public Class(es) -------------------------------------- */
 
 class CLastError
 {
@@ -862,7 +862,7 @@ public:
   CSocket();
   CSocket(eSocketAF SockAF, eSocketType SocketType);
   virtual ~CSocket();
-  VUResult vuapi Socket(eSocketAF SocketAF, eSocketType SocketType, eSocketProtocol SocketProtocol = SP_NONE);
+  VUResult vuapi Socket(eSocketAF Family, eSocketType Type, eSocketProtocol Protocol = SP_NONE);
   VUResult vuapi Bind(const TAccessPoint& AccessPoint);
   VUResult vuapi Bind(const std::string& Address, ushort usNPort);
   VUResult vuapi Listen(int iMaxConnection = SOMAXCONN);
@@ -871,10 +871,8 @@ public:
   VUResult vuapi Connect(const std::string& Address, ushort usPort);
   IResult vuapi Send(const char* lpData, int iLength, eSocketMessage SocketMessage = SF_NONE);
   IResult vuapi Send(const CBinary& Data, eSocketMessage SocketMessage = SF_NONE);
-  IResult vuapi Send(const SOCKET socket, const char* lpData, int iLength, eSocketMessage SocketMessage = SF_NONE);
   IResult vuapi Recv(char* lpData, int iLength, eSocketMessage SocketMessage = SF_NONE);
   IResult vuapi Recv(CBinary& Data, eSocketMessage SocketMessage = SF_NONE);
-  IResult vuapi Recv(SOCKET socket, char* lpData, int iLength, eSocketMessage SocketMessage = SF_NONE);
   IResult vuapi SendTo(const char* lpData, int iLength, TSocketInfomation& SocketInformation);
   IResult vuapi SendTo(const CBinary& Data, TSocketInfomation& SocketInformation);
   IResult vuapi RecvFrom(char* lpData, int iLength, TSocketInfomation& SocketInformation);
@@ -888,6 +886,20 @@ public:
   std::string vuapi GetHostByName(const std::string& Name);
   bool vuapi IsHostName(const std::string& s);
   bool vuapi BytesToIP(const TSocketInfomation& SocketInformation);
+
+private:
+  IResult vuapi Send(
+    const SOCKET socket,
+    const char* lpData,
+    int iLength,
+    eSocketMessage SocketMessage = SF_NONE
+  );
+  IResult vuapi Recv(
+    SOCKET socket,
+    char* lpData,
+    int iLength,
+    eSocketMessage SocketMessage = SF_NONE
+  );
 };
 
 #endif // VU_SOCKET_ENABLED
@@ -1389,7 +1401,7 @@ public:
     ulong ulDesiredAccess = FILE_MAP_ALL_ACCESS,
     ulong ulMaxFileOffsetLow = 0,
     ulong ulMaxFileOffsetHigh = 0,
-    ulong ulNumberOfBytesToMap = 0 // The mapping extends from the specified offset to the end of the file mapping.
+    ulong ulNumberOfBytesToMap = 0 // The mapping extends from the specified offset to the end.
   );
 
   ulong vuapi GetFileSize();
@@ -1519,8 +1531,16 @@ public:
   int vuapi ReadInteger(const std::string& Section, const std::string& Key, int Default);
   bool vuapi ReadBool(const std::string& Section, const std::string& Key, bool Default);
   float vuapi ReadFloat(const std::string& Section, const std::string& Key, float Default);
-  std::string vuapi ReadString(const std::string& Section, const std::string& Key, const std::string& Default);
-  std::unique_ptr<uchar[]> vuapi ReadStruct(const std::string& Section, const std::string& Key, ulong ulSize);
+  std::string vuapi ReadString(
+    const std::string& Section,
+    const std::string& Key,
+    const std::string& Default
+  );
+  std::unique_ptr<uchar[]> vuapi ReadStruct(
+    const std::string& Section,
+    const std::string& Key,
+    ulong ulSize
+  );
 
   int vuapi ReadInteger(const std::string& Key, int Default);
   bool vuapi ReadBool(const std::string& Key, bool Default);
@@ -1531,8 +1551,17 @@ public:
   bool vuapi WriteInteger(const std::string& Section, const std::string& Key, int Value);
   bool vuapi WriteBool(const std::string& Section, const std::string& Key, bool Value);
   bool vuapi WriteFloat(const std::string& Section, const std::string& Key, float Value);
-  bool vuapi WriteString(const std::string& Section, const std::string& Key, const std::string& Value);
-  bool vuapi WriteStruct(const std::string& Section, const std::string& Key, void* pStruct, ulong ulSize);
+  bool vuapi WriteString(
+    const std::string& Section,
+    const std::string& Key,
+    const std::string& Value
+  );
+  bool vuapi WriteStruct(
+    const std::string& Section,
+    const std::string& Key,
+    void* pStruct,
+    ulong ulSize
+  );
 
   bool vuapi WriteInteger(const std::string& Key, int Value);
   bool vuapi WriteBool(const std::string& Key, bool Value);
@@ -1558,7 +1587,10 @@ public:
   void SetCurrentFilePath(const std::wstring& FilePath);
   void SetCurrentSection(const std::wstring& Section);
 
-  std::vector<std::wstring> vuapi ReadSection(const std::wstring& Section, ulong ulMaxSize = MAXBYTE);
+  std::vector<std::wstring> vuapi ReadSection(
+    const std::wstring& Section,
+    ulong ulMaxSize = MAXBYTE
+  );
   std::vector<std::wstring> vuapi ReadSection(ulong ulMaxSize = MAXBYTE);
 
   std::vector<std::wstring> vuapi ReadSectionNames(ulong ulMaxSize = MAXBYTE);
@@ -1566,8 +1598,16 @@ public:
   int vuapi ReadInteger(const std::wstring& Section, const std::wstring& Key, int Default);
   bool vuapi ReadBool(const std::wstring& Section, const std::wstring& Key, bool Default);
   float vuapi ReadFloat(const std::wstring& Section, const std::wstring& Key, float Default);
-  std::wstring vuapi ReadString(const std::wstring& Section, const std::wstring& Key, const std::wstring& Default);
-  std::unique_ptr<uchar[]> vuapi ReadStruct(const std::wstring& Section, const std::wstring& Key, ulong ulSize);
+  std::wstring vuapi ReadString(
+    const std::wstring& Section,
+    const std::wstring& Key,
+    const std::wstring& Default
+  );
+  std::unique_ptr<uchar[]> vuapi ReadStruct(
+    const std::wstring& Section,
+    const std::wstring& Key,
+    ulong ulSize
+  );
 
   int vuapi ReadInteger(const std::wstring& Key, int Default);
   bool vuapi ReadBool(const std::wstring& Key, bool Default);
@@ -1578,8 +1618,17 @@ public:
   bool vuapi WriteInteger(const std::wstring& Section, const std::wstring& Key, int Value);
   bool vuapi WriteBool(const std::wstring& Section, const std::wstring& Key, bool Value);
   bool vuapi WriteFloat(const std::wstring& Section, const std::wstring& Key, float Value);
-  bool vuapi WriteString(const std::wstring& Section, const std::wstring& Key, const std::wstring& Value);
-  bool vuapi WriteStruct(const std::wstring& Section, const std::wstring& Key, void* pStruct, ulong ulSize);
+  bool vuapi WriteString(
+    const std::wstring& Section,
+    const std::wstring& Key,
+    const std::wstring& Value
+  );
+  bool vuapi WriteStruct(
+    const std::wstring& Section,
+    const std::wstring& Key,
+    void* pStruct,
+    ulong ulSize
+  );
 
   bool vuapi WriteInteger(const std::wstring& Key, int Value);
   bool vuapi WriteBool(const std::wstring& Key, bool Value);
@@ -1716,7 +1765,10 @@ public:
   bool vuapi ReadBool(const std::string& ValueName, bool Default);
   float vuapi ReadFloat(const std::string& ValueName, float Default);
   std::string vuapi ReadString(const std::string& ValueName, const std::string& Default);
-  std::vector<std::string> vuapi ReadMultiString(const std::string& ValueName, const std::vector<std::string> Default);
+  std::vector<std::string> vuapi ReadMultiString(
+    const std::string& ValueName,
+    const std::vector<std::string> Default
+  );
   std::string vuapi ReadExpandString(const std::string& ValueName, const std::string& Default);
   std::unique_ptr<uchar[]> vuapi ReadBinary(const std::string& ValueName, const void* pDefault);
 };
@@ -1761,7 +1813,10 @@ public:
   bool vuapi ReadBool(const std::wstring& ValueName, bool Default);
   float vuapi ReadFloat(const std::wstring& ValueName, float Default);
   std::wstring vuapi ReadString(const std::wstring& ValueName, const std::wstring& Default);
-  std::vector<std::wstring> vuapi ReadMultiString(const std::wstring& ValueName, const std::vector<std::wstring> Default);
+  std::vector<std::wstring> vuapi ReadMultiString(
+    const std::wstring& ValueName,
+    const std::vector<std::wstring> Default
+  );
   std::wstring vuapi ReadExpandString(const std::wstring& ValueName, const std::wstring& Default);
   std::unique_ptr<uchar[]> vuapi ReadBinary(const std::wstring& ValueName, const void* Default);
 protected:
@@ -2201,7 +2256,7 @@ private:
   CFileMappingW m_FileMap;
 };
 
-/*--------------- The definition of common structure(s) which compatible both ANSI & UNICODE --------------*/
+/*---------- The definition of common structure(s) which compatible both ANSI & UNICODE ----------*/
 
 #ifdef _UNICODE
 #define TFSObject TFSObjectW
@@ -2209,7 +2264,7 @@ private:
 #define TFSObject TFSObjectA
 #endif
 
-/*----------------- The definition of common Class(es) which compatible both ANSI & UNICODE ---------------*/
+/*------------ The definition of common Class(es) which compatible both ANSI & UNICODE -----------*/
 
 #ifdef _UNICODE
 #define CGUID CGUIDW
@@ -2228,7 +2283,7 @@ private:
 #define CLibrary CLibraryA
 #define CFileSystem CFileSystemA
 #define CFileMapping CFileMappingA
-#define CINIFile CIniFileA
+#define CINIFile CINIFileA
 #define CRegistry CRegistryA
 #define CPEFileT CPEFileTA
 #endif
