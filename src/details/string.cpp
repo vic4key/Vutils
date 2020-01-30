@@ -300,44 +300,40 @@ std::unique_ptr<wchar[]> vuapi ListToMultiStringW(const std::vector<std::wstring
   return p;
 }
 
-std::string vuapi LoadResourceStringA(const UINT uID, HINSTANCE ModuleHandle, const std::string& ModuleName)
+std::string vuapi LoadRCStringA(const UINT uID, const std::string& ModuleName)
 {
-  char* ps = nullptr;
-  std::string s;
-  s.clear();
+  std::string result = "";
 
-  if ((ModuleHandle == nullptr || ModuleHandle == INVALID_HANDLE_VALUE) && ModuleName.length() != 0)
+  HINSTANCE hInstance = ::GetModuleHandleA(ModuleName.empty() ? nullptr : ModuleName.c_str());
+  if (hInstance != nullptr)
   {
-    ModuleHandle = GetModuleHandleA(ModuleName.c_str());
+    char* ps = nullptr;
+    int z = ::LoadStringA(hInstance, uID, (LPSTR)&ps, 0);
+    if (z > 0 && ps != nullptr)
+    {
+      result.assign(ps, z);
+    }
   }
 
-  auto z = LoadStringA(ModuleHandle, uID, (LPSTR)&ps, 0);
-  if (z > 0)
-  {
-    s.assign(ps, z);
-  }
-
-  return s;
+  return result;
 }
 
-std::wstring vuapi LoadResourceStringW(const UINT uID, HINSTANCE ModuleHandle, const std::wstring& ModuleName)
+std::wstring vuapi LoadRCStringW(const UINT uID, const std::wstring& ModuleName)
 {
-  wchar* ps = nullptr;
-  std::wstring s;
-  s.clear();
+  std::wstring result = L"";
 
-  if ((ModuleHandle == nullptr || ModuleHandle == INVALID_HANDLE_VALUE) && ModuleName.length() != 0)
+  HINSTANCE hInstance = ::GetModuleHandleW(ModuleName.empty() ? nullptr : ModuleName.c_str());
+  if (hInstance != nullptr)
   {
-    ModuleHandle = GetModuleHandleW(ModuleName.c_str());
+    wchar* ps = nullptr;
+    int z = ::LoadStringW(hInstance, uID, (LPWSTR)&ps, 0);
+    if (z > 0 && ps != nullptr)
+    {
+      result.assign(ps, z);
+    }
   }
 
-  auto z = LoadStringW(ModuleHandle, uID, (LPWSTR)&ps, 0);
-  if (z > 0)
-  {
-    s.assign(ps, z);
-  }
-
-  return s;
+  return result;
 }
 
 std::string vuapi TrimStringA(const std::string& String, const eTrimType& TrimType, const std::string& TrimChars)

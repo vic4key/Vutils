@@ -349,16 +349,8 @@ std::vector<std::string> vuapi MultiStringToListA(const char* lpcszMultiString);
 std::vector<std::wstring> vuapi MultiStringToListW(const wchar* lpcwszMultiString);
 std::unique_ptr<char[]> vuapi ListToMultiStringA(const std::vector<std::string>& StringList);
 std::unique_ptr<wchar[]> vuapi ListToMultiStringW(const std::vector<std::wstring>& StringList);
-std::string vuapi LoadResourceStringA(
-  const UINT uID,
-  HINSTANCE ModuleHandle = nullptr,
-  const std::string& ModuleName = ""
-);
-std::wstring vuapi LoadResourceStringW(
-  const UINT uID,
-  HINSTANCE ModuleHandle = nullptr,
-  const std::wstring& ModuleName = L""
-);
+std::string vuapi LoadRCStringA(const UINT uID, const std::string& ModuleName = "");
+std::wstring vuapi LoadRCStringW(const UINT uID, const std::wstring& ModuleName = L"");
 std::string vuapi TrimStringA(
   const std::string& String,
   const eTrimType& TrimType = eTrimType::TS_BOTH,
@@ -495,7 +487,7 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 #define SplitString SplitStringW
 #define MultiStringToList MultiStringToListW
 #define ListToMultiString ListToMultiStringW
-#define LoadResourceString LoadResourceStringW
+#define LoadRCString LoadRCStringW
 #define TrimString TrimStringW
 /* Process Working */
 #define NameToPID NameToPIDW
@@ -524,7 +516,7 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 #define UpperString UpperStringA
 #define SplitString SplitStringA
 #define MultiStringToList MultiStringToListA
-#define LoadResourceString LoadResourceStringA
+#define LoadRCString LoadRCStringA
 #define TrimString TrimStringA
 /* Process Working */
 #define NameToPID NameToPIDA
