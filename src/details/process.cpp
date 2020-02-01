@@ -598,7 +598,7 @@ VUResult vuapi InjectDLLA(DWORD PID, const std::string& DLLFilePath, bool WaitLo
   auto pBlock = VirtualAllocEx(
     hp.get(),
     nullptr,
-    (DLLFilePath.length() + 1) * sizeof(char), // +1 for a null-terminated UNICODE string
+    (DLLFilePath.length() + 1) * sizeof(char), // +1 for a null-terminated ANSI string
     MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE
   );
   if (pBlock == nullptr)
