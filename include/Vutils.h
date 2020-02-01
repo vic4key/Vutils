@@ -400,6 +400,12 @@ typedef enum _PROCESSOR_ARCHITECTURE
   PA_UNKNOWN = PROCESSOR_ARCHITECTURE_UNKNOWN,
 } eProcessorArchitecture;
 
+typedef struct _BLOCK
+{
+  void*  Address;
+  SIZE_T Size;
+} TBlock;
+
 HWND vuapi GetConsoleWindowHandle();
 eProcessorArchitecture GetProcessorArchitecture();
 eWow64 vuapi IsWow64(ulong ulPID = (ulong)-1); /* -1: Error, 0: False, 1: True */
@@ -415,6 +421,8 @@ std::string vuapi PIDToNameA(ulong ulPID);
 std::wstring vuapi PIDToNameW(ulong ulPID);
 HMODULE vuapi RemoteGetModuleHandleA(ulong ulPID, const std::string& ModuleName); // TODO: Uncompleted.
 HMODULE vuapi RemoteGetModuleHandleW(ulong ulPID, const std::wstring& ModuleName);
+VUResult vuapi InjectDLLA(DWORD PID, const std::string&  DLLFilePath, bool WaitLoadingDLL = true);
+VUResult vuapi InjectDLLW(DWORD PID, const std::wstring& DLLFilePath, bool WaitLoadingDLL = true);
 bool vuapi RPM(
   const HANDLE hProcess,
   const void* lpAddress,
@@ -493,6 +501,7 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 #define NameToPID NameToPIDW
 #define PIDToName PIDToNameW
 #define RemoteGetModuleHandle RemoteGetModuleHandleW
+#define InjectDLL InjectDLLW
 /* File/Directory Working */
 #define IsDirectoryExists IsDirectoryExistsW
 #define IsFileExists IsFileExistsW
@@ -522,6 +531,7 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 #define NameToPID NameToPIDA
 #define PIDToName PIDToNameA
 #define RemoteGetModuleHandle RemoteGetModuleHandleA
+#define InjectDLL InjectDLLA
 /* File/Directory Working */
 #define IsDirectoryExists IsDirectoryExistsA
 #define IsFileExists IsFileExistsA

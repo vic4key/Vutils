@@ -268,6 +268,8 @@ std::vector<ulong> vuapi NameToPIDA(const std::string& ProcessName, ulong ulMaxP
     }
   }
 
+  SetLastError(ERROR_SUCCESS);
+
   return l;
 }
 
@@ -313,6 +315,8 @@ std::vector<ulong> vuapi NameToPIDW(const std::wstring& ProcessName, ulong ulMax
       l.push_back(PID);
     }
   }
+
+  SetLastError(ERROR_SUCCESS);
 
   return l;
 }
@@ -544,6 +548,174 @@ HMODULE vuapi RemoteGetModuleHandleW(const ulong ulPID, const std::wstring& Modu
   #endif // _WIN64
 
   return result;
+}
+
+#define CREATE_THREAD_ACCESS (PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ)
+
+VUResult vuapi InjectDLLA(DWORD PID, const std::string& DLLFilePath, bool WaitLoadingDLL)
+{
+  if (PID == 0 || PID == -1)
+  {
+    return 1;
+  }
+
+  if (!IsFileExistsA(DLLFilePath))
+  {
+    SetLastError(ERROR_FILE_NOT_FOUND);
+    return 2;
+  }
+
+  auto DLLFileName = ExtractFileNameA(DLLFilePath);
+  if (DLLFileName.empty())
+  {
+    SetLastError(ERROR_FILE_NOT_FOUND);
+    return 2;
+  }
+
+  if (RemoteGetModuleHandleA(PID, DLLFileName) != 0)
+  {
+    SetLastError(ERROR_ALREADY_EXISTS);
+    return 3;
+  }
+
+  std::shared_ptr<void> hp(OpenProcess(CREATE_THREAD_ACCESS, FALSE, PID), CloseHandle);
+  if (hp.get() == INVALID_HANDLE_VALUE)
+  {
+    return 4;
+  }
+
+  /**
+   * TODO: Should get the function address in the target process, not this process like this.
+   * Solution: Get the function VA + process base address of the target process.
+   */
+  typedef HMODULE(WINAPI* PfnLoadLibraryA)(LPCSTR lpLibFileName);
+  PfnLoadLibraryA pfnLoadLibraryA = VU_GET_API(kernel32.dll, LoadLibraryA);
+  if (pfnLoadLibraryA == nullptr)
+  {
+    return 5;
+  }
+
+  auto pBlock = VirtualAllocEx(
+    hp.get(),
+    nullptr,
+    (DLLFilePath.length() + 1) * sizeof(char), // +1 for a null-terminated UNICODE string
+    MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE
+  );
+  if (pBlock == nullptr)
+  {
+    return 6;
+  }
+
+  if (!WPM(hp.get(), pBlock, DLLFilePath.c_str(), DLLFilePath.length() * sizeof(char)))
+  {
+    return 7;
+  }
+
+  auto hThread = CreateRemoteThread(
+    hp.get(),
+    nullptr, 0,
+    (LPTHREAD_START_ROUTINE)pfnLoadLibraryA,
+    pBlock,
+    0, nullptr
+  );
+  if (hThread == nullptr)
+  {
+    return 8;
+  }
+
+  if (WaitLoadingDLL)
+  {
+    WaitForSingleObject(hThread, INFINITE);
+    CloseHandle(hThread);
+    VirtualFreeEx(hp.get(), pBlock, 0, MEM_RELEASE);
+  }
+
+  SetLastError(ERROR_SUCCESS);
+
+  return 0;
+}
+
+VUResult vuapi InjectDLLW(DWORD PID, const std::wstring& DLLFilePath, bool WaitLoadingDLL)
+{
+  if (PID == 0 || PID == -1)
+  {
+    return 1;
+  }
+
+  if (!IsFileExistsW(DLLFilePath))
+  {
+    SetLastError(ERROR_FILE_NOT_FOUND);
+    return 2;
+  }
+
+  auto DLLFileName = ExtractFileNameW(DLLFilePath);
+  if (DLLFileName.empty())
+  {
+    SetLastError(ERROR_FILE_NOT_FOUND);
+    return 2;
+  }
+
+  if (RemoteGetModuleHandleW(PID, DLLFileName) != 0)
+  {
+    SetLastError(ERROR_ALREADY_EXISTS);
+    return 3;
+  }
+
+  std::shared_ptr<void> hp(OpenProcess(CREATE_THREAD_ACCESS, FALSE, PID), CloseHandle);
+  if (hp.get() == INVALID_HANDLE_VALUE)
+  {
+    return 4;
+  }
+
+  /**
+   * TODO: Should get the function address in the target process, not this process like this.
+   * Solution: Get the function VA + process base address of the target process.
+   */
+  typedef HMODULE(WINAPI* PfnLoadLibraryW)(LPCWSTR lpLibFileName);
+  PfnLoadLibraryW pfnLoadLibraryW = VU_GET_API(kernel32.dll, LoadLibraryW);
+  if (pfnLoadLibraryW == nullptr)
+  {
+    return 5;
+  }
+
+  auto pBlock = VirtualAllocEx(
+    hp.get(),
+    nullptr,
+    (DLLFilePath.length() + 1) * sizeof(wchar_t), // +1 for a null-terminated UNICODE string
+    MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE
+  );
+  if (pBlock == nullptr)
+  {
+    return 6;
+  }
+
+  if (!WPM(hp.get(), pBlock, DLLFilePath.c_str(), DLLFilePath.length() * sizeof(wchar_t)))
+  {
+    return 7;
+  }
+
+  auto hThread = CreateRemoteThread(
+    hp.get(),
+    nullptr, 0,
+    (LPTHREAD_START_ROUTINE)pfnLoadLibraryW,
+    pBlock,
+    0, nullptr
+  );
+  if (hThread == nullptr)
+  {
+    return 8;
+  }
+
+  if (WaitLoadingDLL)
+  {
+    WaitForSingleObject(hThread, INFINITE);
+    CloseHandle(hThread);
+    VirtualFreeEx(hp.get(), pBlock, 0, MEM_RELEASE);
+  }
+
+  SetLastError(ERROR_SUCCESS);
+
+  return 0;
 }
 
 } // namespace vu
