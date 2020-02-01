@@ -335,6 +335,7 @@
     <ClCompile Include="src\details\socket.cpp" />
     <ClCompile Include="src\details\stopwatch.cpp" />
     <ClCompile Include="src\details\string.cpp" />
+    <ClCompile Include="src\details\window.cpp" />
     <ClCompile Include="src\Vutils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -10,25 +10,6 @@
 namespace vu
 {
 
-HWND vuapi GetConsoleWindowHandle()
-{
-  typedef HWND (WINAPI *PfnGetConsoleWindow)();
-
-  HWND hwConsole = NULL;
-
-  PfnGetConsoleWindow pfnGetConsoleWindow = (PfnGetConsoleWindow)CLibrary::QuickGetProcAddress(
-    _T("kernel32.dll"),
-    _T("GetConsoleWindow")
-  );
-
-  if (pfnGetConsoleWindow)
-  {
-    hwConsole = pfnGetConsoleWindow();
-  }
-
-  return hwConsole;
-}
-
 bool vuapi IsAdministrator()
 {
   BOOL IsMember = FALSE;

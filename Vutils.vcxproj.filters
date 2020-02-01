@@ -146,5 +146,8 @@
     <ClCompile Include="src\details\inifile.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
+    <ClCompile Include="src\details\window.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

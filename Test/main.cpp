@@ -111,7 +111,7 @@ int _tmain(int argc, _TCHAR* argv[])
   std::tcout << _T("--- *.* ---") << std::endl;
 
   // Misc
-  /*vu::Box(vu::GetConsoleWindowHandle(), _T("I'm %s. I'm %d years old."), _T("Vic P"), 26);
+  /*vu::Box(vu::GetConsoleWindow(), _T("I'm %s. I'm %d years old."), _T("Vic P"), 26);
   vu::Msg(_T("I'm %s. I'm %d years old."), _T("Vic P"), 26);
 
   std::tcout << vu::Fmt(_T("I'm %s. I'm %d years old. (A)"), _T("Vic P"), 26) << std::endl;
@@ -325,8 +325,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
   std::cout << "API::ATTACH -> MessageBoxW -> Success" << std::endl;
 
-  MessageBoxA(vu::GetConsoleWindowHandle(), "The first message.", "A", MB_OK);
-  MessageBoxW(vu::GetConsoleWindowHandle(), L"The first message.", L"W", MB_OK);
+  MessageBoxA(vu::GetConsoleWindow(), "The first message.", "A", MB_OK);
+  MessageBoxW(vu::GetConsoleWindow(), L"The first message.", L"W", MB_OK);
 
   if (!VU_DETACH_API(API[0], user32.dll, MessageBoxA))
   {
@@ -342,8 +342,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
   std::cout << "API::DETACH -> MessageBoxW -> Success" << std::endl;
 
-  MessageBoxA(vu::GetConsoleWindowHandle(), "The second message.", "A", MB_OK);
-  MessageBoxW(vu::GetConsoleWindowHandle(), L"The second message.", L"W", MB_OK);*/
+  MessageBoxA(vu::GetConsoleWindow(), "The second message.", "A", MB_OK);
+  MessageBoxW(vu::GetConsoleWindow(), L"The second message.", L"W", MB_OK);*/
 
   // CINIFileA
   /*vu::CINIFile ini(vu::GetCurrentFilePath() + _T(".ini"));

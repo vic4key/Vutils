@@ -406,9 +406,10 @@ typedef struct _BLOCK
   SIZE_T Size;
 } TBlock;
 
-HWND vuapi GetConsoleWindowHandle();
 eProcessorArchitecture GetProcessorArchitecture();
 eWow64 vuapi IsWow64(ulong ulPID = (ulong)-1); /* -1: Error, 0: False, 1: True */
+ulong vuapi GetParentPID(ulong ulChildPID);
+ulong vuapi GetMainThreadID(ulong ulPID);
 std::vector<ulong> vuapi NameToPIDA(
   const std::string& ProcessName,
   ulong ulMaxProcessNumber = MAX_NPROCESSES
@@ -421,8 +422,8 @@ std::string vuapi PIDToNameA(ulong ulPID);
 std::wstring vuapi PIDToNameW(ulong ulPID);
 HMODULE vuapi RemoteGetModuleHandleA(ulong ulPID, const std::string& ModuleName); // TODO: Uncompleted.
 HMODULE vuapi RemoteGetModuleHandleW(ulong ulPID, const std::wstring& ModuleName);
-VUResult vuapi InjectDLLA(DWORD PID, const std::string&  DLLFilePath, bool WaitLoadingDLL = true);
-VUResult vuapi InjectDLLW(DWORD PID, const std::wstring& DLLFilePath, bool WaitLoadingDLL = true);
+VUResult vuapi InjectDLLA(ulong ulPID, const std::string&  DLLFilePath, bool WaitLoadingDLL = true);
+VUResult vuapi InjectDLLW(ulong ulPID, const std::wstring& DLLFilePath, bool WaitLoadingDLL = true);
 bool vuapi RPM(
   const HANDLE hProcess,
   const void* lpAddress,
@@ -457,6 +458,12 @@ bool vuapi WPMEX(
   const SIZE_T nOffsets = 0,
   ...
 );
+
+/**
+ * Window Working
+ */
+HWND vuapi GetConsoleWindow();
+HWND vuapi FindTopWindow(ulong ulPID);
 
 /**
  * File/Directory Working

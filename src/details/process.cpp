@@ -9,6 +9,8 @@
 
 #include <cassert>
 
+#include <tlhelp32.h>
+
 namespace vu
 {
 
@@ -198,31 +200,62 @@ ulong vuapi GetParentPID(ulong ulChildPID)
     return (ulong)-1;
   }
 
-  TProcessEntry32A pe;
-  HANDLE hSnapshot;
-  BOOL bNext;
-
-  hSnapshot = pfnCreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+  auto hSnapshot = pfnCreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
   if (hSnapshot == INVALID_HANDLE_VALUE)
   {
     return (ulong)-1;
   }
 
+  ulong result = -1;
+
+  TProcessEntry32A pe = { 0 };
   pe.dwSize = sizeof(TProcessEntry32A);
 
-  bNext = pfnProcess32FirstA(hSnapshot, &pe);
-
-  while (bNext)
+  auto nextale = pfnProcess32FirstA(hSnapshot, &pe);
+  while (nextale)
   {
     if (pe.th32ProcessID == ulChildPID)
     {
-      return pe.th32ParentProcessID;
+      result = pe.th32ParentProcessID;
+      break;
     }
-    bNext = pfnProcess32NextA(hSnapshot, &pe);
-    pe.dwSize = sizeof(TProcessEntry32A);
+
+    nextale = pfnProcess32NextA(hSnapshot, &pe);
   }
 
-  return (ulong)-1;
+  CloseHandle(hSnapshot);
+
+  return result;
+}
+
+ulong vuapi GetMainThreadID(ulong ulPID)
+{
+  auto hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+  if (hSnap == INVALID_HANDLE_VALUE)
+  {
+    return -1;
+  }
+
+  ulong result = -1;
+
+  THREADENTRY32 te = { 0 };
+  te.dwSize = sizeof(THREADENTRY32);
+
+  auto nextable = Thread32First(hSnap, &te);
+  while (nextable)
+  {
+    if (te.th32OwnerProcessID == ulPID)
+    {
+      result = te.th32ThreadID;
+      break;
+    }
+
+    nextable = Thread32Next(hSnap, &te);
+  }
+
+  CloseHandle(hSnap);
+
+  return result;
 }
 
 std::vector<ulong> vuapi NameToPIDA(const std::string& ProcessName, ulong ulMaxProcessNumber)
@@ -255,16 +288,16 @@ std::vector<ulong> vuapi NameToPIDA(const std::string& ProcessName, ulong ulMaxP
 
   std::string s1 = LowerStringA(ProcessName), s2;
 
-  ulong PID;
+  ulong ulPID;
   for (vu::ulong i = 0; i < nProcesses; i++)
   {
-    PID = pProcesses.get()[i];
+    ulPID = pProcesses.get()[i];
 
     s2.clear();
-    s2 = LowerStringA(vu::PIDToNameA(PID));
+    s2 = LowerStringA(vu::PIDToNameA(ulPID));
     if (s1 == s2)
     {
-      l.push_back(PID);
+      l.push_back(ulPID);
     }
   }
 
@@ -303,16 +336,16 @@ std::vector<ulong> vuapi NameToPIDW(const std::wstring& ProcessName, ulong ulMax
 
   std::wstring s1 = LowerStringW(ProcessName), s2;
 
-  ulong PID;
+  ulong ulPID;
   for (vu::ulong i = 0; i < nProcesses; i++)
   {
-    PID = pProcesses.get()[i];
+    ulPID = pProcesses.get()[i];
 
     s2.clear();
-    s2 = LowerStringW(vu::PIDToNameW(PID));
+    s2 = LowerStringW(vu::PIDToNameW(ulPID));
     if (s1 == s2)
     {
-      l.push_back(PID);
+      l.push_back(ulPID);
     }
   }
 
@@ -552,9 +585,9 @@ HMODULE vuapi RemoteGetModuleHandleW(const ulong ulPID, const std::wstring& Modu
 
 #define CREATE_THREAD_ACCESS (PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ)
 
-VUResult vuapi InjectDLLA(DWORD PID, const std::string& DLLFilePath, bool WaitLoadingDLL)
+VUResult vuapi InjectDLLA(ulong ulPID, const std::string& DLLFilePath, bool WaitLoadingDLL)
 {
-  if (PID == 0 || PID == -1)
+  if (ulPID == 0 || ulPID == -1)
   {
     return 1;
   }
@@ -572,13 +605,13 @@ VUResult vuapi InjectDLLA(DWORD PID, const std::string& DLLFilePath, bool WaitLo
     return 2;
   }
 
-  if (RemoteGetModuleHandleA(PID, DLLFileName) != 0)
+  if (RemoteGetModuleHandleA(ulPID, DLLFileName) != 0)
   {
     SetLastError(ERROR_ALREADY_EXISTS);
     return 3;
   }
 
-  std::shared_ptr<void> hp(OpenProcess(CREATE_THREAD_ACCESS, FALSE, PID), CloseHandle);
+  std::shared_ptr<void> hp(OpenProcess(CREATE_THREAD_ACCESS, FALSE, ulPID), CloseHandle);
   if (hp.get() == INVALID_HANDLE_VALUE)
   {
     return 4;
@@ -635,9 +668,9 @@ VUResult vuapi InjectDLLA(DWORD PID, const std::string& DLLFilePath, bool WaitLo
   return 0;
 }
 
-VUResult vuapi InjectDLLW(DWORD PID, const std::wstring& DLLFilePath, bool WaitLoadingDLL)
+VUResult vuapi InjectDLLW(ulong ulPID, const std::wstring& DLLFilePath, bool WaitLoadingDLL)
 {
-  if (PID == 0 || PID == -1)
+  if (ulPID == 0 || ulPID == -1)
   {
     return 1;
   }
@@ -655,13 +688,13 @@ VUResult vuapi InjectDLLW(DWORD PID, const std::wstring& DLLFilePath, bool WaitL
     return 2;
   }
 
-  if (RemoteGetModuleHandleW(PID, DLLFileName) != 0)
+  if (RemoteGetModuleHandleW(ulPID, DLLFileName) != 0)
   {
     SetLastError(ERROR_ALREADY_EXISTS);
     return 3;
   }
 
-  std::shared_ptr<void> hp(OpenProcess(CREATE_THREAD_ACCESS, FALSE, PID), CloseHandle);
+  std::shared_ptr<void> hp(OpenProcess(CREATE_THREAD_ACCESS, FALSE, ulPID), CloseHandle);
   if (hp.get() == INVALID_HANDLE_VALUE)
   {
     return 4;
