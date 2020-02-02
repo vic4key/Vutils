@@ -73,7 +73,7 @@ VUResult vuapi InitTlHelp32()
   }
 
   CLibrary kernel32(_T("kernel32.dll"));
-  if (!kernel32.IsLibraryAvailable())
+  if (!kernel32.IsAvailable())
   {
     return ErrorCode(1);
   }

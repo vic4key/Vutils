@@ -748,37 +748,31 @@ private:
 class CLibraryA : public CLastError
 {
 public:
-  CLibraryA();
   CLibraryA(const std::string& ModuleName);
-  CLibraryA(const std::string& ModuleName, const std::string& RoutineName);
   virtual ~CLibraryA();
 
-  bool  vuapi IsLibraryAvailable();
-  void* vuapi GetProcAddress();
+  const HMODULE& vuapi GetHandle() const;
+  bool  vuapi IsAvailable();
   void* vuapi GetProcAddress(const std::string& ProcName);
-  void* vuapi GetProcAddress(const std::string& ModuleName, const std::string& ProcName);
   static void* vuapi QuickGetProcAddress(const std::string& ModuleName, const std::string& ProcName);
 
 private:
-  std::string m_ModuleName, m_ProcName;
+  HMODULE m_ModuleHandle;
 };
 
 class CLibraryW : public CLastError
 {
 public:
-  CLibraryW();
   CLibraryW(const std::wstring& ModuleName);
-  CLibraryW(const std::wstring& ModuleName, const std::wstring& ProcName);
   virtual ~CLibraryW();
 
-  bool  vuapi IsLibraryAvailable();
-  void* vuapi GetProcAddress();
+  const HMODULE& vuapi GetHandle() const;
+  bool  vuapi IsAvailable();
   void* vuapi GetProcAddress(const std::wstring& RoutineName);
-  void* vuapi GetProcAddress(const std::wstring& ModuleName, const std::wstring& ProcName);
   static void* vuapi QuickGetProcAddress(const std::wstring& ModuleName, const std::wstring& ProcName);
 
 private:
-  std::wstring m_ModuleName, m_ProcName;
+  HMODULE m_ModuleHandle;
 };
 
 /**
