@@ -37,7 +37,7 @@ void* vuapi CLibraryA::GetProcAddress(const std::string& ProcName)
     return nullptr;
   }
 
-  return ::GetProcAddress(m_ModuleHandle, ProcName.c_str());
+  return (void*)::GetProcAddress(m_ModuleHandle, ProcName.c_str());
 }
 
 void* vuapi CLibraryA::QuickGetProcAddress(const std::string& ModuleName, const std::string& ProcName)
@@ -86,7 +86,7 @@ void* vuapi CLibraryW::GetProcAddress(const std::wstring& ProcName)
 
   std::string s(ProcName.cbegin(), ProcName.cend());
 
-  return ::GetProcAddress(m_ModuleHandle, s.c_str());
+  return (void*)::GetProcAddress(m_ModuleHandle, s.c_str());
 }
 
 void* vuapi CLibraryW::QuickGetProcAddress(const std::wstring& ModuleName, const std::wstring& ProcName)
