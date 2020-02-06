@@ -345,6 +345,40 @@ int _tmain(int argc, _TCHAR* argv[])
   MessageBoxA(vu::GetConsoleWindow(), "The second message.", "A", MB_OK);
   MessageBoxW(vu::GetConsoleWindow(), L"The second message.", L"W", MB_OK);*/
 
+  // CWMHook
+  /*// extern "C" __declspec(dllexport) LRESULT CALLBACK fnXProc(int nCode, WPARAM wParam, LPARAM lParam)
+  // {
+  //   return CallNextHookEx(nullptr, nCode, wParam, lParam);
+  // }
+
+  #define VU_STRINGIZE(s) #s
+
+  #ifdef _WIN64
+  #define EXE_NAME _T("x64dbg.exe")
+  #define DLL_PATH _T("path\\to\\x64\\Test.WH.DLL.dll")
+  #define UND(s) _T(VU_STRINGIZE(s))
+  #else // _WIN32
+  #define EXE_NAME _T("x32dbg.exe")
+  #define DLL_PATH _T("path\\to\\x86\\Test.WH.DLL.dll")
+  #define UND(s) VU_STRINGIZE(_##s##@12)
+  #endif // _WIN64
+
+  auto pids = vu::NameToPID(EXE_NAME);
+  assert(!pids.empty());
+  auto PID = pids.back();
+
+  vu::CWMHook wh(PID, DLL_PATH);
+
+  assert(wh.Start(WH_CBT, UND(fnCBTProc)) == vu::VU_OK);
+  assert(wh.Start(WH_MOUSE, UND(fnMouseProc)) == vu::VU_OK);
+  assert(wh.Start(WH_KEYBOARD, UND(fnKeyboardProc)) == vu::VU_OK);
+
+  fgetchar();
+
+  assert(wh.Stop(WH_CBT) == vu::VU_OK);
+  assert(wh.Stop(WH_MOUSE) == vu::VU_OK);
+  assert(wh.Stop(WH_KEYBOARD) == vu::VU_OK);*/
+
   // CINIFileA
   /*vu::CINIFile ini(vu::GetCurrentFilePath() + _T(".ini"));
 

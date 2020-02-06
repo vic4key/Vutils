@@ -149,5 +149,8 @@
     <ClCompile Include="src\details\window.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
+    <ClCompile Include="src\details\wmhook.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

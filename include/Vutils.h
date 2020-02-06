@@ -1028,6 +1028,52 @@ public:
 };
 
 /**
+ * Windows Messages Hooking
+ */
+
+class CWMHookX : public CLastError
+{
+public:
+  CWMHookX();
+  virtual ~CWMHookX();
+
+  VUResult vuapi Stop(int Type);
+
+public:
+  static HHOOK m_Handles[WH_MAXHOOK];
+
+protected:
+  virtual VUResult SetWindowsHookExX(int Type, HMODULE hModule, HOOKPROC pProc);
+
+protected:
+  ulong m_PID;
+};
+
+class CWMHookA : public CWMHookX
+{
+public:
+  CWMHookA(ulong PID, const std::string& DLLFilePath);
+  virtual ~CWMHookA();
+
+  VUResult vuapi Start(int Type, const std::string& ProcName);
+
+private:
+  CLibraryA m_DLL;
+};
+
+class CWMHookW : public CWMHookX
+{
+public:
+  CWMHookW(ulong PID, const std::wstring& DLLFilePath);
+  virtual ~CWMHookW();
+
+  VUResult vuapi Start(int Type, const std::wstring& ProcName);
+
+private:
+  CLibraryW m_DLL;
+};
+
+/**
  * File System
  */
 
@@ -2280,6 +2326,7 @@ private:
 #ifdef _UNICODE
 #define CGUID CGUIDW
 #define CDynHook CDynHookW
+#define CWMHook CWMHookW
 #define CService CServiceW
 #define CLibrary CLibraryW
 #define CFileSystem CFileSystemW
@@ -2290,6 +2337,7 @@ private:
 #else
 #define CGUID CGUIDA
 #define CDynHook CDynHookA
+#define CWMHook CWMHookA
 #define CService CServiceA
 #define CLibrary CLibraryA
 #define CFileSystem CFileSystemA
