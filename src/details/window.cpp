@@ -28,25 +28,28 @@ HWND vuapi GetConsoleWindow()
   return hwConsole;
 }
 
+typedef std::pair<ulong, HWND> PairPIDHWND;
+
+BOOL CALLBACK fnFindTopWindowCallback(HWND hWnd, LPARAM lParam)
+{
+  auto& params = *(PairPIDHWND*)lParam;
+
+  DWORD thePID = 0;
+
+  if (GetWindowThreadProcessId(hWnd, &thePID) && thePID == params.first)
+  {
+    params.second = hWnd;
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
 HWND vuapi FindTopWindow(ulong ulPID)
 {
-  typedef std::pair<ulong, HWND> PairPIDHWND;
   PairPIDHWND params(ulPID, nullptr);
 
-  auto ret = EnumWindows([](HWND hWnd, LPARAM lParam) -> BOOL
-  {
-    auto& params = *(PairPIDHWND*)lParam;
-
-    DWORD thePID = 0;
-
-    if (GetWindowThreadProcessId(hWnd, &thePID) && thePID == params.first)
-    {
-      params.second = hWnd;
-      return FALSE;
-    }
-
-    return TRUE;
-  }, (LPARAM)&params);
+  auto ret = EnumWindows(fnFindTopWindowCallback, (LPARAM)&params);
 
   return params.second;
 }
