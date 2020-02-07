@@ -58,7 +58,7 @@ Belows are the IDE/Compiler that supported C++ 11.
 
 # License
 
-Released under the [MIT](LICENSE.TXT) license
+Released under the [MIT](LICENSE) license
 
 # Installation
 
