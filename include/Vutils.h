@@ -923,13 +923,13 @@ private:
  * @brief Hook/Unhook a function in a module by name.
  * @define The prefix of redirection function must be  : Hfn
  * @define The prefix of real function pointer must be : pfn
- * @param[in] O The CDynHook instance.
+ * @param[in] O The CAPIHook instance.
  * @param[in] M The module name.
  * @param[in] F The function name.
  * @return  true if the function succeeds. Otherwise false.
  */
-#define VU_ATTACH_API(O, M, F) O.APIAttach(_T( # M ), _T( # F ), (void*)&Hfn ## F, (void**)&pfn ## F)
-#define VU_DETACH_API(O, M, F) O.APIDetach(_T( # M ), _T( # F ), (void**)&pfn ## F)
+#define VU_ATTACH_API(O, M, F) O.Start(_T( # M ), _T( # F ), (void*)&Hfn ## F, (void**)&pfn ## F)
+#define VU_DETACH_API(O, M, F) O.Stop(_T( # M ), _T( # F ), (void**)&pfn ## F)
 
 typedef enum _MEMORY_ADDRESS_TYPE
 {
@@ -961,7 +961,7 @@ typedef struct _MEMORY_INSTRUCTION
   } MAN;
 } TMemoryInstruction;
 
-class CDynHookX
+class CAPIHookX
 {
 protected:
   typedef struct _REDIRECT
@@ -983,44 +983,44 @@ protected:
   #endif // _M_IX86
 
 public:
-  CDynHookX() : m_Hooked(false) {};
-  virtual ~CDynHookX() {};
+  CAPIHookX() : m_Hooked(false) {};
+  virtual ~CAPIHookX() {};
 
   bool vuapi Attach(void* pProc, void* pHookProc, void** pOldProc);
   bool vuapi Detach(void* pProc, void** pOldProc);
 };
 
-class CDynHookA: public CDynHookX
+class CAPIHookA: public CAPIHookX
 {
 public:
-  CDynHookA() {};
-  virtual ~CDynHookA() {};
+  CAPIHookA() {};
+  virtual ~CAPIHookA() {};
 
-  bool vuapi APIAttach(
+  bool vuapi Start(
     const std::string& ModuleName,
     const std::string& ProcName,
     void* lpHookProc, void** lpOldProc
   );
-  bool vuapi APIDetach(
+  bool vuapi Stop(
     const std::string& ModuleName,
     const std::string& ProcName,
     void** lpOldProc
   );
 };
 
-class CDynHookW: public CDynHookX
+class CAPIHookW: public CAPIHookX
 {
 public:
-  CDynHookW() {};
-  virtual ~CDynHookW() {};
+  CAPIHookW() {};
+  virtual ~CAPIHookW() {};
 
-  bool vuapi APIAttach(
+  bool vuapi Start(
     const std::wstring& ModuleName,
     const std::wstring& ProcName,
     void* lpHookProc,
     void** lpOldProc
   );
-  bool vuapi APIDetach(
+  bool vuapi Stop(
     const std::wstring& ModuleName,
     const std::wstring& ProcName,
     void** lpOldProc
@@ -2325,7 +2325,7 @@ private:
 
 #ifdef _UNICODE
 #define CGUID CGUIDW
-#define CDynHook CDynHookW
+#define CAPIHook CAPIHookW
 #define CWMHook CWMHookW
 #define CService CServiceW
 #define CLibrary CLibraryW
@@ -2336,7 +2336,7 @@ private:
 #define CPEFileT CPEFileTW
 #else
 #define CGUID CGUIDA
-#define CDynHook CDynHookA
+#define CAPIHook CAPIHookA
 #define CWMHook CWMHookA
 #define CService CServiceA
 #define CLibrary CLibraryA

@@ -162,7 +162,7 @@ bool vuapi GetAssembleInstruction(
   return result;
 }
 
-bool vuapi CDynHookX::Attach(void* pProc, void* pHookProc, void** pOldProc)
+bool vuapi CAPIHookX::Attach(void* pProc, void* pHookProc, void** pOldProc)
 {
   /*
     // x86
@@ -253,7 +253,7 @@ bool vuapi CDynHookX::Attach(void* pProc, void* pHookProc, void** pOldProc)
   return true;
 }
 
-bool vuapi CDynHookX::Detach(void* pProc, void** pOldProc)
+bool vuapi CAPIHookX::Detach(void* pProc, void** pOldProc)
 {
   if (!m_Hooked)
   {
@@ -283,7 +283,7 @@ bool vuapi CDynHookX::Detach(void* pProc, void** pOldProc)
   return true;
 }
 
-bool vuapi CDynHookA::APIAttach(
+bool vuapi CAPIHookA::Start(
   const std::string& ModuleName,
   const std::string& ProcName,
   void* lpHookProc,
@@ -301,8 +301,11 @@ bool vuapi CDynHookA::APIAttach(
   return m_Hooked;
 }
 
-bool vuapi CDynHookA::APIDetach(const std::string& ModuleName, const std::string& ProcName, void** lpOldProc
-                                )
+bool vuapi CAPIHookA::Stop(
+  const std::string& ModuleName,
+  const std::string& ProcName,
+  void** lpOldProc
+)
 {
   if (!m_Hooked)
   {
@@ -318,7 +321,7 @@ bool vuapi CDynHookA::APIDetach(const std::string& ModuleName, const std::string
   return this->Detach(lpProc, lpOldProc);
 }
 
-bool vuapi CDynHookW::APIAttach(
+bool vuapi CAPIHookW::Start(
   const std::wstring& ModuleName,
   const std::wstring& ProcName,
   void* lpHookProc,
@@ -336,7 +339,11 @@ bool vuapi CDynHookW::APIAttach(
   return m_Hooked;
 }
 
-bool vuapi CDynHookW::APIDetach(const std::wstring& ModuleName, const std::wstring& ProcName, void** lpOldProc)
+bool vuapi CAPIHookW::Stop(
+  const std::wstring& ModuleName,
+  const std::wstring& ProcName,
+  void** lpOldProc
+)
 {
   if (!m_Hooked)
   {

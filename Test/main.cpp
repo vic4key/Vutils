@@ -306,8 +306,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
   std::tcout << _T("Socket -> Close -> Success") << std::endl;*/
 
-  // CDynHook
-  /*vu::CDynHook API[2];
+  // CAPIHook
+  /*vu::CAPIHook API[2];
 
   if (!VU_ATTACH_API(API[0], user32.dll, MessageBoxA))
   {
