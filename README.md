@@ -14,7 +14,7 @@ It helps your programming go easier, faster and simpler.
 	- [x] for 32-bit application
 	- [x] for 64-bit application
 - [x] C++ Builder
-	- [ ] for 32-bit application
+	- [x] for 32-bit application
 	- [x] for 64-bit application
 
 # Features
@@ -28,7 +28,7 @@ It helps your programming go easier, faster and simpler.
 	* Service
 	* Registry
 	* INI File
-	* PE File
+	* PE Fil
 	* Stop Watch
 	* File System
 	* File Mapping
