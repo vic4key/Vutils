@@ -20,32 +20,33 @@ It helps your programming go easier, faster and simpler.
 # Features
 
 * Classes
-	* File System
 	* Process
 	* GUID
 	* Binary
 	* Library
 	* Socket
-	* API Hooking
 	* Service
-	* File Mapping
-	* INI File
 	* Registry
-	* Critical Section
-	* Stop Watch
+	* INI File
 	* PE File
+	* Stop Watch
+	* File System
+	* File Mapping
+	* API Hooking
+	* Message Hooking
+	* Critical Section
 	* Singleton Template
-	* etc
+	* Miscellaneous
 
 * Functions
 	* Math
 	* Date/Time
 	* Data Types
-	* Message Formatting Debug/Box
-	* String Formatting/Handling
-	* File/Directory
-	* Misc
-	* etc
+	* Message Box Formatting
+	* Message Debug Formatting
+	* String Formatting/Manipulation
+	* File/Directory Manipulation
+	* Miscellaneous
 
 # Requirements
 
