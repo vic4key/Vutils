@@ -28,7 +28,7 @@ It helps your programming go easier, faster and simpler.
 	* Service
 	* Registry
 	* INI File
-	* PE Fil
+	* PE File
 	* Stop Watch
 	* File System
 	* File Mapping
