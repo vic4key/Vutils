@@ -46,6 +46,7 @@ It helps your programming go easier, faster and simpler.
 	* Message Debug Formatting
 	* String Formatting/Manipulation
 	* File/Directory Manipulation
+	* Windows Manipulation
 	* Miscellaneous
 
 # Requirements
