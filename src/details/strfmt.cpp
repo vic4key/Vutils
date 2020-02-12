@@ -10,6 +10,11 @@
 namespace vu
 {
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#endif // _MSC_VER
+
 const std::string  VU_TITLE_BOXA =  "Vutils";
 const std::wstring VU_TITLE_BOXW = L"Vutils";
 
@@ -471,5 +476,9 @@ void vuapi HexDump(const void* Data, int Size)
 
   printf("  %s\n", Buffer);
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
 
 } // namespace vu

@@ -9,6 +9,11 @@
 namespace vu
 {
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 26812)
+#endif // _MSC_VER
+
 CServiceX::CServiceX() : CLastError()
 {
   m_Initialized = false;
@@ -479,5 +484,9 @@ std::wstring vuapi CServiceW::GetDisplayName(const std::wstring& AnotherServiceN
 
   return s;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
 
 } // namespace vu

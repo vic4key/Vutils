@@ -15,6 +15,11 @@
 namespace vu
 {
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#endif // _MSC_VER
+
 #ifdef VU_SOCKET_ENABLED
 
 const std::string VU_LOCALHOST = "127.0.0.1";
@@ -482,5 +487,9 @@ bool vuapi CSocket::BytesToIP(const TSocketInfomation& SocketInformation)
 }
 
 #endif // VU_SOCKET_ENABLED
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
 
 } // namespace vu

@@ -68,6 +68,10 @@
 #endif // VU_SOCKET_ENABLED
 #endif // WIN32_LEAN_AND_MEAN
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#endif // _MSC_VER
+
 /* Vutils Options */
 
 // MSVC
@@ -84,10 +88,6 @@
 #ifdef __MINGW32__
 #pragma pack(1)     // Force byte alignment of structures
 #endif
-
-#ifdef _MSC_VER
-#pragma warning(disable: 4996)
-#endif // _MSC_VER
 
 /* ----------------------------------- Vutils Declarations -------------------------------------- */
 
@@ -2338,5 +2338,9 @@ private:
 #endif
 
 } // namespace vu
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
 
 #endif // VUTILS_H
