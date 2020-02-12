@@ -11,7 +11,7 @@ namespace vu
 
 HHOOK CWMHookX::m_Handles[WH_MAXHOOK] = { 0 };
 
-CWMHookX::CWMHookX()
+CWMHookX::CWMHookX() : CLastError()
 {
   m_PID = -1;
 }

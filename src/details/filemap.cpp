@@ -13,14 +13,11 @@ namespace vu
  * CFileMappingX
  */
 
-CFileMappingX::CFileMappingX()
+CFileMappingX::CFileMappingX() : CLastError()
 {
   m_pData = nullptr;
-
-  m_MapHandle = INVALID_HANDLE_VALUE;
+  m_MapHandle  = INVALID_HANDLE_VALUE;
   m_FileHandle = INVALID_HANDLE_VALUE;
-
-  m_LastErrorCode = ERROR_SUCCESS;
 }
 
 CFileMappingX::~CFileMappingX()

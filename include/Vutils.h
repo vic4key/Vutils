@@ -861,17 +861,8 @@ struct TAccessPoint
 
 class CSocket : public CLastError
 {
-private:
-  WSADATA m_WSAData;
-  SOCKET m_Socket;
-  sockaddr_in m_Server;
-  hostent m_Client;
-
-  bool vuapi IsSocketValid(SOCKET socket);
-
 public:
-  CSocket();
-  CSocket(eSocketAF SockAF, eSocketType SocketType);
+  CSocket(eSocketAF SockAF = eSocketAF::SAF_INET, eSocketType SocketType = eSocketType::ST_STREAM);
   virtual ~CSocket();
   VUResult vuapi Socket(eSocketAF Family, eSocketType Type, eSocketProtocol Protocol = SP_NONE);
   VUResult vuapi Bind(const TAccessPoint& AccessPoint);
@@ -899,6 +890,8 @@ public:
   bool vuapi BytesToIP(const TSocketInfomation& SocketInformation);
 
 private:
+  bool vuapi IsSocketValid(SOCKET socket);
+
   IResult vuapi Send(
     const SOCKET socket,
     const char* lpData,
@@ -911,6 +904,12 @@ private:
     int iLength,
     eSocketMessage SocketMessage = SF_NONE
   );
+
+private:
+  WSADATA m_WSAData;
+  SOCKET  m_Socket;
+  hostent m_Client;
+  sockaddr_in m_Server;
 };
 
 #endif // VU_SOCKET_ENABLED
@@ -1150,7 +1149,7 @@ typedef struct _FS_OBJECT_W
 class CFileSystemX : public CLastError
 {
 public:
-  CFileSystemX() {};
+  CFileSystemX();
   virtual ~CFileSystemX();
   virtual bool vuapi IsFileHandleValid(HANDLE fileHandle);
   virtual bool vuapi IsReady();
@@ -1191,7 +1190,7 @@ private:
 class CFileSystemA: public CFileSystemX
 {
 public:
-  CFileSystemA() {};
+  CFileSystemA();
   CFileSystemA(
     const std::string& FilePath,
     eFSModeFlags fmFlag,
@@ -1199,7 +1198,7 @@ public:
     eFSShareFlags fsFlag     = FS_ALLACCESS,
     eFSAttributeFlags faFlag = FA_NORMAL
   );
-  virtual ~CFileSystemA() {};
+  virtual ~CFileSystemA();
   bool vuapi Init(
     const std::string& FilePath,
     eFSModeFlags fmFlag,
@@ -1222,7 +1221,7 @@ public:
 class CFileSystemW: public CFileSystemX
 {
 public:
-  CFileSystemW() {};
+  CFileSystemW();
   CFileSystemW(
     const std::wstring& FilePath,
     eFSModeFlags fmFlag,
@@ -1230,7 +1229,7 @@ public:
     eFSShareFlags fsFlag     = FS_ALLACCESS,
     eFSAttributeFlags faFlag = FA_NORMAL
   );
-  virtual ~CFileSystemW() {};
+  virtual ~CFileSystemW();
   bool vuapi Init(
     const std::wstring& FilePath,
     eFSModeFlags fmFlag,
@@ -1359,12 +1358,8 @@ typedef enum _SC_ACCESS_TYPE
 class CServiceX : public CLastError
 {
 public:
-  CServiceX() : m_Initialized(false)
-  {
-    m_LastErrorCode = ERROR_SUCCESS;
-  };
-
-  virtual ~CServiceX() {};
+  CServiceX();
+  virtual ~CServiceX();
 
   bool vuapi Init(eSCAccessType SCAccessType = eSCAccessType::SC_ALL_ACCESS);
   bool vuapi Destroy();
@@ -1565,17 +1560,10 @@ public:
 
 class CINIFileA : public CLastError
 {
-private:
-  std::string m_FilePath;
-  std::string m_Section;
-
-  void ValidFilePath();
-
 public:
-  CINIFileA() {};
+  CINIFileA();
   CINIFileA(const std::string& FilePath);
-  CINIFileA(const std::string& FilePath, const std::string& Section);
-  virtual ~CINIFileA() {};
+  virtual ~CINIFileA();
 
   void SetCurrentFilePath(const std::string& FilePath);
   void SetCurrentSection(const std::string& Section);
@@ -1625,21 +1613,21 @@ public:
   bool vuapi WriteFloat(const std::string& Key, float Value);
   bool vuapi WriteString(const std::string& Key, const std::string& Value);
   bool vuapi WriteStruct(const std::string& Key, void* pStruct, ulong ulSize);
+
+private:
+  void ValidFilePath();
+
+private:
+  std::string m_FilePath;
+  std::string m_Section;
 };
 
 class CINIFileW : public CLastError
 {
-private:
-  std::wstring m_FilePath;
-  std::wstring m_Section;
-
-  void ValidFilePath();
-
 public:
-  CINIFileW() {};
+  CINIFileW();
   CINIFileW(const std::wstring& FilePath);
-  CINIFileW(const std::wstring& FilePath, const std::wstring& Section);
-  virtual ~CINIFileW() {};
+  virtual ~CINIFileW();
 
   void SetCurrentFilePath(const std::wstring& FilePath);
   void SetCurrentSection(const std::wstring& Section);
@@ -1692,6 +1680,13 @@ public:
   bool vuapi WriteFloat(const std::wstring& Key, float Value);
   bool vuapi WriteString(const std::wstring& Key, const std::wstring& Value);
   bool vuapi WriteStruct(const std::wstring& Key, void* pStruct, ulong ulSize);
+
+private:
+  void ValidFilePath();
+
+private:
+  std::wstring m_FilePath;
+  std::wstring m_Section;
 };
 
 /**
@@ -1765,12 +1760,8 @@ typedef enum _REG_REFLECTION
 class CRegistryX : public CLastError
 {
 public:
-  CRegistryX()
-  {
-    m_LastErrorCode = ERROR_SUCCESS;
-  };
-
-  virtual ~CRegistryX() {};
+  CRegistryX();
+  virtual ~CRegistryX();
 
   HKEY vuapi GetCurrentKeyHandle();
   eRegReflection vuapi QueryReflectionKey();
@@ -1784,14 +1775,11 @@ protected:
 
 class CRegistryA : public CRegistryX
 {
-private:
-  std::string m_SubKey;
-
 public:
   CRegistryA();
   CRegistryA(eRegRoot RegRoot);
   CRegistryA(eRegRoot RegRoot, const std::string& SubKey);
-  virtual ~CRegistryA() {};
+  virtual ~CRegistryA();
 
   ulong vuapi GetSizeOfMultiString(const char* lpcszMultiString);
   ulong vuapi GetDataSize(const std::string& ValueName, ulong ulType);
@@ -1828,18 +1816,18 @@ public:
   );
   std::string vuapi ReadExpandString(const std::string& ValueName, const std::string& Default);
   std::unique_ptr<uchar[]> vuapi ReadBinary(const std::string& ValueName, const void* pDefault);
+
+private:
+  std::string m_SubKey;
 };
 
 class CRegistryW : public CRegistryX
 {
-private:
-  std::wstring m_SubKey;
-
 public:
   CRegistryW();
   CRegistryW(eRegRoot RegRoot);
   CRegistryW(eRegRoot RegRoot, const std::wstring& SubKey);
-  virtual ~CRegistryW() {};
+  virtual ~CRegistryW();
 
   ulong vuapi GetSizeOfMultiString(const wchar* lpcwszMultiString);
   ulong vuapi GetDataSize(const std::wstring& ValueName, ulong ulType);
@@ -1876,7 +1864,9 @@ public:
   );
   std::wstring vuapi ReadExpandString(const std::wstring& ValueName, const std::wstring& Default);
   std::unique_ptr<uchar[]> vuapi ReadBinary(const std::wstring& ValueName, const void* Default);
-protected:
+
+private:
+  std::wstring m_SubKey;
 };
 
 /**
@@ -1885,12 +1875,9 @@ protected:
 
 class CCriticalSection
 {
-private:
-  TCriticalSection m_CriticalSection;
-
 public:
-  CCriticalSection() {};
-  virtual ~CCriticalSection() {};
+  CCriticalSection();
+  virtual ~CCriticalSection();
 
   void vuapi Init();
   void vuapi Enter();
@@ -1898,6 +1885,9 @@ public:
   void vuapi Destroy();
 
   TCriticalSection& vuapi GetCurrentSection();
+
+private:
+  TCriticalSection m_CriticalSection;
 };
 
 /**

@@ -11,6 +11,13 @@
 namespace vu
 {
 
+CFileSystemX::CFileSystemX() : CLastError()
+{
+  m_ReadSize = 0;
+  m_WroteSize = 0;
+  m_FileHandle = nullptr;
+}
+
 CFileSystemX::~CFileSystemX()
 {
   this->Close();
@@ -186,15 +193,23 @@ const CBinary vuapi CFileSystemX::ReadContent()
 
 // A
 
+CFileSystemA::CFileSystemA() : CFileSystemX()
+{
+}
+
 CFileSystemA::CFileSystemA(
   const std::string& FilePath,
   eFSModeFlags fmFlag,
   eFSGenericFlags fgFlag,
   eFSShareFlags fsFlag,
   eFSAttributeFlags faFlag
-)
+) : CFileSystemX()
 {
   this->Init(FilePath, fmFlag, fgFlag, fsFlag, faFlag);
+}
+
+CFileSystemA::~CFileSystemA()
+{
 }
 
 bool vuapi CFileSystemA::Init(
@@ -305,15 +320,23 @@ bool CFileSystemA::Iterate(
 
 // W
 
+CFileSystemW::CFileSystemW() : CFileSystemX()
+{
+}
+
 CFileSystemW::CFileSystemW(
   const std::wstring& FilePath,
   eFSModeFlags fmFlag,
   eFSGenericFlags fgFlag,
   eFSShareFlags fsFlag,
   eFSAttributeFlags faFlag
-)
+) : CFileSystemX()
 {
   this->Init(FilePath, fmFlag, fgFlag, fsFlag, faFlag);
+}
+
+CFileSystemW::~CFileSystemW()
+{
 }
 
 bool vuapi CFileSystemW::Init(

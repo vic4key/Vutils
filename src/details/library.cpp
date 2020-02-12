@@ -9,7 +9,7 @@
 namespace vu
 {
 
-CLibraryA::CLibraryA(const std::string& ModuleName)
+CLibraryA::CLibraryA(const std::string& ModuleName) : CLastError()
 {
   m_ModuleHandle  = LoadLibraryA(ModuleName.c_str());
   m_LastErrorCode = GetLastError();
@@ -56,7 +56,7 @@ void* vuapi CLibraryA::QuickGetProcAddress(const std::string& ModuleName, const 
   return lib.GetProcAddress(ProcName);
 }
 
-CLibraryW::CLibraryW(const std::wstring& ModuleName)
+CLibraryW::CLibraryW(const std::wstring& ModuleName) : CLastError()
 {
   m_ModuleHandle  = LoadLibraryW(ModuleName.c_str());
   m_LastErrorCode = GetLastError();
@@ -84,7 +84,7 @@ void* vuapi CLibraryW::GetProcAddress(const std::wstring& ProcName)
     return nullptr;
   }
 
-  std::string s(ProcName.cbegin(), ProcName.cend());
+  auto s = ToStringA(ProcName);
 
   return (void*)::GetProcAddress(m_ModuleHandle, s.c_str());
 }

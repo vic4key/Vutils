@@ -19,31 +19,20 @@ namespace vu
 
 const std::string VU_LOCALHOST = "127.0.0.1";
 
-CSocket::CSocket()
+CSocket::CSocket(eSocketAF socketAF, eSocketType SocketType) : CLastError()
 {
   m_Socket = INVALID_SOCKET;
 
   memset((void*)&m_WSAData, 0, sizeof(m_WSAData));
   memset((void*)&m_Server, 0, sizeof(m_Server));
   memset((void*)&m_Client, 0, sizeof(m_Client));
-
-  m_LastErrorCode = ERROR_SUCCESS;
-}
-
-CSocket::CSocket(eSocketAF socketAF, eSocketType SocketType)
-{
-  m_Socket = INVALID_SOCKET;
-
-  memset((void*)&m_WSAData, 0, sizeof(m_WSAData));
-  memset((void*)&m_Server, 0, sizeof(m_Server));
-  memset((void*)&m_Client, 0, sizeof(m_Client));
-
-  m_LastErrorCode = ERROR_SUCCESS;
 
   this->Socket(socketAF, SocketType);
 }
 
-CSocket::~CSocket() {}
+CSocket::~CSocket()
+{
+}
 
 bool vuapi CSocket::IsSocketValid(SOCKET socket)
 {

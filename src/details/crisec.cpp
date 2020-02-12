@@ -9,6 +9,15 @@
 namespace vu
 {
 
+CCriticalSection::CCriticalSection()
+{
+  memset(&m_CriticalSection, 0, sizeof(m_CriticalSection));
+}
+
+CCriticalSection::~CCriticalSection()
+{
+}
+
 void vuapi CCriticalSection::Init()
 {
   InitializeCriticalSection(&m_CriticalSection);

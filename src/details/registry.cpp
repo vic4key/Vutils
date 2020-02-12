@@ -10,6 +10,16 @@
 namespace vu
 {
 
+CRegistryX::CRegistryX() : CLastError()
+{
+  m_HKRootKey = nullptr;
+  m_HKSubKey  = nullptr;
+}
+
+CRegistryX::~CRegistryX()
+{
+}
+
 HKEY vuapi CRegistryX::GetCurrentKeyHandle()
 {
   return m_HKSubKey;
@@ -70,30 +80,24 @@ bool vuapi CRegistryX::CloseKey()
   return (m_LastErrorCode == ERROR_SUCCESS);
 }
 
-CRegistryA::CRegistryA()
+CRegistryA::CRegistryA() : CRegistryX()
 {
-  m_HKRootKey = NULL;
-  m_HKSubKey = NULL;
   m_SubKey.clear();
-
-  m_LastErrorCode = ERROR_SUCCESS;
 }
 
-CRegistryA::CRegistryA(eRegRoot RegRoot)
+CRegistryA::CRegistryA(eRegRoot RegRoot) : CRegistryX()
 {
   m_HKRootKey = (HKEY)RegRoot;
-  m_HKSubKey = NULL;
-
-  m_LastErrorCode = ERROR_SUCCESS;
 }
 
 CRegistryA::CRegistryA(eRegRoot RegRoot, const std::string& SubKey)
 {
   m_HKRootKey = (HKEY)RegRoot;
-  m_HKSubKey = NULL;
   m_SubKey = SubKey;
+}
 
-  m_LastErrorCode = ERROR_SUCCESS;
+CRegistryA::~CRegistryA()
+{
 }
 
 ulong vuapi CRegistryA::GetSizeOfMultiString(const char* lpcszMultiString)
@@ -634,30 +638,24 @@ std::unique_ptr<uchar[]> vuapi CRegistryA::ReadBinary(const std::string& ValueNa
   return p;
 }
 
-CRegistryW::CRegistryW()
+CRegistryW::CRegistryW() : CRegistryX()
 {
-  m_HKRootKey = NULL;
-  m_HKRootKey = NULL;
   m_SubKey.clear();
-
-  m_LastErrorCode = ERROR_SUCCESS;
 }
 
-CRegistryW::CRegistryW(eRegRoot RegRoot)
+CRegistryW::CRegistryW(eRegRoot RegRoot) : CRegistryX()
 {
   m_HKRootKey = (HKEY)RegRoot;
-  m_HKSubKey = NULL;
-
-  m_LastErrorCode = ERROR_SUCCESS;
 }
 
-CRegistryW::CRegistryW(eRegRoot RegRoot, const std::wstring& SubKey)
+CRegistryW::CRegistryW(eRegRoot RegRoot, const std::wstring& SubKey) : CRegistryX()
 {
   m_HKRootKey = (HKEY)RegRoot;
-  m_HKSubKey = NULL;
   m_SubKey = SubKey;
+}
 
-  m_LastErrorCode = ERROR_SUCCESS;
+CRegistryW::~CRegistryW()
+{
 }
 
 ulong vuapi CRegistryW::GetSizeOfMultiString(const wchar* lpcwszMultiString)

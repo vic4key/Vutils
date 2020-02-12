@@ -10,15 +10,20 @@
 namespace vu
 {
 
-CINIFileA::CINIFileA(const std::string& FilePath)
+CINIFileA::CINIFileA() : CLastError()
 {
+  m_Section  = "";
+  m_FilePath = "";
+}
+
+CINIFileA::CINIFileA(const std::string& FilePath) : CLastError()
+{
+  m_Section  = "";
   m_FilePath = FilePath;
 }
 
-CINIFileA::CINIFileA(const std::string& FilePath, const std::string& Section)
+CINIFileA::~CINIFileA()
 {
-  m_FilePath = FilePath;
-  m_Section  = Section;
 }
 
 void CINIFileA::ValidFilePath()
@@ -296,19 +301,20 @@ bool vuapi CINIFileA::WriteStruct(const std::string& Key, void* pStruct, ulong u
   return this->WriteStruct(m_Section, Key, pStruct, ulSize);
 }
 
-CINIFileW::CINIFileW(const std::wstring& FilePath)
+CINIFileW::CINIFileW() : CLastError()
 {
-  m_FilePath = FilePath;
-
-  m_LastErrorCode = ERROR_SUCCESS;
+  m_Section  = L"";
+  m_FilePath = L"";
 }
 
-CINIFileW::CINIFileW(const std::wstring& FilePath, const std::wstring& Section)
+CINIFileW::CINIFileW(const std::wstring& FilePath) : CLastError()
 {
+  m_Section  = L"";
   m_FilePath = FilePath;
-  m_Section  = Section;
+}
 
-  m_LastErrorCode = ERROR_SUCCESS;
+CINIFileW::~CINIFileW()
+{
 }
 
 void CINIFileW::ValidFilePath()

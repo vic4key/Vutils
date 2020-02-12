@@ -9,6 +9,18 @@
 namespace vu
 {
 
+CServiceX::CServiceX() : CLastError()
+{
+  m_Initialized = false;
+  m_SCMHandle = nullptr;
+  m_ServiceHandle = nullptr;
+  memset(&m_Status, 0, sizeof(m_Status));
+}
+ 
+CServiceX::~CServiceX()
+{
+}
+
 bool vuapi CServiceX::Init(eSCAccessType SCAccessType)
 {
   m_SCMHandle = OpenSCManager(
@@ -156,22 +168,15 @@ eServiceState vuapi CServiceX::GetState()
 
 // A
 
-CServiceA::CServiceA()
+CServiceA::CServiceA() : CServiceX()
 {
   m_ServiceName.clear();
   m_DisplayName.clear();
   m_ServiceFilePath.clear();
-
-  m_SCMHandle     = 0;
-  m_ServiceHandle = 0;
-
-  m_LastErrorCode = ERROR_SUCCESS;
 }
 
 CServiceA::~CServiceA()
 {
-  m_SCMHandle     = 0;
-  m_ServiceHandle = 0;
 }
 
 bool vuapi CServiceA::Create (
@@ -321,22 +326,15 @@ std::string vuapi CServiceA::GetDisplayName(const std::string& AnotherServiceNam
 
 // W
 
-CServiceW::CServiceW()
+CServiceW::CServiceW() : CServiceX()
 {
   m_ServiceName.clear();
   m_DisplayName.clear();
   m_ServiceFilePath.clear();
-
-  m_SCMHandle     = 0;
-  m_ServiceHandle = 0;
-
-  m_LastErrorCode = ERROR_SUCCESS;
 }
 
 CServiceW::~CServiceW()
 {
-  m_SCMHandle     = 0;
-  m_ServiceHandle = 0;
 }
 
 bool vuapi CServiceW::Create(
