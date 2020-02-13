@@ -7,8 +7,6 @@
 #include "strfmt.h"
 #include "lazy.h"
 
-#include <sstream>
-#include <iomanip>
 #include <math.h>
 
 namespace vu
@@ -106,7 +104,7 @@ std::string vuapi FormatVLA(const std::string Format, va_list args)
   #ifdef _MSC_VER
   vsnprintf(p.get(), N, Format.c_str(), args);
   #else
-  pfn_vsnprintf(p.get(), N, Format.c_str(), args); // TODO: Why is it crashing with floating-point ?
+  pfn_vsnprintf(p.get(), N, Format.c_str(), args);
   #endif
 
   s.assign(p.get());
@@ -518,18 +516,11 @@ std::string vuapi FormatBytesA(long long Bytes, eStdByte Std, int Digits)
   {
     idx = (int)logn(bytes, thestd);
 
-    // std::string fmt = "%0.";
-    // fmt += std::to_string(Digits);
-    // fmt += "a %s";
-    // result = FormatA(fmt, bytes / powl(thestd, idx), Units[idx]);
+    std::string fmt = "%0.";
+    fmt += std::to_string(Digits);
+    fmt += "f %s";
 
-    std::stringstream ss;
-    ss << std::fixed
-       << std::setprecision(Digits)
-       << bytes / powl(thestd, idx)
-       << " "
-       << Units[idx];
-    result = ss.str();
+    result = FormatA(fmt, float(bytes / powl(thestd, idx)), Units[idx]);
   }
 
   return result;
