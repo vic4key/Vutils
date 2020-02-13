@@ -250,9 +250,7 @@ int _tmain(int argc, _TCHAR* argv[])
   std::tcout << vu::LastError().c_str() << std::endl;*/
 
   // CSocket
-  /*vu::CSocket socket;
-
-  const std::string REQ_HOST = "ipv4.download.thinkbroadband.com";
+  /*const std::string REQ_HOST = "ipv4.download.thinkbroadband.com";
   std::string REQ_CONTENT;
   REQ_CONTENT.clear();
   REQ_CONTENT.append("GET /5MB.zip HTTP/1.1\r\n");
@@ -260,18 +258,11 @@ int _tmain(int argc, _TCHAR* argv[])
   REQ_CONTENT.append("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0\r\n");
   REQ_CONTENT.append("Accept-Language: en-US,en;q=0.5\r\n");
   REQ_CONTENT.append("Accept-Encoding: gzip, deflate\r\n");
-  REQ_CONTENT.append("DNT: 1\r\n");
   REQ_CONTENT.append("Connection: keep-alive\r\n");
-  REQ_CONTENT.append("Upgrade-Insecure-Requests: 1\r\n");
+  REQ_CONTENT.append("DNT: 1\r\n");
   REQ_CONTENT.append("\r\n");
 
-  if (socket.Socket(vu::SAF_INET, vu::ST_STREAM) != vu::VU_OK)
-  {
-    std::tcout << _T("Socket -> Create -> Failed") << std::endl;
-    return 1;
-  }
-
-  std::tcout << _T("Socket -> Create -> Success") << std::endl;
+  vu::CSocket socket(vu::SAF_INET, vu::ST_STREAM);
 
   if (socket.Connect(REQ_HOST, 80) != vu::VU_OK)
   {
@@ -287,24 +278,54 @@ int _tmain(int argc, _TCHAR* argv[])
     return 1;
   }
 
+  vu::CBinary reponse(1024);
+  auto N = socket.Recv(reponse);
+  assert(N > 0);
+
+  const std::string FirstResponse = (char*)reponse.GetpData();
+  const std::string HttpHeaderEnd = "\x0D\x0A\x0D\x0A";
+  const std::string HttpHeaderSep = "\x0D\x0A";
+
+  auto l = vu::SplitStringA(FirstResponse, HttpHeaderEnd);
+  assert(!l.empty());
+
+  const auto& ResponseHeader = l.at(0) + HttpHeaderEnd;
+  std::cout << "Response Header:" << std::endl;
+  const auto& headers = vu::SplitStringA(ResponseHeader, HttpHeaderSep, true);
+  for (auto& e : headers)
   {
-    vu::CFileSystemA src7z("5MB.zip", vu::eFSModeFlags::FM_CREATEALWAY);
-    if (src7z.IsReady())
+    std::cout << "\t" << e << std::endl;
+  }
+
+  reponse.SetpData(
+    (char*)reponse.GetpData() + ResponseHeader.length(),
+    N - (int)ResponseHeader.length()
+  );
+
+  vu::CFileSystemA file("5MB.zip", vu::eFSModeFlags::FM_CREATEALWAY);
+  assert(file.IsReady());
+  file.Write(reponse.GetpData(), reponse.GetUsedSize());
+
+  vu::IResult nRecvBytes = 0;
+  do
+  {
+    N = socket.Recv(reponse);
+    if (N > 0)
     {
-      vu::CBinary D(1024);
-      vu::IResult N = -1, nRecvBytes = 0;
-      do
-      {
-        N = socket.Recv(D);
-        if (N > 0)
-        {
-          src7z.Write(D.GetpData(), D.GetUsedSize());
-          nRecvBytes += N;
-        }
-      }
-      while (N > 0);
+      file.Write(reponse.GetpData(), reponse.GetUsedSize());
+      nRecvBytes += N;
+      std::cout
+        << std::left
+        << "Downloaded: "
+        << std::setw(15)
+        << vu::FormatBytesA(nRecvBytes)
+        << '\r'
+        << std::flush;
     }
   }
+  while (N > 0);
+
+  std::cout << std::endl;
 
   if (!socket.Close())
   {
