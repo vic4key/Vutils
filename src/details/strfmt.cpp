@@ -7,7 +7,7 @@
 #include "strfmt.h"
 #include "lazy.h"
 
-#include <cmath>
+#include <math.h>
 
 namespace vu
 {
@@ -502,7 +502,7 @@ std::string vuapi FormatBytesA(long long Bytes, eStdByte Std, int Digits)
   const auto log2l = [](long double v) -> long double
   {
     const long double M_LOG2E = 1.44269504088896340736;
-    return std::logl(v) * M_LOG2E;
+    return logl(v) * M_LOG2E;
   };
 
   const auto logn = [&](long double v, long double n) -> long double
@@ -520,7 +520,7 @@ std::string vuapi FormatBytesA(long long Bytes, eStdByte Std, int Digits)
 
     idx = (int)logn(bytes, thestd);
 
-    result = FormatA(fmt, bytes / std::powl(thestd, idx), Units[idx]);
+    result = FormatA(fmt, bytes / powl(thestd, idx), Units[idx]);
   }
 
   return result;
