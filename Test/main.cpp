@@ -159,14 +159,12 @@ int _tmain(int argc, _TCHAR* argv[])
   std::tcout  << vu::PIDToName(*PIDs.begin()) << std::endl;
   }
 
-  auto pids = vu::NameToPID(_T("notepad.exe")); // 64-bit
-  auto pids = vu::NameToPID(_T("JRuler.exe"));  // 32-bit
-  assert(!pids.empty());
-
-  // vu::InjectDLL(pids.back(), "path\\to\\32-bit-dll", true);
-  // vu::InjectDLL(pids.back(), "path\\to\\64-bit-dll", true);
-
-  std::cout << vu::LastErrorA() << std::endl;
+  // std::vector<vu::ulong> pids;
+  // pids = vu::NameToPID(_T("notepad.exe")); // 64-bit
+  // pids = vu::NameToPID(_T("JRuler.exe"));  // 32-bit
+  // assert(!pids.empty());
+  // vu::InjectDLL(pids.back(), _T("path\\to\\32-bit-dll"), true);
+  // vu::InjectDLL(pids.back(), _T("path\\to\\64-bit-dll"), true);
 
   static std::wstring LES[] = { // List Encoding Short
 	  L"ANSI/UTF-8", L"UTF-8 BOM",
