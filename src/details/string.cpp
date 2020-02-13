@@ -162,7 +162,11 @@ std::wstring vuapi ToStringW(const std::string& String)
   return s;
 }
 
-std::vector<std::string> vuapi SplitStringA(const std::string& String, const std::string& Seperate)
+std::vector<std::string> vuapi SplitStringA(
+  const std::string& String,
+  const std::string& Seperate,
+  bool  remempty 
+)
 {
   std::vector<std::string> l;
   l.clear();
@@ -180,18 +184,22 @@ std::vector<std::string> vuapi SplitStringA(const std::string& String, const std
   while (end != std::string::npos)
   {
     sub = s.substr(start, end - start);
-    l.push_back(std::string(sub.c_str()));
+    if (!sub.empty() || !remempty) l.push_back(std::string(sub.c_str()));
     start = end + sep.length();
     end = s.find(sep, start);
   }
 
   sub = s.substr(start, end);
-  l.push_back(std::string(sub.c_str()));
+  if (!sub.empty() || !remempty) l.push_back(std::string(sub.c_str()));
 
   return l;
 }
 
-std::vector<std::wstring> vuapi SplitStringW(const std::wstring& String, const std::wstring& Seperate)
+std::vector<std::wstring> vuapi SplitStringW(
+  const std::wstring& String,
+  const std::wstring& Seperate,
+  bool  remempty
+)
 {
   std::vector<std::wstring> l;
   l.clear();
@@ -209,13 +217,13 @@ std::vector<std::wstring> vuapi SplitStringW(const std::wstring& String, const s
   while (end != std::wstring::npos)
   {
     sub = s.substr(start, end - start);
-    l.push_back(std::wstring(sub.c_str()));
+    if (!sub.empty() || !remempty) l.push_back(std::wstring(sub.c_str()));
     start = end + sep.length();
     end = s.find(sep, start);
   }
 
   sub = s.substr(start, end);
-  l.push_back(std::wstring(sub.c_str()));
+  if (!sub.empty() || !remempty) l.push_back(std::wstring(sub.c_str()));
 
   return l;
 }

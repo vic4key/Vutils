@@ -347,11 +347,13 @@ std::string vuapi ToStringA(const std::wstring& String);
 std::wstring vuapi ToStringW(const std::string& String);
 std::vector<std::string> vuapi SplitStringA(
   const std::string& String,
-  const std::string& Seperate
+  const std::string& Seperate,
+  bool  remempty = false
 );
 std::vector<std::wstring> vuapi SplitStringW(
   const std::wstring& lpcwszString,
-  const std::wstring& Seperate
+  const std::wstring& Seperate,
+  bool  remempty = false
 );
 std::vector<std::string> vuapi MultiStringToListA(const char* lpcszMultiString);
 std::vector<std::wstring> vuapi MultiStringToListW(const wchar* lpcwszMultiString);
