@@ -12,6 +12,14 @@
 namespace vu
 {
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#pragma warning(disable: 6031)
+#pragma warning(disable: 26451)
+#pragma warning(disable: 26812)
+#endif // _MSC_VER
+
 #ifndef CHAR_BIT
 #define CHAR_BIT      8    // number of bits in a char
 #define SCHAR_MIN   (-128) // minimum signed char value
@@ -381,5 +389,9 @@ std::wstring vuapi TrimStringW(const std::wstring& String, const eTrimType& Trim
 
   return s;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
 
 } // namespace vu
