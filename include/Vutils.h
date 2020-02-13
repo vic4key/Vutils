@@ -302,6 +302,12 @@ typedef enum _ENCODING_TYPE
   ET_UTF32_BE_BOM = 7, // "UTF-32 BE BOM", "UTF-32 Big Endian BOM"
 } eEncodingType;
 
+typedef enum _STD_BYTES : int
+{
+  SI  = 1000, // 1 KB  = 1000 bytes
+  IEC = 1024, // 1 KiB = 1024 bytes
+} eStdByte;
+
 std::string vuapi FormatA(const std::string Format, ...);
 std::wstring vuapi FormatW(const std::wstring Format, ...);
 void vuapi MsgA(const std::string Format, ...);
@@ -319,12 +325,14 @@ std::wstring vuapi FormatDateTimeW(const time_t t, const std::wstring Format);
 std::string vuapi DateTimeToStringA(const time_t t);
 std::wstring vuapi DateTimeToStringW(const time_t t);
 eEncodingType vuapi DetermineEncodingType(const void* Data, const size_t size);
+std::string vuapi FormatBytesA(long long Bytes, eStdByte Std = eStdByte::IEC, int Digits = 2);
+std::wstring vuapi FormatBytesW(long long Bytes, eStdByte Std = eStdByte::IEC, int Digits = 2);
 
 /**
  * String Working
  */
 
-typedef enum _TRIM_STRING
+typedef enum class _TRIM_STRING
 {
   TS_LEFT  = 0,
   TS_RIGHT = 1,
@@ -496,6 +504,7 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 #define LastError LastErrorW
 #define DateTimeToString DateTimeToStringW
 #define FormatDateTime FormatDateTimeW
+#define FormatBytes FormatBytesW
 /* String Working */
 #define LowerString LowerStringW
 #define UpperString UpperStringW
@@ -527,6 +536,7 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 #define LastError LastErrorA
 #define DateTimeToString DateTimeToStringA
 #define FormatDateTime FormatDateTimeA
+#define FormatBytes FormatBytesA
 /* String Working */
 #define LowerString LowerStringA
 #define UpperString UpperStringA

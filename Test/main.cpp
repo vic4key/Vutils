@@ -201,7 +201,17 @@ int _tmain(int argc, _TCHAR* argv[])
       << std::endl;
 
     return true;
-  });*/
+  });
+
+  auto type = vu::eStdByte::SI;
+  auto digits = 2;
+  std::tcout << vu::FormatBytes(912, type, digits) << std::endl; // B/Bi
+  std::tcout << vu::FormatBytes(91234, type, digits) << std::endl; // KB/KiB
+  std::tcout << vu::FormatBytes(9123456, type, digits) << std::endl; // MB/MiB
+  std::tcout << vu::FormatBytes(9123456789, type, digits) << std::endl; // GB/GiB
+  std::tcout << vu::FormatBytes(9123456789101, type, digits) << std::endl; // TB/TiB
+  std::tcout << vu::FormatBytes(9123456789101213, type, digits) << std::endl; // PB/PiB
+  std::tcout << vu::FormatBytes(9123456789101213145, type, digits) << std::endl; // EB/EiB*/
 
   // Math
   /*std::cout << "GCD : " << vu::GCD(3, 9, 27, 81) << std::endl;

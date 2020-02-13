@@ -7,12 +7,16 @@
 #include "strfmt.h"
 #include "lazy.h"
 
+#include <cmath>
+
 namespace vu
 {
 
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4996)
+#pragma warning(disable: 26451)
+#pragma warning(disable: 26812)
 #endif // _MSC_VER
 
 const std::string  VU_TITLE_BOXA =  "Vutils";
@@ -278,7 +282,7 @@ std::string vuapi LastErrorA(ulong ulErrorCode)
   );
 
   std::string s(lpszErrorMessage);
-  s = vu::TrimStringA(s);
+  s = TrimStringA(s);
 
   return s;
 }
@@ -303,7 +307,7 @@ std::wstring vuapi LastErrorW(ulong ulErrorCode)
   );
 
   std::wstring s(lpwszErrorMessage);
-  s = vu::TrimStringW(s);
+  s = TrimStringW(s);
 
   return s;
 }
@@ -475,6 +479,56 @@ void vuapi HexDump(const void* Data, int Size)
   }
 
   printf("  %s\n", Buffer);
+}
+
+std::string vuapi FormatBytesA(long long Bytes, eStdByte Std, int Digits)
+{
+  std::string result = "";
+
+  if (Bytes < 0 || Digits < 0)
+  {
+    return result;
+  }
+
+  const auto bytes  = (long double)Bytes;
+  const auto thestd = (long double)Std;
+
+  // Max positive number of long long is 2*63 ~ 9{18}.
+  // So log(9{18}, 1000-1024) ~ 6-7 array index.
+  static const char* SIUnits[]  = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+  static const char* IECUnits[] = { "B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB" };
+  static const auto  Units = Std == eStdByte::IEC ? IECUnits : SIUnits;
+
+  const auto log2l = [](long double v) -> long double
+  {
+    const long double M_LOG2E = 1.44269504088896340736;
+    return std::logl(v) * M_LOG2E;
+  };
+
+  const auto logn = [&](long double v, long double n) -> long double
+  {
+    return log2l(v) / log2l(n);
+  };
+
+  int idx = 0;
+
+  if (Bytes > 0)
+  {
+    std::string fmt = "%0.";
+    fmt += std::to_string(Digits);
+    fmt += "f %s";
+
+    idx = (int)logn(bytes, thestd);
+
+    result = FormatA(fmt, bytes / std::powl(thestd, idx), Units[idx]);
+  }
+
+  return result;
+}
+
+std::wstring vuapi FormatBytesW(long long Bytes, eStdByte Std, int Digits)
+{
+  return ToStringW(FormatBytesA(Bytes, Std, Digits));
 }
 
 #ifdef _MSC_VER
