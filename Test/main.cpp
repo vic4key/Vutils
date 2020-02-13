@@ -69,7 +69,7 @@ int WINAPI HfnMessageBoxW(HWND   hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT  
 int _tmain(int argc, _TCHAR* argv[])
 {
   // Determine Processor Architecture
-  vu::eProcessorArchitecture arch = vu::GetProcessorArchitecture();
+  auto arch = vu::GetProcessorArchitecture();
   if (arch == vu::PA_X64)
   {
     // Determine Wow64
@@ -180,7 +180,7 @@ int _tmain(int argc, _TCHAR* argv[])
     L"UTF-32 Little Endian BOM", L"UTF-32 Big Endian BOM"
   };
 
-  vu::CFileSystem::Iterate(_T("E:\\path\\to\\example"), _T("*.txt"), [](const vu::TFSObject& FSObject) -> bool
+  vu::CFileSystem::Iterate(_T("path\\to\\example"), _T("*.txt"), [](const vu::TFSObject& FSObject) -> bool
   {
     auto filePath = FSObject.Directory + FSObject.Name;
     vu::CFileSystem fs(filePath, vu::eFSModeFlags::FM_OPENEXISTING);
