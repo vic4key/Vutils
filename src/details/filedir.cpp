@@ -197,10 +197,62 @@ std::wstring vuapi GetCurrentFilePathW()
 
 std::string vuapi GetCurrentDirectoryA(bool bIncludeSlash)
 {
-  return ExtractFilePathA(GetCurrentFilePathA(), bIncludeSlash);
+  std::unique_ptr<char[]> p(new char[MAXPATH]);
+  ZeroMemory(p.get(), MAXPATH);
+
+  ::GetCurrentDirectoryA(MAXPATH, p.get());
+  std::string s(p.get());
+
+  if (bIncludeSlash)
+  {
+    if (s.back() != '\\')
+    {
+      s += L'\\';
+    }
+  }
+  else
+  {
+    if (s.back() == '\\')
+    {
+      s.pop_back();
+    }
+  }
+
+  return s;
 }
 
 std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash)
+{
+  std::unique_ptr<wchar[]> p(new wchar[MAXPATH]);
+  ZeroMemory(p.get(), MAXPATH);
+
+  ::GetCurrentDirectoryW(MAXPATH, p.get());
+  std::wstring s(p.get());
+
+  if (bIncludeSlash)
+  {
+    if (s.back() != L'\\')
+    {
+      s += L'\\';
+    }
+  }
+  else
+  {
+    if (s.back() == L'\\')
+    {
+      s.pop_back();
+    }
+  }
+
+  return s;
+}
+
+std::string vuapi GetContainDirectoryA(bool bIncludeSlash)
+{
+  return ExtractFilePathA(GetCurrentFilePathA(), bIncludeSlash);
+}
+
+std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash)
 {
   return ExtractFilePathW(GetCurrentFilePathW(), bIncludeSlash);
 }

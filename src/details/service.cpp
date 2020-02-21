@@ -195,7 +195,7 @@ bool vuapi CServiceA::Create (
   // Is a full file path?
   if (ServiceFilePath.find('\\') == std::string::npos)
   {
-    m_ServiceFilePath = GetCurrentDirectoryA(true);
+    m_ServiceFilePath = GetContainDirectoryA(true);
     m_ServiceFilePath.append(ServiceFilePath);
   }
   else
@@ -353,7 +353,7 @@ bool vuapi CServiceW::Create(
   // Is a full file path?
   if (ServiceFilePath.find(L'\\') == std::wstring::npos)
   {
-    m_ServiceFilePath = GetCurrentDirectoryW(true);
+    m_ServiceFilePath = GetContainDirectoryW(true);
     m_ServiceFilePath.append(ServiceFilePath);
   }
   else

@@ -230,10 +230,14 @@ int _tmain(int argc, _TCHAR* argv[])
   std::tcout  << vu::ExtractFileName(FILE_PATH) << std::endl;
   std::tcout  << vu::ExtractFileName(FILE_PATH, false) << std::endl;
 
-  std::tcout  << vu::GetCurrentDirectory() << std::endl;
-  std::tcout  << vu::GetCurrentDirectory(false) << std::endl;
+  std::tcout  << vu::GetCurDirectory() << std::endl;
+  std::tcout  << vu::GetCurDirectory(false) << std::endl;
 
-  std::tcout  << vu::GetCurFilePath() << std::endl;
+  std::tcout  << vu::GetContainDirectory() << std::endl;
+  std::tcout  << vu::GetContainDirectory(false) << std::endl;
+
+  std::tcout  << vu::GetCurrentFilePath() << std::endl;
+
   // Not complete
   bool process64Bit = false;
   std::vector<vu::ulong> explorersPID = vu::NameToPID(process64Bit ? _T("explorer.exe") : _T("IDMan.exe"));

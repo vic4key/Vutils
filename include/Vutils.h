@@ -493,6 +493,8 @@ std::string vuapi GetCurrentFilePathA();
 std::wstring vuapi GetCurrentFilePathW();
 std::string vuapi GetCurrentDirectoryA(bool bIncludeSlash = true);
 std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
+std::string vuapi GetContainDirectoryA(bool bIncludeSlash = true);
+std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
 
 /*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
 
@@ -528,6 +530,7 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 #define ExtractFileName ExtractFileNameW
 #define GetCurrentFilePath GetCurrentFilePathW
 #define GetCurDirectory GetCurrentDirectoryW
+#define GetContainDirectory GetContainDirectoryW
 #else
 /* Misc Working */
 #define GetEnviroment GetEnviromentA
@@ -559,6 +562,7 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 #define ExtractFileName ExtractFileNameA
 #define GetCurrentFilePath GetCurrentFilePathA
 #define GetCurDirectory GetCurrentDirectoryA
+#define GetContainDirectory GetContainDirectoryA
 #endif
 
 /* -------------------------------------- Public Class(es) -------------------------------------- */
