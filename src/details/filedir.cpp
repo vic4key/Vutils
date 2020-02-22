@@ -129,6 +129,10 @@ std::string vuapi ExtractFileNameA(const std::string& FilePath, bool bIncludeExt
   {
     fileName = FilePath.substr(slashPos + 1);
   }
+  else // only file name in file path
+  {
+    fileName = FilePath;
+  }
 
   if (!bIncludeExtension)
   {
@@ -151,6 +155,10 @@ std::wstring vuapi ExtractFileNameW(const std::wstring& FilePath, bool bIncludeE
   if (slashPos != std::string::npos)
   {
     fileName = FilePath.substr(slashPos + 1);
+  }
+  else // only file name in file path
+  {
+    fileName = FilePath;
   }
 
   if (!bIncludeExtension)
