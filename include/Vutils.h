@@ -474,6 +474,8 @@ bool vuapi WPMEX(
  */
 HWND vuapi GetConsoleWindow();
 HWND vuapi FindTopWindow(ulong ulPID);
+std::string  vuapi DecodeWMA(const ulong id);
+std::wstring vuapi DecodeWMW(const ulong id);
 
 /**
  * File/Directory Working
@@ -517,6 +519,8 @@ std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
 #define ListToMultiString ListToMultiStringW
 #define LoadRCString LoadRCStringW
 #define TrimString TrimStringW
+/* Window Working */
+#define DecodeWM DecodeWMW
 /* Process Working */
 #define NameToPID NameToPIDW
 #define PIDToName PIDToNameW
@@ -549,6 +553,8 @@ std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
 #define MultiStringToList MultiStringToListA
 #define LoadRCString LoadRCStringA
 #define TrimString TrimStringA
+/* Window Working */
+#define DecodeWM DecodeWMA
 /* Process Working */
 #define NameToPID NameToPIDA
 #define PIDToName PIDToNameA
