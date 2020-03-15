@@ -472,10 +472,45 @@ bool vuapi WPMEX(
 /**
  * Window Working
  */
+
+typedef struct _FONT_A
+{
+  std::string Name;
+  int  Size;
+  bool Italic;
+  bool Underline;
+  bool StrikeOut;
+  int  Weight;
+  int  CharSet;
+  int  Orientation;
+  _FONT_A()
+    : Name(""), Size(0)
+    , Italic(false), Underline(false), StrikeOut(false)
+    , Weight(0), CharSet(ANSI_CHARSET), Orientation(0) {}
+} TFontA;
+
+typedef struct _FONT_W
+{
+  std::wstring Name;
+  int  Size;
+  bool Italic;
+  bool Underline;
+  bool StrikeOut;
+  int  Weight;
+  int  CharSet;
+  int  Orientation;
+  _FONT_W()
+    : Name(L""), Size(0)
+    , Italic(false), Underline(false), StrikeOut(false)
+    , Weight(0), CharSet(ANSI_CHARSET), Orientation(0) {}
+} TFontW;
+
 HWND vuapi GetConsoleWindow();
 HWND vuapi FindTopWindow(ulong ulPID);
 std::string  vuapi DecodeWMA(const ulong id);
 std::wstring vuapi DecodeWMW(const ulong id);
+TFontA vuapi GetFontA(HWND hw);
+TFontW vuapi GetFontW(HWND hw);
 
 /**
  * File/Directory Working
@@ -521,6 +556,7 @@ std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
 #define TrimString TrimStringW
 /* Window Working */
 #define DecodeWM DecodeWMW
+#define GetFont GetFontW
 /* Process Working */
 #define NameToPID NameToPIDW
 #define PIDToName PIDToNameW
@@ -555,6 +591,7 @@ std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
 #define TrimString TrimStringA
 /* Window Working */
 #define DecodeWM DecodeWMA
+#define GetFont GetFontA
 /* Process Working */
 #define NameToPID NameToPIDA
 #define PIDToName PIDToNameA

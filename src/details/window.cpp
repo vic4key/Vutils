@@ -54,7 +54,7 @@ HWND vuapi FindTopWindow(ulong ulPID)
   return params.second;
 }
 
-std::string DecodeWMA(const ulong id)
+std::string vuapi DecodeWMA(const ulong id)
 {
   static struct { ulong id; char* text; } m[] = \
   {
@@ -335,6 +335,64 @@ std::string DecodeWMA(const ulong id)
 std::wstring vuapi DecodeWMW(const ulong id)
 {
   return ToStringW(DecodeWMA(id));
+}
+
+TFontA vuapi GetFontA(HWND hw)
+{
+  TFontA result;
+
+  if (IsWindow(hw))
+  {
+    HDC hdc = GetDC(hw);
+    {
+      HFONT hf = (HFONT)SendMessageA(hw, WM_GETFONT, 0, 0);
+      if (hf != nullptr)
+      {
+        LOGFONTA lf = { 0 };
+        GetObjectA(hf, sizeof(lf), &lf);
+        result.Name  = lf.lfFaceName;
+        result.Size = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(hdc, LOGPIXELSY)); // 72 pixel/inch
+        result.Italic = lf.lfItalic != FALSE;
+        result.Underline = lf.lfUnderline != FALSE;
+        result.StrikeOut = lf.lfStrikeOut != FALSE;
+        result.Weight = lf.lfWeight;
+        result.CharSet = lf.lfCharSet;
+        result.Orientation = lf.lfOrientation;
+      }
+    }
+    ReleaseDC(hw, hdc);
+  }
+
+  return result;
+}
+
+TFontW vuapi GetFontW(HWND hw)
+{
+  TFontW result;
+
+  if (IsWindow(hw))
+  {
+    HDC hdc = GetDC(hw);
+    {
+      HFONT hf = (HFONT)SendMessageW(hw, WM_GETFONT, 0, 0);
+      if (hf != nullptr)
+      {
+        LOGFONTW lf = { 0 };
+        GetObjectW(hf, sizeof(lf), &lf);
+        result.Name = lf.lfFaceName;
+        result.Size = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(hdc, LOGPIXELSY)); // 72 pixel/inch
+        result.Italic = lf.lfItalic != FALSE;
+        result.Underline = lf.lfUnderline != FALSE;
+        result.StrikeOut = lf.lfStrikeOut != FALSE;
+        result.Weight = lf.lfWeight;
+        result.CharSet = lf.lfCharSet;
+        result.Orientation = lf.lfOrientation;
+      }
+    }
+    ReleaseDC(hw, hdc);
+  }
+
+  return result;
 }
 
 } // namespace vu
