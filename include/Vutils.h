@@ -484,7 +484,7 @@ typedef struct _FONT_A
   int  CharSet;
   int  Orientation;
   _FONT_A()
-    : Name(""), Size(0)
+    : Name(""), Size(-1)
     , Italic(false), Underline(false), StrikeOut(false)
     , Weight(0), CharSet(ANSI_CHARSET), Orientation(0) {}
 } TFontA;
@@ -500,7 +500,7 @@ typedef struct _FONT_W
   int  CharSet;
   int  Orientation;
   _FONT_W()
-    : Name(L""), Size(0)
+    : Name(L""), Size(-1)
     , Italic(false), Underline(false), StrikeOut(false)
     , Weight(0), CharSet(ANSI_CHARSET), Orientation(0) {}
 } TFontW;
