@@ -605,12 +605,12 @@ bool CFundamentalW::b() const
 
 int CFundamentalW::i() const
 {
-  return _wtoi(m_data.str().c_str());
+  return atoi(ToStringA(m_data.str()).c_str());
 }
 
 long CFundamentalW::l() const
 {
-  return _wtol(m_data.str().c_str());
+  return atol(ToStringA(m_data.str()).c_str());
 }
 
 float CFundamentalW::f() const
@@ -620,7 +620,7 @@ float CFundamentalW::f() const
 
 double CFundamentalW::d() const
 {
-  return _wtof(m_data.str().c_str());
+  return atof(ToStringA(m_data.str()).c_str());
 }
 
 #ifdef _MSC_VER
