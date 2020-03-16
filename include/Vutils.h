@@ -2492,7 +2492,7 @@ public:
 
   INT_PTR DoModal();
 
-  static LRESULT CALLBACK CInputDialog::DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp);
+  static LRESULT CALLBACK DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp);
 
 private:
   std::wstring  m_Label;
