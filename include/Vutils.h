@@ -55,6 +55,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <sstream>
 #include <cstdint>
 #include <functional>
 
@@ -288,6 +289,42 @@ void vuapi HexDump(const void* Data, int Size);
 /**
  * String Formatting
  */
+
+class CFundamentalA
+{
+public:
+  CFundamentalA();
+  virtual ~CFundamentalA();
+
+  std::stringstream& data();
+  std::string s() const;
+  int vuapi i() const;
+  long vuapi l() const;
+  bool vuapi b() const;
+  float vuapi f() const;
+  double vuapi d() const;
+
+private:
+  std::stringstream m_data;
+};
+
+class CFundamentalW
+{
+public:
+  CFundamentalW();
+  virtual ~CFundamentalW();
+
+  std::wstringstream& data();
+  std::wstring s() const;
+  int vuapi i() const;
+  long vuapi l() const;
+  bool vuapi b() const;
+  float vuapi f() const;
+  double vuapi d() const;
+
+private:
+  std::wstringstream m_data;
+};
 
 typedef enum _ENCODING_TYPE
 {
@@ -546,6 +583,7 @@ std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
 #define DateTimeToString DateTimeToStringW
 #define FormatDateTime FormatDateTimeW
 #define FormatBytes FormatBytesW
+#define CFundamental CFundamentalW
 /* String Working */
 #define LowerString LowerStringW
 #define UpperString UpperStringW
@@ -582,6 +620,7 @@ std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
 #define DateTimeToString DateTimeToStringA
 #define FormatDateTime FormatDateTimeA
 #define FormatBytes FormatBytesA
+#define CFundamental CFundamentalA
 /* String Working */
 #define LowerString LowerStringA
 #define UpperString UpperStringA

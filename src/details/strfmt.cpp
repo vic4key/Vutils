@@ -531,6 +531,98 @@ std::wstring vuapi FormatBytesW(long long Bytes, eStdByte Std, int Digits)
   return ToStringW(FormatBytesA(Bytes, Std, Digits));
 }
 
+/**
+ * CFundamental
+ */
+
+CFundamentalA::CFundamentalA()
+{
+  m_data.clear();
+}
+
+CFundamentalA::~CFundamentalA()
+{
+}
+
+std::stringstream& CFundamentalA::data()
+{
+  return m_data;
+}
+
+std::string CFundamentalA::s() const
+{
+  return m_data.str();
+}
+
+bool CFundamentalA::b() const
+{
+  return i() != 0;
+}
+
+int CFundamentalA::i() const
+{
+  return atoi(m_data.str().c_str());
+}
+
+long CFundamentalA::l() const
+{
+  return atol(m_data.str().c_str());
+}
+
+float CFundamentalA::f() const
+{
+  return float(d());
+}
+
+double CFundamentalA::d() const
+{
+  return atof(m_data.str().c_str());
+}
+
+CFundamentalW::CFundamentalW()
+{
+  m_data.clear();
+}
+
+CFundamentalW::~CFundamentalW()
+{
+}
+
+std::wstringstream& CFundamentalW::data()
+{
+  return m_data;
+}
+
+std::wstring CFundamentalW::s() const
+{
+  return m_data.str();
+}
+
+bool CFundamentalW::b() const
+{
+  return i() != 0;
+}
+
+int CFundamentalW::i() const
+{
+  return _wtoi(m_data.str().c_str());
+}
+
+long CFundamentalW::l() const
+{
+  return _wtol(m_data.str().c_str());
+}
+
+float CFundamentalW::f() const
+{
+  return float(d());
+}
+
+double CFundamentalW::d() const
+{
+  return _wtof(m_data.str().c_str());
+}
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif // _MSC_VER
