@@ -849,11 +849,12 @@ int _tmain(int argc, _TCHAR* argv[])
   CDog::Instance()->Speak();
   CCat::Instance()->Speak();*/
 
-  vu::CInputDialog dialog(L"How old are you?");
+  // CInputDialog
+  /*vu::CInputDialog dialog(L"How old are you?");
   if (dialog.DoModal() == IDOK)
   {
     std::tcout << dialog.Input().i() << std::endl;
-  }
+  }*/
 
   return 0;
 }
