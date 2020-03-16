@@ -689,6 +689,8 @@ LRESULT CALLBACK CInputDialog::DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
     int X = (GetSystemMetrics(SM_CXSCREEN) - rc.right)  / 2;
     int Y = (GetSystemMetrics(SM_CYSCREEN) - rc.bottom) / 2;
     SetWindowPos(hw, nullptr, X, Y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+
+    SetFocus(GetDlgItem(hw, pSelf->IDC_INPUT));
   }
   break;
 
