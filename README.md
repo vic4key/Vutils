@@ -36,6 +36,8 @@ It helps your programming go easier, faster and simpler.
 	* Message Hooking
 	* Critical Section
 	* Singleton Template
+	* Input Dialog
+	* In-Memory Dialog
 	* Miscellaneous
 
 * Functions
@@ -46,7 +48,8 @@ It helps your programming go easier, faster and simpler.
 	* Message Debug Formatting
 	* String Formatting/Manipulation
 	* File/Directory Manipulation
-	* Windows Manipulation
+	* Window Manipulation
+	* Window Message Decoder
 	* Miscellaneous
 
 # Requirements
