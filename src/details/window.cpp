@@ -6,6 +6,9 @@
 
 #include "Vutils.h"
 
+#include <cassert>
+#include <cstdlib>
+
 namespace vu
 {
 
@@ -393,6 +396,341 @@ TFontW vuapi GetFontW(HWND hw)
   }
 
   return result;
+}
+
+/**
+ * CWDT
+ */
+
+#define PTR_ALIGN(p, t)\
+  {\
+    typedef decltype(p) T;\
+    p = T((t(p) + 3) & ~3);\
+  }
+
+void* fn_copy_memory(void** ppdst, void* psrc, size_t nsrc)
+{
+  auto pdst = (char*)*ppdst;
+  memcpy(pdst, psrc, nsrc);
+  pdst += nsrc;
+  return (void*)pdst;
+};
+
+#define PTR_COPY_NEXT_EX(d, s, n)\
+  {\
+    typedef decltype(d) T;\
+    d = (T)fn_copy_memory((void**)&(d), (void*)(s), (n));\
+  }
+
+#define PTR_COPY_NEXT(d, s)\
+  PTR_COPY_NEXT_EX(d, &s, sizeof(s));
+
+/**
+ * CWDTControl
+ */
+
+// https://docs.microsoft.com/en-us/windows/win32/dlgbox/dialog-box-overviews
+// https://docs.microsoft.com/en-us/windows/win32/dlgbox/using-dialog-boxes#creating-a-template-in-memory
+// https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-dlgtemplate
+// https://docs.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-dlgitemtemplate
+
+const WCHAR NullChar = L'\0';
+
+CWDTControl::CWDTControl(
+  const std::wstring& caption,
+  const eControlClass type,
+  const WORD  id,
+  const short x,
+  const short y,
+  const short cx,
+  const short cy,
+  const DWORD style,
+  const DWORD exstyle
+) : m_Caption(caption), m_wType(type), m_wClass(-1), m_wData(0)
+{
+  m_Shape.x = x;
+  m_Shape.y = y;
+  m_Shape.cx = cx;
+  m_Shape.cy = cy;
+  m_Shape.id = id;
+  m_Shape.style = style;
+  m_Shape.dwExtendedStyle = exstyle;
+}
+
+CWDTControl::~CWDTControl()
+{
+}
+
+void CWDTControl::Serialize(void** pptr)
+{
+  auto ptr = *pptr;
+
+  PTR_ALIGN(ptr, DWORD_PTR);
+  PTR_COPY_NEXT(ptr, m_Shape);
+  PTR_COPY_NEXT(ptr, m_wClass);
+  PTR_COPY_NEXT(ptr, m_wType);
+  PTR_COPY_NEXT_EX(ptr, m_Caption.c_str(), sizeof(wchar) * m_Caption.length());
+  PTR_COPY_NEXT(ptr, NullChar);
+  PTR_COPY_NEXT(ptr, m_wData);
+
+  *pptr = ptr;
+}
+
+/**
+ * CWDTDialog
+ */
+
+CWDTDialog::CWDTDialog(
+  const std::wstring& caption,
+  const DWORD style,
+  const DWORD exstyle,
+  const short x,
+  const short y,
+  const short cx,
+  const short cy,
+  HWND hwParent
+) : m_Caption(caption), m_wClass(0), m_wMenu(0), m_hwParent(hwParent)
+{
+  m_hGlobal = GlobalAlloc(GMEM_ZEROINIT, KiB); // 1 KiB
+  assert(m_hGlobal != nullptr);
+
+  m_Font  = L"Segoe UI";
+  m_wFont = 9;
+
+  if (m_hwParent == nullptr)
+  {
+    m_hwParent = GetActiveWindow();
+  }
+
+  if (IsWindow(m_hwParent))
+  {
+    auto font = GetFontW(m_hwParent);
+    if (!font.Name.empty())
+    {
+      m_Font  = font.Name;
+      m_wFont = font.Size;
+    }
+  }
+
+  m_Shape.x = x;
+  m_Shape.y = y;
+  m_Shape.cx = cx;
+  m_Shape.cy = cy;
+  m_Shape.style = style;
+  m_Shape.dwExtendedStyle = exstyle;
+
+  if (!m_Font.empty() && m_wFont != -1)
+  {
+    m_Shape.style |= DS_SETFONT;
+  }
+}
+
+CWDTDialog::~CWDTDialog()
+{
+  if (m_hGlobal != nullptr)
+  {
+    GlobalFree(m_hGlobal);
+  }
+}
+
+const std::vector<vu::CWDTControl>& CWDTDialog::Controls() const
+{
+  return m_Controls;
+}
+
+void CWDTDialog::Add(const CWDTControl& control)
+{
+  m_Controls.push_back(std::move(control));
+  m_Shape.cdit = static_cast<WORD>(m_Controls.size());
+}
+
+void CWDTDialog::Serialize(void** pptr)
+{
+  auto ptr = *pptr;
+
+  PTR_COPY_NEXT(ptr, m_Shape);
+  PTR_COPY_NEXT(ptr, m_wMenu);
+  PTR_COPY_NEXT(ptr, m_wClass);
+  PTR_COPY_NEXT_EX(ptr, m_Caption.c_str(), sizeof(wchar) * m_Caption.length());
+  PTR_COPY_NEXT(ptr, NullChar);
+  PTR_COPY_NEXT(ptr, m_wFont);
+  PTR_COPY_NEXT_EX(ptr, m_Font.c_str(), sizeof(wchar) * m_Font.length());
+  PTR_COPY_NEXT(ptr, NullChar);
+
+  for (auto& control : m_Controls)
+  {
+    control.Serialize(&ptr);
+  }
+
+  *pptr = ptr;
+}
+
+INT_PTR CWDTDialog::DoModal(DLGPROC pfnDlgProc, CWDTDialog* pSelf)
+{
+  m_LastErrorCode = ERROR_SUCCESS;
+
+  if (m_hGlobal == nullptr)
+  {
+    m_LastErrorCode = GetLastError();
+    return -1;
+  }
+
+  auto ptr = GlobalLock(m_hGlobal);
+  if (ptr == nullptr)
+  {
+    m_LastErrorCode = GetLastError();
+    return -1;
+  }
+
+  Serialize(&ptr);
+
+  GlobalUnlock(m_hGlobal);
+
+  auto ret = DialogBoxIndirectParamA(
+    GetModuleHandle(0), LPDLGTEMPLATE(m_hGlobal), 0, pfnDlgProc, LPARAM(pSelf));
+
+  m_LastErrorCode = GetLastError();
+
+  return ret;
+}
+
+/**
+ * CInputDialog
+ */
+
+CInputDialog::CInputDialog(const std::wstring& label, HWND hwParent, bool numberonly)
+  : IDC_LABEL(0x1001)
+  , IDC_INPUT(0x1002)
+  , m_Label(label)
+  , m_NumberOnly(numberonly)
+  , vu::CWDTDialog(L"Input Dialog"
+  , DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+  , WS_EX_DLGMODALFRAME
+  , 0, 0, 179, 60
+  , hwParent
+)
+{
+  Add(CWDTControl(
+    L"Label",
+    CWDTControl::CT_STATIC,
+    IDC_LABEL,
+    7, 5, 165, 8,
+    WS_CHILD | WS_VISIBLE | SS_LEFT | BF_FLAT)
+  );
+
+  Add(CWDTControl(
+    L"",
+    CWDTControl::CT_EDIT,
+    IDC_INPUT,
+    7, 18, 165, 14,
+    WS_CHILD | WS_VISIBLE | ES_LEFT | WS_BORDER | (m_NumberOnly ? ES_NUMBER : 0))
+  );
+
+  Add(CWDTControl(
+    L"OK",
+    CWDTControl::CT_BUTTON,
+    IDOK,
+    66, 39, 50, 14,
+    WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_FLAT)
+  );
+
+  Add(CWDTControl(
+    L"Cancel",
+    CWDTControl::CT_BUTTON,
+    IDCANCEL,
+    121, 39, 50, 14,
+    WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_FLAT)
+  );
+}
+
+CInputDialog::~CInputDialog()
+{
+}
+
+void CInputDialog::Label(const std::wstring& label)
+{
+  m_Label = label;
+}
+
+const std::wstring& CInputDialog::Label() const
+{
+  return m_Label;
+}
+
+vu::CFundamentalW& CInputDialog::Input()
+{
+  return m_Input;
+}
+
+INT_PTR CInputDialog::DoModal()
+{
+  return __super::DoModal(DlgProc, this);
+}
+
+LRESULT CALLBACK CInputDialog::DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
+{
+  static CInputDialog* pSelf = nullptr;
+  switch (msg)
+  {
+  case WM_INITDIALOG:
+  {
+    if (pSelf == nullptr)
+    {
+      pSelf = reinterpret_cast<CInputDialog*>(lp);
+    }
+
+    if (pSelf != nullptr)
+    {
+      SetWindowTextW(GetDlgItem(hw, pSelf->IDC_LABEL), pSelf->Label().c_str());
+    }
+
+    RECT rc = { 0 };
+    GetWindowRect(hw, &rc);
+    int X = (GetSystemMetrics(SM_CXSCREEN) - rc.right)  / 2;
+    int Y = (GetSystemMetrics(SM_CYSCREEN) - rc.bottom) / 2;
+    SetWindowPos(hw, nullptr, X, Y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+  }
+  break;
+
+  case WM_COMMAND:
+  {
+    switch (LOWORD(wp))
+    {
+    case IDOK:
+    {
+      assert(pSelf != nullptr);
+
+      wchar_t s[KiB] = { 0 };
+      GetWindowTextW(GetDlgItem(hw, pSelf->IDC_INPUT), s, sizeof(s) / sizeof(s[0]));
+      pSelf->Input().data() << s;
+
+      EndDialog(hw, IDOK);
+    }
+    break;
+
+    case IDCANCEL:
+    {
+      EndDialog(hw, IDCANCEL);
+    }
+    break;
+
+    default:
+      break;
+    }
+  }
+  break;
+
+  case WM_CLOSE:
+  {
+    EndDialog(hw, IDCANCEL);
+  }
+  break;
+
+  default:
+    break;
+  }
+
+  return FALSE;
 }
 
 } // namespace vu

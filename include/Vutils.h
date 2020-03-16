@@ -2401,6 +2401,105 @@ private:
   CFileMappingW m_FileMap;
 };
 
+/**
+ * CWDTControl
+ */
+
+class CWDTControl
+{
+public:
+  enum eControlClass : WORD
+  {
+    CT_BUTTON     = 0x0080,
+    CT_EDIT       = 0x0081,
+    CT_STATIC     = 0x0082,
+    CT_LIST_BOX   = 0x0083,
+    CT_SCROLL_BAR = 0x0084,
+    CT_COMBO_BOX  = 0x0085,
+    CT_UNKNOW     = 0xFFFF,
+  };
+
+  CWDTControl(
+    const std::wstring& caption,
+    const eControlClass type,
+    const WORD  id,
+    const short x,
+    const short y,
+    const short cx,
+    const short cy,
+    const DWORD style,
+    const DWORD exstyle = 0
+  );
+
+  virtual ~CWDTControl();
+
+  void Serialize(void** pptr);
+
+protected:
+  std::wstring m_Caption;
+  DLGITEMTEMPLATE m_Shape;
+  WORD m_wClass;
+  WORD m_wType;
+  WORD m_wData;
+};
+
+class CWDTDialog : public CLastError
+{
+public:
+  CWDTDialog(
+    const std::wstring& caption,
+    const DWORD style,
+    const DWORD exstyle,
+    const short x,
+    const short y,
+    const short cx,
+    const short cy,
+    HWND hParent = nullptr
+  );
+
+  virtual ~CWDTDialog();
+
+  void Add(const CWDTControl& control);
+  void Serialize(void** pptr);
+  INT_PTR DoModal(DLGPROC pfnDlgProc, CWDTDialog* pParent);
+
+  const std::vector<CWDTControl>& Controls() const;
+
+protected:
+  HGLOBAL m_hGlobal;
+  std::wstring m_Caption;
+  std::wstring m_Font;
+  HWND m_hwParent;
+  std::vector<CWDTControl> m_Controls;
+  DLGTEMPLATE m_Shape;
+  WORD m_wMenu;
+  WORD m_wClass;
+  WORD m_wFont;
+};
+
+class CInputDialog : public CWDTDialog
+{
+public:
+  const WORD IDC_LABEL;
+  const WORD IDC_INPUT;
+
+  CInputDialog(const std::wstring& label, const HWND hwParent = nullptr, bool numberonly = false);
+  virtual ~CInputDialog();
+
+  void Label(const std::wstring& label);
+  const std::wstring& Label() const;
+  CFundamentalW& Input();
+
+  INT_PTR DoModal();
+
+  static LRESULT CALLBACK CInputDialog::DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp);
+
+private:
+  std::wstring  m_Label;
+  CFundamentalW m_Input;
+  bool m_NumberOnly;
+};
+
 /*---------- The definition of common structure(s) which compatible both ANSI & UNICODE ----------*/
 
 #ifdef _UNICODE
