@@ -664,7 +664,7 @@ vu::CFundamentalW& CInputDialog::Input()
 
 INT_PTR CInputDialog::DoModal()
 {
-  return __super::DoModal(DlgProc, this);
+  return CWDTDialog::DoModal(DLGPROC(DlgProc), this);
 }
 
 LRESULT CALLBACK CInputDialog::DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
