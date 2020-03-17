@@ -2,7 +2,7 @@
 //
 
 /* MinGW build EXE with static library
-G++ main.cpp -std=c++0x -lVutils -o Test.exe && Test.exe
+G++ main.cpp -std=c++0x -lVutils -lgdi32 -o Test.exe && Test.exe
 G++ main.cpp -std=c++0x -lVutils -DVU_SOCKET_ENABLED -lws2_32 -DVU_GUID_ENABLED -lrpcrt4 -lgdi32 -o Test.exe && Test.exe
 */
 
