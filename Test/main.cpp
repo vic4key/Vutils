@@ -794,10 +794,10 @@ int _tmain(int argc, _TCHAR* argv[])
 
   SEPERATOR()
 
-  auto funtions = pe.GetImportFunctions();
-  assert(!funtions.empty());
+  auto functions = pe.GetImportFunctions();
+  assert(!functions.empty());
 
-  // for (auto e : funtions)
+  // for (auto e : functions)
   // {
   //   auto s = vu::FormatA("IIDID = %08X, Hint = %04X, '%s'", e.IIDID, e.Hint, e.Name.c_str());
   //   std::cout << s << std::endl;
