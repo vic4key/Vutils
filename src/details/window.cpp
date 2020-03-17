@@ -704,7 +704,7 @@ LRESULT CALLBACK CInputDialog::DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
 
       wchar_t s[KiB] = { 0 };
       GetWindowTextW(GetDlgItem(hw, pSelf->IDC_INPUT), s, sizeof(s) / sizeof(s[0]));
-      pSelf->Input().data() << s;
+      pSelf->Input().Data() << s;
 
       EndDialog(hw, IDOK);
     }

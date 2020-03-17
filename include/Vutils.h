@@ -296,16 +296,16 @@ public:
   CFundamentalA();
   virtual ~CFundamentalA();
 
-  std::stringstream& data();
-  std::string s() const;
-  int vuapi i() const;
-  long vuapi l() const;
-  bool vuapi b() const;
-  float vuapi f() const;
-  double vuapi d() const;
+  std::stringstream& vuapi Data();
+  std::string vuapi String() const;
+  int vuapi Integer() const;
+  long vuapi Long() const;
+  bool vuapi Boolean() const;
+  float vuapi Float() const;
+  double vuapi Double() const;
 
 private:
-  std::stringstream m_data;
+  std::stringstream m_Data;
 };
 
 class CFundamentalW
@@ -314,16 +314,16 @@ public:
   CFundamentalW();
   virtual ~CFundamentalW();
 
-  std::wstringstream& data();
-  std::wstring s() const;
-  int vuapi i() const;
-  long vuapi l() const;
-  bool vuapi b() const;
-  float vuapi f() const;
-  double vuapi d() const;
+  std::wstringstream& vuapi Data();
+  std::wstring vuapi String() const;
+  int vuapi Integer() const;
+  long vuapi Long() const;
+  bool vuapi Boolean() const;
+  float vuapi Float() const;
+  double vuapi Double() const;
 
 private:
-  std::wstringstream m_data;
+  std::wstringstream m_Data;
 };
 
 typedef enum _ENCODING_TYPE

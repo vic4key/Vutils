@@ -537,90 +537,90 @@ std::wstring vuapi FormatBytesW(long long Bytes, eStdByte Std, int Digits)
 
 CFundamentalA::CFundamentalA()
 {
-  m_data.clear();
+  m_Data.clear();
 }
 
 CFundamentalA::~CFundamentalA()
 {
 }
 
-std::stringstream& CFundamentalA::data()
+std::stringstream& CFundamentalA::Data()
 {
-  return m_data;
+  return m_Data;
 }
 
-std::string CFundamentalA::s() const
+std::string CFundamentalA::String() const
 {
-  return m_data.str();
+  return m_Data.str();
 }
 
-bool CFundamentalA::b() const
+bool CFundamentalA::Boolean() const
 {
-  return i() != 0;
+  return Integer() != 0;
 }
 
-int CFundamentalA::i() const
+int CFundamentalA::Integer() const
 {
-  return atoi(m_data.str().c_str());
+  return atoi(m_Data.str().c_str());
 }
 
-long CFundamentalA::l() const
+long CFundamentalA::Long() const
 {
-  return atol(m_data.str().c_str());
+  return atol(m_Data.str().c_str());
 }
 
-float CFundamentalA::f() const
+float CFundamentalA::Float() const
 {
-  return float(d());
+  return float(Double());
 }
 
-double CFundamentalA::d() const
+double CFundamentalA::Double() const
 {
-  return atof(m_data.str().c_str());
+  return atof(m_Data.str().c_str());
 }
 
 CFundamentalW::CFundamentalW()
 {
-  m_data.clear();
+  m_Data.clear();
 }
 
 CFundamentalW::~CFundamentalW()
 {
 }
 
-std::wstringstream& CFundamentalW::data()
+std::wstringstream& CFundamentalW::Data()
 {
-  return m_data;
+  return m_Data;
 }
 
-std::wstring CFundamentalW::s() const
+std::wstring CFundamentalW::String() const
 {
-  return m_data.str();
+  return m_Data.str();
 }
 
-bool CFundamentalW::b() const
+bool CFundamentalW::Boolean() const
 {
-  return i() != 0;
+  return Integer() != 0;
 }
 
-int CFundamentalW::i() const
+int CFundamentalW::Integer() const
 {
-  return atoi(ToStringA(m_data.str()).c_str());
+  return atoi(ToStringA(m_Data.str()).c_str());
 }
 
-long CFundamentalW::l() const
+long CFundamentalW::Long() const
 {
-  return atol(ToStringA(m_data.str()).c_str());
+  return atol(ToStringA(m_Data.str()).c_str());
 }
 
-float CFundamentalW::f() const
+float CFundamentalW::Float() const
 {
-  return float(d());
+  return float(Double());
 }
 
-double CFundamentalW::d() const
+double CFundamentalW::Double() const
 {
-  return atof(ToStringA(m_data.str()).c_str());
+  return atof(ToStringA(m_Data.str()).c_str());
 }
 
 #ifdef _MSC_VER

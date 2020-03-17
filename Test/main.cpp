@@ -853,7 +853,7 @@ int _tmain(int argc, _TCHAR* argv[])
   /*vu::CInputDialog dialog(L"How old are you?");
   if (dialog.DoModal() == IDOK)
   {
-    std::wcout << dialog.Input().s() << std::endl;
+    std::wcout << dialog.Input().String() << std::endl;
   }*/
 
   return 0;
