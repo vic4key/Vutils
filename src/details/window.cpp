@@ -57,6 +57,22 @@ HWND vuapi FindTopWindow(ulong ulPID)
   return params.second;
 }
 
+HWND vuapi FindMainWindow(HWND hWnd)
+{
+  if (!IsWindow(hWnd))
+  {
+    return nullptr;
+  }
+
+  auto hWndParent = GetParent(hWnd);
+  if (hWndParent == nullptr)
+  {
+    return hWnd;
+  }
+
+  return FindMainWindow(hWndParent);
+}
+
 std::string vuapi DecodeWMA(const ulong id)
 {
   static struct { ulong id; char* text; } m[] = \

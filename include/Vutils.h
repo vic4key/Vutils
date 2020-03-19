@@ -544,6 +544,7 @@ typedef struct _FONT_W
 
 HWND vuapi GetConsoleWindow();
 HWND vuapi FindTopWindow(ulong ulPID);
+HWND vuapi FindMainWindow(HWND hWnd);
 std::string  vuapi DecodeWMA(const ulong id);
 std::wstring vuapi DecodeWMW(const ulong id);
 TFontA vuapi GetFontA(HWND hw);
