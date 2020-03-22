@@ -477,7 +477,7 @@ const WCHAR NullChar = L'\0';
 
 CWDTControl::CWDTControl(
   const std::wstring& caption,
-  const eControlClass type,
+  const CWDTControl::eControlClass type,
   const WORD  id,
   const short x,
   const short y,
@@ -579,7 +579,7 @@ const std::vector<vu::CWDTControl>& CWDTDialog::Controls() const
 
 void CWDTDialog::Add(const CWDTControl& control)
 {
-  m_Controls.push_back(std::move(control));
+  m_Controls.push_back(control);
   m_Shape.cdit = static_cast<WORD>(m_Controls.size());
 }
 
