@@ -45,6 +45,8 @@ PfnGetModuleBaseNameW pfnGetModuleBaseNameW = nullptr;
 PfnQueryFullProcessImageNameA pfnQueryFullProcessImageNameA = nullptr;
 PfnQueryFullProcessImageNameW pfnQueryFullProcessImageNameW = nullptr;
 
+PfnGetProcessMemoryInfo pfnGetProcessMemoryInfo;
+
 /**
  * Variables
  */
@@ -74,6 +76,12 @@ VUResult vuapi InitTlHelp32()
 
   CLibrary kernel32(_T("kernel32.dll"));
   if (!kernel32.IsAvailable())
+  {
+    return ErrorCode(1);
+  }
+
+  CLibrary psapi(_T("psapi.dll"));
+  if (!psapi.IsAvailable())
   {
     return ErrorCode(1);
   }
@@ -192,6 +200,16 @@ VUResult vuapi InitTlHelp32()
   if (pfnQueryFullProcessImageNameW == nullptr)
   {
     return ErrorCode(17);
+  }
+
+  pfnGetProcessMemoryInfo = (PfnGetProcessMemoryInfo)kernel32.GetProcAddress(_T("K32GetProcessMemoryInfo"));
+  if (pfnGetProcessMemoryInfo == nullptr)
+  {
+    VU_OBJ_GET_API(psapi, GetProcessMemoryInfo);
+    if (pfnGetProcessMemoryInfo == nullptr)
+    {
+      return ErrorCode(18);
+    }
   }
 
   g_HasToolHelp32 = true;

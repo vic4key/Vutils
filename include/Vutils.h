@@ -2506,6 +2506,89 @@ private:
   bool m_NumberOnly;
 };
 
+/**
+ * Process
+ */
+
+#define INVALID_PID_VALUE -1
+
+typedef struct _PROCESS_CPU_COUNTERS
+{
+  double Usage;
+} PROCESS_CPU_COUNTERS;
+
+typedef struct _PROCESS_TIME_COUNTERS
+{
+  FILETIME CreationTime;
+  FILETIME ExitTime;
+  FILETIME KernelTime;
+  FILETIME UserTime;
+} PROCESS_TIME_COUNTERS;
+
+// Structure for GetProcessMemoryInfo()
+
+typedef struct _PROCESS_MEMORY_COUNTERS {
+  DWORD cb;
+  DWORD PageFaultCount;
+  SIZE_T PeakWorkingSetSize;
+  SIZE_T WorkingSetSize;
+  SIZE_T QuotaPeakPagedPoolUsage;
+  SIZE_T QuotaPagedPoolUsage;
+  SIZE_T QuotaPeakNonPagedPoolUsage;
+  SIZE_T QuotaNonPagedPoolUsage;
+  SIZE_T PagefileUsage;
+  SIZE_T PeakPagefileUsage;
+} PROCESS_MEMORY_COUNTERS;
+typedef PROCESS_MEMORY_COUNTERS* PPROCESS_MEMORY_COUNTERS;
+
+typedef IO_COUNTERS PROCESS_IO_COUNTERS;
+
+class CProcess : public CLastError
+{
+public:
+  CProcess();
+  CProcess(const ulong PID);
+  virtual ~CProcess();
+
+  CProcess& operator=(const CProcess& right);
+  bool operator==(const CProcess& right);
+  bool operator!=(const CProcess& right);
+  friend std::ostream& operator<<(std::ostream& os, const CProcess& process);
+
+  bool Ready();
+  bool Attach(const ulong PID);
+  bool Attach(const HANDLE Handle);
+
+  eWow64 Wow64() const;
+  eXBit  Bits() const;
+
+  bool Read(const  ulongptr Address, CBinary& Data);
+  bool Read(const  ulongptr Address, void* pData, const ulong ulSize);
+  bool Write(const ulongptr Address, const CBinary& Data);
+  bool Write(const  ulongptr Address, const void* pData, const ulong ulSize);
+
+  PROCESS_CPU_COUNTERS GetCPUInformation(const double interval = 1.); // 1 second
+  PROCESS_MEMORY_COUNTERS GetMemoryInformation();
+  PROCESS_TIME_COUNTERS GetTimeInformation();
+  PROCESS_IO_COUNTERS GetIOInformation();
+
+private:
+  HANDLE Open(const ulong PID);
+  bool Close(const HANDLE Handle);
+  void Parse();
+  double GetCPUPercentUsage();
+
+private:
+  ulong  m_PID;
+  HANDLE m_Handle;
+  eWow64 m_Wow64;
+  eXBit  m_Bit;
+  std::wstring m_Name;
+
+  int64_t m_LastSystemTimeUTC;
+  int64_t m_LastSystemTimePerCoreUTC;
+};
+
 /*---------- The definition of common structure(s) which compatible both ANSI & UNICODE ----------*/
 
 #ifdef _UNICODE

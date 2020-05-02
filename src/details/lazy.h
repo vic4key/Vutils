@@ -118,6 +118,8 @@ typedef DWORD (WINAPI *PfnGetModuleBaseNameW)(HANDLE hProcess, HMODULE hModule, 
 typedef BOOL (WINAPI *PfnQueryFullProcessImageNameA)(HANDLE hProcess, DWORD  dwFlags, LPSTR lpExeName, PDWORD lpdwSize);
 typedef BOOL (WINAPI *PfnQueryFullProcessImageNameW)(HANDLE hProcess, DWORD  dwFlags, LPWSTR lpExeName, PDWORD lpdwSize);
 
+typedef BOOL (WINAPI *PfnGetProcessMemoryInfo)(HANDLE Process, PPROCESS_MEMORY_COUNTERS ppsmemCounters, DWORD cb);
+
 /**
  * Variables
  */
@@ -144,6 +146,8 @@ extern PfnGetModuleBaseNameW pfnGetModuleBaseNameW;
 
 extern PfnQueryFullProcessImageNameA pfnQueryFullProcessImageNameA;
 extern PfnQueryFullProcessImageNameW pfnQueryFullProcessImageNameW;
+
+extern PfnGetProcessMemoryInfo pfnGetProcessMemoryInfo;
 
 /**
  * Initialize Tool Help 32 functions.

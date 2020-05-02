@@ -8,6 +8,7 @@
 #include "lazy.h"
 
 #include <cassert>
+#include <thread>
 
 #include <tlhelp32.h>
 
@@ -768,6 +769,314 @@ VUResult vuapi InjectDLLW(ulong ulPID, const std::wstring& DLLFilePath, bool Wai
   SetLastError(ERROR_SUCCESS);
 
   return 0;
+}
+
+/**
+ * CProcess
+ */
+
+CProcess::CProcess()
+  : m_PID(INVALID_PID_VALUE)
+  , m_Handle(INVALID_HANDLE_VALUE)
+  , m_Wow64(eWow64::WOW64_ERROR)
+  , m_Bit(eXBit::x86)
+  , m_Name(L"")
+  , m_LastSystemTimeUTC(0)
+  , m_LastSystemTimePerCoreUTC(0)
+{
+}
+
+CProcess::CProcess(const vu::ulong PID)
+  : m_PID(PID)
+  , m_Handle(INVALID_HANDLE_VALUE)
+  , m_Wow64(eWow64::WOW64_ERROR)
+  , m_Bit(eXBit::x86)
+  , m_Name(L"")
+  , m_LastSystemTimeUTC(0)
+  , m_LastSystemTimePerCoreUTC(0)
+{
+  Attach(m_PID);
+}
+
+CProcess::~CProcess()
+{
+  Close(m_Handle);
+}
+
+CProcess& CProcess::operator=(const CProcess& right)
+{
+  m_PID = right.m_PID;
+  m_Handle = right.m_Handle;
+  m_Wow64 = right.m_Wow64;
+  m_Bit = right.m_Bit;
+  m_Name = right.m_Name;
+  return *this;
+}
+
+bool CProcess::operator==(const CProcess& right)
+{
+  bool result = true;
+  result &= m_PID == right.m_PID;
+  result &= m_Handle == right.m_Handle;
+  result &= m_Wow64 == right.m_Wow64;
+  result &= m_Bit == right.m_Bit;
+  result &= m_Name == right.m_Name;
+  return result;
+}
+
+bool CProcess::operator!=(const CProcess& right)
+{
+  return !(*this == right);
+}
+
+std::ostream& operator<<(std::ostream& os, const CProcess& process)
+{
+  assert(0);
+  return os;
+}
+
+bool CProcess::Ready()
+{
+  return m_Handle != nullptr && m_Handle != INVALID_HANDLE_VALUE;
+}
+
+bool CProcess::Attach(const ulong PID)
+{
+  if (PID == INVALID_PID_VALUE)
+  {
+    return false;
+  }
+
+  auto Handle = Open(PID);
+  if (Handle == INVALID_HANDLE_VALUE)
+  {
+    return false;
+  }
+
+  return Attach(Handle);
+}
+
+bool CProcess::Attach(const HANDLE Handle)
+{
+  if (Handle == INVALID_HANDLE_VALUE)
+  {
+    return false;
+  }
+
+  auto PID = GetProcessId(Handle);
+  if (PID == INVALID_PID_VALUE)
+  {
+    return false;
+  }
+
+  m_PID = PID;
+  m_Handle = Handle;
+
+  SetLastError(ERROR_SUCCESS);
+
+  Parse();
+
+  return true;
+}
+
+vu::eWow64 CProcess::Wow64() const
+{
+  return m_Wow64;
+}
+
+vu::eXBit CProcess::Bits() const
+{
+  return m_Bit;
+}
+
+bool CProcess::Read(const ulongptr Address, CBinary& Data)
+{
+  if (Address == 0 || Data.GetSize() == 0)
+  {
+    return false;
+  }
+
+  return Read(Address, Data.GetpData(), Data.GetSize());
+}
+
+bool CProcess::Read(const ulongptr Address, void* pData, const ulong ulSize)
+{
+  if (Address == 0 || pData == 0 || ulSize == 0)
+  {
+    return false;
+  }
+
+  return RPM(m_Handle, LPCVOID(Address), pData, ulSize, false);
+}
+
+bool CProcess::Write(const ulongptr Address, const CBinary& Data)
+{
+  return Write(Address, Data.GetpData(), Data.GetSize());
+}
+
+bool CProcess::Write(const ulongptr Address, const void* pData, const ulong ulSize)
+{
+  if (Address == 0 || pData == 0 || ulSize == 0)
+  {
+    return false;
+  }
+
+  return WPM(m_Handle, LPCVOID(Address), pData, ulSize, true);
+}
+
+double CProcess::GetCPUPercentUsage()
+{
+  const auto FileTimeToUTC = [](const FILETIME * FileTime) -> uint64_t
+  {
+    LARGE_INTEGER li;
+    li.LowPart  = FileTime->dwLowDateTime;
+    li.HighPart = FileTime->dwHighDateTime;
+    return li.QuadPart;
+  };
+
+  FILETIME SystemTime = { 0 };
+  GetSystemTimeAsFileTime(&SystemTime);
+  const int64_t SystemTimeUTC = FileTimeToUTC(&SystemTime);
+
+  const auto Time = GetTimeInformation();
+
+  auto nCores = std::thread::hardware_concurrency();
+  const int64_t SystemTimePerCoreUTC = (FileTimeToUTC(&Time.KernelTime) + FileTimeToUTC(&Time.UserTime)) / nCores;
+
+  if (m_LastSystemTimePerCoreUTC == 0 || m_LastSystemTimeUTC == 0)
+  {
+    m_LastSystemTimePerCoreUTC = SystemTimePerCoreUTC;
+    m_LastSystemTimeUTC = SystemTimeUTC;
+    return 0.; // GetCPUPercentUsage();
+  }
+
+  const int64_t SystemTimeDeltaPerCoreUTC = SystemTimePerCoreUTC - m_LastSystemTimePerCoreUTC;
+  const int64_t SystemTimeDeltaUTC = SystemTimeUTC - m_LastSystemTimeUTC;
+
+  if (SystemTimeDeltaUTC == 0)
+  {
+    return 0.; // GetCPUPercentUsage();
+  }
+
+  double result = (SystemTimeDeltaPerCoreUTC * 100. + SystemTimeDeltaUTC / 2.) / SystemTimeDeltaUTC;
+
+  m_LastSystemTimePerCoreUTC = SystemTimePerCoreUTC;
+  m_LastSystemTimeUTC = SystemTimeUTC;
+
+  return result;
+};
+
+PROCESS_CPU_COUNTERS CProcess::GetCPUInformation(const double interval)
+{
+  PROCESS_CPU_COUNTERS result = { 0 };
+
+  const int DEF_PART_MS = 200; // millisecond
+
+  const auto ToMiliseconds = [](const double second) -> double
+  {
+    return second * 1000.; // millisecond
+  };
+
+  result.Usage = 0.;
+
+  const int nCount = int(std::ceil(ToMiliseconds(interval) / DEF_PART_MS));
+
+  for (int i = 0; i < nCount; i++)
+  {
+    const double Usage = GetCPUPercentUsage();
+    result.Usage = Usage > result.Usage ? Usage : result.Usage;
+    // result.Usage = Usage;
+    Sleep(DEF_PART_MS);
+  }
+
+  return result;
+}
+
+PROCESS_MEMORY_COUNTERS CProcess::GetMemoryInformation()
+{
+  PROCESS_MEMORY_COUNTERS result = { 0 };
+
+  if (InitTlHelp32() != VU_OK)
+  {
+    return result;
+  }
+
+  pfnGetProcessMemoryInfo(m_Handle, &result, sizeof(result));
+
+  return result;
+}
+
+PROCESS_TIME_COUNTERS CProcess::GetTimeInformation()
+{
+  PROCESS_TIME_COUNTERS result = { 0 };
+
+  GetProcessTimes(
+    m_Handle,
+    &result.CreationTime,
+    &result.ExitTime,
+    &result.KernelTime,
+    &result.UserTime);
+
+  return result;
+}
+
+PROCESS_IO_COUNTERS CProcess::GetIOInformation()
+{
+  PROCESS_IO_COUNTERS result = { 0 };
+
+  GetProcessIoCounters(m_Handle, &result);
+
+  return result;
+}
+
+HANDLE CProcess::Open(const ulong PID)
+{
+  if (PID == INVALID_PID_VALUE)
+  {
+    return INVALID_HANDLE_VALUE;
+  }
+
+  SetPrivilege(SE_DEBUG_NAME, true);
+  SetLastError(ERROR_SUCCESS);
+
+  auto result = OpenProcess(PROCESS_ALL_ACCESS, FALSE, m_PID);
+  if (result == nullptr)
+  {
+    result = INVALID_HANDLE_VALUE;
+  }
+
+  m_LastErrorCode = GetLastError();
+
+  SetPrivilege(SE_DEBUG_NAME, false);
+  SetLastError(ERROR_SUCCESS);
+
+  return result;
+}
+
+bool CProcess::Close(const HANDLE Handle)
+{
+  if (Handle == INVALID_HANDLE_VALUE)
+  {
+    return false;
+  }
+
+  return CloseHandle(m_Handle) != FALSE;
+}
+
+void CProcess::Parse()
+{
+  m_Wow64 = IsWow64(m_Handle);
+
+  if (GetProcessorArchitecture() == vu::PA_X64)
+  {
+    m_Bit = m_Wow64 == eWow64::WOW64_YES ? eXBit::x86 : eXBit::x64;
+  }
+  else
+  {
+    m_Bit = eXBit::x86;
+  }
+
+  m_Name = PIDToNameW(m_PID);
 }
 
 } // namespace vu
