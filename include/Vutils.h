@@ -970,7 +970,7 @@ public:
   virtual ~CSocket();
   VUResult vuapi Socket(eSocketAF Family, eSocketType Type, eSocketProtocol Protocol = SP_NONE);
   VUResult vuapi Bind(const TAccessPoint& AccessPoint);
-  VUResult vuapi Bind(const std::string& Address, ushort usNPort);
+  VUResult vuapi Bind(const std::string& Address, ushort usPort);
   VUResult vuapi Listen(int iMaxConnection = SOMAXCONN);
   VUResult vuapi Accept(TSocketInfomation& SocketInformation);
   VUResult vuapi Connect(const TAccessPoint& AccessPoint);

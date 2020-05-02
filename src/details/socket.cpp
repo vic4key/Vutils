@@ -73,7 +73,7 @@ VUResult vuapi CSocket::Bind(const TAccessPoint& AccessPoint)
   return this->Bind(AccessPoint.Host, AccessPoint.Port);
 }
 
-VUResult vuapi CSocket::Bind(const std::string& Address, unsigned short usPort)
+VUResult vuapi CSocket::Bind(const std::string& Address, ushort usPort)
 {
   if (!this->IsSocketValid(m_Socket))
   {
@@ -152,7 +152,7 @@ VUResult vuapi CSocket::Connect(const TAccessPoint& AccessPoint)
   return this->Connect(AccessPoint.Host, AccessPoint.Port);
 }
 
-VUResult vuapi CSocket::Connect(const std::string& Address, unsigned short usPort)
+VUResult vuapi CSocket::Connect(const std::string& Address, ushort usPort)
 {
   std::string IP;
 
