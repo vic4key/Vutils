@@ -456,7 +456,8 @@ typedef struct _BLOCK
 } TBlock;
 
 eProcessorArchitecture GetProcessorArchitecture();
-eWow64 vuapi IsWow64(ulong ulPID = (ulong)-1); /* -1: Error, 0: False, 1: True */
+eWow64 vuapi IsWow64(const ulong ulPID = (ulong)-1); /* -1: Error, 0: False, 1: True */
+eWow64 vuapi IsWow64(const HANDLE hProcess);
 ulong vuapi GetParentPID(ulong ulChildPID);
 ulong vuapi GetMainThreadID(ulong ulPID);
 std::vector<ulong> vuapi NameToPIDA(

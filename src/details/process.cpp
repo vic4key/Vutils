@@ -33,7 +33,29 @@ eProcessorArchitecture GetProcessorArchitecture()
   return static_cast<eProcessorArchitecture>(si.wProcessorArchitecture);
 }
 
-eWow64 vuapi IsWow64(ulong ulPID)
+eWow64 vuapi IsWow64(const ulong ulPID)
+{
+  HANDLE hProcess = NULL;
+
+  if (ulPID != (ulong)-1)
+  {
+    SetPrivilege(SE_DEBUG_NAME, true);
+    hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ulPID);
+    SetPrivilege(SE_DEBUG_NAME, false);
+  }
+  else
+  {
+    hProcess = GetCurrentProcess();
+  }
+
+  auto result = IsWow64(hProcess);
+
+  CloseHandle(hProcess);
+
+  return result;
+}
+
+eWow64 vuapi IsWow64(const HANDLE hProcess)
 {
   typedef BOOL (WINAPI *PfnIsWow64Process)(HANDLE, PBOOL);
   PfnIsWow64Process pfnIsWow64Process = (PfnIsWow64Process)CLibrary::QuickGetProcAddress(
@@ -45,24 +67,11 @@ eWow64 vuapi IsWow64(ulong ulPID)
     return WOW64_ERROR;
   }
 
-  HANDLE hProcess = NULL;
-
-  if (ulPID != (ulong)-1)
-  {
-    hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ulPID);
-  }
-  else
-  {
-    hProcess = GetCurrentProcess();
-  }
-
   BOOL bWow64 = false;
   if (!pfnIsWow64Process(hProcess, &bWow64))
   {
     return WOW64_ERROR;
   }
-
-  CloseHandle(hProcess);
 
   return (bWow64 ? WOW64_YES : WOW64_NO);
 }
@@ -359,7 +368,9 @@ std::string vuapi PIDToNameA(ulong ulPID)
   std::string s;
   s.clear();
 
+  SetPrivilege(SE_DEBUG_NAME, true);
   HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ulPID);
+  SetPrivilege(SE_DEBUG_NAME, false);
   if (!hProcess)
   {
     return s;
@@ -391,8 +402,10 @@ std::wstring vuapi PIDToNameW(ulong ulPID)
   std::wstring s;
   s.clear();
 
+  SetPrivilege(SE_DEBUG_NAME, true);
   HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ulPID);
-  if (!hProcess)
+  SetPrivilege(SE_DEBUG_NAME, false);
+  if (hProcess == INVALID_HANDLE_VALUE)
   {
     return s;
   }
@@ -437,7 +450,9 @@ HMODULE vuapi Remote64GetModuleHandleA(const ulong ulPID, const std::string& Mod
 {
   HMODULE result = NULL;
 
+  SetPrivilege(SE_DEBUG_NAME, true);
   auto hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ulPID);
+  SetPrivilege(SE_DEBUG_NAME, false);
   if (hProcess == 0 || hProcess == INVALID_HANDLE_VALUE)
   {
     return result;
@@ -611,7 +626,9 @@ VUResult vuapi InjectDLLA(ulong ulPID, const std::string& DLLFilePath, bool Wait
     return 3;
   }
 
+  SetPrivilege(SE_DEBUG_NAME, true);
   std::shared_ptr<void> hp(OpenProcess(CREATE_THREAD_ACCESS, FALSE, ulPID), CloseHandle);
+  SetPrivilege(SE_DEBUG_NAME, false);
   if (hp.get() == INVALID_HANDLE_VALUE)
   {
     return 4;
@@ -694,7 +711,9 @@ VUResult vuapi InjectDLLW(ulong ulPID, const std::wstring& DLLFilePath, bool Wai
     return 3;
   }
 
+  SetPrivilege(SE_DEBUG_NAME, true);
   std::shared_ptr<void> hp(OpenProcess(CREATE_THREAD_ACCESS, FALSE, ulPID), CloseHandle);
+  SetPrivilege(SE_DEBUG_NAME, false);
   if (hp.get() == INVALID_HANDLE_VALUE)
   {
     return 4;
