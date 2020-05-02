@@ -34,6 +34,59 @@ bool vuapi IsAdministrator()
   return (IsMember != FALSE);
 }
 
+bool SetPrivilegeA(const std::string& privilege, const bool enable)
+{
+  const auto s = ToStringW(privilege);
+  return SetPrivilegeW(s, enable);
+}
+
+bool SetPrivilegeW(const std::wstring& privilege, const bool enable)
+{
+  HANDLE hToken = INVALID_HANDLE_VALUE;
+  if (!OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &hToken))
+  {
+    if (GetLastError() != ERROR_NO_TOKEN)
+    {
+      return false;
+    }
+
+    if (!ImpersonateSelf(SecurityImpersonation))
+    {
+      return false;
+    }
+
+    if (!OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &hToken))
+    {
+      return false;
+    }
+  }
+
+  if (hToken == INVALID_HANDLE_VALUE)
+  {
+    return false;
+  }
+
+  bool result = false;
+
+  LUID luid = { 0 };
+  if (LookupPrivilegeValueW(nullptr, privilege.c_str(), &luid))
+  {
+    TOKEN_PRIVILEGES tp = { 0 };
+    tp.PrivilegeCount = 1;
+    tp.Privileges[0].Luid = luid;
+    tp.Privileges[0].Attributes = enable ? SE_PRIVILEGE_ENABLED : 0;
+
+    if (AdjustTokenPrivileges(hToken, FALSE, &tp, sizeof(tp), nullptr, nullptr))
+    {
+      result = GetLastError() != ERROR_NOT_ALL_ASSIGNED;
+    }
+  }
+
+  CloseHandle(hToken);
+
+  return result;
+}
+
 std::string vuapi GetEnviromentA(const std::string EnvName)
 {
   std::string s;

@@ -274,6 +274,8 @@ const size_t MAX_SIZE = MAXBYTE;
  */
 
 bool vuapi IsAdministrator();
+bool SetPrivilegeA(const std::string& privilege, const bool enable);
+bool SetPrivilegeW(const std::wstring& privilege, const bool enable);
 std::string vuapi  GetEnviromentA(const std::string EnvName);
 std::wstring vuapi GetEnviromentW(const std::wstring EnvName);
 
@@ -575,6 +577,7 @@ std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
 
 #ifdef _UNICODE
 /* Misc Working */
+#define SetPrivilege SetPrivilegeW
 #define GetEnviroment GetEnviromentW
 /* String Formatting */
 #define Fmt FormatW
@@ -612,6 +615,7 @@ std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
 #define GetContainDirectory GetContainDirectoryW
 #else
 /* Misc Working */
+#define SetPrivilege SetPrivilegeA
 #define GetEnviroment GetEnviromentA
 /* String Formatting */
 #define Fmt FormatA
