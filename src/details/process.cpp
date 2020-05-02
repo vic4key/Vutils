@@ -8,6 +8,7 @@
 #include "lazy.h"
 
 #include <cassert>
+#include <cmath>
 #include <thread>
 
 #include <tlhelp32.h>
