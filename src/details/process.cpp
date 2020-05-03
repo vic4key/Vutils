@@ -907,7 +907,11 @@ bool CProcess::Read(const ulongptr Address, void* pData, const ulong ulSize)
     return false;
   }
 
-  return RPM(m_Handle, LPCVOID(Address), pData, ulSize, false);
+  auto result = RPM(m_Handle, LPCVOID(Address), pData, ulSize, true);
+
+  m_LastErrorCode = GetLastError();
+
+  return result;
 }
 
 bool CProcess::Write(const ulongptr Address, const CBinary& Data)
@@ -922,7 +926,11 @@ bool CProcess::Write(const ulongptr Address, const void* pData, const ulong ulSi
     return false;
   }
 
-  return WPM(m_Handle, LPCVOID(Address), pData, ulSize, true);
+  auto result = WPM(m_Handle, LPCVOID(Address), pData, ulSize, true);
+
+  m_LastErrorCode = GetLastError();
+
+  return result;
 }
 
 double CProcess::GetCPUPercentUsage()
