@@ -27,13 +27,13 @@ DEF_SAMPLE(Process)
   for (const auto& thread : process.GetThreads())
   {
     static int idx = 0;
-    std::cout << ++idx << ". ThreadID = " << thread.th32ThreadID << std::endl;
-    std::cout << "\tPID = " << thread.th32OwnerProcessID << std::endl;
+    std::cout << ++idx << ". TID = " << thread.th32ThreadID << std::endl;
+    std::cout << "\tPID   = " << thread.th32OwnerProcessID << std::endl;
     std::cout << "\tUsage = " << thread.cntUsage << std::endl;
-    std::cout << "\tBase Priority = " << thread.tpBasePri << std::endl;
+    std::cout << "\tBase Priority  = " << thread.tpBasePri << std::endl;
     std::cout << "\tDelta Priority = " << thread.tpDeltaPri << std::endl;
     std::cout << std::endl;
   }
- 
+
   return vu::VU_OK;
 }
