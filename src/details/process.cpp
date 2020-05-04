@@ -249,7 +249,7 @@ ulong vuapi GetMainThreadID(ulong ulPID)
 
   ulong result = -1;
 
-  THREADENTRY32 te = { 0 };
+  ::THREADENTRY32 te = { 0 };
   te.dwSize = sizeof(THREADENTRY32);
 
   auto nextable = Thread32First(hSnap, &te);
@@ -1086,6 +1086,40 @@ void CProcess::Parse()
   }
 
   m_Name = PIDToNameW(m_PID);
+}
+
+const CProcess::Threads& CProcess::GetThreads()
+{
+  m_Threads.clear();
+
+  if (m_PID == INVALID_PID_VALUE)
+  {
+    return m_Threads;
+  }
+
+  auto hSnapThread = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+  if (hSnapThread == INVALID_HANDLE_VALUE)
+  {
+    return m_Threads;
+  }
+
+  ::THREADENTRY32 te32 = { 0 };
+  te32.dwSize = sizeof(THREADENTRY32);
+
+  if (Thread32First(hSnapThread, &te32))
+  {
+    do
+    {
+      if (te32.th32OwnerProcessID == m_PID)
+      {
+        m_Threads.emplace_back(*reinterpret_cast<vu::THREADENTRY32*>(&te32));
+      }
+    } while (Thread32Next(hSnapThread, &te32));
+  }
+
+  CloseHandle(hSnapThread);
+
+  return m_Threads;
 }
 
 } // namespace vu

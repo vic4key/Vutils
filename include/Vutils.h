@@ -2543,9 +2543,24 @@ typedef PROCESS_MEMORY_COUNTERS* PPROCESS_MEMORY_COUNTERS;
 
 typedef IO_COUNTERS PROCESS_IO_COUNTERS;
 
+typedef struct tagTHREADENTRY32
+{
+  DWORD   dwSize;
+  DWORD   cntUsage;
+  DWORD   th32ThreadID;       // this thread
+  DWORD   th32OwnerProcessID; // Process this thread is associated with
+  LONG    tpBasePri;
+  LONG    tpDeltaPri;
+  DWORD   dwFlags;
+} THREADENTRY32;
+typedef THREADENTRY32* PTHREADENTRY32;
+typedef THREADENTRY32* LPTHREADENTRY32;
+
 class CProcess : public CLastError
 {
 public:
+  typedef std::vector<THREADENTRY32> Threads;
+
   CProcess();
   CProcess(const ulong PID);
   virtual ~CProcess();
@@ -2571,6 +2586,7 @@ public:
   PROCESS_MEMORY_COUNTERS GetMemoryInformation();
   PROCESS_TIME_COUNTERS GetTimeInformation();
   PROCESS_IO_COUNTERS GetIOInformation();
+  const Threads& GetThreads();
 
 private:
   HANDLE Open(const ulong PID);
@@ -2587,6 +2603,8 @@ private:
 
   int64_t m_LastSystemTimeUTC;
   int64_t m_LastSystemTimePerCoreUTC;
+
+  Threads m_Threads;
 };
 
 /*---------- The definition of common structure(s) which compatible both ANSI & UNICODE ----------*/
