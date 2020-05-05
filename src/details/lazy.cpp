@@ -42,10 +42,15 @@ PfnEnumProcesses pfnEnumProcesses = nullptr;
 PfnGetModuleBaseNameA pfnGetModuleBaseNameA = nullptr;
 PfnGetModuleBaseNameW pfnGetModuleBaseNameW = nullptr;
 
+PfnGetModuleFileNameExA pfnGetModuleFileNameExA = nullptr;
+PfnGetModuleFileNameExW pfnGetModuleFileNameExW = nullptr;
+
+PfnGetModuleInformation pfnGetModuleInformation = nullptr;
+
 PfnQueryFullProcessImageNameA pfnQueryFullProcessImageNameA = nullptr;
 PfnQueryFullProcessImageNameW pfnQueryFullProcessImageNameW = nullptr;
 
-PfnGetProcessMemoryInfo pfnGetProcessMemoryInfo;
+PfnGetProcessMemoryInfo pfnGetProcessMemoryInfo = nullptr;
 
 /**
  * Variables
@@ -209,6 +214,36 @@ VUResult vuapi InitTlHelp32()
     if (pfnGetProcessMemoryInfo == nullptr)
     {
       return ErrorCode(18);
+    }
+  }
+
+  pfnGetModuleFileNameExA = (PfnGetModuleFileNameExA)kernel32.GetProcAddress(_T("K32GetModuleFileNameExA"));
+  if (pfnGetModuleFileNameExA == nullptr)
+  {
+    VU_OBJ_GET_API(psapi, GetModuleFileNameExA);
+    if (pfnGetModuleFileNameExA == nullptr)
+    {
+      return ErrorCode(19);
+    }
+  }
+
+  pfnGetModuleFileNameExW = (PfnGetModuleFileNameExW)kernel32.GetProcAddress(_T("K32GetModuleFileNameExW")); 
+  if (pfnGetModuleFileNameExW == nullptr)
+  {
+    VU_OBJ_GET_API(psapi, GetModuleFileNameExW);
+    if (pfnGetModuleFileNameExW == nullptr)
+    {
+      return ErrorCode(20);
+    }
+  }
+
+  pfnGetModuleInformation = (PfnGetModuleInformation)kernel32.GetProcAddress(_T("K32GetModuleInformation"));
+  if (pfnGetModuleInformation == nullptr)
+  {
+    VU_OBJ_GET_API(psapi, GetModuleInformation)
+    if (pfnGetModuleInformation == nullptr)
+    {
+      return ErrorCode(21);
     }
   }
 

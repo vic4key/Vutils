@@ -35,5 +35,15 @@ DEF_SAMPLE(Process)
     std::cout << std::endl;
   }
 
+  for (const auto& module : process.GetModules())
+  {
+    static int idx = 0;
+    std::cout << ++idx << ". MID = " << LPVOID(module.hModule) << std::endl;
+    std::cout << "\tBase Address = " << LPVOID(module.modBaseAddr) << std::endl;
+    std::cout << "\tBase Size = " << vu::FormatBytesA(module.modBaseSize) << std::endl;
+    std::cout << "\tModule = " << module.szModule << std::endl;
+    std::cout << std::endl;
+  }
+
   return vu::VU_OK;
 }

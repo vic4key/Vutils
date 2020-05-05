@@ -1122,4 +1122,61 @@ const CProcess::Threads& CProcess::GetThreads()
   return m_Threads;
 }
 
+#pragma push_macro("MODULEENTRY32")
+#pragma push_macro("Module32First")
+#pragma push_macro("Module32Next")
+#undef MODULEENTRY32
+#undef Module32First
+#undef Module32Next
+
+const CProcess::Modules& CProcess::GetModules()
+{
+  m_Modules.clear();
+
+  if (m_PID == INVALID_PID_VALUE)
+  {
+    return m_Modules;
+  }
+
+  ulong   cbNeeded = 0;
+  HMODULE hModules[MAX_NMODULES] = { 0 };
+  pfnEnumProcessModulesEx(m_Handle, hModules, sizeof(hModules), &cbNeeded, LIST_MODULES_ALL);
+
+  char s[MAX_PATH] = { 0 };
+
+  for (auto& hModule : hModules)
+  {
+    if (hModule == nullptr)
+    {
+      break;
+    }
+
+    MODULEENTRY32 me32 = { 0 };
+    me32.dwSize  = sizeof(me32);
+    me32.hModule = hModule;
+    me32.th32ProcessID = m_PID;
+
+    ZeroMemory(s, sizeof(s));
+    pfnGetModuleBaseNameA(m_Handle, hModule, s, sizeof(s));
+    strcpy_s(me32.szModule, s);
+
+    ZeroMemory(s, sizeof(s));
+    pfnGetModuleFileNameExA(m_Handle, hModule, s, sizeof(s));
+    strcpy_s(me32.szExePath, s);
+
+    MODULEINFO_PTR mi = { 0 };
+    pfnGetModuleInformation(m_Handle, hModule, &mi, sizeof(mi));
+    me32.modBaseAddr = reinterpret_cast<BYTE*>(mi.lpBaseOfDll);
+    me32.modBaseSize = static_cast<DWORD>(mi.SizeOfImage);
+
+    m_Modules.emplace_back(*reinterpret_cast<vu::MODULEENTRY32*>(&me32));
+  }
+
+  return m_Modules;
+}
+
+#pragma pop_macro("Module32Next")
+#pragma pop_macro("Module32First")
+#pragma pop_macro("MODULEENTRY32")
+
 } // namespace vu

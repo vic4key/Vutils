@@ -115,6 +115,11 @@ typedef BOOL (WINAPI *PfnEnumProcesses)(DWORD *pProcessIds, DWORD cb, DWORD *pBy
 typedef DWORD (WINAPI *PfnGetModuleBaseNameA)(HANDLE hProcess, HMODULE hModule, LPSTR lpBaseName, DWORD nSize);
 typedef DWORD (WINAPI *PfnGetModuleBaseNameW)(HANDLE hProcess, HMODULE hModule, LPWSTR lpBaseName, DWORD nSize);
 
+typedef DWORD (WINAPI* PfnGetModuleFileNameExA)(HANDLE hProcess, HMODULE hModule, LPSTR lpFilename, DWORD nSize);
+typedef DWORD (WINAPI* PfnGetModuleFileNameExW)(HANDLE hProcess, HMODULE hModule, LPWSTR lpFilename, DWORD nSize);
+
+typedef BOOL  (WINAPI *PfnGetModuleInformation)(HANDLE hProcess, HMODULE hModule, LPMODULEINFO_PTR lpmodinfo, DWORD cb);
+
 typedef BOOL (WINAPI *PfnQueryFullProcessImageNameA)(HANDLE hProcess, DWORD  dwFlags, LPSTR lpExeName, PDWORD lpdwSize);
 typedef BOOL (WINAPI *PfnQueryFullProcessImageNameW)(HANDLE hProcess, DWORD  dwFlags, LPWSTR lpExeName, PDWORD lpdwSize);
 
@@ -143,6 +148,11 @@ extern PfnEnumProcesses pfnEnumProcesses;
 
 extern PfnGetModuleBaseNameA pfnGetModuleBaseNameA;
 extern PfnGetModuleBaseNameW pfnGetModuleBaseNameW;
+
+extern PfnGetModuleFileNameExA pfnGetModuleFileNameExA;
+extern PfnGetModuleFileNameExW pfnGetModuleFileNameExW;
+
+extern PfnGetModuleInformation pfnGetModuleInformation;
 
 extern PfnQueryFullProcessImageNameA pfnQueryFullProcessImageNameA;
 extern PfnQueryFullProcessImageNameW pfnQueryFullProcessImageNameW;

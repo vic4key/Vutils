@@ -2556,10 +2556,37 @@ typedef struct tagTHREADENTRY32
 typedef THREADENTRY32* PTHREADENTRY32;
 typedef THREADENTRY32* LPTHREADENTRY32;
 
+#ifndef MAX_MODULE_NAME32
+#define MAX_MODULE_NAME32 255
+#endif // !MAX_MODULE_NAME32
+
+typedef struct tagMODULEENTRY32
+{
+  DWORD   dwSize;
+  DWORD   th32ModuleID;       // This module
+  DWORD   th32ProcessID;      // owning process
+  DWORD   GlblcntUsage;       // Global usage count on the module
+  DWORD   ProccntUsage;       // Module usage count in th32ProcessID's context
+  BYTE*   modBaseAddr;        // Base address of module in th32ProcessID's context
+  DWORD   modBaseSize;        // Size in bytes of module starting at modBaseAddr
+  HMODULE hModule;            // The hModule of this module in th32ProcessID's context
+  char    szModule[MAX_MODULE_NAME32 + 1];
+  char    szExePath[MAX_PATH];
+} MODULEENTRY32;
+typedef MODULEENTRY32* PMODULEENTRY32;
+typedef MODULEENTRY32* LPMODULEENTRY32;
+
+typedef struct _MODULEINFO_PTR {
+  DWORD_PTR lpBaseOfDll;
+  DWORD_PTR SizeOfImage;
+  DWORD_PTR EntryPoint;
+} MODULEINFO_PTR, * LPMODULEINFO_PTR;
+
 class CProcess : public CLastError
 {
 public:
   typedef std::vector<THREADENTRY32> Threads;
+  typedef std::vector<MODULEENTRY32> Modules;
 
   CProcess();
   CProcess(const ulong PID);
@@ -2587,6 +2614,7 @@ public:
   PROCESS_TIME_COUNTERS GetTimeInformation();
   PROCESS_IO_COUNTERS GetIOInformation();
   const Threads& GetThreads();
+  const Modules& GetModules();
 
 private:
   HANDLE Open(const ulong PID);
@@ -2605,6 +2633,7 @@ private:
   int64_t m_LastSystemTimePerCoreUTC;
 
   Threads m_Threads;
+  Modules m_Modules;
 };
 
 /*---------- The definition of common structure(s) which compatible both ANSI & UNICODE ----------*/
