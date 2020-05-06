@@ -78,6 +78,62 @@ eWow64 vuapi IsWow64(const HANDLE hProcess)
   return (bWow64 ? WOW64_YES : WOW64_NO);
 }
 
+bool CProcess::Is64Bits(HANDLE Handle)
+{
+  if (Handle == nullptr)
+  {
+    Handle = GetCurrentProcess();
+  }
+
+  CProcess process;
+  process.Attach(Handle);
+  assert(process.Ready());
+
+  return process.Bits() == eXBit::x64;
+}
+
+bool CProcess::Is64Bits(ulong PID)
+{
+  if (PID == NULL)
+  {
+    PID = GetCurrentProcessId();
+  }
+
+  CProcess process;
+  process.Attach(PID);
+  assert(process.Ready());
+
+  return process.Bits() == eXBit::x64;
+}
+
+bool CProcess::IsWow64(HANDLE Handle)
+{
+  if (Handle == nullptr)
+  {
+    Handle = GetCurrentProcess();
+  }
+
+  CProcess process;
+  process.Attach(Handle);
+  assert(process.Ready());
+
+  return process.Wow64() == eWow64::WOW64_YES;
+}
+
+bool CProcess::IsWow64(ulong PID)
+{
+  if (PID == NULL)
+  {
+    PID = GetCurrentProcessId();
+  }
+
+  CProcess process;
+  process.Attach(PID);
+  assert(process.Ready());
+
+  return process.Wow64() == eWow64::WOW64_YES;
+}
+
 bool vuapi RPM(const HANDLE hProcess, const void* lpAddress, void* lpBuffer, const SIZE_T ulSize, const bool force)
 {
   ulong  ulOldProtect = 0;
@@ -370,6 +426,11 @@ std::string vuapi PIDToNameA(ulong ulPID)
   std::string s;
   s.clear();
 
+  if (InitTlHelp32() != VU_OK)
+  {
+    return s;
+  }
+
   SetPrivilege(SE_DEBUG_NAME, true);
   HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ulPID);
   SetPrivilege(SE_DEBUG_NAME, false);
@@ -387,7 +448,7 @@ std::string vuapi PIDToNameA(ulong ulPID)
 
   CloseHandle(hProcess);
 
-  if (ret == 0)
+  if (ret == FALSE)
   {
     return s;
   }
@@ -404,10 +465,15 @@ std::wstring vuapi PIDToNameW(ulong ulPID)
   std::wstring s;
   s.clear();
 
+  if (InitTlHelp32() != VU_OK)
+  {
+    return s;
+  }
+
   SetPrivilege(SE_DEBUG_NAME, true);
   HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ulPID);
   SetPrivilege(SE_DEBUG_NAME, false);
-  if (hProcess == INVALID_HANDLE_VALUE)
+  if (hProcess == nullptr)
   {
     return s;
   }
@@ -421,7 +487,7 @@ std::wstring vuapi PIDToNameW(ulong ulPID)
 
   CloseHandle(hProcess);
 
-  if (ret == 0)
+  if (ret == FALSE)
   {
     return s;
   }
@@ -455,7 +521,7 @@ HMODULE vuapi Remote64GetModuleHandleA(const ulong ulPID, const std::string& Mod
   SetPrivilege(SE_DEBUG_NAME, true);
   auto hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ulPID);
   SetPrivilege(SE_DEBUG_NAME, false);
-  if (hProcess == 0 || hProcess == INVALID_HANDLE_VALUE)
+  if (hProcess == nullptr)
   {
     return result;
   }
@@ -631,7 +697,7 @@ VUResult vuapi InjectDLLA(ulong ulPID, const std::string& DLLFilePath, bool Wait
   SetPrivilege(SE_DEBUG_NAME, true);
   std::shared_ptr<void> hp(OpenProcess(CREATE_THREAD_ACCESS, FALSE, ulPID), CloseHandle);
   SetPrivilege(SE_DEBUG_NAME, false);
-  if (hp.get() == INVALID_HANDLE_VALUE)
+  if (hp.get() == nullptr)
   {
     return 4;
   }
@@ -716,7 +782,7 @@ VUResult vuapi InjectDLLW(ulong ulPID, const std::wstring& DLLFilePath, bool Wai
   SetPrivilege(SE_DEBUG_NAME, true);
   std::shared_ptr<void> hp(OpenProcess(CREATE_THREAD_ACCESS, FALSE, ulPID), CloseHandle);
   SetPrivilege(SE_DEBUG_NAME, false);
-  if (hp.get() == INVALID_HANDLE_VALUE)
+  if (hp.get() == nullptr)
   {
     return 4;
   }
@@ -778,7 +844,7 @@ VUResult vuapi InjectDLLW(ulong ulPID, const std::wstring& DLLFilePath, bool Wai
 
 CProcess::CProcess()
   : m_PID(INVALID_PID_VALUE)
-  , m_Handle(INVALID_HANDLE_VALUE)
+  , m_Handle(nullptr)
   , m_Wow64(eWow64::WOW64_ERROR)
   , m_Bit(eXBit::x86)
   , m_Name(L"")
@@ -789,7 +855,7 @@ CProcess::CProcess()
 
 CProcess::CProcess(const vu::ulong PID)
   : m_PID(PID)
-  , m_Handle(INVALID_HANDLE_VALUE)
+  , m_Handle(nullptr)
   , m_Wow64(eWow64::WOW64_ERROR)
   , m_Bit(eXBit::x86)
   , m_Name(L"")
@@ -836,9 +902,24 @@ std::ostream& operator<<(std::ostream& os, const CProcess& process)
   return os;
 }
 
+const vu::ulong CProcess::PID() const
+{
+  return m_PID;
+}
+
+const HANDLE CProcess::Handle() const
+{
+  return m_Handle;
+}
+
+const std::wstring& CProcess::Name() const
+{
+  return m_Name;
+}
+
 bool CProcess::Ready()
 {
-  return m_Handle != nullptr && m_Handle != INVALID_HANDLE_VALUE;
+  return m_Handle != nullptr;
 }
 
 bool CProcess::Attach(const ulong PID)
@@ -849,7 +930,7 @@ bool CProcess::Attach(const ulong PID)
   }
 
   auto Handle = Open(PID);
-  if (Handle == INVALID_HANDLE_VALUE)
+  if (Handle == nullptr)
   {
     return false;
   }
@@ -859,7 +940,7 @@ bool CProcess::Attach(const ulong PID)
 
 bool CProcess::Attach(const HANDLE Handle)
 {
-  if (Handle == INVALID_HANDLE_VALUE)
+  if (Handle == nullptr)
   {
     return false;
   }
@@ -880,12 +961,12 @@ bool CProcess::Attach(const HANDLE Handle)
   return true;
 }
 
-vu::eWow64 CProcess::Wow64() const
+const vu::eWow64 CProcess::Wow64() const
 {
   return m_Wow64;
 }
 
-vu::eXBit CProcess::Bits() const
+const vu::eXBit CProcess::Bits() const
 {
   return m_Bit;
 }
@@ -1042,16 +1123,16 @@ HANDLE CProcess::Open(const ulong PID)
 {
   if (PID == INVALID_PID_VALUE)
   {
-    return INVALID_HANDLE_VALUE;
+    return nullptr;
   }
 
   SetPrivilege(SE_DEBUG_NAME, true);
   SetLastError(ERROR_SUCCESS);
 
-  auto result = OpenProcess(PROCESS_ALL_ACCESS, FALSE, m_PID);
+  auto result = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
   if (result == nullptr)
   {
-    result = INVALID_HANDLE_VALUE;
+    result = nullptr;
   }
 
   m_LastErrorCode = GetLastError();
@@ -1064,7 +1145,7 @@ HANDLE CProcess::Open(const ulong PID)
 
 bool CProcess::Close(const HANDLE Handle)
 {
-  if (Handle == INVALID_HANDLE_VALUE)
+  if (Handle == nullptr)
   {
     return false;
   }
@@ -1074,7 +1155,7 @@ bool CProcess::Close(const HANDLE Handle)
 
 void CProcess::Parse()
 {
-  m_Wow64 = IsWow64(m_Handle);
+  m_Wow64 = vu::IsWow64(m_Handle);
 
   if (GetProcessorArchitecture() == vu::PA_X64)
   {
