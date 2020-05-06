@@ -78,62 +78,6 @@ eWow64 vuapi IsWow64(const HANDLE hProcess)
   return (bWow64 ? WOW64_YES : WOW64_NO);
 }
 
-bool CProcess::Is64Bits(HANDLE Handle)
-{
-  if (Handle == nullptr)
-  {
-    Handle = GetCurrentProcess();
-  }
-
-  CProcess process;
-  process.Attach(Handle);
-  assert(process.Ready());
-
-  return process.Bits() == eXBit::x64;
-}
-
-bool CProcess::Is64Bits(ulong PID)
-{
-  if (PID == NULL)
-  {
-    PID = GetCurrentProcessId();
-  }
-
-  CProcess process;
-  process.Attach(PID);
-  assert(process.Ready());
-
-  return process.Bits() == eXBit::x64;
-}
-
-bool CProcess::IsWow64(HANDLE Handle)
-{
-  if (Handle == nullptr)
-  {
-    Handle = GetCurrentProcess();
-  }
-
-  CProcess process;
-  process.Attach(Handle);
-  assert(process.Ready());
-
-  return process.Wow64() == eWow64::WOW64_YES;
-}
-
-bool CProcess::IsWow64(ulong PID)
-{
-  if (PID == NULL)
-  {
-    PID = GetCurrentProcessId();
-  }
-
-  CProcess process;
-  process.Attach(PID);
-  assert(process.Ready());
-
-  return process.Wow64() == eWow64::WOW64_YES;
-}
-
 bool vuapi RPM(const HANDLE hProcess, const void* lpAddress, void* lpBuffer, const SIZE_T ulSize, const bool force)
 {
   ulong  ulOldProtect = 0;
@@ -927,8 +871,62 @@ const vu::eXBit CProcess::Bits() const
   return m_Bit;
 }
 
-bool CProcess::Ready()
+bool CProcess::Is64Bits(HANDLE Handle)
 {
+  if (Handle == nullptr)
+  {
+    Handle = GetCurrentProcess();
+  }
+
+  CProcessX process;
+  process.Attach(Handle);
+  assert(process.Ready());
+
+  return process.Bits() == eXBit::x64;
+}
+
+bool CProcess::Is64Bits(ulong PID)
+{
+  if (PID == NULL)
+  {
+    PID = GetCurrentProcessId();
+  }
+
+  CProcessX process;
+  process.Attach(PID);
+  assert(process.Ready());
+
+  return process.Bits() == eXBit::x64;
+}
+
+bool CProcess::IsWow64(HANDLE Handle)
+{
+  if (Handle == nullptr)
+  {
+    Handle = GetCurrentProcess();
+  }
+
+  CProcessX process;
+  process.Attach(Handle);
+  assert(process.Ready());
+
+  return process.Wow64() == eWow64::WOW64_YES;
+}
+
+bool CProcess::IsWow64(ulong PID)
+{
+  if (PID == NULL)
+  {
+    PID = GetCurrentProcessId();
+  }
+
+  CProcessX process;
+  process.Attach(PID);
+  assert(process.Ready());
+
+  return process.Wow64() == eWow64::WOW64_YES;
+}
+
   return m_Handle != nullptr;
 }
 

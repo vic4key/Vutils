@@ -2608,9 +2608,9 @@ public:
   bool Attach(const HANDLE Handle);
 
   static bool Is64Bits(HANDLE Handle = nullptr);
-  static bool Is64Bits(ulong /*PID = NULL*/);
+  static bool Is64Bits(ulong PID/* = NULL*/);
   static bool IsWow64(HANDLE Handle = nullptr);
-  static bool IsWow64(ulong /*PID = NULL*/);
+  static bool IsWow64(ulong PID/* = NULL*/);
 
   bool Read(const  ulongptr Address, CBinary& Data);
   bool Read(const  ulongptr Address, void* pData, const ulong ulSize);
