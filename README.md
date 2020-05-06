@@ -20,13 +20,13 @@ It helps your programming go easier, faster and simpler.
 # Features
 
 * Classes
-	* Process
 	* GUID
 	* Binary
 	* Library
 	* Socket
 	* Service
 	* Registry
+	* Process
 	* INI File
 	* PE File
 	* Stop Watch
@@ -48,6 +48,7 @@ It helps your programming go easier, faster and simpler.
 	* Message Debug Formatting
 	* String Formatting/Manipulation
 	* File/Directory Manipulation
+	* Process Manipulation
 	* Window Manipulation
 	* Window Message Decoder
 	* Miscellaneous

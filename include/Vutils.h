@@ -2556,52 +2556,30 @@ typedef struct tagTHREADENTRY32
 typedef THREADENTRY32* PTHREADENTRY32;
 typedef THREADENTRY32* LPTHREADENTRY32;
 
-#ifndef MAX_MODULE_NAME32
-#define MAX_MODULE_NAME32 255
-#endif // !MAX_MODULE_NAME32
-
-typedef struct tagMODULEENTRY32
-{
-  DWORD   dwSize;
-  DWORD   th32ModuleID;       // This module
-  DWORD   th32ProcessID;      // owning process
-  DWORD   GlblcntUsage;       // Global usage count on the module
-  DWORD   ProccntUsage;       // Module usage count in th32ProcessID's context
-  BYTE*   modBaseAddr;        // Base address of module in th32ProcessID's context
-  DWORD   modBaseSize;        // Size in bytes of module starting at modBaseAddr
-  HMODULE hModule;            // The hModule of this module in th32ProcessID's context
-  char    szModule[MAX_MODULE_NAME32 + 1];
-  char    szExePath[MAX_PATH];
-} MODULEENTRY32;
-typedef MODULEENTRY32* PMODULEENTRY32;
-typedef MODULEENTRY32* LPMODULEENTRY32;
-
 typedef struct _MODULEINFO_PTR {
   DWORD_PTR lpBaseOfDll;
   DWORD_PTR SizeOfImage;
   DWORD_PTR EntryPoint;
 } MODULEINFO_PTR, * LPMODULEINFO_PTR;
 
-class CProcess : public CLastError
+class CProcessX : public CLastError
 {
 public:
   typedef std::vector<THREADENTRY32> Threads;
-  typedef std::vector<MODULEENTRY32> Modules;
 
-  CProcess();
-  CProcess(const ulong PID);
-  virtual ~CProcess();
+  CProcessX();
+  // CProcessX(const ulong PID);
+  virtual ~CProcessX();
 
-  CProcess& operator=(const CProcess& right);
-  bool operator==(const CProcess& right);
-  bool operator!=(const CProcess& right);
-  friend std::ostream& operator<<(std::ostream& os, const CProcess& process);
+  // CProcessX(CProcessX& right);
+  // CProcessX& operator=(CProcessX& right);
+  bool operator==(CProcessX& right);
+  bool operator!=(CProcessX& right);
 
   const ulong  PID() const;
   const HANDLE Handle() const;
   const eWow64 Wow64() const;
   const eXBit  Bits() const;
-  const std::wstring& Name() const;
 
   bool Ready();
   bool Attach(const ulong PID);
@@ -2622,25 +2600,112 @@ public:
   PROCESS_TIME_COUNTERS GetTimeInformation();
   PROCESS_IO_COUNTERS GetIOInformation();
   const Threads& GetThreads();
-  const Modules& GetModules();
+
+protected:
+  virtual void Parse();
 
 private:
   HANDLE Open(const ulong PID);
   bool Close(const HANDLE Handle);
-  void Parse();
   double GetCPUPercentUsage();
 
-private:
+protected:
   ulong  m_PID;
   HANDLE m_Handle;
   eWow64 m_Wow64;
   eXBit  m_Bit;
-  std::wstring m_Name;
 
   int64_t m_LastSystemTimeUTC;
   int64_t m_LastSystemTimePerCoreUTC;
 
   Threads m_Threads;
+};
+
+#ifndef MAX_MODULE_NAME32
+#define MAX_MODULE_NAME32 255
+#endif // !MAX_MODULE_NAME32
+
+typedef struct tagMODULEENTRY32
+{
+  DWORD   dwSize;
+  DWORD   th32ModuleID;       // This module
+  DWORD   th32ProcessID;      // owning process
+  DWORD   GlblcntUsage;       // Global usage count on the module
+  DWORD   ProccntUsage;       // Module usage count in th32ProcessID's context
+  BYTE* modBaseAddr;        // Base address of module in th32ProcessID's context
+  DWORD   modBaseSize;        // Size in bytes of module starting at modBaseAddr
+  HMODULE hModule;            // The hModule of this module in th32ProcessID's context
+  char    szModule[MAX_MODULE_NAME32 + 1];
+  char    szExePath[MAX_PATH];
+} MODULEENTRY32;
+typedef MODULEENTRY32* PMODULEENTRY32;
+typedef MODULEENTRY32* LPMODULEENTRY32;
+
+class CProcessA : public CProcessX
+{
+public:
+  typedef std::vector<MODULEENTRY32> Modules;
+
+  CProcessA();
+  // CProcessA(const ulong PID);
+  virtual ~CProcessA();
+
+  // CProcessA(CProcessA& right);
+  // CProcessA& operator=(CProcessA& right);
+  bool operator==(CProcessA& right);
+  bool operator!=(CProcessA& right);
+  friend std::ostream& operator<<(std::ostream& os, CProcessA& process);
+
+  const std::string& Name() const;
+  const Modules& GetModules();
+
+protected:
+  virtual void Parse();
+
+protected:
+  std::string m_Name;
+  Modules m_Modules;
+};
+
+typedef struct tagMODULEENTRY32W
+{
+  DWORD   dwSize;
+  DWORD   th32ModuleID;       // This module
+  DWORD   th32ProcessID;      // owning process
+  DWORD   GlblcntUsage;       // Global usage count on the module
+  DWORD   ProccntUsage;       // Module usage count in th32ProcessID's context
+  BYTE*   modBaseAddr;        // Base address of module in th32ProcessID's context
+  DWORD   modBaseSize;        // Size in bytes of module starting at modBaseAddr
+  HMODULE hModule;            // The hModule of this module in th32ProcessID's context
+  WCHAR   szModule[MAX_MODULE_NAME32 + 1];
+  WCHAR   szExePath[MAX_PATH];
+} MODULEENTRY32W;
+typedef MODULEENTRY32W* PMODULEENTRY32W;
+typedef MODULEENTRY32W* LPMODULEENTRY32W;
+
+class CProcessW : public CProcessX
+{
+public:
+  typedef std::vector<MODULEENTRY32W> Modules;
+
+  CProcessW();
+  // CProcessW(const ulong PID);
+  virtual ~CProcessW();
+
+  // CProcessW(CProcessW& right);
+  // CProcessW& operator=(CProcessW& right);
+  bool operator==(CProcessW& right);
+  bool operator!=(CProcessW& right);
+  friend std::ostream& operator<<(std::ostream& os, CProcessW& process);
+
+  const std::wstring& Name() const;
+  const Modules& GetModules();
+
+protected:
+  virtual void Parse();
+
+protected:
+  std::wstring m_Name;
   Modules m_Modules;
 };
 
@@ -2658,6 +2723,7 @@ private:
 #define CGUID CGUIDW
 #define CAPIHook CAPIHookW
 #define CWMHook CWMHookW
+#define CProcess CProcessW
 #define CService CServiceW
 #define CLibrary CLibraryW
 #define CFileSystem CFileSystemW
@@ -2669,6 +2735,7 @@ private:
 #define CGUID CGUIDA
 #define CAPIHook CAPIHookA
 #define CWMHook CWMHookA
+#define CProcess CProcessA
 #define CService CServiceA
 #define CLibrary CLibraryA
 #define CFileSystem CFileSystemA

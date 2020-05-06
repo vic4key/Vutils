@@ -783,95 +783,85 @@ VUResult vuapi InjectDLLW(ulong ulPID, const std::wstring& DLLFilePath, bool Wai
 }
 
 /**
- * CProcess
+ * Process
  */
 
-CProcess::CProcess()
+CProcessX::CProcessX()
   : m_PID(INVALID_PID_VALUE)
   , m_Handle(nullptr)
   , m_Wow64(eWow64::WOW64_ERROR)
   , m_Bit(eXBit::x86)
-  , m_Name(L"")
   , m_LastSystemTimeUTC(0)
   , m_LastSystemTimePerCoreUTC(0)
 {
 }
 
-CProcess::CProcess(const vu::ulong PID)
-  : m_PID(PID)
-  , m_Handle(nullptr)
-  , m_Wow64(eWow64::WOW64_ERROR)
-  , m_Bit(eXBit::x86)
-  , m_Name(L"")
-  , m_LastSystemTimeUTC(0)
-  , m_LastSystemTimePerCoreUTC(0)
-{
-  Attach(m_PID);
-}
+// CProcessX::CProcessX(const vu::ulong PID)
+//   : m_PID(PID)
+//   , m_Handle(nullptr)
+//   , m_Wow64(eWow64::WOW64_ERROR)
+//   , m_Bit(eXBit::x86)
+//   , m_LastSystemTimeUTC(0)
+//   , m_LastSystemTimePerCoreUTC(0)
+// {
+//   Attach(m_PID);
+// }
 
-CProcess::~CProcess()
+CProcessX::~CProcessX()
 {
   Close(m_Handle);
 }
 
-CProcess& CProcess::operator=(const CProcess& right)
-{
-  m_PID = right.m_PID;
-  m_Handle = right.m_Handle;
-  m_Wow64 = right.m_Wow64;
-  m_Bit = right.m_Bit;
-  m_Name = right.m_Name;
-  return *this;
-}
+// CProcessX::CProcessX(CProcessX& right)
+// {
+//   *this = right;
+// }
 
-bool CProcess::operator==(const CProcess& right)
+// CProcessX& CProcessX::operator=(CProcessX& right)
+// {
+//   m_PID = right.m_PID;
+//   m_Handle = right.m_Handle;
+//   m_Wow64 = right.m_Wow64;
+//   m_Bit = right.m_Bit;
+//   return *this;
+// }
+
+bool CProcessX::operator==(CProcessX& right)
 {
   bool result = true;
   result &= m_PID == right.m_PID;
   result &= m_Handle == right.m_Handle;
   result &= m_Wow64 == right.m_Wow64;
   result &= m_Bit == right.m_Bit;
-  result &= m_Name == right.m_Name;
   return result;
 }
 
-bool CProcess::operator!=(const CProcess& right)
+bool CProcessX::operator!=(CProcessX& right)
 {
   return !(*this == right);
 }
 
-std::ostream& operator<<(std::ostream& os, const CProcess& process)
-{
-  assert(0);
-  return os;
-}
-
-const vu::ulong CProcess::PID() const
+const vu::ulong CProcessX::PID() const
 {
   return m_PID;
 }
 
-const HANDLE CProcess::Handle() const
+const HANDLE CProcessX::Handle() const
 {
   return m_Handle;
 }
 
-const std::wstring& CProcess::Name() const
-{
-  return m_Name;
-}
-
-const vu::eWow64 CProcess::Wow64() const
+const vu::eWow64 CProcessX::Wow64() const
 {
   return m_Wow64;
 }
 
-const vu::eXBit CProcess::Bits() const
+const vu::eXBit CProcessX::Bits() const
 {
   return m_Bit;
 }
 
-bool CProcess::Is64Bits(HANDLE Handle)
+bool CProcessX::Is64Bits(HANDLE Handle)
 {
   if (Handle == nullptr)
   {
@@ -885,9 +875,9 @@ bool CProcess::Is64Bits(HANDLE Handle)
   return process.Bits() == eXBit::x64;
 }
 
-bool CProcess::Is64Bits(ulong PID)
+bool CProcessX::Is64Bits(ulong PID)
 {
-  if (PID == NULL)
+  if (PID == 0)
   {
     PID = GetCurrentProcessId();
   }
@@ -899,7 +889,7 @@ bool CProcess::Is64Bits(ulong PID)
   return process.Bits() == eXBit::x64;
 }
 
-bool CProcess::IsWow64(HANDLE Handle)
+bool CProcessX::IsWow64(HANDLE Handle)
 {
   if (Handle == nullptr)
   {
@@ -913,9 +903,9 @@ bool CProcess::IsWow64(HANDLE Handle)
   return process.Wow64() == eWow64::WOW64_YES;
 }
 
-bool CProcess::IsWow64(ulong PID)
+bool CProcessX::IsWow64(ulong PID)
 {
-  if (PID == NULL)
+  if (PID == 0)
   {
     PID = GetCurrentProcessId();
   }
@@ -932,7 +922,7 @@ bool CProcessX::Ready()
   return m_Handle != nullptr;
 }
 
-bool CProcess::Attach(const ulong PID)
+bool CProcessX::Attach(const ulong PID)
 {
   if (PID == INVALID_PID_VALUE)
   {
@@ -948,7 +938,7 @@ bool CProcess::Attach(const ulong PID)
   return Attach(Handle);
 }
 
-bool CProcess::Attach(const HANDLE Handle)
+bool CProcessX::Attach(const HANDLE Handle)
 {
   if (Handle == nullptr)
   {
@@ -971,7 +961,7 @@ bool CProcess::Attach(const HANDLE Handle)
   return true;
 }
 
-HANDLE CProcess::Open(const ulong PID)
+HANDLE CProcessX::Open(const ulong PID)
 {
   if (PID == INVALID_PID_VALUE)
   {
@@ -995,7 +985,7 @@ HANDLE CProcess::Open(const ulong PID)
   return result;
 }
 
-bool CProcess::Close(const HANDLE Handle)
+bool CProcessX::Close(const HANDLE Handle)
 {
   if (Handle == nullptr)
   {
@@ -1005,7 +995,7 @@ bool CProcess::Close(const HANDLE Handle)
   return CloseHandle(m_Handle) != FALSE;
 }
 
-void CProcess::Parse()
+void CProcessX::Parse()
 {
   m_Wow64 = vu::IsWow64(m_Handle);
 
@@ -1017,11 +1007,9 @@ void CProcess::Parse()
   {
     m_Bit = eXBit::x86;
   }
-
-  m_Name = PIDToNameW(m_PID);
 }
 
-bool CProcess::Read(const ulongptr Address, CBinary& Data)
+bool CProcessX::Read(const ulongptr Address, CBinary& Data)
 {
   if (Address == 0 || Data.GetSize() == 0)
   {
@@ -1031,7 +1019,7 @@ bool CProcess::Read(const ulongptr Address, CBinary& Data)
   return Read(Address, Data.GetpData(), Data.GetSize());
 }
 
-bool CProcess::Read(const ulongptr Address, void* pData, const ulong ulSize)
+bool CProcessX::Read(const ulongptr Address, void* pData, const ulong ulSize)
 {
   if (Address == 0 || pData == 0 || ulSize == 0)
   {
@@ -1045,12 +1033,12 @@ bool CProcess::Read(const ulongptr Address, void* pData, const ulong ulSize)
   return result;
 }
 
-bool CProcess::Write(const ulongptr Address, const CBinary& Data)
+bool CProcessX::Write(const ulongptr Address, const CBinary& Data)
 {
   return Write(Address, Data.GetpData(), Data.GetSize());
 }
 
-bool CProcess::Write(const ulongptr Address, const void* pData, const ulong ulSize)
+bool CProcessX::Write(const ulongptr Address, const void* pData, const ulong ulSize)
 {
   if (Address == 0 || pData == 0 || ulSize == 0)
   {
@@ -1064,7 +1052,7 @@ bool CProcess::Write(const ulongptr Address, const void* pData, const ulong ulSi
   return result;
 }
 
-double CProcess::GetCPUPercentUsage()
+double CProcessX::GetCPUPercentUsage()
 {
   const auto FileTimeToUTC = [](const FILETIME * FileTime) -> uint64_t
   {
@@ -1106,7 +1094,7 @@ double CProcess::GetCPUPercentUsage()
   return result;
 };
 
-PROCESS_CPU_COUNTERS CProcess::GetCPUInformation(const double interval)
+PROCESS_CPU_COUNTERS CProcessX::GetCPUInformation(const double interval)
 {
   PROCESS_CPU_COUNTERS result = { 0 };
 
@@ -1132,7 +1120,7 @@ PROCESS_CPU_COUNTERS CProcess::GetCPUInformation(const double interval)
   return result;
 }
 
-PROCESS_MEMORY_COUNTERS CProcess::GetMemoryInformation()
+PROCESS_MEMORY_COUNTERS CProcessX::GetMemoryInformation()
 {
   PROCESS_MEMORY_COUNTERS result = { 0 };
 
@@ -1146,7 +1134,7 @@ PROCESS_MEMORY_COUNTERS CProcess::GetMemoryInformation()
   return result;
 }
 
-PROCESS_TIME_COUNTERS CProcess::GetTimeInformation()
+PROCESS_TIME_COUNTERS CProcessX::GetTimeInformation()
 {
   PROCESS_TIME_COUNTERS result = { 0 };
 
@@ -1160,7 +1148,7 @@ PROCESS_TIME_COUNTERS CProcess::GetTimeInformation()
   return result;
 }
 
-PROCESS_IO_COUNTERS CProcess::GetIOInformation()
+PROCESS_IO_COUNTERS CProcessX::GetIOInformation()
 {
   PROCESS_IO_COUNTERS result = { 0 };
 
@@ -1169,7 +1157,7 @@ PROCESS_IO_COUNTERS CProcess::GetIOInformation()
   return result;
 }
 
-const CProcess::Threads& CProcess::GetThreads()
+const CProcessX::Threads& CProcessX::GetThreads()
 {
   m_Threads.clear();
 
@@ -1203,14 +1191,68 @@ const CProcess::Threads& CProcess::GetThreads()
   return m_Threads;
 }
 
-#pragma push_macro("MODULEENTRY32")
-#pragma push_macro("Module32First")
-#pragma push_macro("Module32Next")
-#undef MODULEENTRY32
-#undef Module32First
-#undef Module32Next
+CProcessA::CProcessA()
+  : CProcessX()
+  , m_Name("")
+{
+}
 
-const CProcess::Modules& CProcess::GetModules()
+// CProcessA::CProcessA(const ulong PID)
+//   : CProcessX(PID)
+//   , m_Name("")
+// {
+// }
+
+CProcessA::~CProcessA()
+{
+}
+
+// CProcessA::CProcessA(CProcessA& right)
+// {
+//   *this = right;
+// }
+
+// CProcessA& CProcessA::operator=(CProcessA& right)
+// {
+//   CProcessX::operator=(right);
+//   m_Name = right.m_Name;
+//   return *this;
+// }
+
+bool CProcessA::operator==(CProcessA& right)
+{
+  bool result = true;
+  result &= CProcessX::operator==(right);
+  result &= m_Name == right.m_Name;
+  return result;
+}
+
+bool CProcessA::operator!=(CProcessA& right)
+{
+  return !(*this == right);
+}
+
+std::ostream& operator<<(std::ostream& os, CProcessA& process)
+{
+  assert(0);
+  return os;
+}
+
+const std::string& CProcessA::Name() const
+{
+  return m_Name;
+}
+
+void CProcessA::Parse()
+{
+  CProcessX::Parse();
+  m_Name = PIDToNameA(m_PID);
+}
+
+#pragma push_macro("MODULEENTRY32")
+#undef MODULEENTRY32
+
+const CProcessA::Modules& CProcessA::GetModules()
 {
   m_Modules.clear();
 
@@ -1256,8 +1298,114 @@ const CProcess::Modules& CProcess::GetModules()
   return m_Modules;
 }
 
-#pragma pop_macro("Module32Next")
-#pragma pop_macro("Module32First")
 #pragma pop_macro("MODULEENTRY32")
+
+/**
+ * CProcessW
+ */
+
+CProcessW::CProcessW()
+  : CProcessX()
+  , m_Name(L"")
+{
+}
+
+// CProcessW::CProcessW(const ulong PID)
+//   : CProcessX(PID)
+//   , m_Name("")
+// {
+// }
+
+CProcessW::~CProcessW()
+{
+}
+
+// CProcessW::CProcessW(CProcessW& right)
+// {
+//   *this = right;
+// }
+
+// CProcessW& CProcessW::operator=(CProcessW& right)
+// {
+//   CProcessX::operator=(right);
+//   m_Name = right.m_Name;
+//   return *this;
+// }
+
+bool CProcessW::operator==(CProcessW& right)
+{
+  bool result = true;
+  result &= CProcessX::operator==(right);
+  result &= m_Name == right.m_Name;
+  return result;
+}
+
+bool CProcessW::operator!=(CProcessW& right)
+{
+  return !(*this == right);
+}
+
+std::ostream& operator<<(std::ostream& os, CProcessW& process)
+{
+  assert(0);
+  return os;
+}
+
+const std::wstring& CProcessW::Name() const
+{
+  return m_Name;
+}
+
+void CProcessW::Parse()
+{
+  CProcessX::Parse();
+  m_Name = PIDToNameW(m_PID);
+}
+
+const CProcessW::Modules& CProcessW::GetModules()
+{
+  m_Modules.clear();
+
+  if (m_PID == INVALID_PID_VALUE)
+  {
+    return m_Modules;
+  }
+
+  ulong   cbNeeded = 0;
+  HMODULE hModules[MAX_NMODULES] = { 0 };
+  pfnEnumProcessModulesEx(m_Handle, hModules, sizeof(hModules), &cbNeeded, LIST_MODULES_ALL);
+
+  wchar_t s[MAX_PATH] = { 0 };
+
+  for (auto& hModule : hModules)
+  {
+    if (hModule == nullptr)
+    {
+      break;
+    }
+
+    MODULEENTRY32W me32 = { 0 };
+    me32.dwSize = sizeof(me32);
+    me32.hModule = hModule;
+    me32.th32ProcessID = m_PID;
+
+    ZeroMemory(s, sizeof(s));
+    pfnGetModuleBaseNameW(m_Handle, hModule, s, sizeof(s));
+    wcscpy_s(me32.szModule, s);
+
+    ZeroMemory(s, sizeof(s));
+    pfnGetModuleFileNameExW(m_Handle, hModule, s, sizeof(s));
+    wcscpy_s(me32.szExePath, s);
+
+    MODULEINFO_PTR mi = { 0 };
+    pfnGetModuleInformation(m_Handle, hModule, &mi, sizeof(mi));
+    me32.modBaseAddr = reinterpret_cast<BYTE*>(mi.lpBaseOfDll);
+    me32.modBaseSize = static_cast<DWORD>(mi.SizeOfImage);
+
+    m_Modules.emplace_back(*reinterpret_cast<vu::MODULEENTRY32W*>(&me32));
+  }
+
+  return m_Modules;
+}
 
 } // namespace vu
