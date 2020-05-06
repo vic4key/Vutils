@@ -917,6 +917,16 @@ const std::wstring& CProcess::Name() const
   return m_Name;
 }
 
+const vu::eWow64 CProcess::Wow64() const
+{
+  return m_Wow64;
+}
+
+const vu::eXBit CProcess::Bits() const
+{
+  return m_Bit;
+}
+
 bool CProcess::Ready()
 {
   return m_Handle != nullptr;
@@ -961,14 +971,54 @@ bool CProcess::Attach(const HANDLE Handle)
   return true;
 }
 
-const vu::eWow64 CProcess::Wow64() const
+HANDLE CProcess::Open(const ulong PID)
 {
-  return m_Wow64;
+  if (PID == INVALID_PID_VALUE)
+  {
+    return nullptr;
+  }
+
+  SetPrivilege(SE_DEBUG_NAME, true);
+  SetLastError(ERROR_SUCCESS);
+
+  auto result = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
+  if (result == nullptr)
+  {
+    result = nullptr;
+  }
+
+  m_LastErrorCode = GetLastError();
+
+  SetPrivilege(SE_DEBUG_NAME, false);
+  SetLastError(ERROR_SUCCESS);
+
+  return result;
 }
 
-const vu::eXBit CProcess::Bits() const
+bool CProcess::Close(const HANDLE Handle)
 {
-  return m_Bit;
+  if (Handle == nullptr)
+  {
+    return false;
+  }
+
+  return CloseHandle(m_Handle) != FALSE;
+}
+
+void CProcess::Parse()
+{
+  m_Wow64 = vu::IsWow64(m_Handle);
+
+  if (GetProcessorArchitecture() == vu::PA_X64)
+  {
+    m_Bit = m_Wow64 == eWow64::WOW64_YES ? eXBit::x86 : eXBit::x64;
+  }
+  else
+  {
+    m_Bit = eXBit::x86;
+  }
+
+  m_Name = PIDToNameW(m_PID);
 }
 
 bool CProcess::Read(const ulongptr Address, CBinary& Data)
@@ -1117,56 +1167,6 @@ PROCESS_IO_COUNTERS CProcess::GetIOInformation()
   GetProcessIoCounters(m_Handle, &result);
 
   return result;
-}
-
-HANDLE CProcess::Open(const ulong PID)
-{
-  if (PID == INVALID_PID_VALUE)
-  {
-    return nullptr;
-  }
-
-  SetPrivilege(SE_DEBUG_NAME, true);
-  SetLastError(ERROR_SUCCESS);
-
-  auto result = OpenProcess(PROCESS_ALL_ACCESS, FALSE, PID);
-  if (result == nullptr)
-  {
-    result = nullptr;
-  }
-
-  m_LastErrorCode = GetLastError();
-
-  SetPrivilege(SE_DEBUG_NAME, false);
-  SetLastError(ERROR_SUCCESS);
-
-  return result;
-}
-
-bool CProcess::Close(const HANDLE Handle)
-{
-  if (Handle == nullptr)
-  {
-    return false;
-  }
-
-  return CloseHandle(m_Handle) != FALSE;
-}
-
-void CProcess::Parse()
-{
-  m_Wow64 = vu::IsWow64(m_Handle);
-
-  if (GetProcessorArchitecture() == vu::PA_X64)
-  {
-    m_Bit = m_Wow64 == eWow64::WOW64_YES ? eXBit::x86 : eXBit::x64;
-  }
-  else
-  {
-    m_Bit = eXBit::x86;
-  }
-
-  m_Name = PIDToNameW(m_PID);
 }
 
 const CProcess::Threads& CProcess::GetThreads()
