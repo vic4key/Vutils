@@ -927,6 +927,8 @@ bool CProcess::IsWow64(ulong PID)
   return process.Wow64() == eWow64::WOW64_YES;
 }
 
+bool CProcessX::Ready()
+{
   return m_Handle != nullptr;
 }
 
