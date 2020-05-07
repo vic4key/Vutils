@@ -101,7 +101,7 @@ Released under the [MIT](LICENSE) license
 
 # Examples
 
-See more examples in the [`Test`](Test/main.cpp) project.
+See more examples in the [`Test`](Test) project.
 
 # Contact
 Feel free to contact via [Twitter](https://twitter.com/vic4key) or [Gmail](mailto:vic4key@gmail.com) or [Blog](https://vic.onl/)
