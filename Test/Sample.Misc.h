@@ -4,13 +4,7 @@
 
 #include <iomanip>
 
-class Misc : public Sample
-{
-public:
-  virtual vu::IResult run();
-};
-
-vu::IResult Misc::run()
+DEF_SAMPLE(Misc)
 {
   vu::Box(vu::GetConsoleWindow(), _T("I'm %s. I'm %d years old."), _T("Vic P"), 26);
   vu::Msg(_T("I'm %s. I'm %d years old."), _T("Vic P"), 26);

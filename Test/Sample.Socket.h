@@ -2,13 +2,7 @@
 
 #include "Sample.h"
 
-class Socket : public Sample
-{
-public:
-  virtual vu::IResult run();
-};
-
-vu::IResult Socket::run()
+DEF_SAMPLE(Socket)
 {
   const std::string REQ_HOST = "ipv4.download.thinkbroadband.com";
   std::string REQ_CONTENT;
