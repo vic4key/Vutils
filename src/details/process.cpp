@@ -1009,7 +1009,7 @@ void CProcessX::Parse()
   }
 }
 
-bool CProcessX::Read(const ulongptr Address, CBinary& Data)
+bool CProcessX::Read(const ulongptr Address, CBuffer& Data)
 {
   if (Address == 0 || Data.GetSize() == 0)
   {
@@ -1033,7 +1033,7 @@ bool CProcessX::Read(const ulongptr Address, void* pData, const ulong ulSize)
   return result;
 }
 
-bool CProcessX::Write(const ulongptr Address, const CBinary& Data)
+bool CProcessX::Write(const ulongptr Address, const CBuffer& Data)
 {
   return Write(Address, Data.GetpData(), Data.GetSize());
 }

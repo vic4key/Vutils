@@ -72,7 +72,7 @@ const std::vector<PSectionHeader>& vuapi CPEFileTX<T>::GetSetionHeaders(bool InC
 
   m_SectionHeaders.clear();
 
-  vu::PSectionHeader pSH = (PSectionHeader)((ulong64)m_pPEHeader + sizeof(vu::TNtHeaderT<T>));
+  vu::PSectionHeader pSH = (PSectionHeader)((ulong64)m_pPEHeader + sizeof(vu::TNTHeaderT<T>));
   if (pSH == nullptr)
   {
     return m_SectionHeaders;
@@ -464,7 +464,7 @@ VUResult vuapi CPEFileTA<T>::Parse(const std::string& PEFilePath)
     return 4;
   }
 
-  CPEFileTX<T>::m_pDosHeader = (PDosHeader)CPEFileTX<T>::m_pBase;
+  CPEFileTX<T>::m_pDosHeader = (PDOSHeader)CPEFileTX<T>::m_pBase;
   if (CPEFileTX<T>::m_pDosHeader == nullptr)
   {
     return 5;
@@ -548,7 +548,7 @@ VUResult vuapi CPEFileTW<T>::Parse()
     return 4;
   }
 
-  CPEFileTX<T>::m_pDosHeader = (PDosHeader)CPEFileTX<T>::m_pBase;
+  CPEFileTX<T>::m_pDosHeader = (PDOSHeader)CPEFileTX<T>::m_pBase;
   if (CPEFileTX<T>::m_pDosHeader == nullptr)
   {
     return 5;

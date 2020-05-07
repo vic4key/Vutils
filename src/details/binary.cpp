@@ -9,24 +9,24 @@
 namespace vu
 {
 
-CBinary::CBinary() : m_UsedSize(0), m_Size(0), m_pData(0) {}
+CBuffer::CBuffer() : m_UsedSize(0), m_Size(0), m_pData(0) {}
 
-CBinary::CBinary(const CBinary &right) : m_UsedSize(0), m_Size(0), m_pData(0)
+CBuffer::CBuffer(const CBuffer &right) : m_UsedSize(0), m_Size(0), m_pData(0)
 {
   SetpData(right.m_pData, right.m_Size);
 }
 
-CBinary::CBinary(const void* pData, ulong ulSize) : m_UsedSize(0), m_Size(0), m_pData(0)
+CBuffer::CBuffer(const void* pData, ulong ulSize) : m_UsedSize(0), m_Size(0), m_pData(0)
 {
   SetpData(pData, ulSize);
 }
 
-CBinary::CBinary(ulong ulSize) : m_UsedSize(0), m_Size(0), m_pData(0)
+CBuffer::CBuffer(ulong ulSize) : m_UsedSize(0), m_Size(0), m_pData(0)
 {
   AdjustSize(ulSize);
 }
 
-CBinary::~CBinary()
+CBuffer::~CBuffer()
 {
   if (m_pData != nullptr)
   {
@@ -34,7 +34,7 @@ CBinary::~CBinary()
   }
 }
 
-const CBinary& CBinary::operator=(const CBinary& right)
+const CBuffer& CBuffer::operator=(const CBuffer& right)
 {
   if(this != &right)
   {
@@ -44,7 +44,7 @@ const CBinary& CBinary::operator=(const CBinary& right)
   return *this;
 }
 
-bool CBinary::operator==(const CBinary& right) const
+bool CBuffer::operator==(const CBuffer& right) const
 {
   if(m_Size != right.m_Size)
   {
@@ -54,17 +54,17 @@ bool CBinary::operator==(const CBinary& right) const
   return (memcmp(m_pData, right.m_pData, m_Size) == 0);
 }
 
-bool CBinary::operator!=(const CBinary& right) const
+bool CBuffer::operator!=(const CBuffer& right) const
 {
   return (!(*this == right));
 }
 
-const ulong CBinary::GetSize() const
+const ulong CBuffer::GetSize() const
 {
   return m_Size;
 }
 
-void CBinary::SetUsedSize(ulong ulUsedSize)
+void CBuffer::SetUsedSize(ulong ulUsedSize)
 {
   if (ulUsedSize <= m_Size)
   {
@@ -72,22 +72,22 @@ void CBinary::SetUsedSize(ulong ulUsedSize)
   }
 }
 
-const ulong CBinary::GetUsedSize() const
+const ulong CBuffer::GetUsedSize() const
 {
   return m_UsedSize;
 }
 
-void* CBinary::GetpData()
+void* CBuffer::GetpData()
 {
   return m_pData;
 }
 
-const void* CBinary::GetpData() const
+const void* CBuffer::GetpData() const
 {
   return m_pData;
 }
 
-void CBinary::SetpData(const void* pData, ulong ulSize)
+void CBuffer::SetpData(const void* pData, ulong ulSize)
 {
   AdjustSize(ulSize);
   memcpy(m_pData, pData, ulSize);
@@ -95,7 +95,7 @@ void CBinary::SetpData(const void* pData, ulong ulSize)
   m_UsedSize = ulSize;
 }
 
-void CBinary::AdjustSize(ulong ulSize)
+void CBuffer::AdjustSize(ulong ulSize)
 {
   if(ulSize > m_Size)
   {
@@ -112,6 +112,28 @@ void CBinary::AdjustSize(ulong ulSize)
       memset(m_pData, 0, m_Size*sizeof(uchar));
     }
   }
+}
+
+bool CBuffer::SaveAsFile(const std::string& filePath)
+{
+  if (filePath.empty())
+  {
+    return false;
+  }
+
+  bool result = true; 
+
+  CFileSystemA file(filePath, vu::FM_CREATEALWAY);
+  result &= file.Write(m_pData, m_Size);
+  result &= file.Close();
+
+  return result;
+}
+
+bool CBuffer::SaveAsFile(const std::wstring& filePath)
+{
+  const auto s = ToStringA(filePath);
+  return SaveAsFile(s);
 }
 
 } // namespace vu

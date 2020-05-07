@@ -171,9 +171,9 @@ bool vuapi CFileSystemX::Close()
   return true;
 }
 
-const CBinary vuapi CFileSystemX::ReadContent()
+const CBuffer vuapi CFileSystemX::ReadContent()
 {
-  CBinary pContent(0);
+  CBuffer pContent(0);
 
   auto size = this->GetFileSize();
   if (size == 0) return pContent;

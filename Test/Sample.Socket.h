@@ -32,7 +32,7 @@ DEF_SAMPLE(Socket)
     return 1;
   }
 
-  vu::CBinary reponse(1024);
+  vu::CBuffer reponse(1024);
   auto N = socket.Recv(reponse);
   assert(N > 0);
 

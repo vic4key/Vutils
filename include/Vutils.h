@@ -809,18 +809,18 @@ public:
  * Binary
  */
 
-class CBinary
+class CBuffer
 {
 public:
-  CBinary();
-  CBinary(const CBinary& right);
-  CBinary(const void* pData, ulong ulSize);
-  CBinary(ulong ulSize);
-  virtual ~CBinary();
+  CBuffer();
+  CBuffer(const CBuffer& right);
+  CBuffer(const void* pData, ulong ulSize);
+  CBuffer(ulong ulSize);
+  virtual ~CBuffer();
 
-  const CBinary& operator=(const CBinary& right);
-  bool operator==(const CBinary& right) const;
-  bool operator!=(const CBinary& right) const;
+  const CBuffer& operator=(const CBuffer& right);
+  bool operator==(const CBuffer& right) const;
+  bool operator!=(const CBuffer& right) const;
   void AdjustSize (const ulong ulSize);
   const ulong GetSize() const;
   void SetUsedSize(const ulong ulUsedSize);
@@ -828,6 +828,9 @@ public:
   void SetpData(const void* pData, ulong ulSize);
   void* GetpData();
   const void* GetpData() const;
+
+  bool SaveAsFile(const std::string&  filePath);
+  bool SaveAsFile(const std::wstring& filePath);
 
 private:
   void* m_pData;
@@ -976,13 +979,13 @@ public:
   VUResult vuapi Connect(const TAccessPoint& AccessPoint);
   VUResult vuapi Connect(const std::string& Address, ushort usPort);
   IResult vuapi Send(const char* lpData, int iLength, eSocketMessage SocketMessage = SF_NONE);
-  IResult vuapi Send(const CBinary& Data, eSocketMessage SocketMessage = SF_NONE);
+  IResult vuapi Send(const CBuffer& Data, eSocketMessage SocketMessage = SF_NONE);
   IResult vuapi Recv(char* lpData, int iLength, eSocketMessage SocketMessage = SF_NONE);
-  IResult vuapi Recv(CBinary& Data, eSocketMessage SocketMessage = SF_NONE);
+  IResult vuapi Recv(CBuffer& Data, eSocketMessage SocketMessage = SF_NONE);
   IResult vuapi SendTo(const char* lpData, int iLength, TSocketInfomation& SocketInformation);
-  IResult vuapi SendTo(const CBinary& Data, TSocketInfomation& SocketInformation);
+  IResult vuapi SendTo(const CBuffer& Data, TSocketInfomation& SocketInformation);
   IResult vuapi RecvFrom(char* lpData, int iLength, TSocketInfomation& SocketInformation);
-  IResult vuapi RecvFrom(CBinary& Data, TSocketInfomation& SocketInformation);
+  IResult vuapi RecvFrom(CBuffer& Data, TSocketInfomation& SocketInformation);
   bool vuapi Close(SOCKET socket = 0);
   SOCKET vuapi GetSocket();
   VUResult vuapi GetOption(int iLevel, int iOptName, char* pOptVal, int* lpiLength);
@@ -1258,7 +1261,7 @@ public:
   virtual bool vuapi IsFileHandleValid(HANDLE fileHandle);
   virtual bool vuapi IsReady();
   virtual ulong vuapi GetFileSize();
-  virtual const CBinary vuapi ReadContent();
+  virtual const CBuffer vuapi ReadContent();
   virtual bool vuapi Read(void* Buffer, ulong ulSize);
   virtual bool vuapi Read(
     ulong ulOffset,
@@ -2011,7 +2014,7 @@ public:
   const TDuration Duration();
 
 private:
-  bool m_Reset;
+  bool  m_Reset;
   float m_Duration;
   std::clock_t m_Count, m_Delta;
   std::vector<std::clock_t> m_DeltaHistory;
@@ -2023,10 +2026,10 @@ private:
 
 const ulong MAX_IDD = IMAGE_NUMBEROF_DIRECTORY_ENTRIES;
 
-typedef ulong32  pe32;
-typedef ulong64  pe64;
+typedef ulong32 pe32;
+typedef ulong64 pe64;
 
-typedef IMAGE_DOS_HEADER TDosHeader, *PDosHeader;
+typedef IMAGE_DOS_HEADER TDOSHeader, *PDOSHeader;
 typedef IMAGE_FILE_HEADER TFileHeader, *PFileHeader;
 typedef _IMAGE_SECTION_HEADER TSectionHeader, *PSectionHeader;
 typedef IMAGE_IMPORT_BY_NAME TImportByName, *PImportByName;
@@ -2114,15 +2117,15 @@ typedef TOptHeaderT<ulong64> TOptHeader64, *POptHeader64;
 // IMAGE_NT_HEADERS
 
 template <typename T>
-struct TNtHeaderT
+struct TNTHeaderT
 {
   ulong Signature;
   TFileHeader FileHeader;
   TOptHeaderT<T> OptionalHeader;
 };
 
-typedef TNtHeaderT<ulong32> TNtHeader32, *PNtHeader32;
-typedef TNtHeaderT<ulong64> TNtHeader64, *PNtHeader64;
+typedef TNTHeaderT<ulong32> TNTHeader32,  *PNTHeader32;
+typedef TNTHeaderT<ulong64> TNtTHeader64, *PNTHeader64;
 
 // IMAGE_THUNK_DATA
 
@@ -2277,12 +2280,12 @@ typedef TPEHeaderT<ulong64> TPEHeader64, *PPEHeader64;
 /* The common types (32-bit & 64-bit)  */
 
 #ifdef _WIN64
-typedef TNtHeader64   TNtHeader,  *PNtHeader;
+typedef TNtTHeader64   TNTHeader,  *PNTHeader;
 typedef TOptHeader64  TOptHeader, *POptHeader;
 typedef TThunkData64  TThunkData, *PThunkData;
 typedef TPEHeader64   TPEHeader,  *PPEHeader;
 #else // _WIN32
-typedef TNtHeader32   TNtHeader,  *PNtHeader;
+typedef TNTHeader32   TNTHeader,  *PNTHeader;
 typedef TOptHeader32  TOptHeader, *POptHeader;
 typedef TThunkData32  TThunkData, *PThunkData;
 typedef TPEHeader32   TPEHeader,  *PPEHeader;
@@ -2360,7 +2363,7 @@ protected:
 
   void* m_pBase;
 
-  TDosHeader* m_pDosHeader;
+  TDOSHeader* m_pDosHeader;
   TPEHeaderT<T>* m_pPEHeader;
 
 private:
@@ -2590,9 +2593,9 @@ public:
   static bool IsWow64(HANDLE Handle = nullptr);
   static bool IsWow64(ulong PID/* = NULL*/);
 
-  bool Read(const  ulongptr Address, CBinary& Data);
+  bool Read(const  ulongptr Address, CBuffer& Data);
   bool Read(const  ulongptr Address, void* pData, const ulong ulSize);
-  bool Write(const ulongptr Address, const CBinary& Data);
+  bool Write(const ulongptr Address, const CBuffer& Data);
   bool Write(const  ulongptr Address, const void* pData, const ulong ulSize);
 
   PROCESS_CPU_COUNTERS GetCPUInformation(const double interval = 1.); // 1 second

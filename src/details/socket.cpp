@@ -188,7 +188,7 @@ IResult vuapi CSocket::Send(const char* lpData, int iLength, eSocketMessage Sock
   return this->Send(m_Socket, lpData, iLength, SocketMessage);
 }
 
-IResult vuapi CSocket::Send(const CBinary& Data, eSocketMessage SocketMessage)
+IResult vuapi CSocket::Send(const CBuffer& Data, eSocketMessage SocketMessage)
 {
   return this->Send(m_Socket, (const char*)Data.GetpData(), Data.GetUsedSize(), SocketMessage);
 }
@@ -214,7 +214,7 @@ IResult vuapi CSocket::Recv(char* lpData, int iLength, eSocketMessage SocketMess
   return this->Recv(m_Socket, lpData, iLength, SocketMessage);
 }
 
-IResult vuapi CSocket::Recv(CBinary& Data, eSocketMessage SocketMessage)
+IResult vuapi CSocket::Recv(CBuffer& Data, eSocketMessage SocketMessage)
 {
   void* p = Data.GetpData();
   auto z = this->Recv(m_Socket, (char*)p, Data.GetSize(), SocketMessage);
@@ -242,7 +242,7 @@ IResult vuapi CSocket::Recv(SOCKET socket, char* lpData, int iLength, eSocketMes
   return z;
 }
 
-IResult vuapi CSocket::SendTo(const CBinary& Data, TSocketInfomation& SocketInformation)
+IResult vuapi CSocket::SendTo(const CBuffer& Data, TSocketInfomation& SocketInformation)
 {
   return this->SendTo((const char*)Data.GetpData(), Data.GetUsedSize(), SocketInformation);
 }
@@ -271,7 +271,7 @@ IResult vuapi CSocket::SendTo(const char* lpData, int iLength, TSocketInfomation
   return z;
 }
 
-IResult vuapi CSocket::RecvFrom(CBinary& Data, TSocketInfomation& SocketInformation)
+IResult vuapi CSocket::RecvFrom(CBuffer& Data, TSocketInfomation& SocketInformation)
 {
   void* p = Data.GetpData();
   return this->RecvFrom((char*)p, Data.GetUsedSize(), SocketInformation);
