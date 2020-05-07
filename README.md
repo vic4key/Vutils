@@ -24,9 +24,9 @@ It helps your programming go easier, faster and simpler.
 	* Binary
 	* Library
 	* Socket
+	* Process
 	* Service
 	* Registry
-	* Process
 	* INI File
 	* PE File
 	* Stop Watch
@@ -83,7 +83,7 @@ Released under the [MIT](LICENSE) license
 		* \<Later\>
 
 * Usage
-	* Insert `#include <Vu.h>` or `#include <Boob.h>` to your project.
+	* Insert `#include <vu>` or `#include <boob>` or `#include <Vutils>` to your project.
 	* Use the namespace `vu` to start coding.
 
 * Build

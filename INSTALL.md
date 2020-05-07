@@ -47,7 +47,7 @@
 		+ \<Later\>
 
 5. Usage
-	* 5.1. Insert `#include <Vu.h>` or `#include <Boob.h>` to your project.
+	* 5.1. Insert `#include <vu>` or `#include <boob>` or `#include <Vutils>` to your project.
 	* 5.2. Use the namespace `vu` to start coding.
 
 6. Enjoy
