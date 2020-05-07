@@ -6,6 +6,8 @@ G++ main.cpp -std=c++0x -lVutils -lgdi32 -o Test.exe && Test.exe
 G++ main.cpp -std=c++0x -lVutils -DVU_SOCKET_ENABLED -lws2_32 -DVU_GUID_ENABLED -lrpcrt4 -lgdi32 -o Test.exe && Test.exe
 */
 
+#define _CRT_SECURE_NO_WARNINGS
+
 // #ifdef _UNICODE
 // #undef _UNICODE
 // #endif
@@ -35,31 +37,19 @@ G++ main.cpp -std=c++0x -lVutils -DVU_SOCKET_ENABLED -lws2_32 -DVU_GUID_ENABLED 
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-  std::tstring s = _T("Windows");
-  auto arch = vu::GetProcessorArchitecture();
-  if (arch == vu::PA_X64)
-  {
-    s += _T(" 64-bit");
-    if (vu::IsWow64() == vu::eWow64::WOW64_YES)
-    {
-      s += _T(" (WOW64)");
-    }
-  }
-  else if (arch == vu::PA_X86)
-  {
-    s += _T(" 32-bit");
-  }
-  std::tcout << s << std::endl;
+  std::tcout
+    << _T("Windows Application")
+    << _T(" ")
+    << (vu::CProcess::Is64Bits() ? _T("64-bit") : _T("32-bit"))
+    << std::endl;
 
-  s.clear();
   #ifdef _UNICODE
-  s += _T("Encoding: UNICODE");
+  std::tcout << _T("Encoding: UNICODE") << std::endl;
   #else
-  s += _T("Encoding: ANSI");
+  std::tcout << _T("Encoding: ANSI") << std::endl;
   #endif // _UNICODE
-  std::tcout << s << std::endl;
 
-  std::tcout << std::endl << _T("--- *.* ---") << std::endl;
+  std::tcout << _T("--- *.* ---") << std::endl;
 
   VU_SM_INIT();
 
