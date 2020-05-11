@@ -183,7 +183,9 @@ namespace vu
 #define MB      KB*KB
 #define GB      MB*KB
 
-/* Other Defination */
+/* Other Definitions */
+
+#define VU_ALIGN_UP(v, a) (((v) + ((a) - 1)) & ~((a) - 1))
 
 #ifndef ERROR_INCORRECT_SIZE
 #define ERROR_INCORRECT_SIZE 1462L
