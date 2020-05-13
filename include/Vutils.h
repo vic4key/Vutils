@@ -303,6 +303,30 @@ intptr vuapi GCD(ulongptr count, ...); // UCLN
 intptr vuapi LCM(ulongptr count, ...); // BCNN
 void vuapi HexDump(const void* Data, int Size);
 
+template <typename T>
+bool InRange(const T lo, const T hi, const T v)
+{
+  return (v > lo) && (v < hi);
+}
+
+template <typename T>
+bool InRange(const std::pair<T, T>& range, const T v)
+{
+  return (v > range.first) && (v < range.second);
+}
+
+template <typename T>
+bool InERange(const T lo, const T hi, const T v)
+{
+  return (v >= lo) && (v <= hi);
+}
+
+template <typename T>
+bool InERange(const std::pair<T, T>& range, const T v)
+{
+  return (v >= range.first) && (v <= range.second);
+}
+
 /**
  * String Formatting
  */
