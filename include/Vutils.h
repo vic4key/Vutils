@@ -175,6 +175,8 @@ namespace vu
 #define MAX_NPROCESSES 512
 #define MAX_NMODULES   1024
 
+#define INVALID_PID_VALUE -1
+
 #define KiB     1024
 #define MiB     KiB*KiB
 #define GiB     MiB*KiB
@@ -458,7 +460,7 @@ typedef struct _BLOCK
 } TBlock;
 
 eProcessorArchitecture GetProcessorArchitecture();
-eWow64 vuapi IsWow64(const ulong ulPID = (ulong)-1); /* -1: Error, 0: False, 1: True */
+eWow64 vuapi IsWow64(const ulong ulPID = INVALID_PID_VALUE); /* -1: Error, 0: False, 1: True */
 eWow64 vuapi IsWow64(const HANDLE hProcess);
 ulong vuapi GetParentPID(ulong ulChildPID);
 ulong vuapi GetMainThreadID(ulong ulPID);
@@ -2514,8 +2516,6 @@ private:
 /**
  * Process
  */
-
-#define INVALID_PID_VALUE -1
 
 typedef struct _PROCESS_CPU_COUNTERS
 {

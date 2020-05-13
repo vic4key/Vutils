@@ -13,7 +13,7 @@ HHOOK CWMHookX::m_Handles[WH_MAXHOOK] = { 0 };
 
 CWMHookX::CWMHookX() : CLastError()
 {
-  m_PID = -1;
+  m_PID = INVALID_PID_VALUE;
 }
 
 CWMHookX::~CWMHookX()
@@ -24,7 +24,7 @@ VUResult CWMHookX::SetWindowsHookExX(int Type, HMODULE hModule, HOOKPROC pProc)
 {
   m_LastErrorCode = ERROR_SUCCESS;
 
-  if (m_PID == 0 || m_PID == -1)
+  if (m_PID == INVALID_PID_VALUE)
   {
     return 1;
   }

@@ -39,7 +39,7 @@ eWow64 vuapi IsWow64(const ulong ulPID)
 {
   HANDLE hProcess = NULL;
 
-  if (ulPID != (ulong)-1)
+  if (ulPID != INVALID_PID_VALUE)
   {
     SetPrivilege(SE_DEBUG_NAME, true);
     hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ulPID);
@@ -614,7 +614,7 @@ HMODULE vuapi RemoteGetModuleHandleW(const ulong ulPID, const std::wstring& Modu
 
 VUResult vuapi InjectDLLA(ulong ulPID, const std::string& DLLFilePath, bool WaitLoadingDLL)
 {
-  if (ulPID == 0 || ulPID == -1)
+  if (ulPID == INVALID_PID_VALUE)
   {
     return 1;
   }
@@ -699,7 +699,7 @@ VUResult vuapi InjectDLLA(ulong ulPID, const std::string& DLLFilePath, bool Wait
 
 VUResult vuapi InjectDLLW(ulong ulPID, const std::wstring& DLLFilePath, bool WaitLoadingDLL)
 {
-  if (ulPID == 0 || ulPID == -1)
+  if (ulPID == INVALID_PID_VALUE)
   {
     return 1;
   }
