@@ -2578,10 +2578,15 @@ typedef struct _MODULEINFO_PTR {
   DWORD_PTR EntryPoint;
 } MODULEINFO_PTR, * LPMODULEINFO_PTR;
 
+#define MEM_ALL_STATE (MEM_COMMIT | MEM_FREE | MEM_RESERVE)
+#define MEM_ALL_TYPE  (MEM_IMAGE | MEM_MAPPED | MEM_PRIVATE)
+#define PAGE_ALL_PROTECTION -1
+
 class CProcessX : public CLastError
 {
 public:
   typedef std::vector<THREADENTRY32> Threads;
+  typedef std::vector<MEMORY_BASIC_INFORMATION> Memories;
 
   CProcessX();
   // CProcessX(const ulong PID);
@@ -2616,6 +2621,11 @@ public:
   PROCESS_TIME_COUNTERS GetTimeInformation();
   PROCESS_IO_COUNTERS GetIOInformation();
   const Threads& GetThreads();
+  const Memories& GetMemories(
+    const ulong state = MEM_ALL_STATE,
+    const ulong type  = MEM_ALL_TYPE,
+    const ulong protection = PAGE_ALL_PROTECTION
+  );
 
 protected:
   virtual void Parse();
@@ -2635,6 +2645,7 @@ protected:
   int64_t m_LastSystemTimePerCoreUTC;
 
   Threads m_Threads;
+  Memories m_Memories;
 };
 
 #ifndef MAX_MODULE_NAME32

@@ -1191,6 +1191,38 @@ const CProcessX::Threads& CProcessX::GetThreads()
   return m_Threads;
 }
 
+// https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-memory_basic_information
+// https://docs.microsoft.com/en-us/windows/win32/memory/memory-protection-constants
+
+const CProcessX::Memories& CProcessX::GetMemories(
+  const ulong state,
+  const ulong type,
+  const ulong protection)
+{
+  m_Memories.clear();
+
+  if (m_PID == INVALID_PID_VALUE)
+  {
+    return m_Memories;
+  }
+
+  MEMORY_BASIC_INFORMATION mbi = { 0 };
+
+  while (VirtualQueryEx(
+    m_Handle, LPCVOID(ulonglong(mbi.BaseAddress) + mbi.RegionSize), &mbi, sizeof(mbi)) != FALSE)
+  {
+    if (mbi.BaseAddress != nullptr)
+    {
+      if ((mbi.State & state) && (mbi.Type & type) && (mbi.Protect & protection))
+      {
+        m_Memories.emplace_back(mbi);
+      }
+    }
+  }
+
+  return m_Memories;
+}
+
 CProcessA::CProcessA()
   : CProcessX()
   , m_Name("")

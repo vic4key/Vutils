@@ -46,5 +46,16 @@ DEF_SAMPLE(Process)
     std::cout << std::endl;
   }
 
+  for (const auto& e : process.GetMemories())
+  {
+    static int i = 0;
+    std::cout << std::dec << ++i << ". ";
+    std::cout << std::hex << e.BaseAddress << " - " << vu::FormatBytesA(e.RegionSize) << std::endl;
+    std::cout << std::hex << "\tProtect = " << e.Protect << std::endl;
+    std::cout << std::hex << "\tState   = " << e.State << std::endl;
+    std::cout << std::hex << "\tType    = " << e.Type << std::endl;
+    std::cout << std::endl;
+  }
+
   return vu::VU_OK;
 }
