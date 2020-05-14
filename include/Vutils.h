@@ -230,6 +230,7 @@ typedef wchar_t             wchar;
 
 // 32-bit Default Data Types
 
+typedef unsigned char       byte;
 typedef unsigned char       uchar;
 typedef unsigned short      ushort;
 typedef unsigned short      ushort;
@@ -264,6 +265,7 @@ typedef UINT_PTR            uintptr;
 typedef LONG_PTR            longptr;
 typedef ULONG_PTR           ulongptr;
 
+typedef unsigned char       Byte;
 typedef unsigned char       UChar;
 typedef HALF_PTR            HalfPtr;
 typedef UHALF_PTR           UHalfPtr;
