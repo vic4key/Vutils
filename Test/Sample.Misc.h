@@ -106,5 +106,9 @@ DEF_SAMPLE(Misc)
   std::tcout << vu::FormatBytes(9123456789101213, type, digits) << std::endl; // PB/PiB
   std::tcout << vu::FormatBytes(9123456789101213145, type, digits) << std::endl; // EB/EiB*/
 
+  vu::CBuffer data;
+  auto result = vu::FindPattern(data, _T("11 ?? 33 ?? 44 ?? 55"));
+  std::tcout << _T("Result is ") << result.first << _T(" at Offset ") << result.second << std::endl;
+
   return vu::VU_OK;
 }

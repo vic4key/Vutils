@@ -290,11 +290,17 @@ const size_t MAX_SIZE = MAXBYTE;
  * Misc Working
  */
 
+class CBuffer;
+
 bool vuapi IsAdministrator();
-bool SetPrivilegeA(const std::string& privilege, const bool enable);
-bool SetPrivilegeW(const std::wstring& privilege, const bool enable);
+bool SetPrivilegeA(const std::string& Privilege, const bool Enable);
+bool SetPrivilegeW(const std::wstring& Privilege, const bool Enable);
 std::string vuapi  GetEnviromentA(const std::string EnvName);
 std::wstring vuapi GetEnviromentW(const std::wstring EnvName);
+std::pair<bool, size_t> FindPatternA(const CBuffer& Buffer, const std::string& Pattern);
+std::pair<bool, size_t> FindPatternW(const CBuffer& Buffer, const std::wstring& Pattern);
+std::pair<bool, size_t> FindPatternA(const void* Pointer, const size_t Size, const std::string& Pattern);
+std::pair<bool, size_t> FindPatternW(const void* Pointer, const size_t Size, const std::wstring& Pattern);
 
 /**
  * Math Working
@@ -621,6 +627,7 @@ std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
 /* Misc Working */
 #define SetPrivilege SetPrivilegeW
 #define GetEnviroment GetEnviromentW
+#define FindPattern FindPatternW
 /* String Formatting */
 #define Fmt FormatW
 #define Msg MsgW
@@ -659,6 +666,7 @@ std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
 /* Misc Working */
 #define SetPrivilege SetPrivilegeA
 #define GetEnviroment GetEnviromentA
+#define FindPattern FindPatternA
 /* String Formatting */
 #define Fmt FormatA
 #define Msg MsgA

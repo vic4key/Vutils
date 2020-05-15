@@ -34,13 +34,13 @@ bool vuapi IsAdministrator()
   return (IsMember != FALSE);
 }
 
-bool SetPrivilegeA(const std::string& privilege, const bool enable)
+bool SetPrivilegeA(const std::string& Privilege, const bool Enable)
 {
-  const auto s = ToStringW(privilege);
-  return SetPrivilegeW(s, enable);
+  const auto s = ToStringW(Privilege);
+  return SetPrivilegeW(s, Enable);
 }
 
-bool SetPrivilegeW(const std::wstring& privilege, const bool enable)
+bool SetPrivilegeW(const std::wstring& Privilege, const bool Enable)
 {
   HANDLE hToken = INVALID_HANDLE_VALUE;
   if (!OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &hToken))
@@ -69,12 +69,12 @@ bool SetPrivilegeW(const std::wstring& privilege, const bool enable)
   bool result = false;
 
   LUID luid = { 0 };
-  if (LookupPrivilegeValueW(nullptr, privilege.c_str(), &luid))
+  if (LookupPrivilegeValueW(nullptr, Privilege.c_str(), &luid))
   {
     TOKEN_PRIVILEGES tp = { 0 };
     tp.PrivilegeCount = 1;
     tp.Privileges[0].Luid = luid;
-    tp.Privileges[0].Attributes = enable ? SE_PRIVILEGE_ENABLED : 0;
+    tp.Privileges[0].Attributes = Enable ? SE_PRIVILEGE_ENABLED : 0;
 
     if (AdjustTokenPrivileges(hToken, FALSE, &tp, sizeof(tp), nullptr, nullptr))
     {
@@ -167,6 +167,96 @@ std::wstring vuapi GetEnviromentW(const std::wstring EnvName)
   s.assign(p.get());
 
   return s;
+}
+
+typedef std::vector<std::pair<bool, byte>> TPattern;
+
+const TPattern ToPattern(const std::string& Buffer)
+{
+  TPattern result;
+
+  const auto l = vu::SplitStringA(Buffer, " ");
+  for (const auto& e : l)
+  {
+    auto v = TPattern::value_type(false, 0x00);
+
+    if (e.length() == 2 && isxdigit(e[0]) && isxdigit(e[1]))
+    {
+      v.first  = true;
+      v.second = (byte)strtoul(e.c_str(), nullptr, 16);
+    }
+
+    result.emplace_back(v);
+  }
+
+  return result;
+}
+
+std::pair<bool, size_t> FindPatternA(const CBuffer& Buffer, const std::string& Pattern)
+{
+  std::pair<bool, size_t> result(false, 0);
+
+  if (Buffer.GetpData() == nullptr || Pattern.empty())
+  {
+    return result;
+  }
+
+  const auto Pointer = static_cast<const byte*>(Buffer.GetpData());
+  const size_t Size = Buffer.GetSize();
+
+  return FindPatternA(Pointer, Size, Pattern);
+}
+
+std::pair<bool, size_t> FindPatternW(const CBuffer& Buffer, const std::wstring& Pattern)
+{
+  const auto s = ToStringA(Pattern);
+  return FindPatternA(Buffer, s);
+}
+
+std::pair<bool, size_t> FindPatternA(const void* Pointer, const size_t Size, const std::string& Pattern)
+{
+  std::pair<bool, size_t> result(false, 0);
+
+  if (Pointer == nullptr || Size == 0 || Pattern.empty())
+  {
+    return result;
+  }
+
+  const auto pattern = ToPattern(Pattern);
+  if (pattern.empty())
+  {
+    return result;
+  }
+
+  const auto pointer = static_cast<const byte*>(Pointer);
+  const size_t size = Size;
+
+  for (size_t i = 0; i < size; ++i)
+  {
+    size_t j = 0;
+
+    for (j = 0; j < pattern.size(); ++j)
+    {
+      if (pattern[j].first && pattern[j].second != pointer[i + j])
+      {
+        break;
+      }
+    }
+
+    if (j == pattern.size())
+    {
+      result = std::make_pair(true, i);
+      break;
+    }
+  }
+
+  return result;
+}
+
+std::pair<bool, size_t> FindPatternW(const void* Pointer, const size_t Size, const std::wstring& Pattern)
+{
+  const auto s = ToStringA(Pattern);
+  return FindPatternA(Pointer, Size, s);
 }
 
 } // namespace vu
