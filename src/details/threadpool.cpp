@@ -7,16 +7,7 @@
 #include "Vutils.h"
 #include "defs.h"
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4273) // inconsistent dll linkage
-#endif // _MSC_VER
-
 #include VU_3RD_INCL(TP11/include/threadpool11/threadpool11.h)
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif // _MSC_VER
 
 using namespace threadpool11;
 
