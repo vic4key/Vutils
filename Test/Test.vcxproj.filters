@@ -78,6 +78,9 @@
     <ClInclude Include="Sample.Process.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sample.ThreadPool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

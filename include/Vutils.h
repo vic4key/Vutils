@@ -160,6 +160,14 @@ typedef ios             tios;
 #endif // _UNICODE
 } // namespace std
 
+namespace threadpool11
+{
+  class Pool;
+  typedef std::function<void()> Task;
+}
+
+using namespace threadpool11;
+
 namespace vu
 {
 
@@ -2768,6 +2776,31 @@ protected:
 protected:
   std::wstring m_Name;
   Modules m_Modules;
+};
+
+#ifdef Vutils_EXPORTS
+#define threadpool11_EXPORTING
+#endif // Vutils_EXPORTS
+
+#define MAX_NTHREADS -1
+
+class CThreadPool
+{
+public:
+  CThreadPool(size_t nthreads = MAX_NTHREADS);
+  virtual ~CThreadPool();
+
+  void AddTask(Task&& fn);
+  void Launch();
+
+  size_t WorkerCount() const;
+  size_t WorkQueueCount() const;
+
+  size_t ActiveWorkerCount() const;
+  size_t InactiveWorkerCount() const;
+
+private:
+  Pool* m_pTP;
 };
 
 /*---------- The definition of common structure(s) which compatible both ANSI & UNICODE ----------*/

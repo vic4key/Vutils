@@ -16,7 +16,7 @@ ECHO.
 
 IF NOT EXIST %VU_LIB% MKDIR %VU_LIB%
 
-SET LIBs=
+SET LIBs=-DVutils_EXPORTS
 
 :: for SOCKET
 
@@ -27,7 +27,7 @@ IF [%response%]==[y] SET conditions=1
 
 IF [%conditions%]==[1] (
 	ECHO     Socket -^> ENABLED
-	SET LIBs=%LIBs%-DVU_SOCKET_ENABLED -lws2_32
+	SET LIBs=%LIBs% -DVU_SOCKET_ENABLED -lws2_32
 ) else (
 	ECHO     Socket -^> DISABLED
 )
@@ -63,6 +63,8 @@ G++ -c -std=c++0x %LIBS% -I%VU_INCLUDE% ^
 	%VU_3RD%\MH\src\buffer.cpp ^
 	%VU_3RD%\HDE\src\hde32.cpp ^
 	%VU_3RD%\HDE\src\hde64.cpp ^
+	%VU_3RD%\TP11\src\Pool.cpp ^
+	%VU_3RD%\TP11\src\Worker.cpp ^
 	%VU_SRC%\%VU_NAME%.cpp ^
 	%VU_SRC_DETAILS_CPP%
 

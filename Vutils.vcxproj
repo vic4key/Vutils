@@ -161,7 +161,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration)</ProgramDataBaseFileName>
@@ -176,7 +176,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -192,7 +192,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration)</ProgramDataBaseFileName>
@@ -207,7 +207,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -225,7 +225,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration)</ProgramDataBaseFileName>
@@ -244,7 +244,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -264,7 +264,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration)</ProgramDataBaseFileName>
@@ -283,7 +283,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -304,6 +304,9 @@
     <ClInclude Include="3rdparty\HDE\include\table32.h" />
     <ClInclude Include="3rdparty\HDE\include\table64.h" />
     <ClInclude Include="3rdparty\MH\include\buffer.h" />
+    <ClInclude Include="3rdparty\TP11\include\threadpool11\Pool.h" />
+    <ClInclude Include="3rdparty\TP11\include\threadpool11\threadpool11.h" />
+    <ClInclude Include="3rdparty\TP11\include\threadpool11\Worker.h" />
     <ClInclude Include="include\Boob.h" />
     <ClInclude Include="include\Vu.h" />
     <ClInclude Include="include\Vutils.h" />
@@ -315,6 +318,8 @@
     <ClCompile Include="3rdparty\HDE\src\hde32.cpp" />
     <ClCompile Include="3rdparty\HDE\src\hde64.cpp" />
     <ClCompile Include="3rdparty\MH\src\buffer.cpp" />
+    <ClCompile Include="3rdparty\TP11\src\Pool.cpp" />
+    <ClCompile Include="3rdparty\TP11\src\Worker.cpp" />
     <ClCompile Include="src\details\binary.cpp" />
     <ClCompile Include="src\details\crisec.cpp" />
     <ClCompile Include="src\details\apihook.cpp" />
@@ -335,6 +340,7 @@
     <ClCompile Include="src\details\socket.cpp" />
     <ClCompile Include="src\details\stopwatch.cpp" />
     <ClCompile Include="src\details\string.cpp" />
+    <ClCompile Include="src\details\threadpool.cpp" />
     <ClCompile Include="src\details\window.cpp" />
     <ClCompile Include="src\details\wmhook.cpp" />
     <ClCompile Include="src\Vutils.cpp" />

@@ -27,6 +27,7 @@ It helps your programming go easier, faster and simpler.
 	* Process
 	* Service
 	* Registry
+	* Thread Pool
 	* INI File
 	* PE File
 	* Stop Watch
