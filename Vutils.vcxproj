@@ -345,6 +345,11 @@
     <ClCompile Include="src\details\wmhook.cpp" />
     <ClCompile Include="src\Vutils.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="include\Boob" />
+    <None Include="include\Vu" />
+    <None Include="include\Vutils" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

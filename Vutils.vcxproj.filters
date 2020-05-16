@@ -165,4 +165,15 @@
       <Filter>Third Party Files\TP11</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="include\Boob">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\Vu">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\Vutils">
+      <Filter>Header Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>
