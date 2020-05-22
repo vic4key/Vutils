@@ -1,0 +1,59 @@
+/**
+ * @file   math.tpl
+ * @author Vic P.
+ * @brief  Template for Singleton Pattern
+ */
+
+// Singleton
+
+/* Eg.
+class CObject : public vu::CSingletonT<CObject>
+{
+public:
+  void Method()
+  {
+    // YOUR CODE HERE
+  }
+}
+
+CObject::Instance().Method();
+*/
+
+template<typename T>
+class CSingletonT
+{
+public:
+  CSingletonT()
+  {
+    m_pInstance = static_cast<T*>(this);
+  }
+
+  virtual ~CSingletonT()
+  {
+  }
+
+  static T& Instance()
+  {
+    if (m_pInstance == nullptr)
+    {
+      CSingletonT<T>::m_pInstance = new T();
+    }
+
+    return *m_pInstance;
+  }
+
+  static void Destroy()
+  {
+    if (CSingletonT<T>::m_pInstance != nullptr)
+    {
+      delete CSingletonT<T>::m_pInstance;
+      CSingletonT<T>::m_pInstance = nullptr;
+    }
+  }
+
+protected:
+  static T* m_pInstance;
+};
+
+template<typename T>
+T* CSingletonT<T>::m_pInstance = nullptr;

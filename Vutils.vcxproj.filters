@@ -28,6 +28,9 @@
     <Filter Include="Third Party Files\TP11">
       <UniqueIdentifier>{7cf3d616-cc47-4dc8-bdd8-52c3fa0b29ca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Template Files">
+      <UniqueIdentifier>{6909da66-a8cb-48af-89cb-fdf5e101283a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -174,6 +177,12 @@
     </None>
     <None Include="include\Vutils">
       <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\template\math.tpl">
+      <Filter>Header Files\Template Files</Filter>
+    </None>
+    <None Include="include\template\singleton.tpl">
+      <Filter>Header Files\Template Files</Filter>
     </None>
   </ItemGroup>
 </Project>

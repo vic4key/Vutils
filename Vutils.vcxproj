@@ -347,6 +347,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Boob" />
+    <None Include="include\template\math.tpl" />
+    <None Include="include\template\singleton.tpl" />
     <None Include="include\Vu" />
     <None Include="include\Vutils" />
   </ItemGroup>
