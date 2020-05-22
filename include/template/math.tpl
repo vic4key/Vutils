@@ -115,9 +115,9 @@ public:
     return !(*this == right);
   }
 
-  void Set(const T X = 0, const T Y = 0, const T Z = 0)
+  void Set(const T X = 0, const T Y = 0, const T Z = 0, const T W = 1)
   {
-    SetEx(D, X, Y, Z);
+    SetEx(D, X, Y, Z, W);
   }
 
   const T& X() const
@@ -140,13 +140,13 @@ public:
     return &m_v;
   }
 
-  friend std::ostream& operator<<(std::ostream& os, const PointT& v)
+  friend std::ostream& operator<<(std::ostream& os, const PointT& point)
   {
     os << "(";
 
     for (register int i = 0; i < D; i++)
     {
-      os << v.m_v[i] << (i < D - 1 ? ", " : "");
+      os << point.m_v[i] << (i < D - 1 ? ", " : "");
     }
 
     os << ")";
@@ -154,13 +154,13 @@ public:
     return os;
   }
 
-  friend std::wostream& operator<<(std::wostream& os, const PointT& v)
+  friend std::wostream& operator<<(std::wostream& os, const PointT& point)
   {
     os << L"(";
 
     for (register int i = 0; i < D; i++)
     {
-      os << v.m_v[i] << (i < D - 1 ? L", " : L"");
+      os << point.m_v[i] << (i < D - 1 ? L", " : L"");
     }
 
     os << L")";
@@ -168,13 +168,13 @@ public:
     return os;
   }
 
-  double DistanceTo(const PointT& p) const
+  double Distance(const PointT& point) const
   {
     double result = 0.;
 
     for (register int i = 0; i < D; i++)
     {
-      double v = absT(p.m_v[i] - m_v[i]);
+      double v = absT(point.m_v[i] - m_v[i]);
       result += v * v;
     }
 
@@ -183,14 +183,20 @@ public:
     return result;
   }
 
+  // void Translate(const VectorT& v)
+  // {
+  //   *this += v;
+  // }
+
 protected:
-  void SetEx(const int count, const T X = 0, const T Y = 0, const T Z = 0)
+  void SetEx(const int count, const T X = 0, const T Y = 0, const T Z = 0, const T W = 1)
   {
     assert(count == D);
 
     if (D >= 1) m_v[0] = X;
     if (D >= 2) m_v[1] = Y;
     if (D >= 3) m_v[2] = Z;
+    if (D >= 4) m_v[3] = W;
   }
 
   // void SetEx(const int count, ...)
@@ -248,6 +254,24 @@ public:
   }
 };
 
+// Point4DT - The 4D point template
+
+template <typename T>
+class Point4DT : public PointT<4, T>
+{
+public:
+  enum { D = 4 };
+
+  Point4DT() : PointT<D, T>()
+  {
+  }
+
+  Point4DT(const T X, const T Y, const T Z, const T W = 1)
+  {
+    this->SetEx(D, X, Y, Z, W);
+  }
+};
+
 // VectorT - The vector template
 
 template <int N, typename T>
@@ -260,7 +284,41 @@ public:
   {
   }
 
-  double Length() const
+  VectorT& operator*=(const VectorT& v) // scale
+  {
+    for (register int i = 0; i < D; i++)
+    {
+      this->m_v[i] *= v.m_v[i];
+    }
+
+    return *this;
+  }
+
+  VectorT& operator/=(const VectorT& v) // scale
+  {
+    for (register int i = 0; i < D; i++)
+    {
+      this->m_v[i] /= v.m_v[i];
+    }
+
+    return *this;
+  }
+
+  const VectorT operator*(const VectorT& v) // scale
+  {
+    VectorT result(*this);
+    result *= v;
+    return result;
+  }
+
+  const VectorT operator/(const VectorT& v) // scale
+  {
+    VectorT result(*this);
+    result /= v;
+    return result;
+  }
+
+  double Mag() // Magnitude/Length
   {
     double result = 0.;
 
@@ -273,6 +331,30 @@ public:
 
     return result;
   }
+
+  double Dot(const VectorT& v) const // dot/scalar product
+  {
+    double result = 0.;
+
+    for (register int i = 0; i < D; i++)
+    {
+      result += v.m_v[i] * this->m_v[i];
+    }
+
+    return result;
+  }
+
+  // const VectorT Cross(const VectorT& v) // cross product
+  // {
+  //   VectorT result;
+  //   // YOUR CODE HERE
+  //   return result;
+  // }
+
+  // void VectorT Normalize() // normlize
+  // {
+  //   // YOUR CODE HERE
+  // }
 };
 
 // Vector2DT - The 2D vector template
@@ -308,6 +390,24 @@ public:
   Vector3DT(const T X, const T Y, const T Z)
   {
     this->SetEx(D, X, Y, Z);
+  }
+};
+
+// Vector4DT - The 4D vector template
+
+template <typename T>
+class Vector4DT : public VectorT<4, T>
+{
+public:
+  enum { D = 4 };
+
+  Vector4DT() : VectorT<D, T>()
+  {
+  }
+
+  Vector4DT(const T X, const T Y, const T Z, const T W = 1)
+  {
+    this->SetEx(D, X, Y, Z, W);
   }
 };
 

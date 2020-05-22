@@ -10,13 +10,13 @@ DEF_SAMPLE(Math)
   {
     vu::Point2DT<int> p1(1, 2), p2(3, 4), p3;
 
-    p3 = p1;
+    p3 =  p1;
     p3 == p1;
     p3 != p2;
     p3 += p1;
     p3 -= p2;
-    p3 -  p1;
     p3 +  p2;
+    p3 -  p1;
 
     std::tcout << p1 << std::endl;
     std::tcout << p2 << std::endl;
@@ -24,7 +24,7 @@ DEF_SAMPLE(Math)
 
     p1.Set(1, 1);
     p2.Set(2, 2);
-    std::tcout << p1.DistanceTo(p2) << std::endl;
+    std::tcout << p1.Distance(p2) << std::endl;
   }
 
   {
@@ -35,8 +35,8 @@ DEF_SAMPLE(Math)
     p3 != p2;
     p3 += p1;
     p3 -= p2;
-    p3 -  p1;
     p3 +  p2;
+    p3 -  p1;
 
     std::tcout << p1 << std::endl;
     std::tcout << p2 << std::endl;
@@ -44,17 +44,56 @@ DEF_SAMPLE(Math)
 
     p1.Set(1, 1, 1);
     p2.Set(2, 2, 2);
-    std::tcout << p1.DistanceTo(p2) << std::endl;
+    std::tcout << p1.Distance(p2) << std::endl;
   }
 
   {
-    vu::Vector2DT<int> v2(1, 2);
-    std::tcout << v2 << std::endl;
-    std::tcout << v2.Length() << std::endl;
+    vu::Point4DT<int> p1(1, 2, 3), p2(4, 5, 6), p3;
 
-    vu::Vector3DT<int> v3(1, 2, 3);
-    std::tcout << v3 << std::endl;
-    std::tcout << v3.Length() << std::endl;
+    p3 =  p1;
+    p3 == p1;
+    p3 != p2;
+    p3 += p1;
+    p3 -= p2;
+    p3 +  p2;
+    p3 -  p1;
+
+    std::tcout << p1 << std::endl;
+    std::tcout << p2 << std::endl;
+    std::tcout << p3 << std::endl;
+
+    p1.Set(1, 1, 1);
+    p2.Set(2, 2, 2);
+    std::tcout << p1.Distance(p2) << std::endl;
+  }
+
+  {
+    vu::Vector2DT<int> v21(1, 2), v22(3, 4);
+    std::tcout << v21 << v22 << std::endl;
+    std::tcout << v21 + v22 << std::endl;
+    std::tcout << v21 - v22 << std::endl;
+    std::tcout << v21 * v22 << std::endl;
+    std::tcout << v21 / v22 << std::endl;
+    std::tcout << v21.Mag() << std::endl;
+    std::tcout << v21.Dot(v22) << std::endl;
+
+    vu::Vector3DT<int> v31(1, 2, 3), v32(4, 5, 6);
+    std::tcout << v31 << v32 << std::endl;
+    std::tcout << v31 + v32 << std::endl;
+    std::tcout << v31 - v32 << std::endl;
+    std::tcout << v31 * v32 << std::endl;
+    std::tcout << v31 / v32 << std::endl;
+    std::tcout << v31.Mag() << std::endl;
+    std::tcout << v31.Dot(v32) << std::endl;
+
+    vu::Vector4DT<int> v41(1, 2, 3), v42(5, 6, 7);
+    std::tcout << v41 << v42 << std::endl;
+    std::tcout << v41 + v42 << std::endl;
+    std::tcout << v41 - v42 << std::endl;
+    std::tcout << v41 * v42 << std::endl;
+    std::tcout << v41 / v42 << std::endl;
+    std::tcout << v41.Mag() << std::endl;
+    std::tcout << v41.Dot(v42) << std::endl;
   }
 
   {
