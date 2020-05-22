@@ -51,6 +51,7 @@
 
 #include <Windows.h>
 #include <winsvc.h>
+#include <cmath>
 #include <ctime>
 #include <string>
 #include <vector>

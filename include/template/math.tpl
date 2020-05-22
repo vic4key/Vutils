@@ -4,6 +4,14 @@
  * @brief  Template for Math
  */
 
+// Misc
+
+template <typename T>
+T absT(const T v)
+{
+  return v < T(0) ? -T(v) : T(v);
+}
+
 // Range Validation
 
 template <typename T>
@@ -107,29 +115,10 @@ public:
     return !(*this == right);
   }
 
-  void Set(const int count, const T X = 0, const T Y = 0, const T Z = 0)
+  void Set(const T X = 0, const T Y = 0, const T Z = 0)
   {
-    assert(count == D);
-
-    if (D >= 1) m_v[0] = X;
-    if (D >= 2) m_v[1] = Y;
-    if (D >= 3) m_v[2] = Z;
+    SetEx(D, X, Y, Z);
   }
-
-  // void Set(const int count, ...)
-  // {
-  //   assert(count == D);
-
-  //   va_list args;
-  //   va_start(args, count);
-
-  //   for (register int i = 0; i < D; i++)
-  //   {
-  //     m_v[i] = va_arg(args, T);
-  //   }
-
-  //   va_end(args);
-  // }
 
   const T& X() const
   {
@@ -179,7 +168,47 @@ public:
     return os;
   }
 
-private:
+  double DistanceTo(const PointT& p) const
+  {
+    double result = 0.;
+
+    for (register int i = 0; i < D; i++)
+    {
+      double v = absT(p.m_v[i] - m_v[i]);
+      result += v * v;
+    }
+
+    result = std::sqrt(result);
+
+    return result;
+  }
+
+protected:
+  void SetEx(const int count, const T X = 0, const T Y = 0, const T Z = 0)
+  {
+    assert(count == D);
+
+    if (D >= 1) m_v[0] = X;
+    if (D >= 2) m_v[1] = Y;
+    if (D >= 3) m_v[2] = Z;
+  }
+
+  // void SetEx(const int count, ...)
+  // {
+  //   assert(count == D);
+
+  //   va_list args;
+  //   va_start(args, count);
+
+  //   for (register int i = 0; i < D; i++)
+  //   {
+  //     m_v[i] = va_arg(args, T);
+  //   }
+
+  //   va_end(args);
+  // }
+
+protected:
   T m_v[D];
 };
 
@@ -197,7 +226,7 @@ public:
 
   Point2DT(const T X, const T Y)
   {
-    this->Set(D, X, Y);
+    this->SetEx(D, X, Y);
   }
 };
 
@@ -215,37 +244,70 @@ public:
 
   Point3DT(const T X, const T Y, const T Z)
   {
-    this->Set(D, X, Y, Z);
+    this->SetEx(D, X, Y, Z);
+  }
+};
+
+// VectorT - The vector template
+
+template <int N, typename T>
+class VectorT : public PointT<N, T>
+{
+public:
+  enum { D = N };
+
+  VectorT() : PointT<N, T>()
+  {
+  }
+
+  double Length() const
+  {
+    double result = 0.;
+
+    for (register int i = 0; i < D; i++)
+    {
+      result += this->m_v[i] * this->m_v[i];
+    }
+
+    result = std::sqrt(result);
+
+    return result;
   }
 };
 
 // Vector2DT - The 2D vector template
 
 template <typename T>
-class Vector2DT : public Point2DT<T>
+class Vector2DT : public VectorT<2, T>
 {
 public:
-  Vector2DT() : Point2DT<T>()
+  enum { D = 2 };
+
+  Vector2DT() : VectorT<D, T>()
   {
   }
 
-  Vector2DT(const T X, const T Y) : Point2DT<T>(X, Y)
+  Vector2DT(const T X, const T Y)
   {
+    this->SetEx(D, X, Y);
   }
 };
 
 // Vector3DT - The 3D vector template
 
 template <typename T>
-class Vector3DT : public Point3DT<T>
+class Vector3DT : public VectorT<3, T>
 {
 public:
-  Vector3DT() : Point3DT<T>()
+  enum { D = 3 };
+
+  Vector3DT() : VectorT<D, T>()
   {
   }
 
-  Vector3DT(const T X, const T Y, const T Z) : Point3DT<T>(X, Y, Z)
+  Vector3DT(const T X, const T Y, const T Z)
   {
+    this->SetEx(D, X, Y, Z);
   }
 };
 

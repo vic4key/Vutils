@@ -9,20 +9,27 @@ DEF_SAMPLE(Math)
 
   {
     vu::Point2DT<int> p1(1, 2), p2(3, 4), p3;
-    p3 =  p1;
+
+    p3 = p1;
     p3 == p1;
     p3 != p2;
     p3 += p1;
     p3 -= p2;
     p3 -  p1;
     p3 +  p2;
+
     std::tcout << p1 << std::endl;
     std::tcout << p2 << std::endl;
     std::tcout << p3 << std::endl;
+
+    p1.Set(1, 1);
+    p2.Set(2, 2);
+    std::tcout << p1.DistanceTo(p2) << std::endl;
   }
 
   {
     vu::Point3DT<int> p1(1, 2, 3), p2(4, 5, 6), p3;
+
     p3 =  p1;
     p3 == p1;
     p3 != p2;
@@ -30,16 +37,24 @@ DEF_SAMPLE(Math)
     p3 -= p2;
     p3 -  p1;
     p3 +  p2;
+
     std::tcout << p1 << std::endl;
     std::tcout << p2 << std::endl;
     std::tcout << p3 << std::endl;
+
+    p1.Set(1, 1, 1);
+    p2.Set(2, 2, 2);
+    std::tcout << p1.DistanceTo(p2) << std::endl;
   }
 
   {
     vu::Vector2DT<int> v2(1, 2);
-    vu::Vector3DT<int> v3(1, 2, 3);
     std::tcout << v2 << std::endl;
+    std::tcout << v2.Length() << std::endl;
+
+    vu::Vector3DT<int> v3(1, 2, 3);
     std::tcout << v3 << std::endl;
+    std::tcout << v3.Length() << std::endl;
   }
 
   {
