@@ -183,11 +183,6 @@ public:
     return result;
   }
 
-  // void Translate(const VectorT& v)
-  // {
-  //   *this += v;
-  // }
-
 protected:
   void SetEx(const int count, const T X = 0, const T Y = 0, const T Z = 0, const T W = 1)
   {
@@ -234,6 +229,12 @@ public:
   {
     this->SetEx(D, X, Y);
   }
+
+  void Translate(const T X, const T Y)
+  {
+    Point2DT v(X, Y);
+    *this += v;
+  }
 };
 
 // Point3DT - The 3D point template
@@ -252,6 +253,12 @@ public:
   {
     this->SetEx(D, X, Y, Z);
   }
+
+  void Translate(const T X, const T Y, const T Z)
+  {
+    Point3DT v(X, Y, Z);
+    *this += v;
+  }
 };
 
 // Point4DT - The 4D point template
@@ -269,6 +276,12 @@ public:
   Point4DT(const T X, const T Y, const T Z, const T W = 1)
   {
     this->SetEx(D, X, Y, Z, W);
+  }
+
+  void Translate(const T X, const T Y, const T Z, const T W = 1)
+  {
+    Point4DT v(X, Y, Z, W);
+    *this += v;
   }
 };
 

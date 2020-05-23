@@ -18,6 +18,8 @@ DEF_SAMPLE(Math)
     p3 +  p2;
     p3 -  p1;
 
+    p3.Translate(5, 6);
+
     std::tcout << p1 << std::endl;
     std::tcout << p2 << std::endl;
     std::tcout << p3 << std::endl;
@@ -38,6 +40,8 @@ DEF_SAMPLE(Math)
     p3 +  p2;
     p3 -  p1;
 
+    p3.Translate(7, 8, 9);
+
     std::tcout << p1 << std::endl;
     std::tcout << p2 << std::endl;
     std::tcout << p3 << std::endl;
@@ -57,6 +61,8 @@ DEF_SAMPLE(Math)
     p3 -= p2;
     p3 +  p2;
     p3 -  p1;
+
+    p3.Translate(7, 8, 9, 1);
 
     std::tcout << p1 << std::endl;
     std::tcout << p2 << std::endl;
