@@ -322,6 +322,13 @@ intptr vuapi GCD(ulongptr count, ...); // UCLN
 intptr vuapi LCM(ulongptr count, ...); // BCNN
 void vuapi HexDump(const void* Data, int Size);
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif // M_PI
+
+#define DEG2RAD(angle) ((angle) * M_PI / 180.0)
+#define RAD2DEG(angle) ((angle) * 180.0 / M_PI)
+
 #include "template/math.tpl"
 
 /**

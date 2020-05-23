@@ -74,7 +74,7 @@ DEF_SAMPLE(Math)
   }
 
   {
-    vu::Vector2DT<int> v21(1, 2), v22(3, 4);
+    vu::Vector2DT<double> v21(1, 2), v22(3, 4);
     std::tcout << v21 << v22 << std::endl;
     std::tcout << v21 + v22 << std::endl;
     std::tcout << v21 - v22 << std::endl;
@@ -82,8 +82,10 @@ DEF_SAMPLE(Math)
     std::tcout << v21 / v22 << std::endl;
     std::tcout << v21.Mag() << std::endl;
     std::tcout << v21.Dot(v22) << std::endl;
+    std::tcout << v21.Angle(v22) << std::endl;
+    std::tcout << v21.Normalize() << std::endl;
 
-    vu::Vector3DT<int> v31(1, 2, 3), v32(4, 5, 6);
+    vu::Vector3DT<double> v31(1, 2, 3), v32(4, 5, 6);
     std::tcout << v31 << v32 << std::endl;
     std::tcout << v31 + v32 << std::endl;
     std::tcout << v31 - v32 << std::endl;
@@ -91,8 +93,10 @@ DEF_SAMPLE(Math)
     std::tcout << v31 / v32 << std::endl;
     std::tcout << v31.Mag() << std::endl;
     std::tcout << v31.Dot(v32) << std::endl;
+    std::tcout << v31.Angle(v32) << std::endl;
+    std::tcout << v31.Normalize() << std::endl;
 
-    vu::Vector4DT<int> v41(1, 2, 3, 4), v42(5, 6, 7, 8);
+    vu::Vector4DT<double> v41(1, 2, 3, 4), v42(5, 6, 7, 8);
     std::tcout << v41 << v42 << std::endl;
     std::tcout << v41 + v42 << std::endl;
     std::tcout << v41 - v42 << std::endl;
@@ -100,6 +104,8 @@ DEF_SAMPLE(Math)
     std::tcout << v41 / v42 << std::endl;
     std::tcout << v41.Mag() << std::endl;
     std::tcout << v41.Dot(v42) << std::endl;
+    std::tcout << v41.Angle(v42) << std::endl;
+    std::tcout << v41.Normalize() << std::endl;
   }
 
   {

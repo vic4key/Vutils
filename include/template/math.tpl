@@ -194,21 +194,6 @@ protected:
     if (D >= 4) m_v[3] = W;
   }
 
-  // void SetEx(const int count, ...)
-  // {
-  //   assert(count == D);
-
-  //   va_list args;
-  //   va_start(args, count);
-
-  //   for (register int i = 0; i < D; i++)
-  //   {
-  //     m_v[i] = va_arg(args, T);
-  //   }
-
-  //   va_end(args);
-  // }
-
 protected:
   T m_v[D];
 };
@@ -297,7 +282,7 @@ public:
   {
   }
 
-  VectorT& operator*=(const VectorT& v) // scale
+  VectorT& operator*=(const VectorT& v)
   {
     for (register int i = 0; i < D; i++)
     {
@@ -307,7 +292,7 @@ public:
     return *this;
   }
 
-  VectorT& operator/=(const VectorT& v) // scale
+  VectorT& operator/=(const VectorT& v)
   {
     for (register int i = 0; i < D; i++)
     {
@@ -317,21 +302,21 @@ public:
     return *this;
   }
 
-  const VectorT operator*(const VectorT& v) // scale
+  const VectorT operator*(const VectorT& v)
   {
     VectorT result(*this);
     result *= v;
     return result;
   }
 
-  const VectorT operator/(const VectorT& v) // scale
+  const VectorT operator/(const VectorT& v)
   {
     VectorT result(*this);
     result /= v;
     return result;
   }
 
-  double Mag() // Magnitude/Length
+  double Mag() const // magnitude/length
   {
     double result = 0.;
 
@@ -364,10 +349,24 @@ public:
   //   return result;
   // }
 
-  // void VectorT Normalize() // normlize
-  // {
-  //   // YOUR CODE HERE
-  // }
+  VectorT& Normalize()
+  {
+    const auto mag = Mag();
+
+    for (register int i = 0; i < D; i++)
+    {
+      this->m_v[i] = T(this->m_v[i] / mag);
+    }
+
+    return *this;
+  }
+
+  double Angle(const VectorT& v) const
+  {
+    double result = Dot(v) / (this->Mag() * v.Mag());
+    result = std::acos(result);
+    return RAD2DEG(result);
+  }
 };
 
 // Vector2DT - The 2D vector template

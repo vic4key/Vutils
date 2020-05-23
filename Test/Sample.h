@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Vu.h>
+#include <vu>
 
 /**
  * CSample
