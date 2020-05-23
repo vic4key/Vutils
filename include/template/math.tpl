@@ -206,15 +206,19 @@ public:
   PointT Midpoint(const PointT& point) const
   {
     PointT result = *this;
-
     result += point;
+    result.Scale(0.5);
+    return result;
+  }
 
+  PointT& Scale(const double ratio)
+  {
     for (register int i = 0; i < D; i++)
     {
-      result.Data()[i] = T(result.Data()[i] / 2.);
+      this->m_v[i] = T(this->m_v[i] * ratio);
     }
 
-    return result;
+    return *this;
   }
 
 protected:
@@ -364,7 +368,7 @@ public:
 
     for (register int i = 0; i < D; i++)
     {
-      result += v.m_v[i] * this->m_v[i];
+      result += this->m_v[i] * v.m_v[i];
     }
 
     return result;
@@ -381,13 +385,7 @@ public:
 
   VectorT& Normalize() // normalize/unit
   {
-    const auto mag = Mag();
-
-    for (register int i = 0; i < D; i++)
-    {
-      this->m_v[i] = T(this->m_v[i] / mag);
-    }
-
+    this->Scale(1. / Mag());
     return *this;
   }
 };
