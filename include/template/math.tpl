@@ -376,10 +376,29 @@ public:
 
   VectorT Cross(const VectorT& v) // cross/vector product
   {
+    /**
+     * v = v1 x v2 = |v1| * |v2| * sin(a) * n
+     *   v1 - the first vector
+     *   v2 - the second vector
+     *   a  - the angle between both a and b vector
+     *   n  - normalized/unit vector perpendicular to a and b simultaneously
+     *   v  - the cross/vector product of 2 given vectors
+     */
+
+    // VectorT result = *this;
+
+    // VectorT n = ? ; // TODO: Vic. Uncompleted.
+    // n.Normalize();
+
+    // double a = this->Angle(v);
+    // a = DEG2RAD(a);
+
+    // result *= v;
+    // result *= n;
+    // result.Scale(std::sin(a));
+
     VectorT result;
-
-    // YOUR CODE HERE
-
+    assert(0 && "no base implementation for cross product");
     return result;
   }
 
@@ -406,6 +425,11 @@ public:
   {
     this->SetEx(D, X, Y);
   }
+
+  T Cross(const Vector2DT& v)
+  {
+    return this->X() * v.Y() - this->Y() * v.X();
+  }
 };
 
 // Vector3DT - The 3D vector template
@@ -424,6 +448,16 @@ public:
   {
     this->SetEx(D, X, Y, Z);
   }
+
+  Vector3DT Cross(const Vector3DT& v)
+  {
+    Vector3DT result(
+      this->Y() * v.Z() - this->Z() * v.Y(),
+      this->Z() * v.X() - this->X() * v.Z(),
+      this->X() * v.Y() - this->Y() * v.X()
+    );
+    return result;
+  }
 };
 
 // Vector4DT - The 4D vector template
@@ -441,6 +475,13 @@ public:
   Vector4DT(const T X, const T Y, const T Z, const T W)
   {
     this->SetEx(D, X, Y, Z, W);
+  }
+
+  Vector4DT Cross(const Vector4DT& v)
+  {
+    Vector4DT result;
+    assert(0 && "incompatible dimensions for cross product");
+    return result;
   }
 };
 

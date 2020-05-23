@@ -82,6 +82,7 @@ DEF_SAMPLE(Math)
     std::tcout << v21 / v22 << std::endl;
     std::tcout << v21.Mag() << std::endl;
     std::tcout << v21.Dot(v22) << std::endl;
+    std::tcout << v21.Cross(v22) << std::endl;
     std::tcout << v21.Angle(v22) << std::endl;
     std::tcout << v21.Normalize() << std::endl;
 
@@ -93,6 +94,7 @@ DEF_SAMPLE(Math)
     std::tcout << v31 / v32 << std::endl;
     std::tcout << v31.Mag() << std::endl;
     std::tcout << v31.Dot(v32) << std::endl;
+    std::tcout << v31.Cross(v32) << std::endl;
     std::tcout << v31.Angle(v32) << std::endl;
     std::tcout << v31.Normalize() << std::endl;
 
@@ -104,6 +106,7 @@ DEF_SAMPLE(Math)
     std::tcout << v41 / v42 << std::endl;
     std::tcout << v41.Mag() << std::endl;
     std::tcout << v41.Dot(v42) << std::endl;
+    // std::tcout << v41.Cross(v42) << std::endl;
     std::tcout << v41.Angle(v42) << std::endl;
     std::tcout << v41.Normalize() << std::endl;
   }
