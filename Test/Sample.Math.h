@@ -52,7 +52,7 @@ DEF_SAMPLE(Math)
   }
 
   {
-    vu::Point4DT<int> p1(1, 2, 3), p2(4, 5, 6), p3;
+    vu::Point4DT<int> p1(1, 2, 3, 4), p2(5, 6, 7, 8), p3;
 
     p3 =  p1;
     p3 == p1;
@@ -62,7 +62,7 @@ DEF_SAMPLE(Math)
     p3 +  p2;
     p3 -  p1;
 
-    p3.Translate(7, 8, 9, 1);
+    p3.Translate(3, 4, 5, 6);
 
     std::tcout << p1 << std::endl;
     std::tcout << p2 << std::endl;
@@ -92,7 +92,7 @@ DEF_SAMPLE(Math)
     std::tcout << v31.Mag() << std::endl;
     std::tcout << v31.Dot(v32) << std::endl;
 
-    vu::Vector4DT<int> v41(1, 2, 3), v42(5, 6, 7);
+    vu::Vector4DT<int> v41(1, 2, 3, 4), v42(5, 6, 7, 8);
     std::tcout << v41 << v42 << std::endl;
     std::tcout << v41 + v42 << std::endl;
     std::tcout << v41 - v42 << std::endl;

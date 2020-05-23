@@ -115,7 +115,7 @@ public:
     return !(*this == right);
   }
 
-  void Set(const T X = 0, const T Y = 0, const T Z = 0, const T W = 1)
+  void Set(const T X = 0, const T Y = 0, const T Z = 0, const T W = 0)
   {
     SetEx(D, X, Y, Z, W);
   }
@@ -184,7 +184,7 @@ public:
   }
 
 protected:
-  void SetEx(const int count, const T X = 0, const T Y = 0, const T Z = 0, const T W = 1)
+  void SetEx(const int count, const T X = 0, const T Y = 0, const T Z = 0, const T W = 0)
   {
     assert(count == D);
 
@@ -273,12 +273,12 @@ public:
   {
   }
 
-  Point4DT(const T X, const T Y, const T Z, const T W = 1)
+  Point4DT(const T X, const T Y, const T Z, const T W)
   {
     this->SetEx(D, X, Y, Z, W);
   }
 
-  void Translate(const T X, const T Y, const T Z, const T W = 1)
+  void Translate(const T X, const T Y, const T Z, const T W)
   {
     Point4DT v(X, Y, Z, W);
     *this += v;
@@ -418,7 +418,7 @@ public:
   {
   }
 
-  Vector4DT(const T X, const T Y, const T Z, const T W = 1)
+  Vector4DT(const T X, const T Y, const T Z, const T W)
   {
     this->SetEx(D, X, Y, Z, W);
   }
