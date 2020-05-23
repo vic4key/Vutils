@@ -54,6 +54,23 @@ public:
     }
   }
 
+  bool operator==(const PointT& right)
+  {
+    bool result = true;
+
+    for (register int i = 0; i < D; i++)
+    {
+      result &= m_v[i] == right.m_v[i];
+    }
+
+    return result;
+  }
+
+  bool operator!=(const PointT& right)
+  {
+    return !(*this == right);
+  }
+
   PointT& operator=(const PointT& right)
   {
     for (register int i = 0; i < D; i++)
@@ -84,6 +101,26 @@ public:
     return *this;
   }
 
+  PointT& operator*=(const PointT& v)
+  {
+    for (register int i = 0; i < D; i++)
+    {
+      this->m_v[i] *= v.m_v[i];
+    }
+
+    return *this;
+  }
+
+  PointT& operator/=(const PointT& v)
+  {
+    for (register int i = 0; i < D; i++)
+    {
+      this->m_v[i] /= v.m_v[i];
+    }
+
+    return *this;
+  }
+
   const PointT operator+(const PointT& right)
   {
     PointT result(*this);
@@ -96,23 +133,6 @@ public:
     PointT result(*this);
     result -= right;
     return result;
-  }
-
-  bool operator==(const PointT& right)
-  {
-    bool result = true;
-
-    for (register int i = 0; i < D; i++)
-    {
-      result &= m_v[i] == right.m_v[i];
-    }
-
-    return result;
-  }
-
-  bool operator!=(const PointT& right)
-  {
-    return !(*this == right);
   }
 
   void Set(const T X = 0, const T Y = 0, const T Z = 0, const T W = 0)
@@ -280,26 +300,6 @@ public:
 
   VectorT() : PointT<N, T>()
   {
-  }
-
-  VectorT& operator*=(const VectorT& v)
-  {
-    for (register int i = 0; i < D; i++)
-    {
-      this->m_v[i] *= v.m_v[i];
-    }
-
-    return *this;
-  }
-
-  VectorT& operator/=(const VectorT& v)
-  {
-    for (register int i = 0; i < D; i++)
-    {
-      this->m_v[i] /= v.m_v[i];
-    }
-
-    return *this;
   }
 
   const VectorT operator*(const VectorT& v)
