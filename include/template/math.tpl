@@ -318,6 +318,13 @@ public:
 
   double Angle(const VectorT& v) const
   {
+    /**
+     * a = acos(v1 * v2) / (|v1| * |v2|)
+     *   v1 - the first vector
+     *   v2 - the second vector
+     *   a  - the angle between both 2 given vectors
+     */
+
     double result = Dot(v) / (this->Mag() * v.Mag());
     result = std::acos(result);
     return RAD2DEG(result);
