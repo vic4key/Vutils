@@ -203,6 +203,20 @@ public:
     return result;
   }
 
+  PointT Midpoint(const PointT& point) const
+  {
+    PointT result = *this;
+
+    result += point;
+
+    for (register int i = 0; i < D; i++)
+    {
+      result.Data()[i] = T(result.Data()[i] / 2.);
+    }
+
+    return result;
+  }
+
 protected:
   void SetEx(const int count, const T X = 0, const T Y = 0, const T Z = 0, const T W = 0)
   {
