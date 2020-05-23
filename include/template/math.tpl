@@ -121,14 +121,14 @@ public:
     return *this;
   }
 
-  const PointT operator+(const PointT& right)
+  PointT operator+(const PointT& right)
   {
     PointT result(*this);
     result += right;
     return result;
   }
 
-  const PointT operator-(const PointT& right)
+  PointT operator-(const PointT& right)
   {
     PointT result(*this);
     result -= right;
@@ -155,9 +155,9 @@ public:
     return m_v[2];
   }
 
-  const T* Data() const
+  T* Data()
   {
-    return &m_v;
+    return reinterpret_cast<T*>(&m_v);
   }
 
   friend std::ostream& operator<<(std::ostream& os, const PointT& point)
@@ -302,18 +302,25 @@ public:
   {
   }
 
-  const VectorT operator*(const VectorT& v)
+  VectorT operator*(const VectorT& v)
   {
     VectorT result(*this);
     result *= v;
     return result;
   }
 
-  const VectorT operator/(const VectorT& v)
+  VectorT operator/(const VectorT& v)
   {
     VectorT result(*this);
     result /= v;
     return result;
+  }
+
+  double Angle(const VectorT& v) const
+  {
+    double result = Dot(v) / (this->Mag() * v.Mag());
+    result = std::acos(result);
+    return RAD2DEG(result);
   }
 
   double Mag() const // magnitude/length
@@ -342,14 +349,16 @@ public:
     return result;
   }
 
-  // const VectorT Cross(const VectorT& v) // cross product
-  // {
-  //   VectorT result;
-  //   // YOUR CODE HERE
-  //   return result;
-  // }
+  VectorT Cross(const VectorT& v) // cross/vector product
+  {
+    VectorT result;
 
-  VectorT& Normalize()
+    // YOUR CODE HERE
+
+    return result;
+  }
+
+  VectorT& Normalize() // normalize/unit
   {
     const auto mag = Mag();
 
@@ -359,13 +368,6 @@ public:
     }
 
     return *this;
-  }
-
-  double Angle(const VectorT& v) const
-  {
-    double result = Dot(v) / (this->Mag() * v.Mag());
-    result = std::acos(result);
-    return RAD2DEG(result);
   }
 };
 
