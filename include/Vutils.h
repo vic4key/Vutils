@@ -95,73 +95,7 @@
 
 /* ----------------------------------- Vutils Declarations -------------------------------------- */
 
-/* TCHAR equivalents of STL string and stream classes */
-
-namespace std
-{
-
-static const char* tab  = "\t";   // Tab
-static const char* cr   = "\r";   // Carriage Return
-static const char* lf   = "\n";   // Line Feed
-static const char* crlf = "\r\n"; // Carriage Return & Line Feed
-
-static const wchar_t* wtab  = L"\t";   // Tab
-static const wchar_t* wcr   = L"\r";   // Carriage Return
-static const wchar_t* wlf   = L"\n";   // Line Feed
-static const wchar_t* wcrlf = L"\r\n"; // Carriage Return & Line Feed
-
-#ifdef _UNICODE
-#define tcerr           wcerr
-#define tcin            wcin
-#define tclog           wclog
-#define tcout           wcout
-
-typedef wstring         tstring;
-
-typedef wstringbuf      tstringbuf;
-typedef wstringstream   tstringstream;
-typedef wostringstream  tostringstream;
-typedef wistringstream  tistringstream;
-
-typedef wstreambuf      tstreambuf;
-
-typedef wistream        tistream;
-typedef wostream        tostream;
-typedef wiostream       tiostream;
-
-typedef wfilebuf        tfilebuf;
-typedef wfstream        tfstream;
-typedef wifstream       tifstream;
-typedef wofstream       tofstream;
-
-typedef wios            tios;
-#else // !_UNICODE
-#define tcerr           cerr
-#define tcin            cin
-#define tclog           clog
-#define tcout           cout
-
-typedef string          tstring;
-
-typedef stringbuf       tstringbuf;
-typedef stringstream    tstringstream;
-typedef ostringstream   tostringstream;
-typedef istringstream   tistringstream;
-
-typedef streambuf       tstreambuf;
-
-typedef istream         tistream;
-typedef ostream         tostream;
-typedef iostream        tiostream;
-
-typedef filebuf         tfilebuf;
-typedef fstream         tfstream;
-typedef ifstream        tifstream;
-typedef ofstream        tofstream;
-
-typedef ios             tios;
-#endif // _UNICODE
-} // namespace std
+#include "inline/std.inl" // TCHAR equivalents for STL
 
 namespace threadpool11
 {
@@ -174,120 +108,8 @@ using namespace threadpool11;
 namespace vu
 {
 
-/* Vutils Definitions */
-
-#ifdef _WIN64
-#define vuapi __stdcall
-#else  // _WIN32
-#define vuapi
-#endif // _WIN64
-
-#ifndef _T
-#ifdef _UNICODE
-#define _T(x) L ## x
-#else  // !_UNICODE
-#define _T(x) x
-#endif // _UNICODE
-#endif // _T
-
-#ifndef MAXPATH
-#define MAXPATH MAX_PATH
-#endif
-
-#define MAX_NPROCESSES 512
-#define MAX_NMODULES   1024
-
-#define INVALID_PID_VALUE -1
-
-#define KiB     1024
-#define MiB     KiB*KiB
-#define GiB     MiB*KiB
-
-#define KB      1000
-#define MB      KB*KB
-#define GB      MB*KB
-
-/* Other Definitions */
-
-#define VU_ALIGN_UP(v, a) (((v) + ((a) - 1)) & ~((a) - 1))
-
-#ifndef ERROR_INCORRECT_SIZE
-#define ERROR_INCORRECT_SIZE 1462L
-#endif
-
-// MSVC
-#ifdef _MSC_VER
-#define VU_FUNC_INFO __FUNCSIG__
-#define VU_FUNC_NAME __FUNCTION__
-#endif
-// C++ Builder
-#ifdef __BCPLUSPLUS__
-#define VU_FUNC_INFO __FUNC__
-#define VU_FUNC_NAME __FUNC__
-#endif
-// MingGW
-#ifdef __MINGW32__
-#define VU_FUNC_INFO __PRETTY_FUNCTION__
-#define VU_FUNC_NAME __FUNCTION__
-#endif
-
-/* Vutils Types */
-
-typedef int                 VUResult;
-typedef int                 IResult;
-
-typedef TCHAR               tchar;
-typedef wchar_t             wchar;
-
-// 32-bit Default Data Types
-
-typedef unsigned char       byte;
-typedef unsigned char       uchar;
-typedef unsigned short      ushort;
-typedef unsigned short      ushort;
-typedef unsigned int        uint;
-typedef unsigned long       ulong;
-typedef unsigned long long  ulonglong;
-
-// 32-bit Data Types
-
-typedef short               short32;
-typedef unsigned short      ushort32;
-typedef int                 int32;
-typedef unsigned int        uint32;
-typedef int                 long32;
-typedef unsigned int        ulong32;
-
-// 64-bit Data Types
-
-typedef __int32             short64;
-typedef unsigned __int32    ushort64;
-typedef __int64             int64;
-typedef unsigned __int64    uint64;
-typedef __int64             long64;
-typedef unsigned __int64    ulong64;
-
-// 86-64 Data Types
-
-typedef HALF_PTR            halfptr;
-typedef UHALF_PTR           uhalfptr;
-typedef INT_PTR             intptr;
-typedef UINT_PTR            uintptr;
-typedef LONG_PTR            longptr;
-typedef ULONG_PTR           ulongptr;
-
-typedef unsigned char       Byte;
-typedef unsigned char       UChar;
-typedef HALF_PTR            HalfPtr;
-typedef UHALF_PTR           UHalfPtr;
-typedef INT_PTR             IntPtr;
-typedef UINT_PTR            UIntPtr;
-typedef LONG_PTR            LongPtr;
-typedef ULONG_PTR           ULongPtr;
-
-typedef CRITICAL_SECTION    TCriticalSection, *PCriticalSection;
-
-typedef struct _SERVICE_STATUS TServiceStatus;
+#include "inline/defs.inl"  // Defines
+#include "inline/types.inl" // Types
 
 /* Vutils Constants */
 
@@ -304,13 +126,13 @@ const size_t MAX_SIZE = MAXBYTE;
 class CBuffer;
 
 bool vuapi IsAdministrator();
-bool SetPrivilegeA(const std::string& Privilege, const bool Enable);
+bool SetPrivilegeA(const std::string&  Privilege, const bool Enable);
 bool SetPrivilegeW(const std::wstring& Privilege, const bool Enable);
-std::string vuapi  GetEnviromentA(const std::string EnvName);
+std::string vuapi  GetEnviromentA(const std::string  EnvName);
 std::wstring vuapi GetEnviromentW(const std::wstring EnvName);
-std::pair<bool, size_t> FindPatternA(const CBuffer& Buffer, const std::string& Pattern);
+std::pair<bool, size_t> FindPatternA(const CBuffer& Buffer, const std::string&  Pattern);
 std::pair<bool, size_t> FindPatternW(const CBuffer& Buffer, const std::wstring& Pattern);
-std::pair<bool, size_t> FindPatternA(const void* Pointer, const size_t Size, const std::string& Pattern);
+std::pair<bool, size_t> FindPatternA(const void* Pointer, const size_t Size, const std::string&  Pattern);
 std::pair<bool, size_t> FindPatternW(const void* Pointer, const size_t Size, const std::wstring& Pattern);
 
 /**
@@ -321,13 +143,6 @@ bool vuapi IsFlagOn(ulongptr ulFlags, ulongptr ulFlag);
 intptr vuapi GCD(ulongptr count, ...); // UCLN
 intptr vuapi LCM(ulongptr count, ...); // BCNN
 void vuapi HexDump(const void* Data, int Size);
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif // M_PI
-
-#define DEG2RAD(angle) ((angle) * M_PI / 180.0)
-#define RAD2DEG(angle) ((angle) * 180.0 / M_PI)
 
 #include "template/math.tpl"
 
@@ -1469,6 +1284,8 @@ typedef enum _SC_ACCESS_TYPE
   SC_ALL_ACCESS         = SC_MANAGER_ALL_ACCESS,
 } eSCAccessType;
 
+typedef struct _SERVICE_STATUS TServiceStatus;
+
 class CServiceX : public CLastError
 {
 public:
@@ -1986,6 +1803,8 @@ private:
 /**
  * Critical Section
  */
+
+typedef CRITICAL_SECTION    TCriticalSection, *PCriticalSection;
 
 class CCriticalSection
 {

@@ -6,6 +6,13 @@
 
 // Misc
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif // M_PI
+
+#define DEG2RAD(angle) ((angle) * M_PI / 180.0)
+#define RAD2DEG(angle) ((angle) * 180.0 / M_PI)
+
 template <typename T>
 T absT(const T v)
 {

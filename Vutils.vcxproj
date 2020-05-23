@@ -347,6 +347,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Boob" />
+    <None Include="include\inline\defs.inl" />
+    <None Include="include\inline\std.inl" />
+    <None Include="include\inline\types.inl" />
     <None Include="include\template\math.tpl" />
     <None Include="include\template\singleton.tpl" />
     <None Include="include\Vu" />

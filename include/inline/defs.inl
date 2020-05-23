@@ -1,0 +1,60 @@
+/**
+ * @file   defs.inl
+ * @author Vic P.
+ * @brief  Inline for Defines
+ */
+
+#ifdef _WIN64
+#define vuapi __stdcall
+#else  // _WIN32
+#define vuapi
+#endif // _WIN64
+
+#ifndef _T
+#ifdef _UNICODE
+#define _T(x) L ## x
+#else  // !_UNICODE
+#define _T(x) x
+#endif // _UNICODE
+#endif // _T
+
+#ifndef MAXPATH
+#define MAXPATH MAX_PATH
+#endif
+
+#define MAX_NPROCESSES 512
+#define MAX_NMODULES   1024
+
+#define INVALID_PID_VALUE -1
+
+#define KiB     1024
+#define MiB     KiB*KiB
+#define GiB     MiB*KiB
+
+#define KB      1000
+#define MB      KB*KB
+#define GB      MB*KB
+
+/* Other Definitions */
+
+#define VU_ALIGN_UP(v, a) (((v) + ((a) - 1)) & ~((a) - 1))
+
+#ifndef ERROR_INCORRECT_SIZE
+#define ERROR_INCORRECT_SIZE 1462L
+#endif
+
+// MSVC
+#ifdef _MSC_VER
+#define VU_FUNC_INFO __FUNCSIG__
+#define VU_FUNC_NAME __FUNCTION__
+#endif
+// C++ Builder
+#ifdef __BCPLUSPLUS__
+#define VU_FUNC_INFO __FUNC__
+#define VU_FUNC_NAME __FUNC__
+#endif
+// MingGW
+#ifdef __MINGW32__
+#define VU_FUNC_INFO __PRETTY_FUNCTION__
+#define VU_FUNC_NAME __FUNCTION__
+#endif

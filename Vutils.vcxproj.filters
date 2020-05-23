@@ -31,6 +31,9 @@
     <Filter Include="Header Files\Template Files">
       <UniqueIdentifier>{6909da66-a8cb-48af-89cb-fdf5e101283a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Inline Files">
+      <UniqueIdentifier>{842f4f8a-4b2a-4ed5-aabf-5d7b6956aaee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -183,6 +186,15 @@
     </None>
     <None Include="include\template\singleton.tpl">
       <Filter>Header Files\Template Files</Filter>
+    </None>
+    <None Include="include\inline\std.inl">
+      <Filter>Header Files\Inline Files</Filter>
+    </None>
+    <None Include="include\inline\types.inl">
+      <Filter>Header Files\Inline Files</Filter>
+    </None>
+    <None Include="include\inline\defs.inl">
+      <Filter>Header Files\Inline Files</Filter>
     </None>
   </ItemGroup>
 </Project>
