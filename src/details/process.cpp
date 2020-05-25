@@ -1223,9 +1223,7 @@ const CProcessX::Memories& CProcessX::GetMemories(
   return m_Memories;
 }
 
-CProcessA::CProcessA()
-  : CProcessX()
-  , m_Name("")
+CProcessA::CProcessA() : CProcessX() , m_Name("")
 {
 }
 
@@ -1336,9 +1334,7 @@ const CProcessA::Modules& CProcessA::GetModules()
  * CProcessW
  */
 
-CProcessW::CProcessW()
-  : CProcessX()
-  , m_Name(L"")
+CProcessW::CProcessW() : CProcessX(), m_Name(L"")
 {
 }
 
