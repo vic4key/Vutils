@@ -171,7 +171,7 @@ bool vuapi CFileSystemX::Close()
   return true;
 }
 
-const CBuffer vuapi CFileSystemX::ReadContent()
+const CBuffer vuapi CFileSystemX::ReadAsBuffer()
 {
   CBuffer pContent(0);
 
@@ -234,7 +234,7 @@ const std::string vuapi CFileSystemA::ReadFileAsString(bool removeBOM)
 {
   std::string result("");
 
-  auto pContent = this->ReadContent();
+  auto pContent = this->ReadAsBuffer();
   auto p = (char*)pContent.GetpData();
 
   auto encoding = DetermineEncodingType(pContent.GetpData(), pContent.GetSize());
@@ -259,6 +259,17 @@ const std::string vuapi CFileSystemA::QuickReadAsString(const std::string& FileP
   CFileSystemA file(FilePath, vu::eFSModeFlags::FM_OPENEXISTING);
   auto result = file.ReadFileAsString(removeBOM);
   return result;
+}
+
+CBuffer CFileSystemA::QuickReadAsBuffer(const std::string& FilePath)
+{
+  if (!IsFileExistsA(FilePath))
+  {
+    return CBuffer();
+  }
+
+  CFileSystemA fs(FilePath, eFSModeFlags::FM_OPENEXISTING);
+  return fs.ReadAsBuffer();
 }
 
 bool CFileSystemA::Iterate(
@@ -361,7 +372,7 @@ const std::wstring vuapi CFileSystemW::ReadAsString(bool removeBOM)
 {
   std::wstring result(L"");
 
-  auto pContent = this->ReadContent();
+  auto pContent = this->ReadAsBuffer();
   auto p = (wchar*)pContent.GetpData();
 
   auto encoding = DetermineEncodingType(pContent.GetpData(), pContent.GetSize());
@@ -386,6 +397,17 @@ const std::wstring vuapi CFileSystemW::QuickReadAsString(const std::wstring& Fil
   CFileSystemW file(FilePath, vu::eFSModeFlags::FM_OPENEXISTING);
   auto result = file.ReadAsString(removeBOM);
   return result;
+}
+
+CBuffer CFileSystemW::QuickReadAsBuffer(const std::wstring& FilePath)
+{
+  if (!IsFileExistsW(FilePath))
+  {
+    return CBuffer();
+  }
+
+  CFileSystemW fs(FilePath, eFSModeFlags::FM_OPENEXISTING);
+  return fs.ReadAsBuffer();
 }
 
 bool CFileSystemW::Iterate(

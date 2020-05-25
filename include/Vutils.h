@@ -1083,7 +1083,7 @@ public:
   virtual bool vuapi IsFileHandleValid(HANDLE fileHandle);
   virtual bool vuapi IsReady();
   virtual ulong vuapi GetFileSize();
-  virtual const CBuffer vuapi ReadContent();
+  virtual const CBuffer vuapi ReadAsBuffer();
   virtual bool vuapi Read(void* Buffer, ulong ulSize);
   virtual bool vuapi Read(
     ulong ulOffset,
@@ -1140,6 +1140,7 @@ public:
     const std::string& FilePath,
     bool forceBOM = true
   );
+  static CBuffer QuickReadAsBuffer(const std::string& FilePath);
   static bool Iterate(
     const std::string& Path,
     const std::string& Pattern,
@@ -1171,6 +1172,7 @@ public:
     const std::wstring& FilePath,
     bool removeBOM = true
   );
+  static CBuffer QuickReadAsBuffer(const std::wstring& FilePath);
   static bool Iterate(
     const std::wstring& Path,
     const std::wstring& Pattern,

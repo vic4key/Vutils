@@ -78,12 +78,12 @@ DEF_SAMPLE(Misc)
   vu::CFileSystem::Iterate(_T("path\\to\\example"), _T("*.txt"), [](const vu::TFSObject& FSObject) -> bool
   {
     auto filePath = FSObject.Directory + FSObject.Name;
-    vu::CFileSystem fs(filePath, vu::eFSModeFlags::FM_OPENEXISTING);
-    auto data = fs.ReadContent();
+    auto data = vu::CFileSystem::QuickReadAsBuffer(filePath);
 
     auto result = vu::DetermineEncodingType(data.GetpData(), data.GetSize());
     auto es = result == -1 ? L"Unknown" : LES[result];
     auto el = result == -1 ? L"Unknown" : LEL[result];
+
     std::wcout
       << std::left
       << std::setw(15) << es
