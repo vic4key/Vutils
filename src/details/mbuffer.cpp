@@ -65,7 +65,7 @@ bool CBuffer::operator!=(const CBuffer& right) const
   return !(*this == right);
 }
 
-byte CBuffer::operator[](const size_t offset) const
+byte& CBuffer::operator[](const size_t offset) const
 {
   if (m_pData == nullptr)
   {
@@ -80,7 +80,7 @@ byte CBuffer::operator[](const size_t offset) const
   return static_cast<byte*>(m_pData)[offset];
 }
 
-byte* CBuffer::GetpBytes()
+byte* CBuffer::GetpBytes() const
 {
   return static_cast<byte*>(m_pData);
 }
@@ -97,7 +97,7 @@ size_t CBuffer::GetSize() const
 
 bool CBuffer::Create(void* ptr, const size_t size, const bool clean)
 {
-  if (clean)
+  if (clean || size == 0)
   {
     this->Delete();
   }
@@ -173,6 +173,11 @@ bool CBuffer::Replace(const void* pData, const size_t size)
 bool CBuffer::Replace(const CBuffer& right)
 {
   return this->Replace(right.GetpData(), right.GetSize());
+}
+
+bool CBuffer::Empty() const
+{
+  return m_pData == nullptr || m_Size == 0;
 }
 
 bool CBuffer::Append(const void* pData, const size_t size)

@@ -32,9 +32,17 @@ DEF_SAMPLE(Socket)
     return 1;
   }
 
-  vu::CBuffer reponse(1024);
-  auto N = socket.Recv(reponse);
-  assert(N > 0);
+  // request to get file
+
+  vu::CBuffer reponse(KiB);
+  const auto N = socket.Recv(reponse);
+  if (reponse.Empty())
+  {
+    std::tcout << _T("Socket -> Recv -> Nothing") << std::endl;
+    return 1;
+  }
+
+  // extract response header & body
 
   const std::string FirstResponse = (char*)reponse.GetpData();
   const std::string HttpHeaderEnd = "\x0D\x0A\x0D\x0A";
@@ -46,39 +54,38 @@ DEF_SAMPLE(Socket)
   const auto& ResponseHeader = l.at(0) + HttpHeaderEnd;
   std::cout << "Response Header:" << std::endl;
   const auto& headers = vu::SplitStringA(ResponseHeader, HttpHeaderSep, true);
-  for (auto& e : headers)
+  for (const auto& e : headers)
   {
-    std::cout << "\t" << e << std::endl;
+    std::cout << std::tab << e << std::endl;
   }
 
-  reponse.SetpData(
-    (char*)reponse.GetpData() + ResponseHeader.length(),
-    N - (int)ResponseHeader.length()
-  );
+  vu::CBuffer buffer(reponse.GetpBytes() + ResponseHeader.length(), N - ResponseHeader.length());
 
-  vu::CFileSystemA file("5MB.zip", vu::eFSModeFlags::FM_CREATEALWAY);
-  assert(file.IsReady());
-  file.Write(reponse.GetpData(), reponse.GetUsedSize());
+  // receive file chunks and append to the file buffer
 
-  vu::IResult nRecvBytes = 0;
-  do
+  vu::CBuffer file;
+
+  while (!buffer.Empty())
   {
-    N = socket.Recv(reponse);
-    if (N > 0)
-    {
-      file.Write(reponse.GetpData(), reponse.GetUsedSize());
-      nRecvBytes += N;
-      std::cout
-        << std::left
-        << "Downloaded: "
-        << std::setw(15)
-        << vu::FormatBytesA(nRecvBytes)
-        << '\r'
-        << std::flush;
-    }
-  } while (N > 0);
+    file.Append(buffer);
+
+    buffer.Resize(KiB);
+    socket.Recv(buffer);
+
+    std::cout
+      << std::left
+      << "Downloaded: "
+      << std::setw(15)
+      << vu::FormatBytesA(file.GetSize())
+      << std::cr
+      << std::flush;
+  }
 
   std::cout << std::endl;
+
+  // save file buffer to disk
+
+  file.SaveAsFile(_T("5MB.zip"));
 
   if (!socket.Close())
   {

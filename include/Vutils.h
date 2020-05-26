@@ -641,11 +641,11 @@ public:
   virtual ~CBuffer();
 
   const CBuffer& operator=(const CBuffer& right);
-  bool operator==(const CBuffer& right) const;
-  bool operator!=(const CBuffer& right) const;
-  byte operator[](const size_t offset) const;
+  bool  operator==(const CBuffer& right) const;
+  bool  operator!=(const CBuffer& right) const;
+  byte& operator[](const size_t offset) const;
 
-  byte*  GetpBytes();
+  byte*  GetpBytes() const;
   void*  GetpData() const;
   size_t GetSize() const;
 
@@ -654,23 +654,13 @@ public:
   bool Resize(const size_t size);
   bool Replace(const void* pData, const size_t size);
   bool Replace(const CBuffer& right);
+  bool Empty() const;
 
   bool Append(const void* pData, const size_t size);
   bool Append(const CBuffer& right);
 
   bool SaveAsFile(const std::string&  filePath);
   bool SaveAsFile(const std::wstring& filePath);
-
-  void SetUsedSize(const ulong ulUsedSize)
-  {
-    assert(0);
-  }
-
-  const ulong GetUsedSize() const
-  {
-    assert(0);
-    return 0;
-  }
 
 private:
   bool Create(void* ptr, const size_t size, const bool clean = true);
