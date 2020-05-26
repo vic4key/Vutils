@@ -1019,14 +1019,14 @@ bool CProcessX::Read(const ulongptr Address, CBuffer& Data)
   return Read(Address, Data.GetpData(), Data.GetSize());
 }
 
-bool CProcessX::Read(const ulongptr Address, void* pData, const ulong ulSize)
+bool CProcessX::Read(const ulongptr Address, void* pData, const size_t Size)
 {
-  if (Address == 0 || pData == 0 || ulSize == 0)
+  if (Address == 0 || pData == 0 || Size == 0)
   {
     return false;
   }
 
-  auto result = RPM(m_Handle, LPCVOID(Address), pData, ulSize, true);
+  auto result = RPM(m_Handle, LPCVOID(Address), pData, Size, true);
 
   m_LastErrorCode = GetLastError();
 
@@ -1038,14 +1038,14 @@ bool CProcessX::Write(const ulongptr Address, const CBuffer& Data)
   return Write(Address, Data.GetpData(), Data.GetSize());
 }
 
-bool CProcessX::Write(const ulongptr Address, const void* pData, const ulong ulSize)
+bool CProcessX::Write(const ulongptr Address, const void* pData, const size_t Size)
 {
-  if (Address == 0 || pData == 0 || ulSize == 0)
+  if (Address == 0 || pData == 0 || Size == 0)
   {
     return false;
   }
 
-  auto result = WPM(m_Handle, LPCVOID(Address), pData, ulSize, true);
+  auto result = WPM(m_Handle, LPCVOID(Address), pData, Size, true);
 
   m_LastErrorCode = GetLastError();
 

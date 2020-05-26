@@ -116,9 +116,6 @@
     <ClCompile Include="src\details\guid.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
-    <ClCompile Include="src\details\binary.cpp">
-      <Filter>Source Files\details</Filter>
-    </ClCompile>
     <ClCompile Include="src\details\library.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
@@ -169,6 +166,9 @@
     </ClCompile>
     <ClCompile Include="3rdparty\TP11\src\Pool.cpp">
       <Filter>Third Party Files\TP11</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\mbuffer.cpp">
+      <Filter>Source Files\details</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

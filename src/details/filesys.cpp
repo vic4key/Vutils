@@ -178,13 +178,7 @@ const CBuffer vuapi CFileSystemX::ReadAsBuffer()
   auto size = this->GetFileSize();
   if (size == 0) return pContent;
 
-  #ifdef _WIN64
-  size += 8;
-  #else // _WIN32
-  size += 4;
-  #endif
-
-  pContent.AdjustSize(size);
+  pContent.Resize(size);
 
   this->Read(0, pContent.GetpData(), size, eMoveMethodFlags::MM_BEGIN);
 

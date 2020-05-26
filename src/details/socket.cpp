@@ -216,11 +216,10 @@ IResult vuapi CSocket::Recv(char* lpData, int iLength, eSocketMessage SocketMess
 
 IResult vuapi CSocket::Recv(CBuffer& Data, eSocketMessage SocketMessage)
 {
-  void* p = Data.GetpData();
-  auto z = this->Recv(m_Socket, (char*)p, Data.GetSize(), SocketMessage);
+  auto z = this->Recv(m_Socket, (char*)Data.GetpData(), int(Data.GetSize()), SocketMessage);
   if (z != SOCKET_ERROR)
   {
-    Data.SetUsedSize(z);
+    Data.Resize(z);
   }
 
   return z;

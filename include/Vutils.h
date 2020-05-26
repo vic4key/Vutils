@@ -628,36 +628,57 @@ public:
 #endif // VU_GUID_ENABLED
 
 /**
- * Binary
+ * CBuffer
  */
 
 class CBuffer
 {
 public:
   CBuffer();
+  CBuffer(const void* pData, const size_t size);
+  CBuffer(const size_t size);
   CBuffer(const CBuffer& right);
-  CBuffer(const void* pData, ulong ulSize);
-  CBuffer(ulong ulSize);
   virtual ~CBuffer();
 
   const CBuffer& operator=(const CBuffer& right);
   bool operator==(const CBuffer& right) const;
   bool operator!=(const CBuffer& right) const;
-  void AdjustSize (const ulong ulSize);
-  const ulong GetSize() const;
-  void SetUsedSize(const ulong ulUsedSize);
-  const ulong GetUsedSize() const;
-  void SetpData(const void* pData, ulong ulSize);
-  void* GetpData();
-  const void* GetpData() const;
+  byte operator[](const size_t offset) const;
+
+  byte*  GetpBytes();
+  void*  GetpData() const;
+  size_t GetSize() const;
+
+  void Reset();
+  void Fill(const byte v = 0);
+  bool Resize(const size_t size);
+  bool Replace(const void* pData, const size_t size);
+  bool Replace(const CBuffer& right);
+
+  bool Append(const void* pData, const size_t size);
+  bool Append(const CBuffer& right);
 
   bool SaveAsFile(const std::string&  filePath);
   bool SaveAsFile(const std::wstring& filePath);
 
+  void SetUsedSize(const ulong ulUsedSize)
+  {
+    assert(0);
+  }
+
+  const ulong GetUsedSize() const
+  {
+    assert(0);
+    return 0;
+  }
+
 private:
-  void* m_pData;
-  ulong m_Size;
-  ulong m_UsedSize;
+  bool Create(void* ptr, const size_t size, const bool clean = true);
+  bool Delete();
+
+private:
+  void*  m_pData;
+  size_t m_Size;
 };
 
 /**
@@ -2425,9 +2446,9 @@ public:
   static bool IsWow64(ulong PID/* = NULL*/);
 
   bool Read(const  ulongptr Address, CBuffer& Data);
-  bool Read(const  ulongptr Address, void* pData, const ulong ulSize);
+  bool Read(const  ulongptr Address, void* pData, const size_t ulSize);
   bool Write(const ulongptr Address, const CBuffer& Data);
-  bool Write(const  ulongptr Address, const void* pData, const ulong ulSize);
+  bool Write(const  ulongptr Address, const void* pData, const size_t ulSize);
 
   PROCESS_CPU_COUNTERS GetCPUInformation(const double interval = 1.); // 1 second
   PROCESS_MEMORY_COUNTERS GetMemoryInformation();
