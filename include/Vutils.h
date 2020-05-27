@@ -815,10 +815,12 @@ public:
   IResult vuapi Send(const CBuffer& Data, eSocketMessage SocketMessage = SF_NONE);
   IResult vuapi Recv(char* lpData, int iLength, eSocketMessage SocketMessage = SF_NONE);
   IResult vuapi Recv(CBuffer& Data, eSocketMessage SocketMessage = SF_NONE);
+  IResult vuapi Recvall(CBuffer& Data, eSocketMessage SocketMessage = SF_NONE);
   IResult vuapi SendTo(const char* lpData, int iLength, TSocketInfomation& SocketInformation);
   IResult vuapi SendTo(const CBuffer& Data, TSocketInfomation& SocketInformation);
   IResult vuapi RecvFrom(char* lpData, int iLength, TSocketInfomation& SocketInformation);
   IResult vuapi RecvFrom(CBuffer& Data, TSocketInfomation& SocketInformation);
+  IResult vuapi RecvallFrom(CBuffer& Data, TSocketInfomation& SocketInformation);
   bool vuapi Close(SOCKET socket = 0);
   SOCKET vuapi GetSocket();
   VUResult vuapi GetOption(int iLevel, int iOptName, char* pOptVal, int* lpiLength);

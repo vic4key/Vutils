@@ -241,6 +241,31 @@ IResult vuapi CSocket::Recv(SOCKET socket, char* lpData, int iLength, eSocketMes
   return z;
 }
 
+IResult vuapi CSocket::Recvall(CBuffer& Data, eSocketMessage SocketMessage)
+{
+  CBuffer buffer;
+
+  do
+  {
+    buffer.Resize(KiB);
+    IResult z = this->Recv(buffer, SocketMessage);
+    if (z <= 0)
+    {
+      buffer.Reset();
+    }
+    else
+    {
+      if (z != static_cast<int>(buffer.GetSize()))
+      {
+        buffer.Resize(z);
+      }
+      Data.Append(buffer);
+    }
+  } while (!buffer.Empty());
+
+  return IResult(Data.GetSize());
+}
+
 IResult vuapi CSocket::SendTo(const CBuffer& Data, TSocketInfomation& SocketInformation)
 {
   return this->SendTo((const char*)Data.GetpData(), int(Data.GetSize()), SocketInformation);
@@ -279,6 +304,31 @@ IResult vuapi CSocket::RecvFrom(CBuffer& Data, TSocketInfomation& SocketInformat
   }
 
   return z;
+}
+
+IResult vuapi CSocket::RecvallFrom(CBuffer& Data, TSocketInfomation& SocketInformation)
+{
+  CBuffer buffer;
+
+  do
+  {
+    buffer.Resize(KiB);
+    IResult z = this->RecvFrom(buffer, SocketInformation);
+    if (z <= 0)
+    {
+      buffer.Reset();
+    }
+    else
+    {
+      if (z != static_cast<int>(buffer.GetSize()))
+      {
+        buffer.Resize(z);
+      }
+      Data.Append(buffer);
+    }
+  } while (!buffer.Empty());
+
+  return IResult(Data.GetSize());
 }
 
 IResult vuapi CSocket::RecvFrom(char* lpData, int iLength, TSocketInfomation& SocketInformation)
