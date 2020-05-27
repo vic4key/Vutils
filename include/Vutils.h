@@ -721,131 +721,71 @@ private:
 
 #ifdef VU_SOCKET_ENABLED
 
-#define AF_IRDA  26
-#define AF_INET6 23
-
-typedef enum _SOCKET_AF
-{
-  SAF_UNSPEC    = AF_UNSPEC,
-  SAF_INET      = AF_INET,
-  SAF_IPX       = AF_IPX,
-  SAF_APPLETALK = AF_APPLETALK,
-  SAF_NETBIOS   = AF_NETBIOS,
-  SAF_INET6     = AF_INET6,
-  SAF_IRDA      = AF_IRDA,
-  SAF_BTH       = AF_IRDA,
-} eSocketAF;
-
-typedef enum _SOCKET_TYPE
-{
-  ST_NONE      = 0,
-  ST_STREAM    = SOCK_STREAM,
-  ST_DGRAM     = SOCK_DGRAM,
-  ST_RAW       = SOCK_RAW,
-  ST_RDM       = SOCK_RDM,
-  ST_SEQPACKET = SOCK_RDM,
-} eSocketType;
-
-#define BTHPROTO_RFCOMM 3
-#define IPPROTO_ICMPV6  58
-#define IPPROTO_RM      113
-
-typedef enum _SOCKET_PROTOCOL
-{
-  SP_NONE   = 0,
-  SP_CMP    = IPPROTO_ICMP,
-  SP_IGMP   = IPPROTO_IGMP,
-  SP_RFCOMM = BTHPROTO_RFCOMM,
-  SP_TCP    = IPPROTO_TCP,
-  SP_UDP    = IPPROTO_UDP,
-  SP_ICMPV6 = IPPROTO_ICMPV6,
-  SP_RM     = IPPROTO_RM,
-} eSocketProtocol;
-
-#define MSG_WAITALL     0x8
-#define MSG_INTERRUPT   0x10
-#define MSG_PARTIAL     0x8000
-
-typedef enum _SOCKET_FLAG
-{
-  SF_NONE      = 0,
-  SF_OOB       = MSG_OOB,
-  SF_PEEK      = MSG_PEEK,
-  SF_DONTROUTE = MSG_DONTROUTE,
-  SF_WAITALL   = MSG_WAITALL,
-  SF_PARTIAL   = MSG_PARTIAL,
-  SF_INTERRUPT = MSG_INTERRUPT,
-  SF_MAXIOVLEN = MSG_MAXIOVLEN,
-} eSocketMessage;
-
-typedef enum _SHUTDOWN_FLAG
-{
-  SF_UNKNOWN = -1,
-  SF_RECEIVE = 0,
-  SF_SEND,
-  SF_BOTH,
-} eShutdownFlag;
-
-typedef struct
-{
-  SOCKET s;
-  sockaddr_in sai;
-  char ip[15];
-} TSocketInfomation;
-
-struct TAccessPoint
-{
-  std::string Host;
-  ushort Port;
-};
+#define IPPROTO_NONE 0
+#define MSG_NONE 0
 
 class CSocket : public CLastError
 {
 public:
-  CSocket(eSocketAF SockAF = eSocketAF::SAF_INET, eSocketType SocketType = eSocketType::ST_STREAM);
+  typedef int AddressFamily;
+  typedef int Type;
+  typedef int Protocol;
+  typedef int Flags;
+  typedef int Shutdowns;
+
+  struct sInfomation
+  {
+    SOCKET s;
+    sockaddr_in sai;
+    char ip[15];
+  };
+
+  struct sServer
+  {
+    std::string Host;
+    ushort Port;
+  };
+
+public:
+  CSocket(
+    const AddressFamily af = AF_INET,
+    const Type type = SOCK_STREAM,
+    const Protocol proto = IPPROTO_TCP);
   virtual ~CSocket();
-  VUResult vuapi Socket(eSocketAF Family, eSocketType Type, eSocketProtocol Protocol = SP_NONE);
-  VUResult vuapi Bind(const TAccessPoint& AccessPoint);
-  VUResult vuapi Bind(const std::string& Address, ushort usPort);
-  VUResult vuapi Listen(int iMaxConnection = SOMAXCONN);
-  VUResult vuapi Accept(TSocketInfomation& SocketInformation);
-  VUResult vuapi Connect(const TAccessPoint& AccessPoint);
-  VUResult vuapi Connect(const std::string& Address, ushort usPort);
-  IResult vuapi Send(const char* lpData, int iLength, eSocketMessage SocketMessage = SF_NONE);
-  IResult vuapi Send(const CBuffer& Data, eSocketMessage SocketMessage = SF_NONE);
-  IResult vuapi Recv(char* lpData, int iLength, eSocketMessage SocketMessage = SF_NONE);
-  IResult vuapi Recv(CBuffer& Data, eSocketMessage SocketMessage = SF_NONE);
-  IResult vuapi Recvall(CBuffer& Data, eSocketMessage SocketMessage = SF_NONE);
-  IResult vuapi SendTo(const char* lpData, int iLength, TSocketInfomation& SocketInformation);
-  IResult vuapi SendTo(const CBuffer& Data, TSocketInfomation& SocketInformation);
-  IResult vuapi RecvFrom(char* lpData, int iLength, TSocketInfomation& SocketInformation);
-  IResult vuapi RecvFrom(CBuffer& Data, TSocketInfomation& SocketInformation);
-  IResult vuapi RecvallFrom(CBuffer& Data, TSocketInfomation& SocketInformation);
-  bool vuapi Close(SOCKET socket = 0);
-  SOCKET vuapi GetSocket();
-  VUResult vuapi GetOption(int iLevel, int iOptName, char* pOptVal, int* lpiLength);
-  VUResult vuapi SetOption(int iLevel, int iOptName, const std::string& OptVal, int iLength);
-  VUResult vuapi Shutdown(eShutdownFlag ShutdownFlag);
+
+  const SOCKET&  vuapi GetSocket() const;
+  VUResult vuapi SetOption(const int level, const int opt, const std::string& val, const int size);
+
+  VUResult vuapi Bind(const sServer& server);
+  VUResult vuapi Bind(const std::string& address, const ushort port);
+  VUResult vuapi Listen(const int maxcon = SOMAXCONN);
+  VUResult vuapi Accept(sInfomation& info);
+
+  VUResult vuapi Connect(const sServer& server);
+  VUResult vuapi Connect(const std::string& address, const ushort port);
+
+  IResult vuapi Send(const char* pData, int size, const Flags flags = MSG_NONE);
+  IResult vuapi Send(const CBuffer& data, const Flags flags = MSG_NONE);
+  IResult vuapi Recv(char* pData, int size, const Flags flags = MSG_NONE);
+  IResult vuapi Recv(CBuffer& data, const Flags flags = MSG_NONE);
+  IResult vuapi Recvall(CBuffer& data, const Flags flags = MSG_NONE);
+
+  IResult vuapi SendTo(const char* pData, const int size, const sInfomation& info);
+  IResult vuapi SendTo(const CBuffer& data, const sInfomation& info);
+  IResult vuapi RecvFrom(char* pData, int size, const sInfomation& info);
+  IResult vuapi RecvFrom(CBuffer& data, const sInfomation& info);
+  IResult vuapi RecvallFrom(CBuffer& data, const sInfomation& info);
+
+  bool vuapi Close();
+
+  VUResult vuapi Shutdown(const Shutdowns flags);
   std::string vuapi GetLocalHostName();
   std::string vuapi GetHostByName(const std::string& Name);
   bool vuapi IsHostName(const std::string& s);
-  bool vuapi BytesToIP(const TSocketInfomation& SocketInformation);
+  bool vuapi BytesToIP(const sInfomation& info);
 
 private:
-  bool vuapi IsSocketValid(SOCKET socket);
-
-  IResult vuapi Send(
-    const SOCKET socket,
-    const char* lpData,
-    int iLength,
-    eSocketMessage SocketMessage = SF_NONE
-  );
-  IResult vuapi Recv(
-    SOCKET socket,
-    char* lpData,
-    int iLength,
-    eSocketMessage SocketMessage = SF_NONE
-  );
+  bool vuapi IsValid(const SOCKET& socket);
 
 private:
   WSADATA m_WSAData;

@@ -16,7 +16,7 @@ DEF_SAMPLE(Socket)
   REQ_CONTENT.append("DNT: 1\r\n");
   REQ_CONTENT.append("\r\n");
 
-  vu::CSocket socket(vu::SAF_INET, vu::ST_STREAM);
+  vu::CSocket socket;
 
   if (socket.Connect(REQ_HOST, 80) != vu::VU_OK)
   {
@@ -31,6 +31,12 @@ DEF_SAMPLE(Socket)
     std::tcout << _T("Socket -> Send -> Failed") << std::endl;
     return 1;
   }
+
+  // vu::CBuffer data;
+  // if (socket.Recvall(data) != SOCKET_ERROR)
+  // {
+  //   data.SaveAsFile(_T("5MB.bin"));
+  // }
 
   // request to get file
 
@@ -85,7 +91,7 @@ DEF_SAMPLE(Socket)
 
   // save file buffer to disk
 
-  file.SaveAsFile(_T("5MB.zip"));
+  file.SaveAsFile(_T("5MB.bin"));
 
   if (!socket.Close())
   {
