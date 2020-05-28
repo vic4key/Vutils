@@ -405,6 +405,16 @@ std::wstring vuapi ReplaceW(const std::wstring& Text, const std::wstring& From, 
   return ReplaceT<std::wstring>(Text, From, To);
 }
 
+bool vuapi StartsWithA(const std::string& Text, const std::string& With)
+{
+  return Text.length() >= With.length() && memcmp(Text.c_str(), With.c_str(), With.length()) == 0;
+}
+
+bool vuapi StartsWithW(const std::wstring& Text, const std::wstring& With)
+{
+  return Text.length() >= With.length() && memcmp(Text.c_str(), With.c_str(), 2*With.length()) == 0;
+}
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif // _MSC_VER
