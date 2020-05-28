@@ -26,6 +26,11 @@ DEF_SAMPLE(DF)
 
   std::tcout << vu::GetCurrentFilePath() << std::endl;
 
+  std::tcout << vu::JoinPath(_T("C:\\path\\to\\"), _T("\\file.exe")) << std::endl;
+  std::tcout << vu::JoinPath(_T("C:\\path\\to\\"), _T("file.exe")) << std::endl;
+  std::tcout << vu::JoinPath(_T("C:\\path\\to"), _T("\\file.exe")) << std::endl;
+  std::tcout << vu::JoinPath(_T("C:\\path\\to"), _T("file.exe")) << std::endl;
+
   // TODO: Vic. Uncompleted.
 
   // #ifdef _WIN64

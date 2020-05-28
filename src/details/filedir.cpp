@@ -265,4 +265,50 @@ std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash)
   return ExtractFilePathW(GetCurrentFilePathW(), bIncludeSlash);
 }
 
+std::string vuapi JoinPathA(
+  const std::string& left,
+  const std::string& right,
+  const ePathSep separator
+)
+{
+  const char sep = separator == ePathSep::WIN ? '\\' : '/';
+
+  if (left.empty())
+  {
+    return right; // "" + "/bar"
+  }
+
+  if (left[left.size() - 1] == sep)
+  {
+    if (right.find(sep) == 0)
+    {
+      return left + right.substr(1); // foo/ + /bar
+    }
+    else
+    {
+      return left + right; // foo/ + bar
+    }
+  }
+  else
+  {
+    if (right.find(sep) == 0)
+    {
+      return left + right; // foo + /bar
+    }
+    else
+    {
+      return left + sep + right; // foo + bar
+    }
+  }
+}
+
+std::wstring vuapi JoinPathW(
+  const std::wstring& left,
+  const std::wstring& right,
+  const ePathSep separator
+)
+{
+  return ToStringW(JoinPathA(ToStringA(left), ToStringA(right), separator));
+}
+
 } // namespace vu

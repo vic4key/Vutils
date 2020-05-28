@@ -415,6 +415,12 @@ TFontW vuapi GetFontW(HWND hw);
  * File/Directory Working
  */
 
+enum ePathSep
+{
+  WIN,
+  POSIX,
+};
+
 bool vuapi IsDirectoryExistsA(const std::string& Directory);
 bool vuapi IsDirectoryExistsW(const std::wstring& Directory);
 bool vuapi IsFileExistsA(const std::string& FilePath);
@@ -431,6 +437,16 @@ std::string vuapi GetCurrentDirectoryA(bool bIncludeSlash = true);
 std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 std::string vuapi GetContainDirectoryA(bool bIncludeSlash = true);
 std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
+std::string vuapi JoinPathA(
+  const std::string& left,
+  const std::string& right,
+  const ePathSep separator = ePathSep::WIN
+);
+std::wstring vuapi JoinPathW(
+  const std::wstring& left,
+  const std::wstring& right,
+  const ePathSep separator = ePathSep::WIN
+);
 
 /*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
 
@@ -473,6 +489,7 @@ std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
 #define GetCurrentFilePath GetCurrentFilePathW
 #define GetCurDirectory GetCurrentDirectoryW
 #define GetContainDirectory GetContainDirectoryW
+#define JoinPath JoinPathW
 #else
 /* Misc Working */
 #define SetPrivilege SetPrivilegeA
@@ -511,6 +528,7 @@ std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
 #define GetCurrentFilePath GetCurrentFilePathA
 #define GetCurDirectory GetCurrentDirectoryA
 #define GetContainDirectory GetContainDirectoryA
+#define JoinPath JoinPathA
 #endif
 
 /* -------------------------------------- Public Class(es) -------------------------------------- */
