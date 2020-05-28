@@ -266,49 +266,49 @@ std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash)
 }
 
 std::string vuapi JoinPathA(
-  const std::string& left,
-  const std::string& right,
-  const ePathSep separator
+  const std::string& Left,
+  const std::string& Right,
+  const ePathSep Separator
 )
 {
-  const char sep = separator == ePathSep::WIN ? '\\' : '/';
+  const char Sep = Separator == ePathSep::WIN ? '\\' : '/';
 
-  if (left.empty())
+  if (Left.empty())
   {
-    return right; // "" + "/bar"
+    return Right; // "" + "/bar"
   }
 
-  if (left[left.size() - 1] == sep)
+  if (Left[Left.size() - 1] == Sep)
   {
-    if (right.find(sep) == 0)
+    if (Right.find(Sep) == 0)
     {
-      return left + right.substr(1); // foo/ + /bar
+      return Left + Right.substr(1); // foo/ + /bar
     }
     else
     {
-      return left + right; // foo/ + bar
+      return Left + Right; // foo/ + bar
     }
   }
   else
   {
-    if (right.find(sep) == 0)
+    if (Right.find(Sep) == 0)
     {
-      return left + right; // foo + /bar
+      return Left + Right; // foo + /bar
     }
     else
     {
-      return left + sep + right; // foo + bar
+      return Left + Sep + Right; // foo + bar
     }
   }
 }
 
 std::wstring vuapi JoinPathW(
-  const std::wstring& left,
-  const std::wstring& right,
-  const ePathSep separator
+  const std::wstring& Left,
+  const std::wstring& Right,
+  const ePathSep Separator
 )
 {
-  return ToStringW(JoinPathA(ToStringA(left), ToStringA(right), separator));
+  return ToStringW(JoinPathA(ToStringA(Left), ToStringA(Right), Separator));
 }
 
 } // namespace vu

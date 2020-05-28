@@ -398,6 +398,26 @@ std::wstring vuapi TrimStringW(const std::wstring& String, const eTrimType& Trim
   return s;
 }
 
+std::string vuapi ReplaceA(const std::string& Text, const std::string& From, const std::string& To)
+{
+  std::string result = Text;
+
+  size_t start = 0;
+  while ((start = result.find(From, start)) != std::string::npos)
+  {
+    result.erase(start, From.length());
+    result.insert(start, To);
+    start += To.length();
+  }
+
+  return result;
+}
+
+std::wstring vuapi ReplaceW(const std::wstring& Text, const std::wstring& From, const std::wstring& To)
+{
+  return ToStringW(ReplaceA(ToStringA(Text), ToStringA(From), ToStringA(To)));
+}
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif // _MSC_VER

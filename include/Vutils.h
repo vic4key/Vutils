@@ -268,6 +268,8 @@ std::wstring vuapi TrimStringW(
   const eTrimType& TrimType = eTrimType::TS_BOTH,
   const std::wstring& TrimChars = L" \t\n\r\f\v"
 );
+std::string vuapi ReplaceA(const std::string& Text, const std::string& From, const std::string& To);
+std::wstring vuapi ReplaceW(const std::wstring& Text, const std::wstring& From, const std::wstring& To);
 
 /**
  * Process Working
@@ -438,14 +440,14 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
 std::string vuapi GetContainDirectoryA(bool bIncludeSlash = true);
 std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
 std::string vuapi JoinPathA(
-  const std::string& left,
-  const std::string& right,
-  const ePathSep separator = ePathSep::WIN
+  const std::string& Left,
+  const std::string& Right,
+  const ePathSep Separator = ePathSep::WIN
 );
 std::wstring vuapi JoinPathW(
-  const std::wstring& left,
-  const std::wstring& right,
-  const ePathSep separator = ePathSep::WIN
+  const std::wstring& Left,
+  const std::wstring& Right,
+  const ePathSep Separator = ePathSep::WIN
 );
 
 /*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
@@ -472,6 +474,7 @@ std::wstring vuapi JoinPathW(
 #define ListToMultiString ListToMultiStringW
 #define LoadRCString LoadRCStringW
 #define TrimString TrimStringW
+#define Replace ReplaceW
 /* Window Working */
 #define DecodeWM DecodeWMW
 #define GetFont GetFontW
@@ -511,6 +514,7 @@ std::wstring vuapi JoinPathW(
 #define MultiStringToList MultiStringToListA
 #define LoadRCString LoadRCStringA
 #define TrimString TrimStringA
+#define Replace ReplaceA
 /* Window Working */
 #define DecodeWM DecodeWMA
 #define GetFont GetFontA

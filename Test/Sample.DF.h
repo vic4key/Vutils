@@ -31,6 +31,8 @@ DEF_SAMPLE(DF)
   std::tcout << vu::JoinPath(_T("C:\\path\\to"), _T("\\file.exe")) << std::endl;
   std::tcout << vu::JoinPath(_T("C:\\path\\to"), _T("file.exe")) << std::endl;
 
+  std::tcout << vu::Replace(_T("Written in C++ and for C++"), _T("C++"), _T("Cpp")) << std::endl;
+
   // TODO: Vic. Uncompleted.
 
   // #ifdef _WIN64
