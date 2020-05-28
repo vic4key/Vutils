@@ -162,13 +162,14 @@ std::wstring vuapi ToStringW(const std::string& String)
   return s;
 }
 
-std::vector<std::string> vuapi SplitStringA(
-  const std::string& String,
-  const std::string& Seperate,
-  bool  remempty 
+template <class std_string_t>
+std::vector<std_string_t> SplitStringT(
+  const std_string_t& String,
+  const std_string_t& Seperate,
+  bool  remempty
 )
 {
-  std::vector<std::string> l;
+  std::vector<std_string_t> l;
   l.clear();
 
   if (String.empty())
@@ -176,23 +177,32 @@ std::vector<std::string> vuapi SplitStringA(
     return l;
   }
 
-  std::string s(String), sep(Seperate), sub;
+  std_string_t s(String), sep(Seperate), sub;
   ulongptr start, end;
 
   start = 0;
   end = s.find(sep);
-  while (end != std::string::npos)
+  while (end != std_string_t::npos)
   {
     sub = s.substr(start, end - start);
-    if (!sub.empty() || !remempty) l.push_back(std::string(sub.c_str()));
+    if (!sub.empty() || !remempty) l.push_back(std_string_t(sub.c_str()));
     start = end + sep.length();
     end = s.find(sep, start);
   }
 
   sub = s.substr(start, end);
-  if (!sub.empty() || !remempty) l.push_back(std::string(sub.c_str()));
+  if (!sub.empty() || !remempty) l.push_back(std_string_t(sub.c_str()));
 
   return l;
+}
+
+std::vector<std::string> vuapi SplitStringA(
+  const std::string& String,
+  const std::string& Seperate,
+  bool  remempty 
+)
+{
+  return SplitStringT<std::string>(String, Seperate, remempty);
 }
 
 std::vector<std::wstring> vuapi SplitStringW(
@@ -201,31 +211,7 @@ std::vector<std::wstring> vuapi SplitStringW(
   bool  remempty
 )
 {
-  std::vector<std::wstring> l;
-  l.clear();
-
-  if (String.empty())
-  {
-    return l;
-  }
-
-  std::wstring s(String), sep(Seperate), sub;
-  ulongptr start, end;
-
-  start = 0;
-  end = s.find(sep);
-  while (end != std::wstring::npos)
-  {
-    sub = s.substr(start, end - start);
-    if (!sub.empty() || !remempty) l.push_back(std::wstring(sub.c_str()));
-    start = end + sep.length();
-    end = s.find(sep, start);
-  }
-
-  sub = s.substr(start, end);
-  if (!sub.empty() || !remempty) l.push_back(std::wstring(sub.c_str()));
-
-  return l;
+  return SplitStringT<std::wstring>(String, Seperate, remempty);
 }
 
 std::vector<std::string> vuapi MultiStringToListA(const char* lpcszMultiString)
@@ -352,58 +338,54 @@ std::wstring vuapi LoadRCStringW(const UINT uID, const std::wstring& ModuleName)
   return result;
 }
 
-std::string vuapi TrimStringA(const std::string& String, const eTrimType& TrimType, const std::string& TrimChars)
+template <class std_string_t>
+std_string_t TrimStringT(
+  const std_string_t& String,
+  const eTrimType& TrimType,
+  const std_string_t& TrimChars
+)
 {
-  auto s = String;
+  std_string_t s = String;
 
   switch (TrimType)
   {
   case eTrimType::TS_LEFT:
     s.erase(0, s.find_first_not_of(TrimChars));
     break;
+
   case eTrimType::TS_RIGHT:
     s.erase(s.find_last_not_of(TrimChars) + 1);
     break;
+
   case eTrimType::TS_BOTH:
     s.erase(0, s.find_first_not_of(TrimChars));
     s.erase(s.find_last_not_of(TrimChars) + 1);
     break;
+
   default:
     break;
   }
 
   return s;
+}
+
+std::string vuapi TrimStringA(const std::string& String, const eTrimType& TrimType, const std::string& TrimChars)
+{
+  return TrimStringT<std::string>(String, TrimType, TrimChars);
 }
 
 std::wstring vuapi TrimStringW(const std::wstring& String, const eTrimType& TrimType, const std::wstring& TrimChars)
 {
-  auto s = String;
-
-  switch (TrimType)
-  {
-  case eTrimType::TS_LEFT:
-    s.erase(0, s.find_first_not_of(TrimChars));
-    break;
-  case eTrimType::TS_RIGHT:
-    s.erase(s.find_last_not_of(TrimChars) + 1);
-    break;
-  case eTrimType::TS_BOTH:
-    s.erase(0, s.find_first_not_of(TrimChars));
-    s.erase(s.find_last_not_of(TrimChars) + 1);
-    break;
-  default:
-    break;
-  }
-
-  return s;
+  return TrimStringT<std::wstring>(String, TrimType, TrimChars);
 }
 
-std::string vuapi ReplaceA(const std::string& Text, const std::string& From, const std::string& To)
+template <class std_string_t>
+std_string_t ReplaceT(const std_string_t& Text, const std_string_t& From, const std_string_t& To)
 {
-  std::string result = Text;
+  std_string_t result = Text;
 
   size_t start = 0;
-  while ((start = result.find(From, start)) != std::string::npos)
+  while ((start = result.find(From, start)) != std_string_t::npos)
   {
     result.erase(start, From.length());
     result.insert(start, To);
@@ -413,9 +395,14 @@ std::string vuapi ReplaceA(const std::string& Text, const std::string& From, con
   return result;
 }
 
+std::string vuapi ReplaceA(const std::string& Text, const std::string& From, const std::string& To)
+{
+  return ReplaceT<std::string>(Text, From, To);
+}
+
 std::wstring vuapi ReplaceW(const std::wstring& Text, const std::wstring& From, const std::wstring& To)
 {
-  return ToStringW(ReplaceA(ToStringA(Text), ToStringA(From), ToStringA(To)));
+  return ReplaceT<std::wstring>(Text, From, To);
 }
 
 #ifdef _MSC_VER

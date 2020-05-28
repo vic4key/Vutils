@@ -429,16 +429,16 @@ bool vuapi IsFileExistsA(const std::string& FilePath);
 bool vuapi IsFileExistsW(const std::wstring& FilePath);
 std::string vuapi FileTypeA(const std::string& FilePath);
 std::wstring vuapi FileTypeW(const std::wstring& FilePath);
-std::string vuapi ExtractFilePathA(const std::string& FilePath, bool bIncludeSlash = true);
-std::wstring vuapi ExtractFilePathW(const std::wstring& FilePath, bool bIncludeSlash = true);
-std::string vuapi ExtractFileNameA(const std::string& FilePath, bool bIncludeExtension = true);
-std::wstring vuapi ExtractFileNameW(const std::wstring& FilePath, bool bIncludeExtension = true);
+std::string vuapi ExtractFilePathA(const std::string& FilePath, bool Slash = true);
+std::wstring vuapi ExtractFilePathW(const std::wstring& FilePath, bool Slash = true);
+std::string vuapi ExtractFileNameA(const std::string& FilePath, bool Extension = true);
+std::wstring vuapi ExtractFileNameW(const std::wstring& FilePath, bool Extension = true);
 std::string vuapi GetCurrentFilePathA();
 std::wstring vuapi GetCurrentFilePathW();
-std::string vuapi GetCurrentDirectoryA(bool bIncludeSlash = true);
-std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash = true);
-std::string vuapi GetContainDirectoryA(bool bIncludeSlash = true);
-std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash = true);
+std::string vuapi GetCurrentDirectoryA(bool Slash = true);
+std::wstring vuapi GetCurrentDirectoryW(bool Slash = true);
+std::string vuapi GetContainDirectoryA(bool Slash = true);
+std::wstring vuapi GetContainDirectoryW(bool Slash = true);
 std::string vuapi JoinPathA(
   const std::string& Left,
   const std::string& Right,

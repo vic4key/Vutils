@@ -91,7 +91,7 @@ bool vuapi IsFileExistsW(const std::wstring& FilePath)
   return bResult;
 }
 
-std::string vuapi ExtractFilePathA(const std::string& FilePath, bool bIncludeSlash)
+std::string vuapi ExtractFilePathA(const std::string& FilePath, bool Slash)
 {
   std::string filePath;
   filePath.clear();
@@ -99,13 +99,13 @@ std::string vuapi ExtractFilePathA(const std::string& FilePath, bool bIncludeSla
   size_t slashPos = FilePath.rfind('\\');
   if (slashPos != std::string::npos)
   {
-    filePath = FilePath.substr(0, slashPos + (bIncludeSlash ? 1 : 0));
+    filePath = FilePath.substr(0, slashPos + (Slash ? 1 : 0));
   }
 
   return filePath;
 }
 
-std::wstring vuapi ExtractFilePathW(const std::wstring& FilePath, bool bIncludeSlash)
+std::wstring vuapi ExtractFilePathW(const std::wstring& FilePath, bool Slash)
 {
   std::wstring filePath;
   filePath.clear();
@@ -113,13 +113,13 @@ std::wstring vuapi ExtractFilePathW(const std::wstring& FilePath, bool bIncludeS
   size_t slashPos = FilePath.rfind(L'\\');
   if (slashPos != std::string::npos)
   {
-    filePath = FilePath.substr(0, slashPos + (bIncludeSlash ? 1 : 0));
+    filePath = FilePath.substr(0, slashPos + (Slash ? 1 : 0));
   }
 
   return filePath;
 }
 
-std::string vuapi ExtractFileNameA(const std::string& FilePath, bool bIncludeExtension)
+std::string vuapi ExtractFileNameA(const std::string& FilePath, bool Extension)
 {
   std::string fileName;
   fileName.clear();
@@ -134,7 +134,7 @@ std::string vuapi ExtractFileNameA(const std::string& FilePath, bool bIncludeExt
     fileName = FilePath;
   }
 
-  if (!bIncludeExtension)
+  if (!Extension)
   {
     size_t dotPos = fileName.rfind('.');
     if (dotPos != std::string::npos)
@@ -146,7 +146,7 @@ std::string vuapi ExtractFileNameA(const std::string& FilePath, bool bIncludeExt
   return fileName;
 }
 
-std::wstring vuapi ExtractFileNameW(const std::wstring& FilePath, bool bIncludeExtension)
+std::wstring vuapi ExtractFileNameW(const std::wstring& FilePath, bool Extension)
 {
   std::wstring fileName;
   fileName.clear();
@@ -161,7 +161,7 @@ std::wstring vuapi ExtractFileNameW(const std::wstring& FilePath, bool bIncludeE
     fileName = FilePath;
   }
 
-  if (!bIncludeExtension)
+  if (!Extension)
   {
     size_t dotPos = fileName.rfind(L'.');
     if (dotPos != std::string::npos)
@@ -203,7 +203,7 @@ std::wstring vuapi GetCurrentFilePathW()
   return s;
 }
 
-std::string vuapi GetCurrentDirectoryA(bool bIncludeSlash)
+std::string vuapi GetCurrentDirectoryA(bool Slash)
 {
   std::unique_ptr<char[]> p(new char[MAXPATH]);
   ZeroMemory(p.get(), MAXPATH);
@@ -211,7 +211,7 @@ std::string vuapi GetCurrentDirectoryA(bool bIncludeSlash)
   ::GetCurrentDirectoryA(MAXPATH, p.get());
   std::string s(p.get());
 
-  if (bIncludeSlash)
+  if (Slash)
   {
     if (s.back() != '\\')
     {
@@ -229,7 +229,7 @@ std::string vuapi GetCurrentDirectoryA(bool bIncludeSlash)
   return s;
 }
 
-std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash)
+std::wstring vuapi GetCurrentDirectoryW(bool Slash)
 {
   std::unique_ptr<wchar[]> p(new wchar[MAXPATH]);
   ZeroMemory(p.get(), MAXPATH);
@@ -237,7 +237,7 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash)
   ::GetCurrentDirectoryW(MAXPATH, p.get());
   std::wstring s(p.get());
 
-  if (bIncludeSlash)
+  if (Slash)
   {
     if (s.back() != L'\\')
     {
@@ -255,24 +255,23 @@ std::wstring vuapi GetCurrentDirectoryW(bool bIncludeSlash)
   return s;
 }
 
-std::string vuapi GetContainDirectoryA(bool bIncludeSlash)
+std::string vuapi GetContainDirectoryA(bool Slash)
 {
-  return ExtractFilePathA(GetCurrentFilePathA(), bIncludeSlash);
+  return ExtractFilePathA(GetCurrentFilePathA(), Slash);
 }
 
-std::wstring vuapi GetContainDirectoryW(bool bIncludeSlash)
+std::wstring vuapi GetContainDirectoryW(bool Slash)
 {
-  return ExtractFilePathW(GetCurrentFilePathW(), bIncludeSlash);
+  return ExtractFilePathW(GetCurrentFilePathW(), Slash);
 }
 
-std::string vuapi JoinPathA(
-  const std::string& Left,
-  const std::string& Right,
-  const ePathSep Separator
+template <class std_string_t, typename char_t>
+std_string_t JoinPathT(
+  const std_string_t& Left,
+  const std_string_t& Right,
+  const char_t Sep
 )
 {
-  const char Sep = Separator == ePathSep::WIN ? '\\' : '/';
-
   if (Left.empty())
   {
     return Right; // "" + "/bar"
@@ -302,13 +301,24 @@ std::string vuapi JoinPathA(
   }
 }
 
+std::string vuapi JoinPathA(
+  const std::string& Left,
+  const std::string& Right,
+  const ePathSep Separator
+)
+{
+  const auto Sep = Separator == ePathSep::WIN ? '\\' : '/';
+  return JoinPathT<std::string, char>(Left, Right, Sep);
+}
+
 std::wstring vuapi JoinPathW(
   const std::wstring& Left,
   const std::wstring& Right,
   const ePathSep Separator
 )
 {
-  return ToStringW(JoinPathA(ToStringA(Left), ToStringA(Right), Separator));
+  const auto Sep = Separator == ePathSep::WIN ? L'\\' : L'/';
+  return JoinPathT<std::wstring, wchar_t>(Left, Right, Sep);
 }
 
 } // namespace vu
