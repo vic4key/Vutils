@@ -321,4 +321,34 @@ std::wstring vuapi JoinPathW(
   return JoinPathT<std::wstring, wchar_t>(Left, Right, Sep);
 }
 
+std::string NormalizePathA(const std::string& Path, const ePathSep Separator)
+{
+  auto result = Path;
+
+  const std::string SepWIN = "\\";
+  const std::string SepPOSIX = "/";
+  const std::string Sep = Separator == ePathSep::WIN ? SepWIN : SepPOSIX;
+
+  result = ReplaceA(result, SepWIN + SepWIN, Sep);
+  result = ReplaceA(result, SepWIN, Sep);
+  result = ReplaceA(result, SepPOSIX, Sep);
+
+  return result;
+}
+
+std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator)
+{
+  auto result = Path;
+
+  const std::wstring SepWIN = L"\\";
+  const std::wstring SepPOSIX = L"/";
+  const std::wstring Sep = Separator == ePathSep::WIN ? SepWIN : SepPOSIX;
+
+  result = ReplaceW(result, SepWIN + SepWIN, Sep);
+  result = ReplaceW(result, SepWIN, Sep);
+  result = ReplaceW(result, SepPOSIX, Sep);
+
+  return result;
+}
+
 } // namespace vu

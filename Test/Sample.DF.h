@@ -31,6 +31,18 @@ DEF_SAMPLE(DF)
   std::tcout << vu::JoinPath(_T("C:\\path\\to"), _T("\\file.exe")) << std::endl;
   std::tcout << vu::JoinPath(_T("C:\\path\\to"), _T("file.exe")) << std::endl;
 
+  std::tcout << vu::NormalizePath(_T("C:/path/to/file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::NormalizePath(_T("C:\\path\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::NormalizePath(_T("C:\\path\\\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::NormalizePath(_T("C:\\path\\\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::NormalizePath(_T("C:\\\\path\\to/file.exe"), vu::ePathSep::POSIX) << std::endl;
+
+  std::tcout << vu::NormalizePath(_T("C:/path/to/file.exe")) << std::endl;
+  std::tcout << vu::NormalizePath(_T("C:\\path\\to\\file.exe")) << std::endl;
+  std::tcout << vu::NormalizePath(_T("C:\\path\\\\to\\file.exe")) << std::endl;
+  std::tcout << vu::NormalizePath(_T("C:\\path\\\\to\\file.exe")) << std::endl;
+  std::tcout << vu::NormalizePath(_T("C:\\\\path\\to/file.exe")) << std::endl;
+
   std::tcout << vu::Replace(_T("Written in C++ and for C++"), _T("C++"), _T("Cpp")) << std::endl;
 
   std::tcout << vu::StartsWith(_T("Written in C++ and for C++"), _T("C++")) << std::endl;

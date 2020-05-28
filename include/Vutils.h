@@ -453,6 +453,8 @@ std::wstring vuapi JoinPathW(
   const std::wstring& Right,
   const ePathSep Separator = ePathSep::WIN
 );
+std::string NormalizePathA(const std::string& Path, const ePathSep Separator = ePathSep::WIN);
+std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator = ePathSep::WIN);
 
 /*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
 
@@ -499,6 +501,7 @@ std::wstring vuapi JoinPathW(
 #define GetCurDirectory GetCurrentDirectoryW
 #define GetContainDirectory GetContainDirectoryW
 #define JoinPath JoinPathW
+#define NormalizePath NormalizePathW
 #else
 /* Misc Working */
 #define SetPrivilege SetPrivilegeA
@@ -541,6 +544,7 @@ std::wstring vuapi JoinPathW(
 #define GetCurDirectory GetCurrentDirectoryA
 #define GetContainDirectory GetContainDirectoryA
 #define JoinPath JoinPathA
+#define NormalizePath NormalizePathA
 #endif
 
 /* -------------------------------------- Public Class(es) -------------------------------------- */
