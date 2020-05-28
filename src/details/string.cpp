@@ -415,6 +415,23 @@ bool vuapi StartsWithW(const std::wstring& Text, const std::wstring& With)
   return Text.length() >= With.length() && memcmp(Text.c_str(), With.c_str(), 2*With.length()) == 0;
 }
 
+template <class std_string_t>
+static bool EndsWithT(const std_string_t& Text, const std_string_t& With)
+{
+  return Text.length() >= With.length() &&
+    std::equal(Text.cend() - With.length(), Text.cend(), With.cbegin());
+}
+
+bool vuapi EndsWithA(const std::string& Text, const std::string& With)
+{
+  return EndsWithT<std::string>(Text, With);
+}
+
+bool vuapi EndsWithW(const std::wstring& Text, const std::wstring& With)
+{
+  return EndsWithT<std::wstring>(Text, With);
+}
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif // _MSC_VER

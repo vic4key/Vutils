@@ -272,6 +272,8 @@ std::string vuapi ReplaceA(const std::string& Text, const std::string& From, con
 std::wstring vuapi ReplaceW(const std::wstring& Text, const std::wstring& From, const std::wstring& To);
 bool vuapi StartsWithA(const std::string& Text, const std::string& With);
 bool vuapi StartsWithW(const std::wstring& Text, const std::wstring& With);
+bool vuapi EndsWithA(const std::string& Text, const std::string& With);
+bool vuapi EndsWithW(const std::wstring& Text, const std::wstring& With);
 
 /**
  * Process Working
@@ -478,6 +480,7 @@ std::wstring vuapi JoinPathW(
 #define TrimString TrimStringW
 #define Replace ReplaceW
 #define StartsWith StartsWithW
+#define EndsWith EndsWithW
 /* Window Working */
 #define DecodeWM DecodeWMW
 #define GetFont GetFontW
@@ -519,6 +522,7 @@ std::wstring vuapi JoinPathW(
 #define TrimString TrimStringA
 #define Replace ReplaceA
 #define StartsWith StartsWithA
+#define EndsWith EndsWithA
 /* Window Working */
 #define DecodeWM DecodeWMA
 #define GetFont GetFontA
