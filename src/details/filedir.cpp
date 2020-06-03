@@ -91,7 +91,7 @@ bool vuapi IsFileExistsW(const std::wstring& FilePath)
   return bResult;
 }
 
-std::string vuapi ExtractFilePathA(const std::string& FilePath, bool Slash)
+std::string vuapi ExtractFileDirectoryA(const std::string& FilePath, bool Slash)
 {
   std::string filePath;
   filePath.clear();
@@ -105,7 +105,7 @@ std::string vuapi ExtractFilePathA(const std::string& FilePath, bool Slash)
   return filePath;
 }
 
-std::wstring vuapi ExtractFilePathW(const std::wstring& FilePath, bool Slash)
+std::wstring vuapi ExtractFileDirectoryW(const std::wstring& FilePath, bool Slash)
 {
   std::wstring filePath;
   filePath.clear();
@@ -257,12 +257,12 @@ std::wstring vuapi GetCurrentDirectoryW(bool Slash)
 
 std::string vuapi GetContainDirectoryA(bool Slash)
 {
-  return ExtractFilePathA(GetCurrentFilePathA(), Slash);
+  return ExtractFileDirectoryA(GetCurrentFilePathA(), Slash);
 }
 
 std::wstring vuapi GetContainDirectoryW(bool Slash)
 {
-  return ExtractFilePathW(GetCurrentFilePathW(), Slash);
+  return ExtractFileDirectoryW(GetCurrentFilePathW(), Slash);
 }
 
 template <class std_string_t, typename char_t>
@@ -349,6 +349,240 @@ std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator)
   result = ReplaceW(result, SepPOSIX, Sep);
 
   return result;
+}
+
+/**
+ * CPathA
+ */
+
+CPathA::CPathA(const ePathSep Separator) : m_Path(""), m_Sep(Separator)
+{
+  Finalize();
+}
+
+CPathA::CPathA(const std::string& Path, const ePathSep Separator) : m_Path(Path), m_Sep(Separator)
+{
+  Finalize();
+}
+
+CPathA::CPathA(const CPathA& right)
+{
+  *this = right;
+}
+
+CPathA::~CPathA()
+{
+}
+
+const vu::CPathA& CPathA::operator=(const CPathA& right)
+{
+  m_Path = right.m_Path;
+  m_Sep  = right.m_Sep;
+  return *this;
+}
+
+const vu::CPathA& CPathA::operator=(const std::string& right)
+{
+  m_Path = right;
+  return *this;
+}
+
+bool CPathA::operator==(const CPathA& right)
+{
+  bool result = m_Sep == right.m_Sep;
+
+  if (result)
+  {
+    if (m_Sep == ePathSep::WIN)
+    {
+      result &= LowerStringA(m_Path) == LowerStringA(right.m_Path);
+    }
+    else if (m_Sep == ePathSep::POSIX)
+    {
+      result &= m_Path == right.m_Path;
+    }
+  }
+
+  return result;
+}
+
+bool CPathA::operator!=(const CPathA& right)
+{
+  return !(*this == right);
+}
+
+vu::CPathA& CPathA::Trim(const eTrimType TrimType)
+{
+  m_Path = TrimStringA(m_Path, TrimType);
+  return *this;
+}
+
+vu::CPathA& CPathA::Normalize()
+{
+  m_Path = NormalizePathA(m_Path, m_Sep);
+  return *this;
+}
+
+vu::CPathA& CPathA::Join(const std::string& Path)
+{
+  m_Path = JoinPathA(m_Path, Path, m_Sep);
+  return *this;
+}
+
+vu::CPathA& CPathA::Finalize()
+{
+  Trim();
+  Normalize();
+  return *this;
+}
+
+vu::CPathA CPathA::FileName(bool Extension) const
+{
+  CPathA tmp(*this);
+  tmp.Finalize();
+  return vu::ExtractFileNameA(tmp.AsString(), Extension);
+}
+
+vu::CPathA CPathA::FileDirectory(bool Slash) const
+{
+  CPathA tmp(*this);
+  tmp.Finalize();
+  return vu::ExtractFileDirectoryA(tmp.AsString(), Slash);
+}
+
+bool CPathA::Exists() const
+{
+  CPathA tmp(*this);
+  tmp.Finalize();
+  return IsDirectoryExistsA(tmp.AsString()) || IsFileExistsA(tmp.AsString());
+}
+
+std::string CPathA::AsString() const
+{
+  return m_Path;
+}
+
+std::ostream& operator<<(std::ostream& os, CPathA& Path)
+{
+  os << Path.m_Path;
+  return os;
+}
+
+/**
+ * CPathW
+ */
+
+CPathW::CPathW(const ePathSep Separator) : m_Path(L""), m_Sep(Separator)
+{
+  Finalize();
+}
+
+CPathW::CPathW(const std::wstring& Path, const ePathSep Separator) : m_Path(Path), m_Sep(Separator)
+{
+  Finalize();
+}
+
+CPathW::CPathW(const CPathW& right)
+{
+  *this = right;
+}
+
+CPathW::~CPathW()
+{
+}
+
+const vu::CPathW& CPathW::operator=(const CPathW& right)
+{
+  m_Path = right.m_Path;
+  m_Sep  = right.m_Sep;
+  return *this;
+}
+
+const vu::CPathW& CPathW::operator=(const std::wstring& right)
+{
+  m_Path = right;
+  return *this;
+}
+
+bool CPathW::operator==(const CPathW& right)
+{
+  bool result = m_Sep == right.m_Sep;
+
+  if (result)
+  {
+    if (m_Sep == ePathSep::WIN)
+    {
+      result &= LowerStringW(m_Path) == LowerStringW(right.m_Path);
+    }
+    else if (m_Sep == ePathSep::POSIX)
+    {
+      result &= m_Path == right.m_Path;
+    }
+  }
+
+  return result;
+}
+
+bool CPathW::operator!=(const CPathW& right)
+{
+  return !(*this == right);
+}
+
+vu::CPathW& CPathW::Trim(const eTrimType TrimType)
+{
+  m_Path = TrimStringW(m_Path, TrimType);
+  return *this;
+}
+
+vu::CPathW& CPathW::Normalize()
+{
+  m_Path = NormalizePathW(m_Path, m_Sep);
+  return *this;
+}
+
+vu::CPathW& CPathW::Join(const std::wstring& Path)
+{
+  m_Path = JoinPathW(m_Path, Path, m_Sep);
+  return *this;
+}
+
+vu::CPathW& CPathW::Finalize()
+{
+  Trim();
+  Normalize();
+  return *this;
+}
+
+vu::CPathW CPathW::FileName(bool Extension) const
+{
+  CPathW tmp(*this);
+  tmp.Finalize();
+  return vu::ExtractFileNameW(tmp.AsString(), Extension);
+}
+
+vu::CPathW CPathW::FileDirectory(bool Slash) const
+{
+  CPathW tmp(*this);
+  tmp.Finalize();
+  return vu::ExtractFileDirectoryW(tmp.AsString(), Slash);
+}
+
+bool CPathW::Exists() const
+{
+  CPathW tmp(*this);
+  tmp.Finalize();
+  return IsDirectoryExistsW(tmp.AsString()) || IsFileExistsW(tmp.AsString());
+}
+
+std::wstring CPathW::AsString() const
+{
+  return m_Path;
+}
+
+std::wostream& operator<<(std::wostream& os, CPathW& Path)
+{
+  os << Path.m_Path;
+  return os;
 }
 
 } // namespace vu

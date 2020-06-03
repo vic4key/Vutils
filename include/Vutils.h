@@ -433,8 +433,8 @@ bool vuapi IsFileExistsA(const std::string& FilePath);
 bool vuapi IsFileExistsW(const std::wstring& FilePath);
 std::string vuapi FileTypeA(const std::string& FilePath);
 std::wstring vuapi FileTypeW(const std::wstring& FilePath);
-std::string vuapi ExtractFilePathA(const std::string& FilePath, bool Slash = true);
-std::wstring vuapi ExtractFilePathW(const std::wstring& FilePath, bool Slash = true);
+std::string vuapi ExtractFileDirectoryA(const std::string& FilePath, bool Slash = true);
+std::wstring vuapi ExtractFileDirectoryW(const std::wstring& FilePath, bool Slash = true);
 std::string vuapi ExtractFileNameA(const std::string& FilePath, bool Extension = true);
 std::wstring vuapi ExtractFileNameW(const std::wstring& FilePath, bool Extension = true);
 std::string vuapi GetCurrentFilePathA();
@@ -495,7 +495,7 @@ std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator =
 #define IsDirectoryExists IsDirectoryExistsW
 #define IsFileExists IsFileExistsW
 #define FileType FileTypeW
-#define ExtractFilePath ExtractFilePathW
+#define ExtractFileDirectory ExtractFileDirectoryW
 #define ExtractFileName ExtractFileNameW
 #define GetCurrentFilePath GetCurrentFilePathW
 #define GetCurDirectory GetCurrentDirectoryW
@@ -538,7 +538,7 @@ std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator =
 #define IsDirectoryExists IsDirectoryExistsA
 #define IsFileExists IsFileExistsA
 #define FileType FileTypeA
-#define ExtractFilePath ExtractFilePathA
+#define ExtractFileDirectory ExtractFileDirectoryA
 #define ExtractFileName ExtractFileNameA
 #define GetCurrentFilePath GetCurrentFilePathA
 #define GetCurDirectory GetCurrentDirectoryA
@@ -2561,6 +2561,74 @@ private:
   Pool* m_pTP;
 };
 
+/**
+ * CPath
+ */
+
+class CPathA
+{
+public:
+  CPathA(const ePathSep Separator = ePathSep::WIN);
+  CPathA(const std::string& Path, const ePathSep Separator = ePathSep::WIN);
+  CPathA(const CPathA& right);
+  virtual ~CPathA();
+
+  const CPathA& operator=(const CPathA& right);
+  const CPathA& operator=(const std::string& right);
+  bool operator==(const CPathA& right);
+  bool operator!=(const CPathA& right);
+
+  CPathA& Trim(const eTrimType TrimType = eTrimType::TS_BOTH);
+  CPathA& Normalize();
+  CPathA& Join(const std::string& Path);
+  CPathA& Finalize();
+
+  CPathA FileName(bool Extension = true) const;
+  CPathA FileDirectory(bool Slash = true) const;
+
+  bool Exists() const;
+
+  std::string AsString() const;
+
+  friend std::ostream& operator<<(std::ostream& os, CPathA& path);
+
+private:
+  ePathSep m_Sep;
+  std::string m_Path;
+};
+
+class CPathW
+{
+public:
+  CPathW(const ePathSep Separator = ePathSep::WIN);
+  CPathW(const std::wstring& Path, const ePathSep Separator = ePathSep::WIN);
+  CPathW(const CPathW& right);
+  virtual ~CPathW();
+
+  const CPathW& operator=(const CPathW& right);
+  const CPathW& operator=(const std::wstring& right);
+  bool operator==(const CPathW& right);
+  bool operator!=(const CPathW& right);
+
+  CPathW& Trim(const eTrimType TrimType = eTrimType::TS_BOTH);
+  CPathW& Normalize();
+  CPathW& Join(const std::wstring& Path);
+  CPathW& Finalize();
+
+  CPathW FileName(bool Extension = true) const;
+  CPathW FileDirectory(bool Slash = true) const;
+
+  bool Exists() const;
+
+  std::wstring AsString() const;
+
+  friend std::wostream& operator<<(std::wostream& os, CPathW& path);
+
+private:
+  ePathSep m_Sep;
+  std::wstring m_Path;
+};
+
 /*---------- The definition of common structure(s) which compatible both ANSI & UNICODE ----------*/
 
 #ifdef _UNICODE
@@ -2583,6 +2651,7 @@ private:
 #define CINIFile CINIFileW
 #define CRegistry CRegistryW
 #define CPEFileT CPEFileTW
+#define CPath CPathW
 #else
 #define CGUID CGUIDA
 #define CAPIHook CAPIHookA
@@ -2595,6 +2664,7 @@ private:
 #define CINIFile CINIFileA
 #define CRegistry CRegistryA
 #define CPEFileT CPEFileTA
+#define CPath CPathA
 #endif
 
 } // namespace vu

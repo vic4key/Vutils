@@ -31,7 +31,7 @@ void CINIFileA::ValidFilePath()
   if (m_FilePath.empty())
   {
     std::string filePath = GetCurrentFilePathA();
-    std::string fileDir  = ExtractFilePathA(filePath, true);
+    std::string fileDir  = ExtractFileDirectoryA(filePath, true);
     std::string fileName = ExtractFileNameA(filePath, false);
     m_FilePath = fileDir + fileName + ".INI";
   }
@@ -322,7 +322,7 @@ void CINIFileW::ValidFilePath()
   if (m_FilePath.empty())
   {
     std::wstring filePath = GetCurrentFilePathW();
-    std::wstring fileDir = ExtractFilePathW(filePath, true);
+    std::wstring fileDir = ExtractFileDirectoryW(filePath, true);
     std::wstring fileName = ExtractFileNameW(filePath, false);
     m_FilePath = fileDir + fileName + L".INI";
   }

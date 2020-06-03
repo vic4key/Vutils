@@ -4,7 +4,7 @@
 
 DEF_SAMPLE(DF)
 {
-  const std::tstring FILE_DIR = _T("C:\\Intel\\Logs\\");
+  const std::tstring FILE_DIR  = _T("C:\\Intel\\Logs\\");
   const std::tstring FILE_PATH = _T("C:\\Intel\\Logs\\IntelGFX.log");
 
   std::tcout << (vu::IsDirectoryExists(FILE_DIR) ? _T("Directory is exist") : _T("Directory isn't exist")) << std::endl;
@@ -12,8 +12,8 @@ DEF_SAMPLE(DF)
 
   std::tcout << vu::FileType(FILE_PATH) << std::endl;
 
-  std::tcout << vu::ExtractFilePath(FILE_PATH) << std::endl;
-  std::tcout << vu::ExtractFilePath(FILE_PATH, false) << std::endl;
+  std::tcout << vu::ExtractFileDirectory(FILE_PATH) << std::endl;
+  std::tcout << vu::ExtractFileDirectory(FILE_PATH, false) << std::endl;
 
   std::tcout << vu::ExtractFileName(FILE_PATH) << std::endl;
   std::tcout << vu::ExtractFileName(FILE_PATH, false) << std::endl;
@@ -50,6 +50,32 @@ DEF_SAMPLE(DF)
 
   std::tcout << vu::EndsWith(_T("Written in C++ and for C++"), _T("C++")) << std::endl;
   std::tcout << vu::EndsWith(_T("Written in C++ and for C++"), _T("Written")) << std::endl;
+
+  vu::CPath fileDir;
+  fileDir.Join(_T("   C:/Users")).Join(_T("/Vic")).Join(_T("\\.vscode\\")).Normalize().Finalize();
+
+  vu::CPath fileDirTmp = std::tstring(_T("C:/Users/Vic\\.vscode\\extensions"));
+  
+  vu::CPath filePath(fileDir);
+  filePath.Join(_T("argv.json")).Normalize().Finalize();
+
+  vu::CPath filePathTmp(fileDir);
+  filePathTmp.Join(_T("argv-tmp.json")).Normalize().Finalize();
+
+  std::tcout << fileDir  << std::endl;
+  std::tcout << fileDirTmp << std::endl;
+
+  std::tcout << filePath << std::endl;
+  std::tcout << filePathTmp << std::endl;
+
+  std::tcout << (filePath == filePathTmp) << std::endl;
+  std::tcout << (filePath != filePathTmp) << std::endl;
+
+  std::tcout << _T("Exists (Dir)  : ") << fileDir.Exists() << std::endl;
+  std::tcout << _T("Exists (File) : ") << filePath.Exists() << std::endl;
+
+  std::tcout << _T("File Name : ") << filePath.FileName().AsString() << std::endl;
+  std::tcout << _T("File Directory : ") << filePath.FileDirectory().AsString() << std::endl;
 
   // TODO: Vic. Uncompleted.
 
