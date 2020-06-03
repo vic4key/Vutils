@@ -21,9 +21,10 @@ It helps your programming go easier, faster and simpler.
 
 * Classes
 	* GUID
-	* Binary
+	* Buffer
 	* Library
 	* Socket
+	* Path
 	* Process
 	* Service
 	* Registry
