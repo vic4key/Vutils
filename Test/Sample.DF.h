@@ -43,14 +43,6 @@ DEF_SAMPLE(DF)
   std::tcout << vu::NormalizePath(_T("C:\\path\\\\to\\file.exe")) << std::endl;
   std::tcout << vu::NormalizePath(_T("C:\\\\path\\to/file.exe")) << std::endl;
 
-  std::tcout << vu::Replace(_T("Written in C++ and for C++"), _T("C++"), _T("Cpp")) << std::endl;
-
-  std::tcout << vu::StartsWith(_T("Written in C++ and for C++"), _T("C++")) << std::endl;
-  std::tcout << vu::StartsWith(_T("Written in C++ and for C++"), _T("Written")) << std::endl;
-
-  std::tcout << vu::EndsWith(_T("Written in C++ and for C++"), _T("C++")) << std::endl;
-  std::tcout << vu::EndsWith(_T("Written in C++ and for C++"), _T("Written")) << std::endl;
-
   vu::CPath fileDir;
   fileDir.Join(_T("   C:/Users")).Join(_T("/Vic")).Join(_T("\\.vscode\\")).Finalize();
 
