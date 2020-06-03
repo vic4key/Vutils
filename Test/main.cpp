@@ -3,14 +3,18 @@
 
 /* MinGW build EXE with static library
 G++ main.cpp -std=c++0x -lVutils -lgdi32 -o Test.exe && Test.exe
+G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -lgdi32 -o Test.exe && Test.exe
 G++ main.cpp -std=c++0x -lVutils -DVU_SOCKET_ENABLED -lws2_32 -DVU_GUID_ENABLED -lrpcrt4 -lgdi32 -o Test.exe && Test.exe
+G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_SOCKET_ENABLED -lws2_32 -DVU_GUID_ENABLED -lrpcrt4 -lgdi32 -o Test.exe && Test.exe
 */
 
 #define _CRT_SECURE_NO_WARNINGS
 
+#ifdef _MSC_VER
 // #ifdef _UNICODE
 // #undef _UNICODE
 // #endif
+#endif // _MSC_VER
 
 #include <windows.h>
 #include <tchar.h>

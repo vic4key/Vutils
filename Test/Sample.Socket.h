@@ -4,6 +4,8 @@
 
 DEF_SAMPLE(Socket)
 {
+  #if defined(VU_SOCKET_ENABLED)
+
   const std::string REQ_HOST = "ipv4.download.thinkbroadband.com";
   std::string REQ_CONTENT;
   REQ_CONTENT.clear();
@@ -100,6 +102,8 @@ DEF_SAMPLE(Socket)
   }
 
   std::tcout << _T("Socket -> Close -> Success") << std::endl;
+
+  #endif // VU_SOCKET_ENABLED
 
   return vu::VU_OK;
 }
