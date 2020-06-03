@@ -2575,6 +2575,10 @@ public:
 
   const CPathA& operator=(const CPathA& right);
   const CPathA& operator=(const std::string& right);
+  const CPathA& operator+=(const CPathA& right);
+  const CPathA& operator+=(const std::string& right);
+  CPathA operator+(const CPathA& right);
+  CPathA operator+(const std::string& right);
   bool operator==(const CPathA& right);
   bool operator!=(const CPathA& right);
 
@@ -2607,6 +2611,10 @@ public:
 
   const CPathW& operator=(const CPathW& right);
   const CPathW& operator=(const std::wstring& right);
+  const CPathW& operator+=(const CPathW& right);
+  const CPathW& operator+=(const std::wstring& right);
+  CPathW operator+(const CPathW& right);
+  CPathW operator+(const std::wstring& right);
   bool operator==(const CPathW& right);
   bool operator!=(const CPathW& right);
 

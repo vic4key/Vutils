@@ -52,15 +52,17 @@ DEF_SAMPLE(DF)
   std::tcout << vu::EndsWith(_T("Written in C++ and for C++"), _T("Written")) << std::endl;
 
   vu::CPath fileDir;
-  fileDir.Join(_T("   C:/Users")).Join(_T("/Vic")).Join(_T("\\.vscode\\")).Normalize().Finalize();
+  fileDir.Join(_T("   C:/Users")).Join(_T("/Vic")).Join(_T("\\.vscode\\")).Finalize();
 
   vu::CPath fileDirTmp = std::tstring(_T("C:/Users/Vic\\.vscode\\extensions"));
   
   vu::CPath filePath(fileDir);
-  filePath.Join(_T("argv.json")).Normalize().Finalize();
+  filePath += vu::CPath(_T("argv.json"));
+  filePath.Finalize();
 
   vu::CPath filePathTmp(fileDir);
-  filePathTmp.Join(_T("argv-tmp.json")).Normalize().Finalize();
+  filePathTmp = filePathTmp + vu::CPath(_T("argv-tmp.json"));
+  filePathTmp.Finalize();
 
   std::tcout << fileDir  << std::endl;
   std::tcout << fileDirTmp << std::endl;

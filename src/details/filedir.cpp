@@ -357,12 +357,10 @@ std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator)
 
 CPathA::CPathA(const ePathSep Separator) : m_Path(""), m_Sep(Separator)
 {
-  Finalize();
 }
 
 CPathA::CPathA(const std::string& Path, const ePathSep Separator) : m_Path(Path), m_Sep(Separator)
 {
-  Finalize();
 }
 
 CPathA::CPathA(const CPathA& right)
@@ -385,6 +383,32 @@ const vu::CPathA& CPathA::operator=(const std::string& right)
 {
   m_Path = right;
   return *this;
+}
+
+const vu::CPathA& CPathA::operator+=(const CPathA& right)
+{
+  *this += right.m_Path;
+  return *this;
+}
+
+const vu::CPathA& CPathA::operator+=(const std::string& right)
+{
+  this->Join(right);
+  return *this;
+}
+
+vu::CPathA CPathA::operator+(const CPathA& right)
+{
+  CPathA result(*this);
+  result += right.m_Path;
+  return result;
+}
+
+vu::CPathA CPathA::operator+(const std::string& right)
+{
+  CPathA result(*this);
+  result += right;
+  return result;
 }
 
 bool CPathA::operator==(const CPathA& right)
@@ -474,12 +498,10 @@ std::ostream& operator<<(std::ostream& os, CPathA& Path)
 
 CPathW::CPathW(const ePathSep Separator) : m_Path(L""), m_Sep(Separator)
 {
-  Finalize();
 }
 
 CPathW::CPathW(const std::wstring& Path, const ePathSep Separator) : m_Path(Path), m_Sep(Separator)
 {
-  Finalize();
 }
 
 CPathW::CPathW(const CPathW& right)
@@ -502,6 +524,32 @@ const vu::CPathW& CPathW::operator=(const std::wstring& right)
 {
   m_Path = right;
   return *this;
+}
+
+const vu::CPathW& CPathW::operator+=(const CPathW& right)
+{
+  *this += right.m_Path;
+  return *this;
+}
+
+const vu::CPathW& CPathW::operator+=(const std::wstring& right)
+{
+  this->Join(right);
+  return *this;
+}
+
+vu::CPathW CPathW::operator+(const CPathW& right)
+{
+  CPathW result(*this);
+  result += right.m_Path;
+  return result;
+}
+
+vu::CPathW CPathW::operator+(const std::wstring& right)
+{
+  CPathW result(*this);
+  result += right;
+  return result;
 }
 
 bool CPathW::operator==(const CPathW& right)
