@@ -9,17 +9,17 @@
 namespace vu
 {
 
-CBuffer::CBuffer()
+CBuffer::CBuffer() : m_pData(nullptr), m_Size(0)
 {
   this->Create(nullptr, 0);
 }
 
-CBuffer::CBuffer(const size_t size)
+CBuffer::CBuffer(const size_t size) : m_pData(nullptr), m_Size(0)
 {
   this->Create(nullptr, size);
 }
 
-CBuffer::CBuffer(const void* pData, const size_t size)
+CBuffer::CBuffer(const void* pData, const size_t size) : m_pData(nullptr), m_Size(0)
 {
   this->Replace(pData, size);
 }
@@ -208,7 +208,7 @@ bool CBuffer::SaveAsFile(const std::string& filePath)
     return false;
   }
 
-  bool result = true; 
+  bool result = true;
 
   CFileSystemA file(filePath, vu::FM_CREATEALWAY);
   result &= file.Write(m_pData, ulong(m_Size));
