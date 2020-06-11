@@ -20,7 +20,7 @@ DEF_SAMPLE(WMHook)
   #else // _WIN32
   #define EXE_NAME _T("x32dbg.exe")
   #define DLL_PATH _T("Test.WH.x86.dll")
-  #define UND(s) VU_STRINGIZE(_##s##@12)
+  #define UND(s) VU_STRINGIZE(_) VU_STRINGIZE(s) VU_STRINGIZE(@12)
   #endif // _WIN64
 
   auto pids = vu::NameToPID(EXE_NAME);
