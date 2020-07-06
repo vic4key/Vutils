@@ -787,13 +787,14 @@ public:
     const Protocol proto = IPPROTO_TCP);
   virtual ~CSocket();
 
-  const SOCKET&  vuapi GetSocket() const;
+  void vuapi Attach(const sInfomation& si);
+
   VUResult vuapi SetOption(const int level, const int opt, const std::string& val, const int size);
 
   VUResult vuapi Bind(const sServer& server);
   VUResult vuapi Bind(const std::string& address, const ushort port);
   VUResult vuapi Listen(const int maxcon = SOMAXCONN);
-  VUResult vuapi Accept(sInfomation& info);
+  VUResult vuapi Accept(sInfomation& si);
 
   VUResult vuapi Connect(const sServer& server);
   VUResult vuapi Connect(const std::string& address, const ushort port);
@@ -824,8 +825,7 @@ private:
 private:
   WSADATA m_WSAData;
   SOCKET  m_Socket;
-  hostent m_Client;
-  sockaddr_in m_Server;
+  sockaddr_in m_SAI;
 };
 
 #endif // VU_SOCKET_ENABLED

@@ -23,12 +23,12 @@ namespace vu
 #ifdef VU_SOCKET_ENABLED
 
 const std::string VU_LOCALHOST = "127.0.0.1";
+const size_t VU_DEF_BLOCK_SIZE = KiB;
 
 CSocket::CSocket(const AddressFamily af, const Type type, const Protocol proto) : CLastError()
 {
   ZeroMemory(&m_WSAData, sizeof(m_WSAData));
-  ZeroMemory(&m_Server, sizeof(m_Server));
-  ZeroMemory(&m_Client, sizeof(m_Client));
+  ZeroMemory(&m_SAI, sizeof(m_SAI));
 
   if (WSAStartup(MAKEWORD(2, 2), &m_WSAData) != 0)
   {
@@ -37,7 +37,7 @@ CSocket::CSocket(const AddressFamily af, const Type type, const Protocol proto) 
 
   m_Socket = socket(af, type, proto);
 
-  m_Server.sin_family = af;
+  m_SAI.sin_family = af;
 }
 
 CSocket::~CSocket()
@@ -52,9 +52,10 @@ bool vuapi CSocket::IsValid(const SOCKET& socket)
   return !(socket == 0 || socket == INVALID_SOCKET);
 }
 
-const SOCKET& vuapi CSocket::GetSocket() const
+void vuapi CSocket::Attach(const sInfomation& si)
 {
-  return m_Socket;
+  m_Socket = si.s;
+  m_SAI = si.sai;
 }
 
 VUResult vuapi CSocket::SetOption(
@@ -110,10 +111,10 @@ VUResult vuapi CSocket::Bind(const std::string& address, const ushort port)
     return 2;
   }
 
-  m_Server.sin_addr.S_un.S_addr = inet_addr(IP.c_str());
-  m_Server.sin_port = htons(port);
+  m_SAI.sin_addr.S_un.S_addr = inet_addr(IP.c_str());
+  m_SAI.sin_port = htons(port);
 
-  if (bind(m_Socket, (const struct sockaddr*)&m_Server, sizeof(m_Server)) == SOCKET_ERROR)
+  if (bind(m_Socket, (const struct sockaddr*)&m_SAI, sizeof(m_SAI)) == SOCKET_ERROR)
   {
     m_LastErrorCode = GetLastError();
     return 3;
@@ -136,27 +137,27 @@ VUResult vuapi CSocket::Listen(const int maxcon)
   return (result == SOCKET_ERROR ? 2 : VU_OK);
 }
 
-VUResult vuapi CSocket::Accept(sInfomation& info)
+VUResult vuapi CSocket::Accept(sInfomation& si)
 {
   if (!this->IsValid(m_Socket))
   {
     return 1;
   }
 
-  ZeroMemory(&info, sizeof(info));
+  ZeroMemory(&si, sizeof(si));
 
-  int size = sizeof(info.sai);
+  int size = sizeof(si.sai);
 
-  info.s = accept(m_Socket, (struct sockaddr*)&info.sai, &size);
+  si.s = accept(m_Socket, (struct sockaddr*)&si.sai, &size);
 
   m_LastErrorCode = GetLastError();
 
-  if (!this->IsValid(info.s))
+  if (!this->IsValid(si.s))
   {
     return 2;
   }
 
-  this->BytesToIP(info);
+  this->BytesToIP(si);
 
   return VU_OK;
 }
@@ -184,10 +185,10 @@ VUResult vuapi CSocket::Connect(const std::string& Address, ushort usPort)
     return 1;
   }
 
-  m_Server.sin_addr.S_un.S_addr = inet_addr(IP.c_str());
-  m_Server.sin_port = htons(usPort);
+  m_SAI.sin_addr.S_un.S_addr = inet_addr(IP.c_str());
+  m_SAI.sin_port = htons(usPort);
 
-  if (connect(m_Socket, (const struct sockaddr*)&m_Server, sizeof(m_Server)) == SOCKET_ERROR)
+  if (connect(m_Socket, (const struct sockaddr*)&m_SAI, sizeof(m_SAI)) == SOCKET_ERROR)
   {
     m_LastErrorCode = GetLastError();
     this->Close();
@@ -256,7 +257,7 @@ IResult vuapi CSocket::Recvall(CBuffer& Data, const Flags flags)
 
   do
   {
-    buffer.Resize(KiB);
+    buffer.Resize(VU_DEF_BLOCK_SIZE);
     IResult z = this->Recv(buffer, flags);
     if (z <= 0)
     {
@@ -264,11 +265,15 @@ IResult vuapi CSocket::Recvall(CBuffer& Data, const Flags flags)
     }
     else
     {
-      if (z != static_cast<int>(buffer.GetSize()))
+      if (z < static_cast<int>(buffer.GetSize()))
       {
         buffer.Resize(z);
       }
       Data.Append(buffer);
+      if (z < VU_DEF_BLOCK_SIZE)
+      {
+        buffer.Reset();
+      }
     }
   } while (!buffer.Empty());
 
@@ -342,7 +347,7 @@ IResult vuapi CSocket::RecvallFrom(CBuffer& Data, const sInfomation& info)
 
   do
   {
-    buffer.Resize(KiB);
+    buffer.Resize(VU_DEF_BLOCK_SIZE);
     IResult z = this->RecvFrom(buffer, info);
     if (z <= 0)
     {
@@ -350,11 +355,15 @@ IResult vuapi CSocket::RecvallFrom(CBuffer& Data, const sInfomation& info)
     }
     else
     {
-      if (z != static_cast<int>(buffer.GetSize()))
+      if (z < static_cast<int>(buffer.GetSize()))
       {
         buffer.Resize(z);
       }
       Data.Append(buffer);
+      if (z < VU_DEF_BLOCK_SIZE)
+      {
+        buffer.Reset();
+      }
     }
   } while (!buffer.Empty());
 
