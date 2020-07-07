@@ -790,7 +790,8 @@ public:
   virtual ~CSocket();
 
   void vuapi Attach(const TSocket& socket);
-  SOCKET& GetSocket();
+  SOCKET&  vuapi GetSocket();
+  VUResult vuapi EnableNonBlocking(bool state = true);
 
   VUResult vuapi SetOption(const int level, const int opt, const std::string& val, const int size);
 
@@ -1383,7 +1384,7 @@ public:
   void vuapi Close();
 
 protected:
-  bool IsValidHandle(HANDLE Handle);
+  bool Valid(HANDLE Handle);
 
 protected:
   HANDLE m_FileHandle;

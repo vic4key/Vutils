@@ -58,7 +58,7 @@ void vuapi CSocket::Attach(const TSocket& socket)
   m_SAI = socket.sai;
 }
 
-SOCKET& CSocket::GetSocket()
+SOCKET& vuapi CSocket::GetSocket()
 {
   return m_Socket;
 }
@@ -83,6 +83,22 @@ VUResult vuapi CSocket::SetOption(
   {
     m_LastErrorCode = GetLastError();
     return 3;
+  }
+
+  return VU_OK;
+}
+
+VUResult vuapi CSocket::EnableNonBlocking(bool state)
+{
+  if (!this->IsValid(m_Socket))
+  {
+    return 1;
+  }
+
+  ulong NonBlock = state ? 1 : 0;
+  if (ioctlsocket(m_Socket, FIONBIO, &NonBlock) == SOCKET_ERROR)
+  {
+    return 2;
   }
 
   return VU_OK;
