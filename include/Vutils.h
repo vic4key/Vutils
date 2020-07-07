@@ -767,36 +767,39 @@ public:
   typedef int Flags;
   typedef int Shutdowns;
 
-  struct sInfomation
+  struct TSocket
   {
     SOCKET s;
     sockaddr_in sai;
     char ip[15];
   };
 
-  struct sServer
+  struct TEndPoint
   {
     std::string Host;
     ushort Port;
+
+    TEndPoint(const std::string& host, const ushort port) : Host(host), Port(port) {}
   };
 
 public:
   CSocket(
     const AddressFamily af = AF_INET,
     const Type type = SOCK_STREAM,
-    const Protocol proto = IPPROTO_TCP);
+    const Protocol proto = IPPROTO_IP);
   virtual ~CSocket();
 
-  void vuapi Attach(const sInfomation& si);
+  void vuapi Attach(const TSocket& socket);
+  SOCKET& GetSocket();
 
   VUResult vuapi SetOption(const int level, const int opt, const std::string& val, const int size);
 
-  VUResult vuapi Bind(const sServer& server);
+  VUResult vuapi Bind(const TEndPoint& endpoint);
   VUResult vuapi Bind(const std::string& address, const ushort port);
   VUResult vuapi Listen(const int maxcon = SOMAXCONN);
-  VUResult vuapi Accept(sInfomation& si);
+  VUResult vuapi Accept(TSocket& socket);
 
-  VUResult vuapi Connect(const sServer& server);
+  VUResult vuapi Connect(const TEndPoint& endpoint);
   VUResult vuapi Connect(const std::string& address, const ushort port);
 
   IResult vuapi Send(const char* pData, int size, const Flags flags = MSG_NONE);
@@ -805,22 +808,22 @@ public:
   IResult vuapi Recv(CBuffer& data, const Flags flags = MSG_NONE);
   IResult vuapi Recvall(CBuffer& data, const Flags flags = MSG_NONE);
 
-  IResult vuapi SendTo(const char* pData, const int size, const sInfomation& info);
-  IResult vuapi SendTo(const CBuffer& data, const sInfomation& info);
-  IResult vuapi RecvFrom(char* pData, int size, const sInfomation& info);
-  IResult vuapi RecvFrom(CBuffer& data, const sInfomation& info);
-  IResult vuapi RecvallFrom(CBuffer& data, const sInfomation& info);
+  IResult vuapi SendTo(const char* pData, const int size, const TSocket& socket);
+  IResult vuapi SendTo(const CBuffer& data, const TSocket& socket);
+  IResult vuapi RecvFrom(char* pData, int size, const TSocket& socket);
+  IResult vuapi RecvFrom(CBuffer& data, const TSocket& socket);
+  IResult vuapi RecvallFrom(CBuffer& data, const TSocket& socket);
 
   bool vuapi Close();
 
   VUResult vuapi Shutdown(const Shutdowns flags);
-  std::string vuapi GetLocalHostName();
-  std::string vuapi GetHostByName(const std::string& Name);
-  bool vuapi IsHostName(const std::string& s);
-  bool vuapi BytesToIP(const sInfomation& info);
+  std::string vuapi GetHostName();
+  std::string vuapi GetHostAddress(const std::string& Name);
 
 private:
   bool vuapi IsValid(const SOCKET& socket);
+  bool vuapi Parse(const TSocket& socket);
+  bool vuapi IsHostName(const std::string& s);
 
 private:
   WSADATA m_WSAData;

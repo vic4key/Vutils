@@ -52,10 +52,15 @@ bool vuapi CSocket::IsValid(const SOCKET& socket)
   return !(socket == 0 || socket == INVALID_SOCKET);
 }
 
-void vuapi CSocket::Attach(const sInfomation& si)
+void vuapi CSocket::Attach(const TSocket& socket)
 {
-  m_Socket = si.s;
-  m_SAI = si.sai;
+  m_Socket = socket.s;
+  m_SAI = socket.sai;
+}
+
+SOCKET& CSocket::GetSocket()
+{
+  return m_Socket;
 }
 
 VUResult vuapi CSocket::SetOption(
@@ -83,9 +88,9 @@ VUResult vuapi CSocket::SetOption(
   return VU_OK;
 }
 
-VUResult vuapi CSocket::Bind(const sServer& server)
+VUResult vuapi CSocket::Bind(const TEndPoint& endpoint)
 {
-  return this->Bind(server.Host, server.Port);
+  return this->Bind(endpoint.Host, endpoint.Port);
 }
 
 VUResult vuapi CSocket::Bind(const std::string& address, const ushort port)
@@ -99,7 +104,7 @@ VUResult vuapi CSocket::Bind(const std::string& address, const ushort port)
 
   if (this->IsHostName(address) == true)
   {
-    IP = this->GetHostByName(address);
+    IP = this->GetHostAddress(address);
   }
   else
   {
@@ -137,34 +142,34 @@ VUResult vuapi CSocket::Listen(const int maxcon)
   return (result == SOCKET_ERROR ? 2 : VU_OK);
 }
 
-VUResult vuapi CSocket::Accept(sInfomation& si)
+VUResult vuapi CSocket::Accept(TSocket& socket)
 {
   if (!this->IsValid(m_Socket))
   {
     return 1;
   }
 
-  ZeroMemory(&si, sizeof(si));
+  ZeroMemory(&socket, sizeof(socket));
 
-  int size = sizeof(si.sai);
+  int size = sizeof(socket.sai);
 
-  si.s = accept(m_Socket, (struct sockaddr*)&si.sai, &size);
+  socket.s = accept(m_Socket, (struct sockaddr*)&socket.sai, &size);
 
   m_LastErrorCode = GetLastError();
 
-  if (!this->IsValid(si.s))
+  if (!this->IsValid(socket.s))
   {
     return 2;
   }
 
-  this->BytesToIP(si);
+  this->Parse(socket);
 
   return VU_OK;
 }
 
-VUResult vuapi CSocket::Connect(const sServer& AccessPoint)
+VUResult vuapi CSocket::Connect(const TEndPoint& endpoint)
 {
-  return this->Connect(AccessPoint.Host, AccessPoint.Port);
+  return this->Connect(endpoint.Host, endpoint.Port);
 }
 
 VUResult vuapi CSocket::Connect(const std::string& Address, ushort usPort)
@@ -173,7 +178,7 @@ VUResult vuapi CSocket::Connect(const std::string& Address, ushort usPort)
 
   if (this->IsHostName(Address) == true)
   {
-    IP = this->GetHostByName(Address);
+    IP = this->GetHostAddress(Address);
   }
   else
   {
@@ -280,12 +285,12 @@ IResult vuapi CSocket::Recvall(CBuffer& Data, const Flags flags)
   return IResult(Data.GetSize());
 }
 
-IResult vuapi CSocket::SendTo(const CBuffer& Data, const sInfomation& info)
+IResult vuapi CSocket::SendTo(const CBuffer& Data, const TSocket& socket)
 {
-  return this->SendTo((const char*)Data.GetpData(), int(Data.GetSize()), info);
+  return this->SendTo((const char*)Data.GetpData(), int(Data.GetSize()), socket);
 }
 
-IResult vuapi CSocket::SendTo(const char* lpData, const int size, const sInfomation& info)
+IResult vuapi CSocket::SendTo(const char* lpData, const int size, const TSocket& socket)
 {
   if (!this->IsValid(m_Socket))
   {
@@ -297,8 +302,8 @@ IResult vuapi CSocket::SendTo(const char* lpData, const int size, const sInfomat
     lpData,
     size,
     0,
-    (const struct sockaddr*)&info.sai,
-    sizeof(info.sai)
+    (const struct sockaddr*)&socket.sai,
+    sizeof(socket.sai)
   );
 
   if (z == SOCKET_ERROR)
@@ -309,9 +314,9 @@ IResult vuapi CSocket::SendTo(const char* lpData, const int size, const sInfomat
   return z;
 }
 
-IResult vuapi CSocket::RecvFrom(CBuffer& Data, const sInfomation& info)
+IResult vuapi CSocket::RecvFrom(CBuffer& Data, const TSocket& socket)
 {
-  auto z =  this->RecvFrom((char*)Data.GetpData(), int(Data.GetSize()), info);
+  auto z =  this->RecvFrom((char*)Data.GetpData(), int(Data.GetSize()), socket);
   if (z != SOCKET_ERROR)
   {
     Data.Resize(z);
@@ -320,35 +325,35 @@ IResult vuapi CSocket::RecvFrom(CBuffer& Data, const sInfomation& info)
   return z;
 }
 
-IResult vuapi CSocket::RecvFrom(char* lpData, int size, const sInfomation& info)
+IResult vuapi CSocket::RecvFrom(char* lpData, int size, const TSocket& socket)
 {
   if (!this->IsValid(m_Socket))
   {
     return SOCKET_ERROR;
   }
 
-  int n = sizeof(info.sai);
-  IResult z = recvfrom(m_Socket, lpData, size, 0, (struct sockaddr *)&info.sai, &n);
+  int n = sizeof(socket.sai);
+  IResult z = recvfrom(m_Socket, lpData, size, 0, (struct sockaddr *)&socket.sai, &n);
   if (z == SOCKET_ERROR)
   {
     m_LastErrorCode = GetLastError();
   }
   else
   {
-    this->BytesToIP(info);
+    this->Parse(socket);
   }
 
   return z;
 }
 
-IResult vuapi CSocket::RecvallFrom(CBuffer& Data, const sInfomation& info)
+IResult vuapi CSocket::RecvallFrom(CBuffer& Data, const TSocket& socket)
 {
   CBuffer buffer;
 
   do
   {
     buffer.Resize(VU_DEF_BLOCK_SIZE);
-    IResult z = this->RecvFrom(buffer, info);
+    IResult z = this->RecvFrom(buffer, socket);
     if (z <= 0)
     {
       buffer.Reset();
@@ -399,7 +404,7 @@ VUResult vuapi CSocket::Shutdown(const Shutdowns flags)
   return VU_OK;
 }
 
-std::string vuapi CSocket::GetLocalHostName()
+std::string vuapi CSocket::GetHostName()
 {
   std::string result = "";
 
@@ -426,7 +431,7 @@ std::string vuapi CSocket::GetLocalHostName()
   return result;
 }
 
-std::string vuapi CSocket::GetHostByName(const std::string& Name)
+std::string vuapi CSocket::GetHostAddress(const std::string& Name)
 {
   std::string r;
   r.clear();
@@ -495,15 +500,15 @@ bool vuapi CSocket::IsHostName(const std::string& s)
   return r;
 }
 
-bool vuapi CSocket::BytesToIP(const sInfomation& info)
+bool vuapi CSocket::Parse(const TSocket& socket)
 {
   if (sprintf(
-    (char*)info.ip,
+    (char*)socket.ip,
     "%d.%d.%d.%d\0",
-    info.sai.sin_addr.S_un.S_un_b.s_b1,
-    info.sai.sin_addr.S_un.S_un_b.s_b2,
-    info.sai.sin_addr.S_un.S_un_b.s_b3,
-    info.sai.sin_addr.S_un.S_un_b.s_b4
+    socket.sai.sin_addr.S_un.S_un_b.s_b1,
+    socket.sai.sin_addr.S_un.S_un_b.s_b2,
+    socket.sai.sin_addr.S_un.S_un_b.s_b3,
+    socket.sai.sin_addr.S_un.S_un_b.s_b4
   ) < 0) return false;
   else return true;
 }
