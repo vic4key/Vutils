@@ -822,7 +822,7 @@ public:
   std::string vuapi GetHostAddress(const std::string& Name);
 
 private:
-  bool vuapi IsValid(const SOCKET& socket);
+  bool vuapi Valid(const SOCKET& socket);
   bool vuapi Parse(const TSocket& socket);
   bool vuapi IsHostName(const std::string& s);
 
@@ -1071,7 +1071,7 @@ class CFileSystemX : public CLastError
 public:
   CFileSystemX();
   virtual ~CFileSystemX();
-  virtual bool vuapi IsFileHandleValid(HANDLE fileHandle);
+  virtual bool vuapi Valid(HANDLE fileHandle);
   virtual bool vuapi IsReady();
   virtual ulong vuapi GetFileSize();
   virtual const CBuffer vuapi ReadAsBuffer();

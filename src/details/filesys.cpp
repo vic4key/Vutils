@@ -23,7 +23,7 @@ CFileSystemX::~CFileSystemX()
   this->Close();
 }
 
-bool vuapi CFileSystemX::IsFileHandleValid(HANDLE fileHandle)
+bool vuapi CFileSystemX::Valid(HANDLE fileHandle)
 {
   if (!fileHandle || fileHandle == INVALID_HANDLE_VALUE)
   {
@@ -35,7 +35,7 @@ bool vuapi CFileSystemX::IsFileHandleValid(HANDLE fileHandle)
 
 bool vuapi CFileSystemX::IsReady()
 {
-  return this->IsFileHandleValid(m_FileHandle);
+  return this->Valid(m_FileHandle);
 }
 
 bool vuapi CFileSystemX::Read(
@@ -102,7 +102,7 @@ bool vuapi CFileSystemX::Write(const void* cBuffer, ulong ulSize)
 
 bool vuapi CFileSystemX::Seek(ulong ulOffset, eMoveMethodFlags mmFlag)
 {
-  if (!this->IsFileHandleValid(m_FileHandle))
+  if (!this->Valid(m_FileHandle))
   {
     return false;
   }
@@ -116,7 +116,7 @@ bool vuapi CFileSystemX::Seek(ulong ulOffset, eMoveMethodFlags mmFlag)
 
 ulong vuapi CFileSystemX::GetFileSize()
 {
-  if (!this->IsFileHandleValid(m_FileHandle))
+  if (!this->Valid(m_FileHandle))
   {
     return 0;
   }
@@ -156,7 +156,7 @@ bool vuapi CFileSystemX::IOControl(
 
 bool vuapi CFileSystemX::Close()
 {
-  if (!this->IsFileHandleValid(m_FileHandle))
+  if (!this->Valid(m_FileHandle))
   {
     return false;
   }
@@ -215,7 +215,7 @@ bool vuapi CFileSystemA::Init(
 )
 {
   m_FileHandle = CreateFileA(FilePath.c_str(), fgFlag, fsFlag, NULL, fmFlag, faFlag, NULL);
-  if (!this->IsFileHandleValid(m_FileHandle))
+  if (!this->Valid(m_FileHandle))
   {
     m_LastErrorCode = GetLastError();
     return false;
@@ -353,7 +353,7 @@ bool vuapi CFileSystemW::Init(
 )
 {
   m_FileHandle = CreateFileW(FilePath.c_str(), fgFlag, fsFlag, NULL, fmFlag, faFlag, NULL);
-  if (!this->IsFileHandleValid(m_FileHandle))
+  if (!this->Valid(m_FileHandle))
   {
     m_LastErrorCode = GetLastError();
     return false;

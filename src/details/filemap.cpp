@@ -25,7 +25,7 @@ CFileMappingX::~CFileMappingX()
   this->Close();
 }
 
-bool CFileMappingX::IsValidHandle(HANDLE Handle)
+bool CFileMappingX::Valid(HANDLE Handle)
 {
   return (Handle != nullptr && Handle != INVALID_HANDLE_VALUE);
 }
@@ -37,7 +37,7 @@ void* vuapi CFileMappingX::View(
   ulong ulNumberOfBytesToMap
 )
 {
-  if (!this->IsValidHandle(m_MapHandle))
+  if (!this->Valid(m_MapHandle))
   {
     return nullptr;
   }
@@ -63,13 +63,13 @@ void vuapi CFileMappingX::Close()
     m_pData = nullptr;
   }
 
-  if (this->IsValidHandle(m_MapHandle))
+  if (this->Valid(m_MapHandle))
   {
     CloseHandle(m_MapHandle);
     m_MapHandle = INVALID_HANDLE_VALUE;
   }
 
-  if (this->IsValidHandle(m_FileHandle))
+  if (this->Valid(m_FileHandle))
   {
     CloseHandle(m_FileHandle);
     m_FileHandle = INVALID_HANDLE_VALUE;
@@ -78,7 +78,7 @@ void vuapi CFileMappingX::Close()
 
 ulong vuapi CFileMappingX::GetFileSize()
 {
-  if (!this->IsValidHandle(m_FileHandle))
+  if (!this->Valid(m_FileHandle))
   {
     return INVALID_FILE_SIZE;
   }
@@ -121,7 +121,7 @@ VUResult vuapi CFileMappingA::CreateWithinFile(
 
   m_LastErrorCode = GetLastError();
 
-  if (!this->IsValidHandle(m_FileHandle))
+  if (!this->Valid(m_FileHandle))
   {
     return 2;
   }
@@ -142,7 +142,7 @@ VUResult vuapi CFileMappingA::CreateNamedSharedMemory(
   ulong ulProtect
 )
 {
-  if (!this->IsValidHandle(m_FileHandle) && MappingName.empty())
+  if (!this->Valid(m_FileHandle) && MappingName.empty())
   {
     return 1;
   }
@@ -158,7 +158,7 @@ VUResult vuapi CFileMappingA::CreateNamedSharedMemory(
 
   m_LastErrorCode = GetLastError();
 
-  if (!this->IsValidHandle(m_MapHandle))
+  if (!this->Valid(m_MapHandle))
   {
     return 2;
   }
@@ -181,7 +181,7 @@ VUResult vuapi CFileMappingA::Open(
 
   m_LastErrorCode = GetLastError();
 
-  if (!this->IsValidHandle(m_MapHandle))
+  if (!this->Valid(m_MapHandle))
   {
     return 2;
   }
@@ -220,7 +220,7 @@ VUResult vuapi CFileMappingW::CreateWithinFile(
 
   m_LastErrorCode = GetLastError();
 
-  if (!this->IsValidHandle(m_FileHandle))
+  if (!this->Valid(m_FileHandle))
   {
     return 2;
   }
@@ -241,7 +241,7 @@ VUResult vuapi CFileMappingW::CreateNamedSharedMemory(
   ulong ulProtect
 )
 {
-  if (!this->IsValidHandle(m_FileHandle) && MappingName.empty())
+  if (!this->Valid(m_FileHandle) && MappingName.empty())
   {
     return 1;
   }
@@ -257,7 +257,7 @@ VUResult vuapi CFileMappingW::CreateNamedSharedMemory(
 
   m_LastErrorCode = GetLastError();
 
-  if (!this->IsValidHandle(m_MapHandle))
+  if (!this->Valid(m_MapHandle))
   {
     return 2;
   }
@@ -280,7 +280,7 @@ VUResult vuapi CFileMappingW::Open(
 
   m_LastErrorCode = GetLastError();
 
-  if (!this->IsValidHandle(m_MapHandle))
+  if (!this->Valid(m_MapHandle))
   {
     return 2;
   }
