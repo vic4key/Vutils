@@ -156,6 +156,13 @@ public:
   CFundamentalA();
   virtual ~CFundamentalA();
 
+  template<typename T>
+  friend CFundamentalA& operator<<(CFundamentalA& stream, T v)
+  {
+    stream.m_Data << v;
+    return stream;
+  }
+
   std::stringstream& vuapi Data();
   std::string vuapi String() const;
   int vuapi Integer() const;
@@ -173,6 +180,13 @@ class CFundamentalW
 public:
   CFundamentalW();
   virtual ~CFundamentalW();
+
+  template<typename T>
+  friend CFundamentalW& operator<<(CFundamentalW& stream, T v)
+  {
+    stream.m_Data << v;
+    return stream;
+  }
 
   std::wstringstream& vuapi Data();
   std::wstring vuapi String() const;
