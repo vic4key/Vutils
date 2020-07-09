@@ -69,9 +69,7 @@
 #include <vector>
 #include <memory>
 #include <sstream>
-#include <ostream>
 #include <cassert>
-#include <cstdint>
 #include <functional>
 
 #ifdef _MSC_VER
