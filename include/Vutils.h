@@ -26,12 +26,16 @@
 /* The Conditions of Vutils */
 
 #if !defined(_WIN32) && !defined(_WIN64)
-#error Vutils is only available for Windows (32-bit and 64-bit) platform.
-#endif // !defined(_WIN32) && !defined(_WIN64)
+#error Vutils required Windows 32-bit/64-bit platform
+#endif
 
 #ifndef __cplusplus
-#error Vutils is only supported C++ compiler.
-#endif // __cplusplus
+#error Vutils required C++ compiler
+#endif
+
+#ifdef _INC_WINDOWS
+#error Vutils required to include before Windows.h or at the top
+#endif
 
 /* Vutils Configurations */
 
@@ -54,7 +58,11 @@
 #endif
 
 #include <windows.h>
+
+#ifdef VU_SOCKET_ENABLED
 #include <winsock2.h>
+#endif
+
 #include <cmath>
 #include <ctime>
 #include <string>
