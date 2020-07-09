@@ -49,7 +49,12 @@
 
 /* Header Inclusions */
 
-#include <Windows.h>
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#include <windows.h>
+#include <winsock2.h>
 #include <cmath>
 #include <ctime>
 #include <string>
@@ -60,16 +65,6 @@
 #include <cassert>
 #include <cstdint>
 #include <functional>
-
-#ifdef WIN32_LEAN_AND_MEAN
-#ifdef VU_SOCKET_ENABLED
-#ifndef _WINSOCKAPI_
-#include <WinSock2.h>
-#else
-#include <winsock.h>
-#endif // _WINSOCKAPI_
-#endif // VU_SOCKET_ENABLED
-#endif // WIN32_LEAN_AND_MEAN
 
 #ifdef _MSC_VER
 #pragma warning(push)

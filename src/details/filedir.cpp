@@ -6,6 +6,8 @@
 
 #include "Vutils.h"
 
+#include <shellapi.h>
+
 namespace vu
 {
 

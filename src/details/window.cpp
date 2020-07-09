@@ -9,6 +9,8 @@
 #include <cassert>
 #include <cstdlib>
 
+#include "defs.h"
+
 namespace vu
 {
 

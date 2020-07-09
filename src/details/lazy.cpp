@@ -5,6 +5,7 @@
  */
 
 #include "lazy.h"
+#include "defs.h"
 
 #define ErrorCode(code) (ECBase + code)
 

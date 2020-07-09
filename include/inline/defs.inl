@@ -10,14 +10,6 @@
 #define vuapi
 #endif // _WIN64
 
-#ifndef _T
-#ifdef _UNICODE
-#define _T(x) L ## x
-#else  // !_UNICODE
-#define _T(x) x
-#endif // _UNICODE
-#endif // _T
-
 #ifndef MAXPATH
 #define MAXPATH MAX_PATH
 #endif

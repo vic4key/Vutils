@@ -13,6 +13,8 @@
 
 #include <tlhelp32.h>
 
+#include "defs.h"
+
 namespace vu
 {
 

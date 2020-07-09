@@ -16,10 +16,9 @@ G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_SOCKET_ENAB
 // #endif
 #endif // _MSC_VER
 
+#include <vu>
 #include <windows.h>
 #include <tchar.h>
-
-#include <vu>
 
 #include "Sample.Manager.h"
 #include "Sample.Misc.h"
