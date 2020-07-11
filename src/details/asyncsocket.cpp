@@ -15,6 +15,11 @@ CAsyncSocket::CAsyncSocket(
   const vu::CSocket::Protocol proto) : m_Server(af, type, proto)
 {
   this->Initialze();
+
+  for (uint i = 0; i < eFnType::UNDEFINED; i++)
+  {
+    m_FNs[i] = nullptr;
+  }
 }
 
 CAsyncSocket::~CAsyncSocket()
@@ -22,22 +27,27 @@ CAsyncSocket::~CAsyncSocket()
   this->Close();
 }
 
-void CAsyncSocket::Initialze()
+void vuapi CAsyncSocket::Initialze()
 {
   m_nEvents = 0;
 
   ZeroMemory(m_Sockets, sizeof(m_Sockets));
   ZeroMemory(m_Events, sizeof(m_Events));
 
-  m_Running  = false;
+  m_Running = false;
 }
 
-VUResult CAsyncSocket::Bind(const std::string& address, const ushort port)
+VUResult vuapi CAsyncSocket::Bind(const CSocket::TEndPoint& endpoint)
+{
+  return m_Server.Bind(endpoint);
+}
+
+VUResult vuapi CAsyncSocket::Bind(const std::string& address, const ushort port)
 {
   return m_Server.Bind(address, port);
 }
 
-VUResult CAsyncSocket::Listen(const int maxcon)
+VUResult vuapi CAsyncSocket::Listen(const int maxcon)
 {
   if (!m_Server.Available())
   {
@@ -53,19 +63,24 @@ VUResult CAsyncSocket::Listen(const int maxcon)
   }
 
   m_Sockets[m_nEvents] = m_Server.GetSocket();
-  m_Events[m_nEvents]  = Event;
+  m_Events[m_nEvents] = Event;
   m_nEvents++;
 
   return m_Server.Listen(maxcon);
 }
 
-IResult CAsyncSocket::Close()
+IResult vuapi CAsyncSocket::Close()
 {
   return m_Server.Close();
 }
 
-VUResult CAsyncSocket::Run()
+VUResult vuapi CAsyncSocket::Run()
 {
+  if (!m_Server.Available())
+  {
+    return 1;
+  }
+
   VUResult result = VU_OK;
 
   if (m_Running)
@@ -83,7 +98,7 @@ VUResult CAsyncSocket::Run()
   return VU_OK;
 }
 
-VUResult CAsyncSocket::Loop()
+VUResult vuapi CAsyncSocket::Loop()
 {
   VUResult result = VU_OK;
 
@@ -101,7 +116,7 @@ VUResult CAsyncSocket::Loop()
     idx = i;
 
     auto& Socket = m_Sockets[idx];
-    auto& Event  = m_Events[idx];
+    auto& Event = m_Events[idx];
 
     WSANETWORKEVENTS Events = { 0 };
     WSAEnumNetworkEvents(Socket, Event, &Events);
@@ -146,7 +161,7 @@ VUResult CAsyncSocket::Loop()
   return result;
 }
 
-IResult CAsyncSocket::DoOpen(WSANETWORKEVENTS& Events, SOCKET& Socket)
+IResult vuapi CAsyncSocket::DoOpen(WSANETWORKEVENTS& Events, SOCKET& Socket)
 {
   if (Events.iErrorCode[FD_ACCEPT_BIT] != 0)
   {
@@ -165,7 +180,7 @@ IResult CAsyncSocket::DoOpen(WSANETWORKEVENTS& Events, SOCKET& Socket)
 
   WSAEVENT Event = WSACreateEvent();
   WSAEventSelect(obj.s, Event, FD_READ | FD_WRITE | FD_CLOSE);
-  m_Events[m_nEvents]  = Event;
+  m_Events[m_nEvents] = Event;
   m_Sockets[m_nEvents] = obj.s;
   m_nEvents++;
 
@@ -177,7 +192,7 @@ IResult CAsyncSocket::DoOpen(WSANETWORKEVENTS& Events, SOCKET& Socket)
   return VU_OK;
 }
 
-IResult CAsyncSocket::DoRecv(WSANETWORKEVENTS& Events, SOCKET& Socket)
+IResult vuapi CAsyncSocket::DoRecv(WSANETWORKEVENTS& Events, SOCKET& Socket)
 {
   if (Events.iErrorCode[FD_READ_BIT] != 0)
   {
@@ -192,7 +207,7 @@ IResult CAsyncSocket::DoRecv(WSANETWORKEVENTS& Events, SOCKET& Socket)
   return VU_OK;
 }
 
-IResult CAsyncSocket::DoSend(WSANETWORKEVENTS& Events, SOCKET& Socket)
+IResult vuapi CAsyncSocket::DoSend(WSANETWORKEVENTS& Events, SOCKET& Socket)
 {
   if (Events.iErrorCode[FD_WRITE_BIT] != 0)
   {
@@ -207,7 +222,7 @@ IResult CAsyncSocket::DoSend(WSANETWORKEVENTS& Events, SOCKET& Socket)
   return VU_OK;
 }
 
-IResult CAsyncSocket::DoClose(WSANETWORKEVENTS& Events, SOCKET& Socket)
+IResult vuapi CAsyncSocket::DoClose(WSANETWORKEVENTS& Events, SOCKET& Socket)
 {
   if (Events.iErrorCode[FD_CLOSE_BIT] != 0)
   {
@@ -226,24 +241,42 @@ IResult CAsyncSocket::DoClose(WSANETWORKEVENTS& Events, SOCKET& Socket)
   return VU_OK;
 }
 
+void CAsyncSocket::On(const eFnType type, const FnPrototype fn)
+{
+  assert(!m_Running && type < eFnType::UNDEFINED);
+  m_FNs[type] = fn;
+}
+
 void CAsyncSocket::OnOpen(CSocket& client)
 {
-  assert(0);
+  if (auto& fn = m_FNs[eFnType::OPEN])
+  {
+    fn(client);
+  }
 }
 
 void CAsyncSocket::OnSend(CSocket& client)
 {
-  assert(0);
+  if (auto& fn = m_FNs[eFnType::SEND])
+  {
+    fn(client);
+  }
 }
 
 void CAsyncSocket::OnRecv(CSocket& client)
 {
-  assert(0);
+  if (auto& fn = m_FNs[eFnType::RECV])
+  {
+    fn(client);
+  }
 }
 
 void CAsyncSocket::OnClose(CSocket& client)
 {
-  assert(0);
+  if (auto& fn = m_FNs[eFnType::CLOSE])
+  {
+    fn(client);
+  }
 }
 
 } // namespace vu

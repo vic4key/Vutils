@@ -865,16 +865,30 @@ private:
 class CAsyncSocket
 {
 public:
+  typedef std::function<void(CSocket& client)> FnPrototype;
+
+  typedef enum _FN_TYPE : uint
+  {
+    OPEN,
+    CLOSE,
+    RECV,
+    SEND,
+    UNDEFINED,
+  } eFnType;
+
   CAsyncSocket(
     const vu::CSocket::AddressFamily af = AF_INET,
     const vu::CSocket::Type type = SOCK_STREAM,
     const vu::CSocket::Protocol proto = IPPROTO_IP);
   virtual ~CAsyncSocket();
 
-  VUResult Bind(const std::string& address, const ushort port);
-  VUResult Listen(const int maxcon = SOMAXCONN);
-  VUResult Run();
-  IResult  Close();
+  VUResult vuapi Bind(const CSocket::TEndPoint& endpoint);
+  VUResult vuapi Bind(const std::string& address, const ushort port);
+  VUResult vuapi Listen(const int maxcon = SOMAXCONN);
+  VUResult vuapi Run();
+  IResult  vuapi Close();
+
+  virtual void On(const eFnType type, const FnPrototype fn); // must be mapping before call Run(...)
 
   virtual void OnOpen(CSocket&  client);
   virtual void OnClose(CSocket& client);
@@ -882,13 +896,13 @@ public:
   virtual void OnRecv(CSocket&  client);
 
 protected:
-  void Initialze();
-  VUResult Loop();
+  void vuapi Initialze();
+  VUResult vuapi Loop();
 
-  IResult DoOpen(WSANETWORKEVENTS&  Events, SOCKET& Socket);
-  IResult DoRecv(WSANETWORKEVENTS&  Events, SOCKET& Socket);
-  IResult DoSend(WSANETWORKEVENTS&  Events, SOCKET& Socket);
-  IResult DoClose(WSANETWORKEVENTS& Events, SOCKET& Socket);
+  IResult vuapi DoOpen(WSANETWORKEVENTS&  Events, SOCKET& Socket);
+  IResult vuapi DoRecv(WSANETWORKEVENTS&  Events, SOCKET& Socket);
+  IResult vuapi DoSend(WSANETWORKEVENTS&  Events, SOCKET& Socket);
+  IResult vuapi DoClose(WSANETWORKEVENTS& Events, SOCKET& Socket);
 
 protected:
   vu::CSocket m_Server;
@@ -896,6 +910,7 @@ protected:
   DWORD  m_nEvents;
   SOCKET m_Sockets[WSA_MAXIMUM_WAIT_EVENTS];
   WSAEVENT m_Events[WSA_MAXIMUM_WAIT_EVENTS];
+  FnPrototype m_FNs[eFnType::UNDEFINED];
 };
 
 #endif // VU_SOCKET_ENABLED
