@@ -829,7 +829,7 @@ public:
   IResult vuapi RecvFrom(CBuffer& data, const TSocket& socket);
   IResult vuapi RecvallFrom(CBuffer& data, const TSocket& socket);
 
-  bool vuapi Close();
+  IResult vuapi Close();
 
   VUResult vuapi Shutdown(const Shutdowns flags);
   std::string vuapi GetHostName();

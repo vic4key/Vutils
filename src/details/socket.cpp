@@ -390,17 +390,17 @@ IResult vuapi CSocket::RecvallFrom(CBuffer& Data, const TSocket& socket)
   return IResult(Data.GetSize());
 }
 
-bool vuapi CSocket::Close()
+VUResult vuapi CSocket::Close()
 {
   if (!this->Valid(m_Socket))
   {
-    return false;
+    return 1;
   }
 
   closesocket(m_Socket);
   m_Socket = INVALID_SOCKET;
 
-  return true;
+  return VU_OK;
 }
 
 VUResult vuapi CSocket::Shutdown(const Shutdowns flags)
