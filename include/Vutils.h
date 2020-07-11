@@ -835,12 +835,12 @@ public:
   const AddressFamily vuapi GetAF() const;
   const Type vuapi  GetType() const;
   const Protocol vuapi  GetProtocol() const;
-  const sockaddr_in& vuapi  GetSAI() const;
 
   SOCKET& vuapi GetSocket();
 
+  const sockaddr_in vuapi GetLocalSAI();
+  const sockaddr_in vuapi GetRemoteSAI();
   std::string vuapi GetHostName();
-  std::string vuapi GetHostAddress(const std::string& Name);
 
   VUResult vuapi SetOption(const int level, const int opt, const std::string& val, const int size);
   VUResult vuapi EnableNonBlocking(bool state = true);
@@ -850,6 +850,7 @@ private:
   bool vuapi Valid(const SOCKET& socket);
   bool vuapi Parse(const TSocket& socket);
   bool vuapi IsHostName(const std::string& s);
+  std::string vuapi GetHostAddress(const std::string& Name);
 
 private:
   WSADATA m_WSAData;

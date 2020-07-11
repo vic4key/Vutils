@@ -108,14 +108,35 @@ const CSocket::Protocol vuapi CSocket::GetProtocol() const
   return m_Proto;
 }
 
-const sockaddr_in& vuapi CSocket::GetSAI() const
-{
-  return m_SAI;
-}
-
 SOCKET& vuapi CSocket::GetSocket()
 {
   return m_Socket;
+}
+
+const sockaddr_in vuapi CSocket::GetLocalSAI()
+{
+  sockaddr_in result = { 0 };
+
+  if (this->Available())
+  {
+    auto size = int(sizeof(result));
+    getsockname(m_Socket, (struct sockaddr*)&result, &size);
+  }
+
+  return result;
+}
+
+const sockaddr_in vuapi CSocket::GetRemoteSAI()
+{
+  sockaddr_in result = { 0 };
+
+  if (this->Available())
+  {
+    auto size = int(sizeof(result));
+    getpeername(m_Socket, (struct sockaddr*)&result, &size);
+  }
+
+  return result;
 }
 
 VUResult vuapi CSocket::SetOption(
@@ -171,17 +192,7 @@ VUResult vuapi CSocket::Bind(const std::string& address, const ushort port)
     return 1;
   }
 
-  std::string IP;
-
-  if (this->IsHostName(address) == true)
-  {
-    IP = this->GetHostAddress(address);
-  }
-  else
-  {
-    IP = address;
-  }
-
+  std::string IP = this->IsHostName(address) ? this->GetHostAddress(address) : address;
   if (IP.empty())
   {
     return 2;
