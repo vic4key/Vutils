@@ -23,11 +23,11 @@ It helps your programming go easier, faster and simpler.
 	* GUID
 	* Buffer
 	* Library
-	* Socket
 	* Path
 	* Process
 	* Service
 	* Registry
+	* Sync/Async Socket
 	* Thread Pool
 	* INI File
 	* PE File
