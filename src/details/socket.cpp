@@ -22,7 +22,6 @@ namespace vu
 
 #ifdef VU_SOCKET_ENABLED
 
-const std::string VU_LOCALHOST = "127.0.0.1";
 const size_t VU_DEF_BLOCK_SIZE = KiB;
 
 CSocket::CSocket(const AddressFamily af, const Type type, const Protocol proto) : CLastError()
@@ -449,71 +448,69 @@ std::string vuapi CSocket::GetHostName()
 
 std::string vuapi CSocket::GetHostAddress(const std::string& Name)
 {
-  std::string r;
-  r.clear();
+  std::string result = "";
 
   if (!this->Valid(m_Socket))
   {
     WSASetLastError(6);  // WSA_INVALID_HANDLE
-    return r;
+    return result;
   }
 
   if (Name.empty())
   {
     WSASetLastError(87); // WSA_INVALID_PARAMETER
-    r = VU_LOCALHOST;
-    return r;
+    return result;
   }
 
   if (Name.length() >= MAXBYTE)
   {
     WSASetLastError(87); // WSA_INVALID_PARAMETER
-    return r;
+    return result;
   }
 
   hostent * h = gethostbyname(Name.c_str());
   if (h == nullptr)
   {
-    return r;
+    return result;
   }
 
   if (h->h_addr_list[0] == nullptr || strlen(h->h_addr_list[0]) == 0)
   {
-    return r;
+    return result;
   }
 
   in_addr a = {0};
   memcpy((void*)&a, (void*)h->h_addr_list[0], sizeof(a));
-  r = inet_ntoa(a);
+  result = inet_ntoa(a);
 
-  return r;
+  return result;
 }
 
 bool vuapi CSocket::IsHostName(const std::string& s)
 {
-  bool r = false;
+  bool result = false;
   const std::string MASK = "01234567890.";
 
   if (s.empty())
   {
-    return r;
+    return result;
   }
 
   if (s.length() >= MAXBYTE)
   {
-    return r;
+    return result;
   }
 
   for (unsigned int i = 0; i < s.length(); i++)
   {
     if (strchr(MASK.c_str(), s[i]) == nullptr)
     {
-      r = true;
+      result = true;
       break;
     }
   }
 
-  return r;
+  return result;
 }
 
 bool vuapi CSocket::Parse(const TSocket& socket)
