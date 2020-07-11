@@ -1,0 +1,249 @@
+/**
+ * @file   asyncsocket.cpp
+ * @author Vic P.
+ * @brief  Implementation for Asynchronous Socket
+ */
+
+#include "Vutils.h"
+
+namespace vu
+{
+
+CAsyncSocket::CAsyncSocket(
+  const vu::CSocket::AddressFamily af,
+  const vu::CSocket::Type type,
+  const vu::CSocket::Protocol proto) : m_Server(af, type, proto)
+{
+  this->Initialze();
+}
+
+CAsyncSocket::~CAsyncSocket()
+{
+  this->Close();
+}
+
+void CAsyncSocket::Initialze()
+{
+  m_nEvents = 0;
+
+  ZeroMemory(m_Sockets, sizeof(m_Sockets));
+  ZeroMemory(m_Events, sizeof(m_Events));
+
+  m_Running  = false;
+}
+
+VUResult CAsyncSocket::Bind(const std::string& address, const ushort port)
+{
+  return m_Server.Bind(address, port);
+}
+
+VUResult CAsyncSocket::Listen(const int maxcon)
+{
+  if (!m_Server.Available())
+  {
+    return 1;
+  }
+
+  this->Initialze();
+
+  WSAEVENT Event = WSACreateEvent();
+  if (WSAEventSelect(m_Server.GetSocket(), Event, FD_ACCEPT | FD_CLOSE) == SOCKET_ERROR)
+  {
+    return 2;
+  }
+
+  m_Sockets[m_nEvents] = m_Server.GetSocket();
+  m_Events[m_nEvents]  = Event;
+  m_nEvents++;
+
+  return m_Server.Listen(maxcon);
+}
+
+IResult CAsyncSocket::Close()
+{
+  return m_Server.Close();
+}
+
+VUResult CAsyncSocket::Run()
+{
+  VUResult result = VU_OK;
+
+  if (m_Running)
+  {
+    return result;
+  }
+
+  m_Running = true;
+
+  while (m_Running)
+  {
+    m_Running = (result = this->Loop()) == VU_OK;
+  }
+
+  return VU_OK;
+}
+
+VUResult CAsyncSocket::Loop()
+{
+  VUResult result = VU_OK;
+
+  DWORD idx = WSAWaitForMultipleEvents(m_nEvents, m_Events, FALSE, WSA_INFINITE, FALSE); // fWaitAll = TRUE
+  idx -= WSA_WAIT_EVENT_0;
+
+  for (DWORD i = idx; i < m_nEvents; i++)
+  {
+    idx = WSAWaitForMultipleEvents(1, &m_Events[i], FALSE, 100, FALSE);
+    if (idx == WSA_WAIT_FAILED || idx == WSA_WAIT_TIMEOUT)
+    {
+      continue;
+    }
+
+    idx = i;
+
+    auto& Socket = m_Sockets[idx];
+    auto& Event  = m_Events[idx];
+
+    WSANETWORKEVENTS Events = { 0 };
+    WSAEnumNetworkEvents(Socket, Event, &Events);
+
+    if (Events.lNetworkEvents & FD_ACCEPT)
+    {
+      result = this->DoOpen(Events, Socket);
+      if (result != VU_OK)
+      {
+        break;
+      }
+    }
+
+    if (Events.lNetworkEvents & FD_READ)
+    {
+      result = DoRecv(Events, Socket);
+      if (result != VU_OK)
+      {
+        break;
+      }
+    }
+
+    if (Events.lNetworkEvents & FD_WRITE)
+    {
+      result = DoSend(Events, Socket);
+      if (result != VU_OK)
+      {
+        break;
+      }
+    }
+
+    if (Events.lNetworkEvents & FD_CLOSE)
+    {
+      result = DoClose(Events, Socket);
+      if (result != VU_OK)
+      {
+        break;
+      }
+    }
+  }
+
+  return result;
+}
+
+IResult CAsyncSocket::DoOpen(WSANETWORKEVENTS& Events, SOCKET& Socket)
+{
+  if (Events.iErrorCode[FD_ACCEPT_BIT] != 0)
+  {
+    return Events.iErrorCode[FD_ACCEPT_BIT];
+  }
+
+  CSocket::TSocket obj = { 0 };
+  int n = static_cast<int>(sizeof(obj.sai));
+
+  obj.s = accept(Socket, (struct sockaddr*)&obj.sai, &n);
+  if (m_nEvents > WSA_MAXIMUM_WAIT_EVENTS)
+  {
+    closesocket(obj.s);
+    return WSAEMFILE; // Too many connections
+  }
+
+  WSAEVENT Event = WSACreateEvent();
+  WSAEventSelect(obj.s, Event, FD_READ | FD_WRITE | FD_CLOSE);
+  m_Events[m_nEvents]  = Event;
+  m_Sockets[m_nEvents] = obj.s;
+  m_nEvents++;
+
+  CSocket client(m_Server.GetAF(), m_Server.GetType(), m_Server.GetProtocol(), false);
+  client.Attach(obj);
+  this->OnOpen(client);
+  client.Detach();
+
+  return VU_OK;
+}
+
+IResult CAsyncSocket::DoRecv(WSANETWORKEVENTS& Events, SOCKET& Socket)
+{
+  if (Events.iErrorCode[FD_READ_BIT] != 0)
+  {
+    return Events.iErrorCode[FD_READ_BIT];
+  }
+
+  CSocket client(m_Server.GetAF(), m_Server.GetType(), m_Server.GetProtocol(), false);
+  client.Attach(Socket);
+  this->OnRecv(client);
+  client.Detach();
+
+  return VU_OK;
+}
+
+IResult CAsyncSocket::DoSend(WSANETWORKEVENTS& Events, SOCKET& Socket)
+{
+  if (Events.iErrorCode[FD_WRITE_BIT] != 0)
+  {
+    return Events.iErrorCode[FD_WRITE_BIT];
+  }
+
+  CSocket client(m_Server.GetAF(), m_Server.GetType(), m_Server.GetProtocol(), false);
+  client.Attach(Socket);
+  this->OnSend(client);
+  client.Detach();
+
+  return VU_OK;
+}
+
+IResult CAsyncSocket::DoClose(WSANETWORKEVENTS& Events, SOCKET& Socket)
+{
+  if (Events.iErrorCode[FD_CLOSE_BIT] != 0)
+  {
+    return Events.iErrorCode[FD_CLOSE_BIT];
+  }
+
+  CSocket client(m_Server.GetAF(), m_Server.GetType(), m_Server.GetProtocol(), false);
+  client.Attach(Socket);
+  this->OnClose(client);
+  client.Detach();
+
+  closesocket(Socket);
+  Socket = 0;
+  // CompressArrays(m_Events, m_Sockets, &m_nEvents);
+
+  return VU_OK;
+}
+
+void CAsyncSocket::OnOpen(CSocket& client)
+{
+  assert(0);
+}
+
+void CAsyncSocket::OnSend(CSocket& client)
+{
+  assert(0);
+}
+
+void CAsyncSocket::OnRecv(CSocket& client)
+{
+  assert(0);
+}
+
+void CAsyncSocket::OnClose(CSocket& client)
+{
+  assert(0);
+}
+
+} // namespace vu
