@@ -803,6 +803,7 @@ public:
     const Protocol proto = IPPROTO_IP);
   virtual ~CSocket();
 
+  void vuapi Attach(const SOCKET&  socket);
   void vuapi Attach(const TSocket& socket);
   void vuapi Detach();
   bool vuapi Available();

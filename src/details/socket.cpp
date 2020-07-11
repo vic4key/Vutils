@@ -58,6 +58,13 @@ bool vuapi CSocket::Available()
   return this->Valid(m_Socket);
 }
 
+void vuapi CSocket::Attach(const SOCKET& socket)
+{
+  TSocket obj = { 0 };
+  obj.s = socket;
+  this->Attach(obj);
+}
+
 void vuapi CSocket::Attach(const TSocket& socket)
 {
   m_Socket = socket.s;
