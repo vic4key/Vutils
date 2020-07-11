@@ -862,6 +862,42 @@ private:
   SOCKET  m_Socket;
 };
 
+class CAsyncSocket
+{
+public:
+  CAsyncSocket(
+    const vu::CSocket::AddressFamily af = AF_INET,
+    const vu::CSocket::Type type = SOCK_STREAM,
+    const vu::CSocket::Protocol proto = IPPROTO_IP);
+  virtual ~CAsyncSocket();
+
+  VUResult Bind(const std::string& address, const ushort port);
+  VUResult Listen(const int maxcon = SOMAXCONN);
+  VUResult Run();
+  IResult  Close();
+
+  virtual void OnOpen(CSocket&  client);
+  virtual void OnClose(CSocket& client);
+  virtual void OnSend(CSocket&  client);
+  virtual void OnRecv(CSocket&  client);
+
+protected:
+  void Initialze();
+  VUResult Loop();
+
+  IResult DoOpen(WSANETWORKEVENTS&  Events, SOCKET& Socket);
+  IResult DoRecv(WSANETWORKEVENTS&  Events, SOCKET& Socket);
+  IResult DoSend(WSANETWORKEVENTS&  Events, SOCKET& Socket);
+  IResult DoClose(WSANETWORKEVENTS& Events, SOCKET& Socket);
+
+protected:
+  vu::CSocket m_Server;
+  bool   m_Running;
+  DWORD  m_nEvents;
+  SOCKET m_Sockets[WSA_MAXIMUM_WAIT_EVENTS];
+  WSAEVENT m_Events[WSA_MAXIMUM_WAIT_EVENTS];
+};
+
 #endif // VU_SOCKET_ENABLED
 
 /**

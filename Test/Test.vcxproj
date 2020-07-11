@@ -154,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sample.APIHook.h" />
+    <ClInclude Include="Sample.AsyncSocket.h" />
     <ClInclude Include="Sample.DF.h" />
     <ClInclude Include="Sample.FileMapping.h" />
     <ClInclude Include="Sample.FileSystem.h" />
