@@ -800,7 +800,8 @@ public:
   CSocket(
     const AddressFamily af = AF_INET,
     const Type type = SOCK_STREAM,
-    const Protocol proto = IPPROTO_IP);
+    const Protocol proto = IPPROTO_IP,
+    bool wsa = true);
   virtual ~CSocket();
 
   void vuapi Attach(const SOCKET&  socket);
@@ -830,7 +831,14 @@ public:
 
   IResult vuapi Close();
 
+  const WSADATA& vuapi GetWSAData() const;
+  const AddressFamily vuapi GetAF() const;
+  const Type vuapi  GetType() const;
+  const Protocol vuapi  GetProtocol() const;
+  const sockaddr_in& vuapi  GetSAI() const;
+
   SOCKET& vuapi GetSocket();
+
   std::string vuapi GetHostName();
   std::string vuapi GetHostAddress(const std::string& Name);
 
@@ -845,8 +853,12 @@ private:
 
 private:
   WSADATA m_WSAData;
-  SOCKET  m_Socket;
+  AddressFamily m_AF;
+  Type m_Type;
+  Protocol m_Proto;
+  bool m_WSA;
   sockaddr_in m_SAI;
+  SOCKET  m_Socket;
 };
 
 #endif // VU_SOCKET_ENABLED

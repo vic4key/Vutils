@@ -24,26 +24,37 @@ namespace vu
 
 const size_t VU_DEF_BLOCK_SIZE = KiB;
 
-CSocket::CSocket(const AddressFamily af, const Type type, const Protocol proto) : CLastError()
+CSocket::CSocket(
+  const AddressFamily af,
+  const Type type,
+  const Protocol proto,
+  bool  wsa
+) : CLastError(), m_AF(af), m_Type(type), m_Proto(proto), m_WSA(wsa)
 {
   ZeroMemory(&m_WSAData, sizeof(m_WSAData));
   ZeroMemory(&m_SAI, sizeof(m_SAI));
 
-  if (WSAStartup(MAKEWORD(2, 2), &m_WSAData) != 0)
+  if (m_WSA)
   {
-    m_LastErrorCode = GetLastError();
+    if (WSAStartup(MAKEWORD(2, 2), &m_WSAData) != 0)
+    {
+      m_LastErrorCode = GetLastError();
+    }
   }
 
-  m_Socket = socket(af, type, proto);
+  m_Socket = socket(m_AF, m_Type, m_Proto);
 
-  m_SAI.sin_family = af;
+  m_SAI.sin_family = m_AF;
 }
 
 CSocket::~CSocket()
 {
   this->Close();
 
-  WSACleanup();
+  if (m_WSA)
+  {
+    WSACleanup();
+  }
 
   m_LastErrorCode = GetLastError();
 }
@@ -75,6 +86,31 @@ void vuapi CSocket::Detach()
 {
   m_Socket = INVALID_SOCKET;
   ZeroMemory(&m_SAI, sizeof(m_SAI));
+}
+
+const WSADATA& vuapi CSocket::GetWSAData() const
+{
+  return m_WSAData;
+}
+
+const CSocket::AddressFamily vuapi CSocket::GetAF() const
+{
+  return m_AF;
+}
+
+const CSocket::Type vuapi CSocket::GetType() const
+{
+  return m_Type;
+}
+
+const CSocket::Protocol vuapi CSocket::GetProtocol() const
+{
+  return m_Proto;
+}
+
+const sockaddr_in& vuapi CSocket::GetSAI() const
+{
+  return m_SAI;
 }
 
 SOCKET& vuapi CSocket::GetSocket()
