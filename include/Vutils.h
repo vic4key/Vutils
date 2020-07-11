@@ -803,12 +803,9 @@ public:
     const Protocol proto = IPPROTO_IP);
   virtual ~CSocket();
 
-  bool vuapi Available();
   void vuapi Attach(const TSocket& socket);
-  SOCKET&  vuapi GetSocket();
-  VUResult vuapi EnableNonBlocking(bool state = true);
-
-  VUResult vuapi SetOption(const int level, const int opt, const std::string& val, const int size);
+  void vuapi Detach();
+  bool vuapi Available();
 
   VUResult vuapi Bind(const TEndPoint& endpoint);
   VUResult vuapi Bind(const std::string& address, const ushort port);
@@ -832,9 +829,13 @@ public:
 
   IResult vuapi Close();
 
-  VUResult vuapi Shutdown(const Shutdowns flags);
+  SOCKET& vuapi GetSocket();
   std::string vuapi GetHostName();
   std::string vuapi GetHostAddress(const std::string& Name);
+
+  VUResult vuapi SetOption(const int level, const int opt, const std::string& val, const int size);
+  VUResult vuapi EnableNonBlocking(bool state = true);
+  VUResult vuapi Shutdown(const Shutdowns flags);
 
 private:
   bool vuapi Valid(const SOCKET& socket);

@@ -64,6 +64,12 @@ void vuapi CSocket::Attach(const TSocket& socket)
   m_SAI = socket.sai;
 }
 
+void vuapi CSocket::Detach()
+{
+  m_Socket = INVALID_SOCKET;
+  ZeroMemory(&m_SAI, sizeof(m_SAI));
+}
+
 SOCKET& vuapi CSocket::GetSocket()
 {
   return m_Socket;
