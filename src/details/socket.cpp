@@ -41,6 +41,8 @@ CSocket::CSocket(const AddressFamily af, const Type type, const Protocol proto) 
 
 CSocket::~CSocket()
 {
+  this->Close();
+
   WSACleanup();
 
   m_LastErrorCode = GetLastError();
@@ -49,6 +51,11 @@ CSocket::~CSocket()
 bool vuapi CSocket::Valid(const SOCKET& socket)
 {
   return !(socket == 0 || socket == INVALID_SOCKET);
+}
+
+bool vuapi CSocket::Available()
+{
+  return this->Valid(m_Socket);
 }
 
 void vuapi CSocket::Attach(const TSocket& socket)
@@ -68,7 +75,7 @@ VUResult vuapi CSocket::SetOption(
   const std::string& val,
   const int size)
 {
-  if (!this->Valid(m_Socket))
+  if (!this->Available())
   {
     return 1;
   }
@@ -89,7 +96,7 @@ VUResult vuapi CSocket::SetOption(
 
 VUResult vuapi CSocket::EnableNonBlocking(bool state)
 {
-  if (!this->Valid(m_Socket))
+  if (!this->Available())
   {
     return 1;
   }
@@ -110,7 +117,7 @@ VUResult vuapi CSocket::Bind(const TEndPoint& endpoint)
 
 VUResult vuapi CSocket::Bind(const std::string& address, const ushort port)
 {
-  if (!this->Valid(m_Socket))
+  if (!this->Available())
   {
     return 1;
   }
@@ -145,7 +152,7 @@ VUResult vuapi CSocket::Bind(const std::string& address, const ushort port)
 
 VUResult vuapi CSocket::Listen(const int maxcon)
 {
-  if (!this->Valid(m_Socket))
+  if (!this->Available())
   {
     return 1;
   }
@@ -159,7 +166,7 @@ VUResult vuapi CSocket::Listen(const int maxcon)
 
 VUResult vuapi CSocket::Accept(TSocket& socket)
 {
-  if (!this->Valid(m_Socket))
+  if (!this->Available())
   {
     return 1;
   }
@@ -220,7 +227,7 @@ VUResult vuapi CSocket::Connect(const std::string& Address, ushort usPort)
 
 IResult vuapi CSocket::Send(const char* lpData, int size, const Flags flags)
 {
-  if (!this->Valid(m_Socket))
+  if (!this->Available())
   {
     return SOCKET_ERROR;
   }
@@ -241,7 +248,7 @@ IResult vuapi CSocket::Send(const CBuffer& data, const Flags flags)
 
 IResult vuapi CSocket::Recv(char* lpData, int size, const Flags flags)
 {
-  if (!this->Valid(m_Socket))
+  if (!this->Available())
   {
     return SOCKET_ERROR;
   }
@@ -257,7 +264,7 @@ IResult vuapi CSocket::Recv(char* lpData, int size, const Flags flags)
 
 IResult vuapi CSocket::Recv(CBuffer& Data, const Flags flags)
 {
-  if (!this->Valid(m_Socket))
+  if (!this->Available())
   {
     return SOCKET_ERROR;
   }
@@ -307,7 +314,7 @@ IResult vuapi CSocket::SendTo(const CBuffer& Data, const TSocket& socket)
 
 IResult vuapi CSocket::SendTo(const char* lpData, const int size, const TSocket& socket)
 {
-  if (!this->Valid(m_Socket))
+  if (!this->Available())
   {
     return SOCKET_ERROR;
   }
@@ -342,7 +349,7 @@ IResult vuapi CSocket::RecvFrom(CBuffer& Data, const TSocket& socket)
 
 IResult vuapi CSocket::RecvFrom(char* lpData, int size, const TSocket& socket)
 {
-  if (!this->Valid(m_Socket))
+  if (!this->Available())
   {
     return SOCKET_ERROR;
   }
@@ -392,7 +399,7 @@ IResult vuapi CSocket::RecvallFrom(CBuffer& Data, const TSocket& socket)
 
 VUResult vuapi CSocket::Close()
 {
-  if (!this->Valid(m_Socket))
+  if (!this->Available())
   {
     return 1;
   }
@@ -405,7 +412,7 @@ VUResult vuapi CSocket::Close()
 
 VUResult vuapi CSocket::Shutdown(const Shutdowns flags)
 {
-  if (!this->Valid(m_Socket))
+  if (!this->Available())
   {
     return 1;
   }
@@ -423,7 +430,7 @@ std::string vuapi CSocket::GetHostName()
 {
   std::string result = "";
 
-  if (!this->Valid(m_Socket))
+  if (!this->Available())
   {
     return result;
   }
@@ -450,7 +457,7 @@ std::string vuapi CSocket::GetHostAddress(const std::string& Name)
 {
   std::string result = "";
 
-  if (!this->Valid(m_Socket))
+  if (!this->Available())
   {
     WSASetLastError(6);  // WSA_INVALID_HANDLE
     return result;
