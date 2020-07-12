@@ -110,9 +110,10 @@ VUResult vuapi CAsyncSocket::Run()
 
   while (m_Running)
   {
-    m_Mutex.lock();
-    m_Running = (result = this->Loop()) == VU_OK;
-    m_Mutex.unlock();
+    if (this->Loop() != VU_OK)
+    {
+      break;
+    }
   }
 
   return VU_OK;
@@ -122,11 +123,13 @@ VUResult vuapi CAsyncSocket::Loop()
 {
   VUResult result = VU_OK;
 
-  DWORD idx = WSAWaitForMultipleEvents(m_nEvents, m_Events, FALSE, WSA_INFINITE, FALSE); // fWaitAll = TRUE
+  // TODO: Vic. Recheck. FALSE, WSA_INFINITE, FALSE
+  DWORD idx = WSAWaitForMultipleEvents(m_nEvents, m_Events, FALSE, 0, FALSE);
   idx -= WSA_WAIT_EVENT_0;
 
   for (DWORD i = idx; i < m_nEvents; i++)
   {
+    // TODO: Vic. Recheck. TRUE, 1000, FALSE
     idx = WSAWaitForMultipleEvents(1, &m_Events[i], FALSE, 0, FALSE);
     if (idx == WSA_WAIT_FAILED || idx == WSA_WAIT_TIMEOUT)
     {
