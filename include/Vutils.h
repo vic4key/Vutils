@@ -62,6 +62,7 @@
 
 #include <cmath>
 #include <ctime>
+#include <mutex>
 #include <string>
 #include <vector>
 #include <memory>
@@ -879,10 +880,14 @@ public:
     const vu::CSocket::Protocol proto = IPPROTO_IP);
   virtual ~CAsyncSocket();
 
+  bool vuapi Available();
+  bool vuapi Running();
+
   VUResult vuapi Bind(const CSocket::TEndPoint& endpoint);
   VUResult vuapi Bind(const std::string& address, const ushort port);
   VUResult vuapi Listen(const int maxcon = SOMAXCONN);
   VUResult vuapi Run();
+  VUResult vuapi Stop();
   IResult  vuapi Close();
 
   virtual void On(const eFnType type, const FnPrototype fn); // must be mapping before call Run(...)
@@ -908,6 +913,7 @@ protected:
   SOCKET m_Sockets[WSA_MAXIMUM_WAIT_EVENTS];
   WSAEVENT m_Events[WSA_MAXIMUM_WAIT_EVENTS];
   FnPrototype m_FNs[eFnType::UNDEFINED];
+  std::mutex m_Mutex;
 };
 
 #endif // VU_SOCKET_ENABLED

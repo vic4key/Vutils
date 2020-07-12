@@ -37,6 +37,16 @@ void vuapi CAsyncSocket::Initialze()
   m_Running = false;
 }
 
+bool vuapi CAsyncSocket::Available()
+{
+  return m_Server.Available();
+}
+
+bool vuapi CAsyncSocket::Running()
+{
+  return m_Running;
+}
+
 VUResult vuapi CAsyncSocket::Bind(const CSocket::TEndPoint& endpoint)
 {
   return m_Server.Bind(endpoint);
@@ -74,6 +84,14 @@ IResult vuapi CAsyncSocket::Close()
   return m_Server.Close();
 }
 
+VUResult vuapi CAsyncSocket::Stop()
+{
+  m_Mutex.lock();
+  m_Running = false;
+  m_Mutex.unlock();
+  return VU_OK;
+}
+
 VUResult vuapi CAsyncSocket::Run()
 {
   if (!m_Server.Available())
@@ -92,7 +110,9 @@ VUResult vuapi CAsyncSocket::Run()
 
   while (m_Running)
   {
+    m_Mutex.lock();
     m_Running = (result = this->Loop()) == VU_OK;
+    m_Mutex.unlock();
   }
 
   return VU_OK;
