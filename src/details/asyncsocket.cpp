@@ -107,7 +107,7 @@ VUResult vuapi CAsyncSocket::Loop()
 
   for (DWORD i = idx; i < m_nEvents; i++)
   {
-    idx = WSAWaitForMultipleEvents(1, &m_Events[i], FALSE, 100, FALSE);
+    idx = WSAWaitForMultipleEvents(1, &m_Events[i], FALSE, 0, FALSE);
     if (idx == WSA_WAIT_FAILED || idx == WSA_WAIT_TIMEOUT)
     {
       continue;
