@@ -45,7 +45,7 @@ std::set<SOCKET> vuapi CAsyncSocket::GetClients()
   {
     for (auto& socket : m_Sockets)
     {
-      if (socket != NULL && socket != INVALID_SOCKET && socket != m_Server.GetSocket())
+      if (socket != 0 && socket != INVALID_SOCKET && socket != m_Server.GetSocket())
       {
         result.insert(socket);
       }
