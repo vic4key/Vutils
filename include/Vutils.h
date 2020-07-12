@@ -60,6 +60,7 @@
 #include <winsock2.h>
 #endif
 
+#include <set>
 #include <cmath>
 #include <ctime>
 #include <mutex>
@@ -835,7 +836,7 @@ public:
   const Protocol vuapi  GetProtocol() const;
 
   SOCKET& vuapi GetSocket();
-
+  std::set<SOCKET>  vuapi GetClients();
   const sockaddr_in vuapi GetLocalSAI();
   const sockaddr_in vuapi GetRemoteSAI();
   std::string vuapi GetHostName();
@@ -879,6 +880,8 @@ public:
     const vu::CSocket::Type type = SOCK_STREAM,
     const vu::CSocket::Protocol proto = IPPROTO_IP);
   virtual ~CAsyncSocket();
+
+  std::set<SOCKET> vuapi GetClients();
 
   bool vuapi Available();
   bool vuapi Running();

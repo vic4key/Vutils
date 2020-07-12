@@ -37,6 +37,24 @@ void vuapi CAsyncSocket::Initialze()
   m_Running = false;
 }
 
+std::set<SOCKET> vuapi CAsyncSocket::GetClients()
+{
+  std::set<SOCKET> result;
+
+  if (m_Server.Available())
+  {
+    for (auto& socket : m_Sockets)
+    {
+      if (socket != NULL && socket != INVALID_SOCKET && socket != m_Server.GetSocket())
+      {
+        result.insert(socket);
+      }
+    }
+  }
+
+  return result;
+}
+
 bool vuapi CAsyncSocket::Available()
 {
   return m_Server.Available();
@@ -73,7 +91,7 @@ VUResult vuapi CAsyncSocket::Listen(const int maxcon)
   }
 
   m_Sockets[m_nEvents] = m_Server.GetSocket();
-  m_Events[m_nEvents] = Event;
+  m_Events[m_nEvents]  = Event;
   m_nEvents++;
 
   return m_Server.Listen(maxcon);
@@ -139,7 +157,7 @@ VUResult vuapi CAsyncSocket::Loop()
     idx = i;
 
     auto& Socket = m_Sockets[idx];
-    auto& Event = m_Events[idx];
+    auto& Event  = m_Events[idx];
 
     WSANETWORKEVENTS Events = { 0 };
     WSAEnumNetworkEvents(Socket, Event, &Events);
@@ -203,7 +221,7 @@ IResult vuapi CAsyncSocket::DoOpen(WSANETWORKEVENTS& Events, SOCKET& Socket)
 
   WSAEVENT Event = WSACreateEvent();
   WSAEventSelect(obj.s, Event, FD_READ | FD_WRITE | FD_CLOSE);
-  m_Events[m_nEvents] = Event;
+  m_Events[m_nEvents]  = Event;
   m_Sockets[m_nEvents] = obj.s;
   m_nEvents++;
 
