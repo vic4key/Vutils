@@ -132,7 +132,7 @@ VUResult vuapi CAsyncSocket::Loop()
 
     if (Events.lNetworkEvents & FD_READ)
     {
-      result = DoRecv(Events, Socket);
+      result = this->DoRecv(Events, Socket);
       if (result != VU_OK)
       {
         break;
@@ -141,7 +141,7 @@ VUResult vuapi CAsyncSocket::Loop()
 
     if (Events.lNetworkEvents & FD_WRITE)
     {
-      result = DoSend(Events, Socket);
+      result = this->DoSend(Events, Socket);
       if (result != VU_OK)
       {
         break;
@@ -150,7 +150,7 @@ VUResult vuapi CAsyncSocket::Loop()
 
     if (Events.lNetworkEvents & FD_CLOSE)
     {
-      result = DoClose(Events, Socket);
+      result = this->DoClose(Events, Socket);
       if (result != VU_OK)
       {
         break;
