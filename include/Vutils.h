@@ -33,10 +33,6 @@
 #error Vutils required C++ compiler
 #endif
 
-#ifdef _INC_WINDOWS
-#error Vutils required to include before Windows.h or at the top
-#endif
-
 /* Vutils Configurations */
 
 // VU_SOCKET_ENABLED
@@ -58,6 +54,7 @@
 #endif
 
 #include <windows.h>
+#include <winsvc.h>
 
 #ifdef VU_SOCKET_ENABLED
 #include <winsock2.h>
