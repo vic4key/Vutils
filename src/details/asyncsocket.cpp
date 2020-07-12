@@ -132,6 +132,8 @@ VUResult vuapi CAsyncSocket::Run()
     {
       break;
     }
+
+    Sleep(1);
   }
 
   return VU_OK;
