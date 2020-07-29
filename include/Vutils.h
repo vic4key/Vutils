@@ -692,18 +692,20 @@ public:
   bool  operator!=(const CBuffer& right) const;
   byte& operator[](const size_t offset) const;
 
-  CBuffer Till(const void* pdata, const size_t size) const;
-
   byte*  GetpBytes() const;
   void*  GetpData() const;
   size_t GetSize() const;
+
+  bool Empty() const;
 
   void Reset();
   void Fill(const byte v = 0);
   bool Resize(const size_t size);
   bool Replace(const void* pData, const size_t size);
   bool Replace(const CBuffer& right);
-  bool Empty() const;
+  bool Match(const void* pdata, const size_t size) const;
+  size_t Find(const void* pdata, const size_t size) const;
+  CBuffer Till(const void* pdata, const size_t size) const;
 
   bool Append(const void* pData, const size_t size);
   bool Append(const CBuffer& right);
