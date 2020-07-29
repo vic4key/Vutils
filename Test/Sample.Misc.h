@@ -118,5 +118,25 @@ DEF_SAMPLE(Misc)
   auto result = vu::FindPattern(data, _T("11 ?? 33 ?? 44 ?? 55"));
   std::tcout << _T("Result is ") << result.first << _T(" at Offset ") << result.second << std::endl;
 
+  std::string  s = "0123456789";
+  vu::CBuffer  slicer(s.data(), s.size());
+
+  std::cout << slicer(0, 0).ToStringA() << std::endl;
+  std::cout << slicer(9, 9).ToStringA() << std::endl;
+  std::cout << slicer(0, 9).ToStringA() << std::endl;
+
+  std::cout << slicer(3, 7).ToStringA() << std::endl;
+
+  std::cout << slicer(-7, -2).ToStringA() << std::endl;
+  std::cout << slicer(2, -2).ToStringA() << std::endl;
+
+  std::cout << slicer(0, -8).ToStringA() << std::endl;
+  std::cout << slicer(0, -9).ToStringA() << std::endl;
+  std::cout << slicer(0, -10).ToStringA() << std::endl;
+
+  std::cout << slicer(-8, 10).ToStringA() << std::endl;
+  std::cout << slicer(-9, 10).ToStringA() << std::endl;
+  std::cout << slicer(-10, 10).ToStringA() << std::endl;
+
   return vu::VU_OK;
 }
