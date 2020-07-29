@@ -206,7 +206,7 @@ bool CBuffer::Create(void* ptr, const size_t size, const bool clean)
   {
     memset(m_pData, 0, m_Size);
   }
-  else
+  else if (clean)
   {
     memcpy_s(m_pData, m_Size, ptr, size);
   }
