@@ -24,7 +24,7 @@ CBuffer::CBuffer(const void* pData, const size_t size) : m_pData(nullptr), m_Siz
   this->Replace(pData, size);
 }
 
-CBuffer::CBuffer(const CBuffer& right)
+CBuffer::CBuffer(const CBuffer& right) : m_pData(nullptr), m_Size(0)
 {
   *this = right;
 }
