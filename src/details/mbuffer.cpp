@@ -65,7 +65,7 @@ bool CBuffer::operator!=(const CBuffer& right) const
   return !(*this == right);
 }
 
-byte& CBuffer::operator[](const size_t offset) const
+byte& CBuffer::operator[](const size_t offset)
 {
   if (m_pData == nullptr)
   {
@@ -78,6 +78,11 @@ byte& CBuffer::operator[](const size_t offset) const
   }
 
   return static_cast<byte*>(m_pData)[offset];
+}
+
+CBuffer CBuffer::operator()(int begin, int end) const
+{
+  return this->Slice(begin, end);
 }
 
 size_t CBuffer::Find(const void* pdata, const size_t size) const
@@ -117,6 +122,41 @@ CBuffer CBuffer::Till(const void* pdata, const size_t size) const
   {
     result.Create(m_pData, offset);
   }
+
+  return result;
+}
+
+CBuffer CBuffer::Slice(int begin, int end) const
+{
+  CBuffer result;
+
+  if (m_pData == nullptr || m_Size == 0)
+  {
+    return result;
+  }
+
+  if (begin < 0)
+  {
+    begin = static_cast<int>(m_Size) + begin;
+  }
+
+  if (end < 0)
+  {
+    end = static_cast<int>(m_Size) + end;
+  }
+
+  if (begin < 0 || end < 0 || begin > m_Size || end > m_Size || begin > end)
+  {
+    return result;
+  }
+
+  int size = end - begin;
+  if (size <= 0 || size > m_Size)
+  {
+    return result;
+  }
+
+  result.Create(this->GetpBytes() + begin, size);
 
   return result;
 }
