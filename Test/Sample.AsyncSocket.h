@@ -10,7 +10,7 @@ DEF_SAMPLE(AsyncSocket)
   #if defined(VU_SOCKET_ENABLED)
 
   const vu::CSocket::TEndPoint EndPoint("127.0.0.1", 1609);
-  fnExampleBinding(EndPoint);
+  // fnExampleBinding(EndPoint);
   // fnExampleInheritance(EndPoint);
 
   #endif // VU_SOCKET_ENABLED
@@ -44,8 +44,7 @@ void fnExampleBinding(const vu::CSocket::TEndPoint& endpoint)
   {
     vu::CBuffer data(KiB);
     client.Recv(data);
-    std::string s(reinterpret_cast<const char*>(data.GetpBytes()), data.GetSize());
-    printf("client %d recv `%s`\n", client.GetRemoteSAI().sin_port, s.c_str());
+    printf("client %d recv `%s`\n", client.GetRemoteSAI().sin_port, data.ToStringA().c_str());
   });
 
   server.Bind(endpoint);
