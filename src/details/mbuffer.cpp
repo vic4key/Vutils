@@ -148,7 +148,15 @@ bool CBuffer::Create(void* ptr, const size_t size, const bool clean)
     return false;
   }
 
-  m_pData = std::realloc(ptr, m_Size = size);
+  if (clean)
+  {
+    m_pData = std::calloc(m_Size = size, 1);
+  }
+  else
+  {
+    m_pData = std::realloc(ptr, m_Size = size);
+  }
+
   if (m_pData == nullptr)
   {
     throw std::bad_alloc();

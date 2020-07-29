@@ -42,9 +42,9 @@ DEF_SAMPLE(Socket)
 
   // request to get file
 
-  vu::CBuffer reponse(KiB);
-  const auto N = socket.Recv(reponse);
-  if (reponse.Empty())
+  vu::CBuffer response(KiB);
+  const auto N = socket.Recv(response);
+  if (response.Empty())
   {
     std::tcout << _T("Socket -> Recv -> Nothing") << std::endl;
     return 1;
@@ -52,9 +52,9 @@ DEF_SAMPLE(Socket)
 
   // extract response header & body
 
-  const std::string FirstResponse = (char*)reponse.GetpData();
-  const std::string HttpHeaderEnd = "\x0D\x0A\x0D\x0A";
-  const std::string HttpHeaderSep = "\x0D\x0A";
+  const std::string FirstResponse = response.ToStringA();
+  const std::string HttpHeaderSep = std::crlf;
+  const std::string HttpHeaderEnd = HttpHeaderSep + HttpHeaderSep;
 
   auto l = vu::SplitStringA(FirstResponse, HttpHeaderEnd);
   assert(!l.empty());
@@ -67,7 +67,7 @@ DEF_SAMPLE(Socket)
     std::cout << std::tab << e << std::endl;
   }
 
-  vu::CBuffer buffer(reponse.GetpBytes() + ResponseHeader.length(), N - ResponseHeader.length());
+  vu::CBuffer buffer(response.GetpBytes() + ResponseHeader.length(), N - ResponseHeader.length());
 
   // receive file chunks and append to the file buffer
 
