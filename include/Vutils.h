@@ -94,7 +94,7 @@
 
 /* ----------------------------------- Vutils Declarations -------------------------------------- */
 
-#include "inline/std.inl" // TCHAR equivalents for STL
+#include "inline/std.inl"
 
 namespace threadpool11
 {
@@ -107,8 +107,9 @@ using namespace threadpool11;
 namespace vu
 {
 
-#include "inline/defs.inl"  // Defines
-#include "inline/types.inl" // Types
+#include "inline/defs.inl"
+#include "inline/types.inl"
+#include "inline/spechrs.inl"
 
 /* Vutils Constants */
 

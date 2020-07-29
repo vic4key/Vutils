@@ -199,5 +199,8 @@
     <None Include="include\inline\defs.inl">
       <Filter>Header Files\Inline Files</Filter>
     </None>
+    <None Include="include\inline\spechrs.inl">
+      <Filter>Header Files\Inline Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

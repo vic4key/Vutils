@@ -7,15 +7,7 @@
 namespace std
 {
 
-static const char* tab  = "\t";   // Tab
-static const char* cr   = "\r";   // Carriage Return
-static const char* lf   = "\n";   // Line Feed
-static const char* crlf = "\r\n"; // Carriage Return & Line Feed
-
-static const wchar_t* wtab  = L"\t";   // Tab
-static const wchar_t* wcr   = L"\r";   // Carriage Return
-static const wchar_t* wlf   = L"\n";   // Line Feed
-static const wchar_t* wcrlf = L"\r\n"; // Carriage Return & Line Feed
+#include "inline/spechrs.inl"
 
 #ifdef _UNICODE
 #define tcerr           wcerr
