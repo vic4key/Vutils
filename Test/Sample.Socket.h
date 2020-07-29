@@ -95,7 +95,7 @@ DEF_SAMPLE(Socket)
 
   file.SaveAsFile(_T("5MB.bin"));
 
-  if (!socket.Close())
+  if (socket.Close() != vu::VU_OK)
   {
     std::tcout << _T("Socket -> Close -> Failed") << std::endl;
     return 1;
