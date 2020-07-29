@@ -692,6 +692,8 @@ public:
   bool  operator!=(const CBuffer& right) const;
   byte& operator[](const size_t offset) const;
 
+  CBuffer Till(const void* pdata, const size_t size) const;
+
   byte*  GetpBytes() const;
   void*  GetpData() const;
   size_t GetSize() const;

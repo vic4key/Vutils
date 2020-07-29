@@ -80,6 +80,37 @@ byte& CBuffer::operator[](const size_t offset) const
   return static_cast<byte*>(m_pData)[offset];
 }
 
+CBuffer CBuffer::Till(const void* pdata, const size_t size) const
+{
+  CBuffer result;
+
+  if (m_pData == nullptr || m_Size == 0 || pdata == nullptr || size == 0 || m_Size < size)
+  {
+    return result;
+  }
+
+  const auto pbytes = this->GetpBytes();
+  assert(pbytes != nullptr);
+
+  size_t offset = 0;
+
+  for (size_t i = 0; i <= m_Size - size; i++)
+  {
+    if (memcmp(reinterpret_cast<const void*>(pbytes + i), pdata, size) == 0)
+    {
+      offset = i;
+      break;
+    }
+  }
+
+  if (offset > 0)
+  {
+    result.Create(m_pData, offset);
+  }
+
+  return result;
+}
+
 byte* CBuffer::GetpBytes() const
 {
   return static_cast<byte*>(m_pData);
