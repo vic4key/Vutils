@@ -22,25 +22,25 @@ void fnExampleBinding(const vu::CSocket::TEndPoint& endpoint)
 {
   vu::CAsyncSocket server;
 
-  server.On(vu::CAsyncSocket::eFnType::OPEN, [](vu::CSocket& client) -> void
+  server.On(vu::CAsyncSocket::OPEN, [](vu::CSocket& client) -> void
   {
     printf("\n");
     printf("client %d opened\n", client.GetRemoteSAI().sin_port);
   });
 
-  server.On(vu::CAsyncSocket::eFnType::CLOSE, [](vu::CSocket& client) -> void
+  server.On(vu::CAsyncSocket::CLOSE, [](vu::CSocket& client) -> void
   {
     printf("client %d closed\n", client.GetRemoteSAI().sin_port);
   });
 
-  server.On(vu::CAsyncSocket::eFnType::SEND, [](vu::CSocket& client) -> void
+  server.On(vu::CAsyncSocket::SEND, [](vu::CSocket& client) -> void
   {
     std::string s = "hello from server";
     client.Send(s.data(), int(s.size()));
     printf("client %d send `%s`\n", client.GetRemoteSAI().sin_port, s.c_str());
   });
 
-  server.On(vu::CAsyncSocket::eFnType::RECV, [](vu::CSocket& client) -> void
+  server.On(vu::CAsyncSocket::RECV, [](vu::CSocket& client) -> void
   {
     vu::CBuffer data(KiB);
     client.Recv(data);
