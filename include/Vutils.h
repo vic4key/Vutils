@@ -711,6 +711,9 @@ public:
   bool Append(const void* pData, const size_t size);
   bool Append(const CBuffer& right);
 
+  std::string  ToStringA() const;
+  std::wstring ToStringW() const;
+
   bool SaveAsFile(const std::string&  filePath);
   bool SaveAsFile(const std::wstring& filePath);
 

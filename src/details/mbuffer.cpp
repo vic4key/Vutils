@@ -242,6 +242,16 @@ bool CBuffer::Append(const CBuffer& right)
   return this->Append(right.GetpData(), right.GetSize());
 }
 
+std::string CBuffer::ToStringA() const
+{
+  return std::string(reinterpret_cast<const char*>(m_pData), m_Size / sizeof(char));
+}
+
+std::wstring CBuffer::ToStringW() const
+{
+  return std::wstring(reinterpret_cast<const wchar*>(m_pData), m_Size / sizeof(wchar));
+}
+
 bool CBuffer::SaveAsFile(const std::string& filePath)
 {
   if (filePath.empty())
@@ -260,7 +270,7 @@ bool CBuffer::SaveAsFile(const std::string& filePath)
 
 bool CBuffer::SaveAsFile(const std::wstring& filePath)
 {
-  const auto s = ToStringA(filePath);
+  const auto s = vu::ToStringA(filePath);
   return this->SaveAsFile(s);
 }
 
