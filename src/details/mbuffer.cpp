@@ -137,21 +137,21 @@ CBuffer CBuffer::Slice(int begin, int end) const
 
   if (begin < 0)
   {
-    begin = static_cast<int>(m_Size) + begin;
+    begin = int(m_Size) + begin;
   }
 
   if (end < 0)
   {
-    end = static_cast<int>(m_Size) + end;
+    end = int(m_Size) + end;
   }
 
-  if (begin < 0 || end < 0 || begin > m_Size || end > m_Size || begin > end)
+  if (begin < 0 || end < 0 || begin > int(m_Size) || end > int(m_Size) || begin > end)
   {
     return result;
   }
 
   int size = end - begin;
-  if (size <= 0 || size > m_Size)
+  if (size <= 0 || size > int(m_Size))
   {
     return result;
   }
