@@ -151,6 +151,7 @@ CBuffer CBuffer::Slice(int begin, int end) const
   }
 
   int size = end - begin;
+
   if (size <= 0 || size > int(m_Size))
   {
     return result;
