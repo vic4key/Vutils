@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>Vutils</id>
+    <version>20200731</version>
+    <title>Vutils</title>
+    <authors>Vic P.</authors>
+    <owners>vic4key</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="file">build\Vutils\LICENSE.md</license>
+    <projectUrl>https://github.com/vic4key/Vutils</projectUrl>
+    <description>Vutils or Vic Utilities is an utility library written in Modern C++ and for Modern C++. It helps your programming go easier, faster and simpler.</description>
+    <releaseNotes>Daily Updates</releaseNotes>
+    <copyright>Copyright © Vic P.</copyright>
+    <tags>vutils, utility, native, cpp</tags>
+  </metadata>
+  <files>
+    <file src="include\**\*.*" target="build\Vutils\include"/>
+    <file src="lib\**\*.*"     target="build\Vutils\lib"/>
+    <file src="Vutils.props"   target="build"/>
+    <file src="README.md"      target="build\Vutils"/>
+    <file src="LICENSE.md"     target="build\Vutils"/>
+  </files>
+</package>
