@@ -16,9 +16,8 @@
   </metadata>
   <files>
     <file src="include\**\*" target="build\Vutils\include"/>
-    <file src="lib\**\*"     target="build\Vutils\lib"/>
+    <file src="lib\**\*"     target="build\Vutils\lib" exclude="lib\**\*.idb;lib\**\*.pdb"/>
     <file src="Vutils.props" target="build"/>
-    <file src="README.md"    target="build\Vutils"/>
     <file src="LICENSE.md"   target="build\Vutils"/>
   </files>
 </package>
