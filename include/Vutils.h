@@ -21,7 +21,7 @@
 
 /* Vutils Version */
 
-#define VU_VERSION  0x01000000 // Version 1.00.000
+#define VU_VERSION  0x01000000 // Version 01.00.0000
 
 /* The Conditions of Vutils */
 
