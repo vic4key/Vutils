@@ -2,8 +2,12 @@
 
 #include "Sample.h"
 
+#if defined(VU_SOCKET_ENABLED)
+
 void fnExampleBinding(const vu::CSocket::TEndPoint& endpoint);
 void fnExampleInheritance(const vu::CSocket::TEndPoint& endpoint);
+
+#endif // VU_SOCKET_ENABLED
 
 DEF_SAMPLE(AsyncSocket)
 {
@@ -17,6 +21,8 @@ DEF_SAMPLE(AsyncSocket)
 
   return vu::VU_OK;
 }
+
+#if defined(VU_SOCKET_ENABLED)
 
 void fnExampleBinding(const vu::CSocket::TEndPoint& endpoint)
 {
@@ -94,3 +100,5 @@ void fnExampleInheritance(const vu::CSocket::TEndPoint& endpoint)
   server.Run();
   server.Close();
 }
+
+#endif // VU_SOCKET_ENABLED
