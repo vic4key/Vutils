@@ -170,6 +170,7 @@
     <ClInclude Include="Sample.Singleton.h" />
     <ClInclude Include="Sample.Socket.h" />
     <ClInclude Include="Sample.GUID.h" />
+    <ClInclude Include="Sample.StopWatch.h" />
     <ClInclude Include="Sample.ThreadPool.h" />
     <ClInclude Include="Sample.WMHook.h" />
     <ClInclude Include="stdafx.h" />

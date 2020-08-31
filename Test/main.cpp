@@ -32,6 +32,7 @@ G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_SOCKET_ENAB
 #include "Sample.Registry.h"
 #include "Sample.Process.h"
 #include "Sample.Service.h"
+#include "Sample.StopWatch.h"
 #include "Sample.FileSystem.h"
 #include "Sample.FileMapping.h"
 #include "Sample.PEFile.h"
@@ -69,6 +70,7 @@ int _tmain(int argc, _TCHAR* argv[])
   // VU_SM_ADD_SAMPLE(Registry);
   // VU_SM_ADD_SAMPLE(Process);
   // VU_SM_ADD_SAMPLE(Service);
+  // VU_SM_ADD_SAMPLE(StopWatch);
   // VU_SM_ADD_SAMPLE(FileSystem);
   // VU_SM_ADD_SAMPLE(FileMapping);
   // VU_SM_ADD_SAMPLE(PEFile);
