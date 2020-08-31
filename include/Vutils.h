@@ -1953,7 +1953,8 @@ protected:
   bool m_Activated;
 };
 
-static auto DefaultFnStopWatchA = [](const std::string& id, const CStopWatch::TDuration& duration) -> void
+static auto DefaultFnStopWatchA = [](
+  const std::string& id, const CStopWatch::TDuration& duration) -> void
 {
   vu::MsgA(id + " %.3fs", duration.second);
 };
@@ -1973,7 +1974,8 @@ private:
   FnLogging m_fnLogging;
 };
 
-static auto DefaultFnStopWatchW = [](const std::wstring& id, CStopWatch::TDuration& duration) -> void
+static auto DefaultFnStopWatchW = [](
+  const std::wstring& id, const CStopWatch::TDuration& duration) -> void
 {
   vu::MsgW(id + L" %.3fs", duration.second);
 };
@@ -1983,7 +1985,7 @@ class CScopeStopWatchW : public CScopeStopWatchX
 public:
   typedef std::function<void(const std::wstring& id, const CStopWatch::TDuration& duration)> FnLogging;
 
-  CScopeStopWatchW(const std::wstring& prefix, const FnLogging fnLogging = DefaultFnStopWatchA);
+  CScopeStopWatchW(const std::wstring& prefix, const FnLogging fnLogging = DefaultFnStopWatchW);
   virtual ~CScopeStopWatchW();
 
   void Log(const std::wstring& id = L"");
