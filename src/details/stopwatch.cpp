@@ -6,6 +6,8 @@
 
 #include "Vutils.h"
 
+#include <numeric>
+
 namespace vu
 {
 
@@ -14,7 +16,6 @@ CStopWatch::CStopWatch()
   m_Reset = true;
   m_Count = 0;
   m_Delta = 0;
-  m_Duration = 0;
   m_DeltaHistory.clear();
 }
 
@@ -25,39 +26,122 @@ CStopWatch::~CStopWatch()
 
 void CStopWatch::Start(bool reset)
 {
-  m_Reset = reset;
+  m_Count = std::clock();
 
-  if (m_Reset)
+  if (m_Reset = reset)
   {
-    m_Duration = 0;
     m_DeltaHistory.clear();
   }
-
-  m_Count = std::clock();
 }
 
 const CStopWatch::TDuration CStopWatch::Stop()
 {
-  m_Delta = std::clock() - m_Count;
-
-  if (!m_Reset) m_DeltaHistory.push_back(m_Delta);
+  if (m_Count != 0)
+  {
+    m_Delta = std::clock() - m_Count;
+    m_DeltaHistory.push_back(m_Delta);
+  }
 
   return this->Duration();
 }
 
 const CStopWatch::TDuration CStopWatch::Duration()
 {
-  if (!m_Reset)
-  {
-    auto N = m_DeltaHistory.size();
-    for (decltype(N) i = 0; N >= 2, i < N - 1; i++) m_Delta += m_DeltaHistory.at(i);
-  }
+  return TDuration(m_Delta, m_Delta / float(CLOCKS_PER_SEC));
+}
 
-  m_Duration = (float(m_Delta) / float(CLOCKS_PER_SEC));
+const vu::CStopWatch::TDuration CStopWatch::Total()
+{
+  const auto PrevDelta = m_Delta;
 
-  TDuration duration(m_Delta, m_Duration);
+  m_Delta = std::accumulate(m_DeltaHistory.cbegin(), m_DeltaHistory.cend(), 0);
+  const auto duration = this->Duration();
+
+  m_Delta = PrevDelta;
 
   return duration;
+}
+
+/**
+ * CScopeStopWatchX
+ */
+
+CScopeStopWatchX::CScopeStopWatchX() : m_Activated(true)
+{
+  this->Start(true);
+}
+
+CScopeStopWatchX::~CScopeStopWatchX()
+{
+}
+
+void CScopeStopWatchX::Start(bool reset)
+{
+  m_Watcher.Start(reset);
+}
+
+void CScopeStopWatchX::Stop()
+{
+  m_Watcher.Stop();
+}
+
+void CScopeStopWatchX::Active(bool state)
+{
+  m_Activated = state;
+}
+
+CScopeStopWatchA::CScopeStopWatchA(const std::string& prefix, const FnLogging fnLogging)
+  : CScopeStopWatchX(), m_Prefix(prefix), m_fnLogging(fnLogging)
+{
+}
+
+CScopeStopWatchA::~CScopeStopWatchA()
+{
+  this->Stop();
+
+  if (m_Activated)
+  {
+    m_fnLogging(m_Prefix + "Total", m_Watcher.Total());
+  }
+}
+
+void CScopeStopWatchA::Log(const std::string& id)
+{
+  this->Stop();
+
+  if (m_Activated)
+  {
+    m_fnLogging(m_Prefix + id, m_Watcher.Duration());
+  }
+
+  this->Start(false);
+}
+
+CScopeStopWatchW::CScopeStopWatchW(const std::wstring& prefix, const FnLogging fnLogging)
+  : CScopeStopWatchX(), m_Prefix(prefix),m_fnLogging(fnLogging)
+{
+}
+
+CScopeStopWatchW::~CScopeStopWatchW()
+{
+  this->Stop();
+
+  if (m_Activated)
+  {
+    m_fnLogging(m_Prefix + L"Total", m_Watcher.Total());
+  }
+}
+
+void CScopeStopWatchW::Log(const std::wstring& id)
+{
+  this->Stop();
+
+  if (m_Activated)
+  {
+    m_fnLogging(m_Prefix + id, m_Watcher.Duration());
+  }
+
+  this->Start(false);
 }
 
 } // namespace vu

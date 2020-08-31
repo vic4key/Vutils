@@ -1925,15 +1925,72 @@ public:
 public:
   CStopWatch();
   ~CStopWatch();
-  void Start(bool reset = true);
+  void Start(bool reset = false);
   const TDuration Stop();
   const TDuration Duration();
+  const TDuration Total();
 
 private:
-  bool  m_Reset;
-  float m_Duration;
+  bool m_Reset;
   std::clock_t m_Count, m_Delta;
   std::vector<std::clock_t> m_DeltaHistory;
+};
+
+class CScopeStopWatchX
+{
+public:
+  CScopeStopWatchX();
+  virtual ~CScopeStopWatchX();
+
+  void Active(bool state = true);
+
+protected:
+  virtual void Start(bool reset = false);
+  virtual void Stop();
+
+protected:
+  CStopWatch m_Watcher;
+  bool m_Activated;
+};
+
+static auto DefaultFnStopWatchA = [](const std::string& id, const CStopWatch::TDuration& duration) -> void
+{
+  vu::MsgA(id + " %.3fs", duration.second);
+};
+
+class CScopeStopWatchA : public CScopeStopWatchX
+{
+public:
+  typedef std::function<void(const std::string& id, const CStopWatch::TDuration& duration)> FnLogging;
+
+  CScopeStopWatchA(const std::string& prefix, const FnLogging fnLogging = DefaultFnStopWatchA);
+  virtual ~CScopeStopWatchA();
+
+  void Log(const std::string& id = "");
+
+private:
+  std::string m_Prefix;
+  FnLogging m_fnLogging;
+};
+
+static auto DefaultFnStopWatchW = [](const std::wstring& id, CStopWatch::TDuration& duration) -> void
+{
+  vu::MsgW(id + L" %.3fs", duration.second);
+};
+
+class CScopeStopWatchW : public CScopeStopWatchX
+{
+public:
+  typedef std::function<void(const std::wstring& id, const CStopWatch::TDuration& duration)> FnLogging;
+
+  CScopeStopWatchW(const std::wstring& prefix, const FnLogging fnLogging = DefaultFnStopWatchA);
+  virtual ~CScopeStopWatchW();
+
+  void Log(const std::wstring& id = L"");
+
+private:
+  std::wstring m_Prefix;
+  FnLogging m_fnLogging;
 };
 
 /**
@@ -2761,6 +2818,7 @@ private:
 #define CRegistry CRegistryW
 #define CPEFileT CPEFileTW
 #define CPath CPathW
+#define CScopeStopWatch CScopeStopWatchW
 #else
 #define CGUID CGUIDA
 #define CAPIHook CAPIHookA
@@ -2774,6 +2832,7 @@ private:
 #define CRegistry CRegistryA
 #define CPEFileT CPEFileTA
 #define CPath CPathA
+#define CScopeStopWatch CScopeStopWatchA
 #endif
 
 } // namespace vu
