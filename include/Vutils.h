@@ -38,8 +38,8 @@
 // VU_DISABLE_DEFAULT_CFG - To disable all default configurations
 
 // Default are enabled for MSVC and C++ Builder. For MinGW, see detail at README.md or INSTALL.md.
-// VU_SOCKET_ENABLED  - The Socket(class CSocket)
-// VU_GUID_ENABLED    - The Globally/Universally Unique Identifier aka GUID (class CGUID)
+// VU_SOCKET_ENABLED  - The Socket
+// VU_GUID_ENABLED    - The Globally/Universally Unique Identifier aka GUID
 
 #ifndef VU_DISABLE_DEFAULT_CFG
 
