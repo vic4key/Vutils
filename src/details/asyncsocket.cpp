@@ -9,6 +9,8 @@
 namespace vu
 {
 
+#ifdef VU_SOCKET_ENABLED
+
 CAsyncSocket::CAsyncSocket(
   const vu::CSocket::AddressFamily af,
   const vu::CSocket::Type type,
@@ -321,5 +323,7 @@ void CAsyncSocket::OnClose(CSocket& client)
     fn(client);
   }
 }
+
+#endif // VU_SOCKET_ENABLED
 
 } // namespace vu

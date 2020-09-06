@@ -1,7 +1,7 @@
 /**
- * @file   math.tpl
+ * @file   singleton.tpl
  * @author Vic P.
- * @brief  Template for Singleton Pattern
+ * @brief  Template for Singleton Design Pattern
  */
 
 // Singleton
