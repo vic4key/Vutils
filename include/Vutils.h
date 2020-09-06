@@ -35,17 +35,20 @@
 
 /* Vutils Configurations */
 
-// VU_SOCKET_ENABLED
-// VU_GUID_ENABLED
+// VU_DISABLE_DEFAULT_CFG - To disable all default configurations
 
-// Default enabled for only MSVC and C++ Builder. For MinGW, see detail at README.md or INSTALL.md.
-// - The Socket(class CSocket)
-// - The Globally/Universally Unique Identifier aka GUID (class CGUID)
+// Default are enabled for MSVC and C++ Builder. For MinGW, see detail at README.md or INSTALL.md.
+// VU_SOCKET_ENABLED  - The Socket(class CSocket)
+// VU_GUID_ENABLED    - The Globally/Universally Unique Identifier aka GUID (class CGUID)
+
+#ifndef VU_DISABLE_DEFAULT_CFG
 
 #if defined(_MSC_VER) || defined(__BCPLUSPLUS__)
 #define VU_SOCKET_ENABLED
 #define VU_GUID_ENABLED
 #endif
+
+#endif // VU_DISABLE_DEFAULT_CFG
 
 /* Header Inclusions */
 
