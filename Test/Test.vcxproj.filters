@@ -87,6 +87,9 @@
     <ClInclude Include="Sample.StopWatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sample.IATHook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

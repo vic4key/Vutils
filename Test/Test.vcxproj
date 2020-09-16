@@ -158,6 +158,7 @@
     <ClInclude Include="Sample.DF.h" />
     <ClInclude Include="Sample.FileMapping.h" />
     <ClInclude Include="Sample.FileSystem.h" />
+    <ClInclude Include="Sample.IATHook.h" />
     <ClInclude Include="Sample.INIFile.h" />
     <ClInclude Include="Sample.InputDialog.h" />
     <ClInclude Include="Sample.Math.h" />
