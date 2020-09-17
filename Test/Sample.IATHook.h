@@ -6,7 +6,7 @@ using namespace vu;
 
 #include <algorithm>
 
-struct IATObject
+struct sIATElement
 {
   std::string target;
   std::string module;
@@ -14,10 +14,10 @@ struct IATObject
   ULONG_PTR original;
   ULONG_PTR replacement;
 
-  IATObject()
+  sIATElement()
     : target(""), module(""), function(""), original(0), replacement(0) {}
 
-  IATObject(
+  sIATElement(
     const std::string& t,
     const std::string& m,
     const std::string& f,
@@ -25,7 +25,7 @@ struct IATObject
     const ULONG_PTR c = 0)
     : target(t), module(m), function(f), original(o), replacement(c) {}
 
-  const IATObject& operator=(const IATObject& right)
+  const sIATElement& operator=(const sIATElement& right)
   {
     target = right.target;
     module = right.module;
@@ -35,7 +35,7 @@ struct IATObject
     return *this;
   }
 
-  bool operator==(const IATObject& right) const
+  bool operator==(const sIATElement& right) const
   {
     return\
       UpperStringA(target) == UpperStringA(right.target) &&
@@ -43,32 +43,25 @@ struct IATObject
       UpperStringA(function) == UpperStringA(right.function);
   }
 
-  bool operator!=(const IATObject& right) const
+  bool operator!=(const sIATElement& right) const
   {
     return !(*this == right);
   }
 };
 
-class IATManager : public CSingletonT<IATManager>
+class CIATHookManager : public CSingletonT<CIATHookManager>
 {
 public:
   enum IATAction
   {
     IAT_OVERRIDE,
     IAT_RESTORE,
-    IAT_MARK,
   };
 
-  typedef std::vector<IATObject> IATObjects;
+  typedef std::vector<sIATElement> IATElements;
 
-  IATManager();
-  virtual ~IATManager();
-
-  VUResult Mark(
-    const std::string& target,
-    const std::string& module,
-    const std::string& function,
-    const ULONG_PTR replacement = 0);
+  CIATHookManager();
+  virtual ~CIATHookManager();
 
   VUResult Override(
     const std::string& target,
@@ -98,9 +91,9 @@ public:
     PIMAGE_THUNK_DATA& pFT)> fn);
 
 private:
-  IATObjects::iterator Find(const IATObject& object);
+  IATElements::iterator Find(const sIATElement& element);
 
-  IATObjects::iterator Find(
+  IATElements::iterator Find(
     const std::string& target,
     const std::string& module,
     const std::string& function);
@@ -110,42 +103,42 @@ private:
     const std::string& module,
     const std::string& function);
 
-  VUResult Do(const IATAction action, IATObject& object);
+  VUResult Do(const IATAction action, sIATElement& element);
 
 private:
-  IATObjects m_IATObjects;
+  IATElements m_IATElements;
 };
 
-IATManager::IATManager()
+CIATHookManager::CIATHookManager()
 {
 }
 
-IATManager::~IATManager()
+CIATHookManager::~CIATHookManager()
 {
 }
 
-IATManager::IATObjects::iterator IATManager::Find(
+CIATHookManager::IATElements::iterator CIATHookManager::Find(
   const std::string& target,
   const std::string& module,
   const std::string& function)
 {
-  return std::find(m_IATObjects.begin(), m_IATObjects.end(), IATObject(target, module, function));
+  return std::find(m_IATElements.begin(), m_IATElements.end(), sIATElement(target, module, function));
 }
 
-IATManager::IATObjects::iterator IATManager::Find(const IATObject& object)
+CIATHookManager::IATElements::iterator CIATHookManager::Find(const sIATElement& element)
 {
-  return this->Find(object.target, object.module, object.function);
+  return this->Find(element.target, element.module, element.function);
 }
 
-bool IATManager::Exist(
+bool CIATHookManager::Exist(
   const std::string& target,
   const std::string& module,
   const std::string& function)
 {
-  return this->Find(target, module, function) != m_IATObjects.end();
+  return this->Find(target, module, function) != m_IATElements.end();
 }
 
-VUResult IATManager::Mark(
+VUResult CIATHookManager::Override(
   const std::string& target,
   const std::string& module,
   const std::string& function,
@@ -156,114 +149,74 @@ VUResult IATManager::Mark(
     return 1;
   }
 
-  auto object = IATObject(target, module, function, 0, replacement);
+  auto element = sIATElement(target, module, function, 0, replacement);
 
-  if (this->Do(IATAction::IAT_MARK, object) != VU_OK)
+  if (this->Do(IATAction::IAT_OVERRIDE, element) != VU_OK)
   {
     return 2;
   }
 
-  m_IATObjects.emplace_back(object);
+  m_IATElements.emplace_back(element);
 
   return VU_OK;
 }
 
-VUResult IATManager::Override(
-  const std::string& target,
-  const std::string& module,
-  const std::string& function,
-  const ULONG_PTR replacement)
-{
-  if (this->Exist(target, module, function))
-  {
-    return 1;
-  }
-
-  auto object = IATObject(target, module, function, 0, replacement);
-
-  if (this->Do(IATAction::IAT_OVERRIDE, object) != VU_OK)
-  {
-    return 2;
-  }
-
-  m_IATObjects.emplace_back(object);
-
-  return VU_OK;
-}
-
-VUResult IATManager::Restore(
+VUResult CIATHookManager::Restore(
   const std::string& target,
   const std::string& module,
   const std::string& function)
 {
   auto it = this->Find(target, module, function);
-  if (it == m_IATObjects.end())
+  if (it == m_IATElements.end())
   {
     return 1;
   }
 
-  auto object = *it;
+  auto element = *it;
 
-  if (this->Do(IATAction::IAT_RESTORE, object) != VU_OK)
+  if (this->Do(IATAction::IAT_RESTORE, element) != VU_OK)
   {
     return 2;
   }
 
-  m_IATObjects.erase(it);
+  m_IATElements.erase(it);
 
   return VU_OK;
 }
 
-VUResult IATManager::Do(const IATAction action, IATObject& object)
+VUResult CIATHookManager::Do(const IATAction action, sIATElement& element)
 {
-  if (object.target.empty() || object.module.empty() || object.function.empty())
+  if (element.target.empty() || element.module.empty() || element.function.empty())
   {
     return 1;
   }
 
-  this->Iterate(object.target, [&](
+  this->Iterate(element.target, [&](
     const std::string& m, const std::string& f, PIMAGE_THUNK_DATA& pOFT, PIMAGE_THUNK_DATA& pFT)
   {
     printf("[%p] [%p] %s!%s\n", pOFT->u1.Function, pFT->u1.Function, m.c_str(), f.c_str());
   
-    if (object == IATObject(object.target, m, f))
+    if (element == sIATElement(element.target, m, f))
     {
-      switch (action)
+      ULONG_PTR address = 0;
+
+      if (action == IATAction::IAT_OVERRIDE)
       {
-      case IATAction::IAT_OVERRIDE:
-      case IATAction::IAT_RESTORE:
-        {
-          ULONG_PTR address = 0;
+        element.original = pFT->u1.Function;
+        address = element.replacement;
+      }
+      else if (action == IATAction::IAT_RESTORE)
+      {
+        element.replacement = pFT->u1.Function;
+        address = element.original;
+      }
 
-          if (action == IATAction::IAT_OVERRIDE)
-          {
-            object.original = pFT->u1.Function;
-            address = object.replacement;
-          }
-          else if (action == IATAction::IAT_RESTORE)
-          {
-            object.replacement = pFT->u1.Function;
-            address = object.original;
-          }
-
-          if (address != 0)
-          {
-            DWORD protect = 0;
-            VirtualProtect(reinterpret_cast<LPVOID>(&pFT->u1.Function), sizeof(ULONG_PTR), PAGE_READWRITE, &protect);
-            pFT->u1.Function = address;
-            VirtualProtect(reinterpret_cast<LPVOID>(&pFT->u1.Function), sizeof(ULONG_PTR), protect, &protect);
-          }
-        }
-        break;
-
-      case IATAction::IAT_MARK:
-        {
-          object.original = pFT->u1.Function;
-        }
-        break;
-
-      default:
-        break;
+      if (address != 0)
+      {
+        DWORD protect = 0;
+        VirtualProtect(reinterpret_cast<LPVOID>(&pFT->u1.Function), sizeof(ULONG_PTR), PAGE_READWRITE, &protect);
+        pFT->u1.Function = address;
+        VirtualProtect(reinterpret_cast<LPVOID>(&pFT->u1.Function), sizeof(ULONG_PTR), protect, &protect);
       }
 
       return false;
@@ -275,7 +228,7 @@ VUResult IATManager::Do(const IATAction action, IATObject& object)
   return VU_OK;
 }
 
-VUResult IATManager::Iterate(
+VUResult CIATHookManager::Iterate(
   const std::string& module,
   std::function<bool(
     const std::string& module,
@@ -346,10 +299,13 @@ VUResult IATManager::Iterate(
 
 DEF_SAMPLE(IATHook)
 {
-  IATManager::Instance().Override("msvcp110d.dll", "KERNEL32.dll", "IsDebuggerPresent", 0x160991);
+  CIATHookManager::Instance().Override("msvcp110d.dll", "KERNEL32.dll", "IsDebuggerPresent", 0x160991);
   system("PAUSE");
 
-  IATManager::Instance().Restore("msvcp110d.dll", "KERNEL32.dll", "IsDebuggerPresent");
+  CIATHookManager::Instance().Restore("msvcp110d.dll", "KERNEL32.dll", "IsDebuggerPresent");
+  system("PAUSE");
+
+  CIATHookManager::Instance().Override("msvcp110d.dll", "KERNEL32.dll", "IsDebuggerPresent", 0);
   system("PAUSE");
 
   return vu::VU_OK;
