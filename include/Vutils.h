@@ -1050,7 +1050,7 @@ public:
  * API Hooking - IAT
  */
 
-struct sIATElement;
+struct IATElement;
 
 class CIATHookManager : public CSingletonT<CIATHookManager>
 {
@@ -1061,7 +1061,7 @@ public:
     IAT_RESTORE,
   };
 
-  typedef std::vector<sIATElement> IATElements;
+  typedef std::vector<IATElement> IATElements;
 
   CIATHookManager();
   virtual ~CIATHookManager();
@@ -1070,8 +1070,8 @@ public:
     const std::string& target,
     const std::string& module,
     const std::string& function,
-    const ULONG_PTR replacement = NULL,
-    ULONG_PTR** original = NULL
+    const ulongptr replacement = 0,
+    ulongptr** original = nullptr
   );
 
   VUResult Restore(
@@ -1095,7 +1095,7 @@ public:
     PIMAGE_THUNK_DATA& pFT)> fn);
 
 private:
-  IATElements::iterator Find(const sIATElement& element);
+  IATElements::iterator Find(const IATElement& element);
 
   IATElements::iterator Find(
     const std::string& target,
@@ -1107,7 +1107,7 @@ private:
     const std::string& module,
     const std::string& function);
 
-  VUResult Do(const IATAction action, sIATElement& element);
+  VUResult Do(const IATAction action, IATElement& element);
 
 private:
   IATElements m_IATElements;

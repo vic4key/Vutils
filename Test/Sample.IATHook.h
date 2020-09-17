@@ -12,20 +12,15 @@ DEF_SAMPLE(IATHook)
 
   DLL = "Test.exe";
 
-  vu::CIATHookManager::Instance().Override(DLL, "user32.dll", "MessageBoxA", DWORD_PTR(HfnMessageBoxA), (DWORD_PTR**)&pfnMessageBoxA);
-  system("PAUSE");
-
-  MessageBoxA(vu::GetConsoleWindow(), "The first message.", "A", MB_OK);
+  vu::CIATHookManager::Instance().Override(DLL, "user32.dll", "MessageBoxA", vu::ulongptr(HfnMessageBoxA), (vu::ulongptr**)&pfnMessageBoxA);
+  vu::CIATHookManager::Instance().Override(DLL, "user32.dll", "MessageBoxW", vu::ulongptr(HfnMessageBoxW), (vu::ulongptr**)&pfnMessageBoxW);
+  MessageBoxA(vu::GetConsoleWindow(),  "The first message.",  "A", MB_OK);
+  MessageBoxW(vu::GetConsoleWindow(), L"The first message.", L"W", MB_OK);
 
   vu::CIATHookManager::Instance().Restore(DLL, "user32.dll", "MessageBoxA");
-  system("PAUSE");
-
-  MessageBoxA(vu::GetConsoleWindow(), "The second message.", "A", MB_OK);
-
-  vu::CIATHookManager::Instance().Override(DLL, "user32.dll", "MessageBoxA");
-  system("PAUSE");
-
-  // MessageBoxA(vu::GetConsoleWindow(), "The third message.", "A", MB_OK);
+  vu::CIATHookManager::Instance().Restore(DLL, "user32.dll", "MessageBoxW");
+  MessageBoxA(vu::GetConsoleWindow(),  "The second message.",  "A", MB_OK);
+  MessageBoxW(vu::GetConsoleWindow(), L"The second message.", L"W", MB_OK);
 
   return vu::VU_OK;
 }

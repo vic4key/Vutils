@@ -11,26 +11,28 @@
 namespace vu
 {
 
-struct sIATElement
+/**
+ * IATElement
+ */
+
+struct IATElement
 {
   std::string target;
   std::string module;
   std::string function;
-  ULONG_PTR original;
-  ULONG_PTR replacement;
+  ulongptr original;
+  ulongptr replacement;
 
-  sIATElement()
-    : target(""), module(""), function(""), original(0), replacement(0) {}
+  IATElement() : target(""), module(""), function(""), original(0), replacement(0) {}
 
-  sIATElement(
+  IATElement(
     const std::string& t,
     const std::string& m,
     const std::string& f,
-    const ULONG_PTR o = 0,
-    const ULONG_PTR c = 0)
-    : target(t), module(m), function(f), original(o), replacement(c) {}
+    const ulongptr o = 0,
+    const ulongptr c = 0) : target(t), module(m), function(f), original(o), replacement(c) {}
 
-  const sIATElement& operator=(const sIATElement& right)
+  const IATElement& operator=(const IATElement& right)
   {
     target = right.target;
     module = right.module;
@@ -40,7 +42,7 @@ struct sIATElement
     return *this;
   }
 
-  bool operator==(const sIATElement& right) const
+  bool operator==(const IATElement& right) const
   {
     return\
       UpperStringA(target) == UpperStringA(right.target) &&
@@ -48,11 +50,15 @@ struct sIATElement
       UpperStringA(function) == UpperStringA(right.function);
   }
 
-  bool operator!=(const sIATElement& right) const
+  bool operator!=(const IATElement& right) const
   {
     return !(*this == right);
   }
 };
+
+/**
+ * CIATHookManager
+ */
 
 CIATHookManager::CIATHookManager()
 {
@@ -67,10 +73,10 @@ CIATHookManager::IATElements::iterator CIATHookManager::Find(
   const std::string& module,
   const std::string& function)
 {
-  return std::find(m_IATElements.begin(), m_IATElements.end(), sIATElement(target, module, function));
+  return std::find(m_IATElements.begin(), m_IATElements.end(), IATElement(target, module, function));
 }
 
-CIATHookManager::IATElements::iterator CIATHookManager::Find(const sIATElement& element)
+CIATHookManager::IATElements::iterator CIATHookManager::Find(const IATElement& element)
 {
   return this->Find(element.target, element.module, element.function);
 }
@@ -87,15 +93,15 @@ VUResult CIATHookManager::Override(
   const std::string& target,
   const std::string& module,
   const std::string& function,
-  const ULONG_PTR replacement,
-  ULONG_PTR** original)
+  const ulongptr replacement,
+  ulongptr** original)
 {
   if (this->Exist(target, module, function))
   {
     return 1;
   }
 
-  auto element = sIATElement(target, module, function, 0, replacement);
+  auto element = IATElement(target, module, function, 0, replacement);
 
   if (this->Do(IATAction::IAT_OVERRIDE, element) != VU_OK)
   {
@@ -106,7 +112,7 @@ VUResult CIATHookManager::Override(
 
   if (original != nullptr)
   {
-    *original = reinterpret_cast<PDWORD_PTR>(element.original);
+    *original = reinterpret_cast<ulongptr*>(element.original);
   }
 
   return VU_OK;
@@ -135,7 +141,7 @@ VUResult CIATHookManager::Restore(
   return VU_OK;
 }
 
-VUResult CIATHookManager::Do(const IATAction action, sIATElement& element)
+VUResult CIATHookManager::Do(const IATAction action, IATElement& element)
 {
   if (element.target.empty() || element.module.empty() || element.function.empty())
   {
@@ -145,11 +151,11 @@ VUResult CIATHookManager::Do(const IATAction action, sIATElement& element)
   this->Iterate(element.target, [&](
     const std::string& m, const std::string& f, PIMAGE_THUNK_DATA& pOFT, PIMAGE_THUNK_DATA& pFT)
   {
-    printf("[%p] [%p] %s!%s\n", pOFT->u1.Function, pFT->u1.Function, m.c_str(), f.c_str());
+    // MsgA("[%p] [%p] %s!%s\n", pOFT->u1.Function, pFT->u1.Function, m.c_str(), f.c_str());
   
-    if (element == sIATElement(element.target, m, f))
+    if (element == IATElement(element.target, m, f))
     {
-      ULONG_PTR address = 0;
+      ulongptr address = 0;
 
       if (action == IATAction::IAT_OVERRIDE)
       {
@@ -164,10 +170,10 @@ VUResult CIATHookManager::Do(const IATAction action, sIATElement& element)
 
       if (address != 0)
       {
-        DWORD protect = 0;
-        VirtualProtect(reinterpret_cast<LPVOID>(&pFT->u1.Function), sizeof(ULONG_PTR), PAGE_READWRITE, &protect);
+        ulong protect = 0;
+        VirtualProtect(LPVOID(&pFT->u1.Function), sizeof(ulongptr), PAGE_READWRITE, &protect);
         pFT->u1.Function = address;
-        VirtualProtect(reinterpret_cast<LPVOID>(&pFT->u1.Function), sizeof(ULONG_PTR), protect, &protect);
+        VirtualProtect(LPVOID(&pFT->u1.Function), sizeof(ulongptr), protect, &protect);
       }
 
       return false;
@@ -202,7 +208,7 @@ VUResult CIATHookManager::Iterate(
   assert(pDOSHeader != nullptr);
 
   auto pNTHeader = reinterpret_cast<PIMAGE_NT_HEADERS>(
-    reinterpret_cast<ULONG_PTR>(pBase) + pDOSHeader->e_lfanew);
+    reinterpret_cast<ulongptr>(pBase) + pDOSHeader->e_lfanew);
   assert(pNTHeader != nullptr);
 
   auto pIDD = pNTHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
@@ -212,25 +218,25 @@ VUResult CIATHookManager::Iterate(
   }
 
   auto pIID = reinterpret_cast<PIMAGE_IMPORT_DESCRIPTOR>(
-    reinterpret_cast<ULONG_PTR>(pBase) + pIDD.VirtualAddress);
+    reinterpret_cast<ulongptr>(pBase) + pIDD.VirtualAddress);
   assert(pIID != nullptr);
 
   bool breaked = false;
 
   for (int i = 0; pIID->FirstThunk != 0; i++, pIID++)
   {
-    std::string module = reinterpret_cast<ULONG_PTR>(pBase) + reinterpret_cast<LPCSTR>(pIID->Name);
+    std::string module = reinterpret_cast<ulongptr>(pBase) + reinterpret_cast<LPCSTR>(pIID->Name);
 
     auto pFT = reinterpret_cast<PIMAGE_THUNK_DATA>(
-      reinterpret_cast<ULONG_PTR>(pBase) + pIID->FirstThunk);
+      reinterpret_cast<ulongptr>(pBase) + pIID->FirstThunk);
 
     auto pOFT = reinterpret_cast<PIMAGE_THUNK_DATA>(
-      reinterpret_cast<ULONG_PTR>(pBase) + pIID->OriginalFirstThunk);
+      reinterpret_cast<ulongptr>(pBase) + pIID->OriginalFirstThunk);
 
     for (int j = 0; pOFT->u1.AddressOfData != 0; j++, pFT++, pOFT++)
     {
       std::string function = reinterpret_cast<PIMAGE_IMPORT_BY_NAME>(
-        reinterpret_cast<ULONG_PTR>(pBase) + pOFT->u1.AddressOfData)->Name;
+        reinterpret_cast<ulongptr>(pBase) + pOFT->u1.AddressOfData)->Name;
 
       breaked = !fn(module, function, pOFT, pFT);
       if (breaked)
