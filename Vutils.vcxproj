@@ -324,7 +324,7 @@
     <ClCompile Include="src\details\apihookiat.cpp" />
     <ClCompile Include="src\details\mbuffer.cpp" />
     <ClCompile Include="src\details\crisec.cpp" />
-    <ClCompile Include="src\details\apihookil.cpp" />
+    <ClCompile Include="src\details\apihookinl.cpp" />
     <ClCompile Include="src\details\filedir.cpp" />
     <ClCompile Include="src\details\filemap.cpp" />
     <ClCompile Include="src\details\filesys.cpp" />

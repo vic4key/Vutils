@@ -170,10 +170,10 @@
     <ClCompile Include="src\details\asyncsocket.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
-    <ClCompile Include="src\details\apihookil.cpp">
+    <ClCompile Include="src\details\apihookiat.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
-    <ClCompile Include="src\details\apihookiat.cpp">
+    <ClCompile Include="src\details\apihookinl.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
   </ItemGroup>

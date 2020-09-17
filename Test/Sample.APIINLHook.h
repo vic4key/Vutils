@@ -31,7 +31,7 @@ int WINAPI HfnMessageBoxW(HWND   hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT  
 000000013F0D2888 | 44 39 1C 25 35 21 91 77  | cmp dword ptr ds:[77912135],r11d                                           |
 */
 
-DEF_SAMPLE(APIILHook)
+DEF_SAMPLE(APIINLHook)
 {
   vu::CAPIHook API[2];
 
