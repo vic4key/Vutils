@@ -4,13 +4,19 @@
 
 DEF_SAMPLE(IATHook)
 {
-  vu::CIATHookManager::Instance().Override("msvcp110d.dll", "KERNEL32.dll", "IsDebuggerPresent", 0x160991);
+#ifdef _DEBUG
+  std::string DLL = "msvcp110d.dll";
+#else
+  std::string DLL = "msvcp110.dll";
+#endif // !_DEBUG
+
+  vu::CIATHookManager::Instance().Override(DLL, "KERNEL32.dll", "IsDebuggerPresent", 0x160991);
   system("PAUSE");
 
-  vu::CIATHookManager::Instance().Restore("msvcp110d.dll", "KERNEL32.dll", "IsDebuggerPresent");
+  vu::CIATHookManager::Instance().Restore(DLL, "KERNEL32.dll", "IsDebuggerPresent");
   system("PAUSE");
 
-  vu::CIATHookManager::Instance().Override("msvcp110d.dll", "KERNEL32.dll", "IsDebuggerPresent", 0);
+  vu::CIATHookManager::Instance().Override(DLL, "KERNEL32.dll", "IsDebuggerPresent");
   system("PAUSE");
 
   return vu::VU_OK;
