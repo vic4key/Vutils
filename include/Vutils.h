@@ -1050,6 +1050,14 @@ public:
  * API Hooking - IAT
  */
 
+#define VU_API_IAT_ATTACH(O, M, F)\
+  vu::CIATHookManager::Instance().Override(\
+    _T( # O ), _T( # M ), _T( # F ), vu::ulongptr(&Hfn ## F), (vu::ulongptr**)&pfn ## F)
+
+#define VU_API_IAT_DETACH(O, M, F)\
+  vu::CIATHookManager::Instance().Restore(\
+    _T( # O ), _T( # M ), _T( # F ))
+
 struct IATElement;
 
 enum IATAction
