@@ -283,7 +283,7 @@ bool vuapi CAPIHookX::Detach(void* pProc, void** pOldProc)
   return true;
 }
 
-bool vuapi CAPIHookA::Start(
+bool vuapi CAPIHookA::Override(
   const std::string& ModuleName,
   const std::string& ProcName,
   void* lpHookProc,
@@ -301,7 +301,7 @@ bool vuapi CAPIHookA::Start(
   return m_Hooked;
 }
 
-bool vuapi CAPIHookA::Stop(
+bool vuapi CAPIHookA::Restore(
   const std::string& ModuleName,
   const std::string& ProcName,
   void** lpOldProc
@@ -321,7 +321,7 @@ bool vuapi CAPIHookA::Stop(
   return this->Detach(lpProc, lpOldProc);
 }
 
-bool vuapi CAPIHookW::Start(
+bool vuapi CAPIHookW::Override(
   const std::wstring& ModuleName,
   const std::wstring& ProcName,
   void* lpHookProc,
@@ -339,7 +339,7 @@ bool vuapi CAPIHookW::Start(
   return m_Hooked;
 }
 
-bool vuapi CAPIHookW::Stop(
+bool vuapi CAPIHookW::Restore(
   const std::wstring& ModuleName,
   const std::wstring& ProcName,
   void** lpOldProc

@@ -947,8 +947,8 @@ protected:
  * @param[in] F The function name.
  * @return  true if the function succeeds. Otherwise false.
  */
-#define VU_ATTACH_API(O, M, F) O.Start(_T( # M ), _T( # F ), (void*)&Hfn ## F, (void**)&pfn ## F)
-#define VU_DETACH_API(O, M, F) O.Stop(_T( # M ), _T( # F ), (void**)&pfn ## F)
+#define VU_API_IL_OVERRIDE(O, M, F) O.Override(_T( # M ), _T( # F ), (void*)&Hfn ## F, (void**)&pfn ## F)
+#define VU_API_IL_RESTORE(O, M, F) O.Restore(_T( # M ), _T( # F ), (void**)&pfn ## F)
 
 typedef enum _MEMORY_ADDRESS_TYPE
 {
@@ -1015,12 +1015,12 @@ public:
   CAPIHookA() {};
   virtual ~CAPIHookA() {};
 
-  bool vuapi Start(
+  bool vuapi Override(
     const std::string& ModuleName,
     const std::string& ProcName,
     void* lpHookProc, void** lpOldProc
   );
-  bool vuapi Stop(
+  bool vuapi Restore(
     const std::string& ModuleName,
     const std::string& ProcName,
     void** lpOldProc
@@ -1033,13 +1033,13 @@ public:
   CAPIHookW() {};
   virtual ~CAPIHookW() {};
 
-  bool vuapi Start(
+  bool vuapi Override(
     const std::wstring& ModuleName,
     const std::wstring& ProcName,
     void* lpHookProc,
     void** lpOldProc
   );
-  bool vuapi Stop(
+  bool vuapi Restore(
     const std::wstring& ModuleName,
     const std::wstring& ProcName,
     void** lpOldProc
@@ -1050,11 +1050,11 @@ public:
  * API Hooking - IAT
  */
 
-#define VU_API_IAT_ATTACH(O, M, F)\
+#define VU_API_IAT_OVERRIDE(O, M, F)\
   vu::CIATHookManager::Instance().Override(\
     _T( # O ), _T( # M ), _T( # F ), vu::ulongptr(&Hfn ## F), (vu::ulongptr**)&pfn ## F)
 
-#define VU_API_IAT_DETACH(O, M, F)\
+#define VU_API_IAT_RESTORE(O, M, F)\
   vu::CIATHookManager::Instance().Restore(\
     _T( # O ), _T( # M ), _T( # F ))
 

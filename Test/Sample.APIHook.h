@@ -35,7 +35,7 @@ DEF_SAMPLE(APIHook)
 {
   vu::CAPIHook API[2];
 
-  if (!VU_ATTACH_API(API[0], user32.dll, MessageBoxA))
+  if (!VU_API_IL_OVERRIDE(API[0], user32.dll, MessageBoxA))
   {
     std::cout << "API::ATTACH -> MessageBoxA -> Failure" << std::endl;
     return 1;
@@ -43,7 +43,7 @@ DEF_SAMPLE(APIHook)
 
   std::cout << "API::ATTACH -> MessageBoxA -> Success" << std::endl;
 
-  if (!VU_ATTACH_API(API[1], user32.dll, MessageBoxW))
+  if (!VU_API_IL_OVERRIDE(API[1], user32.dll, MessageBoxW))
   {
     std::cout << "API::ATTACH -> MessageBoxW -> Failure" << std::endl;
     return 1;
@@ -51,24 +51,24 @@ DEF_SAMPLE(APIHook)
 
   std::cout << "API::ATTACH -> MessageBoxW -> Success" << std::endl;
 
-  MessageBoxA(vu::GetConsoleWindow(), "The first message.", "A", MB_OK);
+  MessageBoxA(vu::GetConsoleWindow(),  "The first message.",  "A", MB_OK);
   MessageBoxW(vu::GetConsoleWindow(), L"The first message.", L"W", MB_OK);
 
-  if (!VU_DETACH_API(API[0], user32.dll, MessageBoxA))
+  if (!VU_API_IL_RESTORE(API[0], user32.dll, MessageBoxA))
   {
     std::cout << "API::DETACH -> MessageBoxA -> Failure" << std::endl;
   }
 
   std::cout << "API::DETACH -> MessageBoxA -> Success" << std::endl;
 
-  if (!VU_DETACH_API(API[1], user32.dll, MessageBoxW))
+  if (!VU_API_IL_RESTORE(API[1], user32.dll, MessageBoxW))
   {
     std::cout << "API::DETACH -> MessageBoxW -> Failure" << std::endl;
   }
 
   std::cout << "API::DETACH -> MessageBoxW -> Success" << std::endl;
 
-  MessageBoxA(vu::GetConsoleWindow(), "The second message.", "A", MB_OK);
+  MessageBoxA(vu::GetConsoleWindow(),  "The second message.",  "A", MB_OK);
   MessageBoxW(vu::GetConsoleWindow(), L"The second message.", L"W", MB_OK);
 
   return vu::VU_OK;
