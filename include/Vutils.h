@@ -935,7 +935,7 @@ protected:
 #endif // VU_SOCKET_ENABLED
 
 /**
- * API Hooking
+ * API Hooking - Inline
  */
 
  /**
