@@ -235,8 +235,8 @@ VUResult CIATHookManagerA::Iterate(
 
     for (int j = 0; pOFT->u1.AddressOfData != 0; j++, pFT++, pOFT++)
     {
-      std::string function = reinterpret_cast<PIMAGE_IMPORT_BY_NAME>(
-        reinterpret_cast<ulongptr>(pBase) + pOFT->u1.AddressOfData)->Name;
+      std::string function = reinterpret_cast<char*>(reinterpret_cast<PIMAGE_IMPORT_BY_NAME>(
+        reinterpret_cast<ulongptr>(pBase) + pOFT->u1.AddressOfData)->Name);
 
       breaked = !fn(module, function, pOFT, pFT);
       if (breaked)
