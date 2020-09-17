@@ -26,8 +26,8 @@ G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_SOCKET_ENAB
 #include "Sample.DF.h"
 #include "Sample.Socket.h"
 #include "Sample.AsyncSocket.h"
-#include "Sample.APIHook.h"
-#include "Sample.IATHook.h"
+#include "Sample.APIILHook.h"
+#include "Sample.APIIATHook.h"
 #include "Sample.WMHook.h"
 #include "Sample.INIFile.h"
 #include "Sample.Registry.h"
@@ -65,8 +65,8 @@ int _tmain(int argc, _TCHAR* argv[])
   // VU_SM_ADD_SAMPLE(DF);
   // VU_SM_ADD_SAMPLE(Socket);
   // VU_SM_ADD_SAMPLE(AsyncSocket);
-  // VU_SM_ADD_SAMPLE(APIHook);
-  // VU_SM_ADD_SAMPLE(IATHook);
+  // VU_SM_ADD_SAMPLE(APIILHook);
+  // VU_SM_ADD_SAMPLE(APIIATHook);
   // VU_SM_ADD_SAMPLE(WMHook);
   // VU_SM_ADD_SAMPLE(INIFile);
   // VU_SM_ADD_SAMPLE(Registry);
