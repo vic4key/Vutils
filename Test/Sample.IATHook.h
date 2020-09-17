@@ -10,14 +10,22 @@ DEF_SAMPLE(IATHook)
   std::string DLL = "msvcp110.dll";
 #endif // !_DEBUG
 
-  vu::CIATHookManager::Instance().Override(DLL, "KERNEL32.dll", "IsDebuggerPresent", 0x160991);
+  DLL = "Test.exe";
+
+  vu::CIATHookManager::Instance().Override(DLL, "user32.dll", "MessageBoxA", DWORD_PTR(HfnMessageBoxA), (DWORD_PTR**)&pfnMessageBoxA);
   system("PAUSE");
 
-  vu::CIATHookManager::Instance().Restore(DLL, "KERNEL32.dll", "IsDebuggerPresent");
+  MessageBoxA(vu::GetConsoleWindow(), "The first message.", "A", MB_OK);
+
+  vu::CIATHookManager::Instance().Restore(DLL, "user32.dll", "MessageBoxA");
   system("PAUSE");
 
-  vu::CIATHookManager::Instance().Override(DLL, "KERNEL32.dll", "IsDebuggerPresent");
+  MessageBoxA(vu::GetConsoleWindow(), "The second message.", "A", MB_OK);
+
+  vu::CIATHookManager::Instance().Override(DLL, "user32.dll", "MessageBoxA");
   system("PAUSE");
+
+  // MessageBoxA(vu::GetConsoleWindow(), "The third message.", "A", MB_OK);
 
   return vu::VU_OK;
 }

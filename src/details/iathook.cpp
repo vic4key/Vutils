@@ -87,7 +87,8 @@ VUResult CIATHookManager::Override(
   const std::string& target,
   const std::string& module,
   const std::string& function,
-  const ULONG_PTR replacement)
+  const ULONG_PTR replacement,
+  ULONG_PTR** original)
 {
   if (this->Exist(target, module, function))
   {
@@ -102,6 +103,11 @@ VUResult CIATHookManager::Override(
   }
 
   m_IATElements.emplace_back(element);
+
+  if (original != nullptr)
+  {
+    *original = reinterpret_cast<PDWORD_PTR>(element.original);
+  }
 
   return VU_OK;
 }

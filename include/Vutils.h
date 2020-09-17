@@ -1070,7 +1070,8 @@ public:
     const std::string& target,
     const std::string& module,
     const std::string& function,
-    const ULONG_PTR replacement = NULL
+    const ULONG_PTR replacement = NULL,
+    ULONG_PTR** original = NULL
   );
 
   VUResult Restore(
