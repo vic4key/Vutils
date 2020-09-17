@@ -1052,19 +1052,19 @@ public:
 
 struct IATElement;
 
-class CIATHookManager : public CSingletonT<CIATHookManager>
+enum IATAction
+{
+  IAT_OVERRIDE,
+  IAT_RESTORE,
+};
+
+class CIATHookManagerA : public CSingletonT<CIATHookManagerA>
 {
 public:
-  enum IATAction
-  {
-    IAT_OVERRIDE,
-    IAT_RESTORE,
-  };
-
   typedef std::vector<IATElement> IATElements;
 
-  CIATHookManager();
-  virtual ~CIATHookManager();
+  CIATHookManagerA();
+  virtual ~CIATHookManagerA();
 
   VUResult Override(
     const std::string& target,
@@ -1111,6 +1111,29 @@ private:
 
 private:
   IATElements m_IATElements;
+};
+
+class CIATHookManagerW : public CSingletonT<CIATHookManagerW>
+{
+public:
+  typedef std::vector<IATElement> IATElements;
+
+  CIATHookManagerW();
+  virtual ~CIATHookManagerW();
+
+  VUResult Override(
+    const std::wstring& target,
+    const std::wstring& module,
+    const std::wstring& function,
+    const ulongptr replacement = 0,
+    ulongptr** original = nullptr
+  );
+
+  VUResult Restore(
+    const std::wstring& target,
+    const std::wstring& module,
+    const std::wstring& function
+  );
 };
 
 /**
@@ -2880,6 +2903,7 @@ private:
 #ifdef _UNICODE
 #define CGUID CGUIDW
 #define CAPIHook CAPIHookW
+#define CIATHookManager CIATHookManagerW
 #define CWMHook CWMHookW
 #define CProcess CProcessW
 #define CService CServiceW
@@ -2894,6 +2918,7 @@ private:
 #else
 #define CGUID CGUIDA
 #define CAPIHook CAPIHookA
+#define CIATHookManager CIATHookManagerA
 #define CWMHook CWMHookA
 #define CProcess CProcessA
 #define CService CServiceA

@@ -1,7 +1,7 @@
 /**
- * @file   apihook.cpp
+ * @file   iathook.cpp
  * @author Vic P.
- * @brief  Implementation for API Hooking
+ * @brief  Implementation for IAT API Hooking
  */
 
 #include "Vutils.h"
@@ -57,18 +57,18 @@ struct IATElement
 };
 
 /**
- * CIATHookManager
+ * CIATHookManagerA
  */
 
-CIATHookManager::CIATHookManager()
+CIATHookManagerA::CIATHookManagerA()
 {
 }
 
-CIATHookManager::~CIATHookManager()
+CIATHookManagerA::~CIATHookManagerA()
 {
 }
 
-CIATHookManager::IATElements::iterator CIATHookManager::Find(
+CIATHookManagerA::IATElements::iterator CIATHookManagerA::Find(
   const std::string& target,
   const std::string& module,
   const std::string& function)
@@ -76,12 +76,12 @@ CIATHookManager::IATElements::iterator CIATHookManager::Find(
   return std::find(m_IATElements.begin(), m_IATElements.end(), IATElement(target, module, function));
 }
 
-CIATHookManager::IATElements::iterator CIATHookManager::Find(const IATElement& element)
+CIATHookManagerA::IATElements::iterator CIATHookManagerA::Find(const IATElement& element)
 {
   return this->Find(element.target, element.module, element.function);
 }
 
-bool CIATHookManager::Exist(
+bool CIATHookManagerA::Exist(
   const std::string& target,
   const std::string& module,
   const std::string& function)
@@ -89,7 +89,7 @@ bool CIATHookManager::Exist(
   return this->Find(target, module, function) != m_IATElements.end();
 }
 
-VUResult CIATHookManager::Override(
+VUResult CIATHookManagerA::Override(
   const std::string& target,
   const std::string& module,
   const std::string& function,
@@ -118,7 +118,7 @@ VUResult CIATHookManager::Override(
   return VU_OK;
 }
 
-VUResult CIATHookManager::Restore(
+VUResult CIATHookManagerA::Restore(
   const std::string& target,
   const std::string& module,
   const std::string& function)
@@ -141,7 +141,7 @@ VUResult CIATHookManager::Restore(
   return VU_OK;
 }
 
-VUResult CIATHookManager::Do(const IATAction action, IATElement& element)
+VUResult CIATHookManagerA::Do(const IATAction action, IATElement& element)
 {
   if (element.target.empty() || element.module.empty() || element.function.empty())
   {
@@ -185,7 +185,7 @@ VUResult CIATHookManager::Do(const IATAction action, IATElement& element)
   return VU_OK;
 }
 
-VUResult CIATHookManager::Iterate(
+VUResult CIATHookManagerA::Iterate(
   const std::string& module,
   std::function<bool(
     const std::string& module,
@@ -252,6 +252,38 @@ VUResult CIATHookManager::Iterate(
   }
 
   return VU_OK;
+}
+
+/**
+ * CIATHookManagerW
+ */
+
+CIATHookManagerW::CIATHookManagerW()
+{
+}
+
+CIATHookManagerW::~CIATHookManagerW()
+{
+}
+
+VUResult CIATHookManagerW::Override(
+  const std::wstring& target,
+  const std::wstring& module,
+  const std::wstring& function,
+  const ulongptr replacement,
+  ulongptr** original)
+{
+  return CIATHookManagerA::Instance().Override(
+    ToStringA(target), ToStringA(module), ToStringA(function), replacement, original);
+}
+
+VUResult CIATHookManagerW::Restore(
+  const std::wstring& target,
+  const std::wstring& module,
+  const std::wstring& function)
+{
+  return CIATHookManagerA::Instance().Restore(
+    ToStringA(target), ToStringA(module), ToStringA(function));
 }
 
 } // namespace vu
