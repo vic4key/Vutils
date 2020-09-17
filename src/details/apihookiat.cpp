@@ -1,5 +1,5 @@
 /**
- * @file   iathook.cpp
+ * @file   apihookiat.cpp
  * @author Vic P.
  * @brief  Implementation for IAT API Hooking
  */

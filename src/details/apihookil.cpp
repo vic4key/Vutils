@@ -1,7 +1,7 @@
 /**
- * @file   apihook.cpp
+ * @file   apihookil.cpp
  * @author Vic P.
- * @brief  Implementation for API Hooking
+ * @brief  Implementation for Inline API Hooking
  */
 
 #include "Vutils.h"

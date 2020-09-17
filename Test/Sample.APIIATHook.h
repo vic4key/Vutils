@@ -2,7 +2,7 @@
 
 #include "Sample.h"
 
-DEF_SAMPLE(IATHook)
+DEF_SAMPLE(APIIATHook)
 {
   VU_API_IAT_OVERRIDE(Test.exe, user32.dll, MessageBoxA);
   VU_API_IAT_OVERRIDE(Test.exe, user32.dll, MessageBoxW);

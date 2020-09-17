@@ -140,9 +140,6 @@
     <ClCompile Include="src\details\pefile.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
-    <ClCompile Include="src\details\apihook.cpp">
-      <Filter>Source Files\details</Filter>
-    </ClCompile>
     <ClCompile Include="src\details\strfmt.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
@@ -173,7 +170,10 @@
     <ClCompile Include="src\details\asyncsocket.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
-    <ClCompile Include="src\details\iathook.cpp">
+    <ClCompile Include="src\details\apihookil.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\apihookiat.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
   </ItemGroup>
