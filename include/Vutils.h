@@ -1047,6 +1047,72 @@ public:
 };
 
 /**
+ * API Hooking - IAT
+ */
+
+struct sIATElement;
+
+class CIATHookManager : public CSingletonT<CIATHookManager>
+{
+public:
+  enum IATAction
+  {
+    IAT_OVERRIDE,
+    IAT_RESTORE,
+  };
+
+  typedef std::vector<sIATElement> IATElements;
+
+  CIATHookManager();
+  virtual ~CIATHookManager();
+
+  VUResult Override(
+    const std::string& target,
+    const std::string& module,
+    const std::string& function,
+    const ULONG_PTR replacement
+  );
+
+  VUResult Restore(
+    const std::string& target,
+    const std::string& module,
+    const std::string& function
+  );
+
+  /**
+   * Iterate all imported-functions in a module.
+   * @param[out] module   The imported-module name.
+   * @param[out] function The imported-function name.
+   * @param[out,in] pOFT  The Original First Thunk that point to INT <Import Name Table>.
+   * @param[out,in] pFT   The First Thunk that point to IAT <Import Address Table>.
+   * @return true to continue or false to exit iteration.
+   */
+  VUResult Iterate(const std::string& module, std::function<bool(
+    const std::string& module,
+    const std::string& function,
+    PIMAGE_THUNK_DATA& pOFT,
+    PIMAGE_THUNK_DATA& pFT)> fn);
+
+private:
+  IATElements::iterator Find(const sIATElement& element);
+
+  IATElements::iterator Find(
+    const std::string& target,
+    const std::string& module,
+    const std::string& function);
+
+  bool Exist(
+    const std::string& target,
+    const std::string& module,
+    const std::string& function);
+
+  VUResult Do(const IATAction action, sIATElement& element);
+
+private:
+  IATElements m_IATElements;
+};
+
+/**
  * Windows Messages Hooking
  */
 

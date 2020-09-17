@@ -321,6 +321,7 @@
     <ClCompile Include="3rdparty\TP11\src\Pool.cpp" />
     <ClCompile Include="3rdparty\TP11\src\Worker.cpp" />
     <ClCompile Include="src\details\asyncsocket.cpp" />
+    <ClCompile Include="src\details\iathook.cpp" />
     <ClCompile Include="src\details\mbuffer.cpp" />
     <ClCompile Include="src\details\crisec.cpp" />
     <ClCompile Include="src\details\apihook.cpp" />
