@@ -34,7 +34,7 @@ It helps your programming go easier, faster and simpler.
 	* Stop Watch
 	* File System
 	* File Mapping
-	* API Hooking
+	* IAT/INL API Hooking
 	* Message Hooking
 	* Critical Section
 	* Singleton Template
