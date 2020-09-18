@@ -1052,7 +1052,9 @@ public:
 
 #define VU_API_IAT_OVERRIDE(O, M, F)\
   vu::CIATHookManager::Instance().Override(\
-    _T( # O ), _T( # M ), _T( # F ), (&Hfn ## F), (const void**)(&pfn ## F))
+    _T( # O ), _T( # M ), _T( # F ),\
+    (const void*)(reinterpret_cast<void*>(&Hfn ## F)),\
+    (const void**)(reinterpret_cast<void**>(&pfn ## F)))
 
 #define VU_API_IAT_RESTORE(O, M, F)\
   vu::CIATHookManager::Instance().Restore(\
