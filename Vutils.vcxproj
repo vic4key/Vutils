@@ -296,9 +296,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="3rdparty\HDE\include\hde32.h" />
     <ClInclude Include="3rdparty\HDE\include\hde64.h" />
     <ClInclude Include="3rdparty\HDE\include\table32.h" />
