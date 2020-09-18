@@ -302,7 +302,7 @@ std::unique_ptr<wchar[]> vuapi ListToMultiStringW(const std::vector<std::wstring
   return p;
 }
 
-std::string vuapi LoadRCStringA(const UINT uID, const std::string& ModuleName)
+std::string vuapi LoadRSStringA(const UINT uID, const std::string& ModuleName)
 {
   std::string result = "";
 
@@ -320,7 +320,7 @@ std::string vuapi LoadRCStringA(const UINT uID, const std::string& ModuleName)
   return result;
 }
 
-std::wstring vuapi LoadRCStringW(const UINT uID, const std::wstring& ModuleName)
+std::wstring vuapi LoadRSStringW(const UINT uID, const std::wstring& ModuleName)
 {
   std::wstring result = L"";
 

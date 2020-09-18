@@ -273,8 +273,8 @@ std::vector<std::string> vuapi MultiStringToListA(const char* lpcszMultiString);
 std::vector<std::wstring> vuapi MultiStringToListW(const wchar* lpcwszMultiString);
 std::unique_ptr<char[]> vuapi ListToMultiStringA(const std::vector<std::string>& StringList);
 std::unique_ptr<wchar[]> vuapi ListToMultiStringW(const std::vector<std::wstring>& StringList);
-std::string vuapi LoadRCStringA(const UINT uID, const std::string& ModuleName = "");
-std::wstring vuapi LoadRCStringW(const UINT uID, const std::wstring& ModuleName = L"");
+std::string vuapi LoadRSStringA(const UINT uID, const std::string& ModuleName = "");
+std::wstring vuapi LoadRSStringW(const UINT uID, const std::wstring& ModuleName = L"");
 std::string vuapi TrimStringA(
   const std::string& String,
   const eTrimType& TrimType = eTrimType::TS_BOTH,
@@ -495,7 +495,7 @@ std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator =
 #define SplitString SplitStringW
 #define MultiStringToList MultiStringToListW
 #define ListToMultiString ListToMultiStringW
-#define LoadRCString LoadRCStringW
+#define LoadRSString LoadRSStringW
 #define TrimString TrimStringW
 #define Replace ReplaceW
 #define StartsWith StartsWithW
@@ -538,7 +538,7 @@ std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator =
 #define UpperString UpperStringA
 #define SplitString SplitStringA
 #define MultiStringToList MultiStringToListA
-#define LoadRCString LoadRCStringA
+#define LoadRSString LoadRSStringA
 #define TrimString TrimStringA
 #define Replace ReplaceA
 #define StartsWith StartsWithA
