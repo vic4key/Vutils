@@ -11,6 +11,12 @@
 namespace vu
 {
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 6011)
+#pragma warning(disable: 4312)
+#endif // _MSC_VER
+
 /**
  * IATElement
  */
@@ -292,5 +298,9 @@ VUResult CIATHookManagerW::Restore(
   return CIATHookManagerA::Instance().Restore(
     ToStringA(target), ToStringA(module), ToStringA(function), replacement);
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
 
 } // namespace vu
