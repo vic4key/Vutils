@@ -1060,17 +1060,9 @@ public:
 
 struct IATElement;
 
-enum IATAction
-{
-  IAT_OVERRIDE,
-  IAT_RESTORE,
-};
-
 class CIATHookManagerA : public CSingletonT<CIATHookManagerA>
 {
 public:
-  typedef std::vector<IATElement> IATElements;
-
   CIATHookManagerA();
   virtual ~CIATHookManagerA();
 
@@ -1104,6 +1096,17 @@ public:
     PIMAGE_THUNK_DATA& pFT)> fn);
 
 private:
+  enum IATAction
+  {
+    IAT_OVERRIDE,
+    IAT_RESTORE,
+  };
+
+  typedef std::vector<IATElement> IATElements;
+
+  IATElements m_IATElements;
+
+private:
   IATElements::iterator Find(const IATElement& element);
 
   IATElements::iterator Find(
@@ -1117,16 +1120,11 @@ private:
     const std::string& function);
 
   VUResult Do(const IATAction action, IATElement& element);
-
-private:
-  IATElements m_IATElements;
 };
 
 class CIATHookManagerW : public CSingletonT<CIATHookManagerW>
 {
 public:
-  typedef std::vector<IATElement> IATElements;
-
   CIATHookManagerW();
   virtual ~CIATHookManagerW();
 
