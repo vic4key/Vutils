@@ -164,7 +164,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration)</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -180,7 +180,7 @@
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration)</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -195,7 +195,7 @@
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration)</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -211,7 +211,7 @@
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration)</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -228,7 +228,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration)</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -248,7 +248,7 @@
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration)</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -267,7 +267,7 @@
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration)</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -287,7 +287,7 @@
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration)</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
