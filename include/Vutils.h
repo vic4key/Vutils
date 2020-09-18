@@ -1052,7 +1052,7 @@ public:
 
 #define VU_API_IAT_OVERRIDE(O, M, F)\
   vu::CIATHookManager::Instance().Override(\
-    _T( # O ), _T( # M ), _T( # F ), vu::ulongptr(&Hfn ## F), (vu::ulongptr**)&pfn ## F)
+    _T( # O ), _T( # M ), _T( # F ), (&Hfn ## F), (const void**)(&pfn ## F))
 
 #define VU_API_IAT_RESTORE(O, M, F)\
   vu::CIATHookManager::Instance().Restore(\
@@ -1078,14 +1078,15 @@ public:
     const std::string& target,
     const std::string& module,
     const std::string& function,
-    const ulongptr replacement = 0,
-    ulongptr** original = nullptr
+    const void* replacement = nullptr,
+    const void** original = nullptr
   );
 
   VUResult Restore(
     const std::string& target,
     const std::string& module,
-    const std::string& function
+    const std::string& function,
+    const void** replacement = nullptr
   );
 
   /**
@@ -1133,14 +1134,15 @@ public:
     const std::wstring& target,
     const std::wstring& module,
     const std::wstring& function,
-    const ulongptr replacement = 0,
-    ulongptr** original = nullptr
+    const void* replacement = nullptr,
+    const void** original = nullptr
   );
 
   VUResult Restore(
     const std::wstring& target,
     const std::wstring& module,
-    const std::wstring& function
+    const std::wstring& function,
+    const void** replacement = nullptr
   );
 };
 

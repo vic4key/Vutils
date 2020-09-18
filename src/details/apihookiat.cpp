@@ -20,17 +20,17 @@ struct IATElement
   std::string target;
   std::string module;
   std::string function;
-  ulongptr original;
-  ulongptr replacement;
+  const void* original;
+  const void* replacement;
 
-  IATElement() : target(""), module(""), function(""), original(0), replacement(0) {}
+  IATElement() : target(""), module(""), function(""), original(nullptr), replacement(nullptr) {}
 
   IATElement(
     const std::string& t,
     const std::string& m,
     const std::string& f,
-    const ulongptr o = 0,
-    const ulongptr c = 0) : target(t), module(m), function(f), original(o), replacement(c) {}
+    const void* o = 0,
+    const void* r = 0) : target(t), module(m), function(f), original(o), replacement(r) {}
 
   const IATElement& operator=(const IATElement& right)
   {
@@ -93,27 +93,27 @@ VUResult CIATHookManagerA::Override(
   const std::string& target,
   const std::string& module,
   const std::string& function,
-  const ulongptr replacement,
-  ulongptr** original)
+  const void* replacement,
+  const void** original)
 {
   if (this->Exist(target, module, function))
   {
     return 1;
   }
 
-  auto element = IATElement(target, module, function, 0, replacement);
+  auto element = IATElement(target, module, function, nullptr, replacement);
 
   if (this->Do(IATAction::IAT_OVERRIDE, element) != VU_OK)
   {
     return 2;
   }
 
-  m_IATElements.emplace_back(element);
-
   if (original != nullptr)
   {
-    *original = reinterpret_cast<ulongptr*>(element.original);
+    *original = element.original;
   }
+
+  m_IATElements.emplace_back(element);
 
   return VU_OK;
 }
@@ -121,7 +121,8 @@ VUResult CIATHookManagerA::Override(
 VUResult CIATHookManagerA::Restore(
   const std::string& target,
   const std::string& module,
-  const std::string& function)
+  const std::string& function,
+  const void** replacement)
 {
   auto it = this->Find(target, module, function);
   if (it == m_IATElements.end())
@@ -134,6 +135,11 @@ VUResult CIATHookManagerA::Restore(
   if (this->Do(IATAction::IAT_RESTORE, element) != VU_OK)
   {
     return 2;
+  }
+
+  if (replacement != nullptr)
+  {
+    *replacement = element.replacement;
   }
 
   m_IATElements.erase(it);
@@ -155,16 +161,16 @@ VUResult CIATHookManagerA::Do(const IATAction action, IATElement& element)
   
     if (element == IATElement(element.target, m, f))
     {
-      ulongptr address = 0;
+      const void* address = 0;
 
       if (action == IATAction::IAT_OVERRIDE)
       {
-        element.original = pFT->u1.Function;
+        element.original = reinterpret_cast<const void*>(pFT->u1.Function);
         address = element.replacement;
       }
       else if (action == IATAction::IAT_RESTORE)
       {
-        element.replacement = pFT->u1.Function;
+        element.replacement = reinterpret_cast<const void*>(pFT->u1.Function);
         address = element.original;
       }
 
@@ -172,7 +178,7 @@ VUResult CIATHookManagerA::Do(const IATAction action, IATElement& element)
       {
         ulong protect = 0;
         VirtualProtect(LPVOID(&pFT->u1.Function), sizeof(ulongptr), PAGE_READWRITE, &protect);
-        pFT->u1.Function = address;
+        pFT->u1.Function = reinterpret_cast<ulongptr>(address);
         VirtualProtect(LPVOID(&pFT->u1.Function), sizeof(ulongptr), protect, &protect);
       }
 
@@ -270,8 +276,8 @@ VUResult CIATHookManagerW::Override(
   const std::wstring& target,
   const std::wstring& module,
   const std::wstring& function,
-  const ulongptr replacement,
-  ulongptr** original)
+  const void* replacement,
+  const void** original)
 {
   return CIATHookManagerA::Instance().Override(
     ToStringA(target), ToStringA(module), ToStringA(function), replacement, original);
@@ -280,10 +286,11 @@ VUResult CIATHookManagerW::Override(
 VUResult CIATHookManagerW::Restore(
   const std::wstring& target,
   const std::wstring& module,
-  const std::wstring& function)
+  const std::wstring& function,
+  const void** replacement)
 {
   return CIATHookManagerA::Instance().Restore(
-    ToStringA(target), ToStringA(module), ToStringA(function));
+    ToStringA(target), ToStringA(module), ToStringA(function), replacement);
 }
 
 } // namespace vu
