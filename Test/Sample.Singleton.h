@@ -4,26 +4,15 @@
 
 DEF_SAMPLE(Singleton)
 {
-  class CDog : public vu::CSingletonT<CDog>
+  class CService : public vu::CSingletonT<CService>
   {
   public:
-    void Speak()
-    {
-      std::cout << VU_FUNC_INFO << std::endl;
-    };
+    void Start() {}
+    void Stop() {}
   };
 
-  class CCat : public vu::CSingletonT<CCat>
-  {
-  public:
-    void Speak()
-    {
-      std::cout << VU_FUNC_INFO << std::endl;
-    };
-  };
-
-  CDog::Instance().Speak();
-  CCat::Instance().Speak();
+  CService::Instance().Start();
+  CService::Instance().Stop();
 
   return vu::VU_OK;
 }
