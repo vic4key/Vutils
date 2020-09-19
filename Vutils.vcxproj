@@ -165,6 +165,11 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>tmp\$(PlatformToolset)\$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>tmp\$(PlatformToolset)\$(IntDir)</ObjectFileName>
+      <XMLDocumentationFileName>tmp\$(PlatformToolset)\$(IntDir)</XMLDocumentationFileName>
+      <BrowseInformationFile>tmp\$(PlatformToolset)\$(IntDir)</BrowseInformationFile>
+      <AssemblerListingLocation>tmp\$(PlatformToolset)\$(IntDir)</AssemblerListingLocation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -181,6 +186,11 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>tmp\$(PlatformToolset)\$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>tmp\$(PlatformToolset)\$(IntDir)</ObjectFileName>
+      <XMLDocumentationFileName>tmp\$(PlatformToolset)\$(IntDir)</XMLDocumentationFileName>
+      <BrowseInformationFile>tmp\$(PlatformToolset)\$(IntDir)</BrowseInformationFile>
+      <AssemblerListingLocation>tmp\$(PlatformToolset)\$(IntDir)</AssemblerListingLocation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -196,6 +206,11 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>tmp\$(PlatformToolset)\$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>tmp\$(PlatformToolset)\$(IntDir)</ObjectFileName>
+      <XMLDocumentationFileName>tmp\$(PlatformToolset)\$(IntDir)</XMLDocumentationFileName>
+      <BrowseInformationFile>tmp\$(PlatformToolset)\$(IntDir)</BrowseInformationFile>
+      <AssemblerListingLocation>tmp\$(PlatformToolset)\$(IntDir)</AssemblerListingLocation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -212,6 +227,11 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>tmp\$(PlatformToolset)\$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>tmp\$(PlatformToolset)\$(IntDir)</ObjectFileName>
+      <XMLDocumentationFileName>tmp\$(PlatformToolset)\$(IntDir)</XMLDocumentationFileName>
+      <BrowseInformationFile>tmp\$(PlatformToolset)\$(IntDir)</BrowseInformationFile>
+      <AssemblerListingLocation>tmp\$(PlatformToolset)\$(IntDir)</AssemblerListingLocation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -229,6 +249,11 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>tmp\$(PlatformToolset)\$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>tmp\$(PlatformToolset)\$(IntDir)</ObjectFileName>
+      <XMLDocumentationFileName>tmp\$(PlatformToolset)\$(IntDir)</XMLDocumentationFileName>
+      <BrowseInformationFile>tmp\$(PlatformToolset)\$(IntDir)</BrowseInformationFile>
+      <AssemblerListingLocation>tmp\$(PlatformToolset)\$(IntDir)</AssemblerListingLocation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -249,6 +274,11 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>tmp\$(PlatformToolset)\$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>tmp\$(PlatformToolset)\$(IntDir)</ObjectFileName>
+      <XMLDocumentationFileName>tmp\$(PlatformToolset)\$(IntDir)</XMLDocumentationFileName>
+      <BrowseInformationFile>tmp\$(PlatformToolset)\$(IntDir)</BrowseInformationFile>
+      <AssemblerListingLocation>tmp\$(PlatformToolset)\$(IntDir)</AssemblerListingLocation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -268,6 +298,11 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>tmp\$(PlatformToolset)\$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>tmp\$(PlatformToolset)\$(IntDir)</ObjectFileName>
+      <XMLDocumentationFileName>tmp\$(PlatformToolset)\$(IntDir)</XMLDocumentationFileName>
+      <BrowseInformationFile>tmp\$(PlatformToolset)\$(IntDir)</BrowseInformationFile>
+      <AssemblerListingLocation>tmp\$(PlatformToolset)\$(IntDir)</AssemblerListingLocation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -288,6 +323,11 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderOutputFile>tmp\$(PlatformToolset)\$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>tmp\$(PlatformToolset)\$(IntDir)</ObjectFileName>
+      <XMLDocumentationFileName>tmp\$(PlatformToolset)\$(IntDir)</XMLDocumentationFileName>
+      <BrowseInformationFile>tmp\$(PlatformToolset)\$(IntDir)</BrowseInformationFile>
+      <AssemblerListingLocation>tmp\$(PlatformToolset)\$(IntDir)</AssemblerListingLocation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
