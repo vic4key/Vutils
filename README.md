@@ -3,7 +3,7 @@
 Vutils or Vic Utilities is an utility library written in [Modern C++](http://modernescpp.com/index.php/what-is-modern-c) and for [Modern C++](http://modernescpp.com/index.php/what-is-modern-c).
 It helps your programming go easier, faster and simpler.
 
-# Information
+## Information
 
 - [x] Windows 32-bit & 64-bit
 - [x] TCHAR - ANSI & UNICODE
@@ -17,29 +17,29 @@ It helps your programming go easier, faster and simpler.
 	- [x] for 32-bit application
 	- [x] for 64-bit application
 
-# Features
+## Features
 
 * Classes
-	* GUID
-	* Buffer
-	* Library
+	* [GUID - Globally/Universally Unique Identifier](<https://en.wikipedia.org/wiki/Universally_unique_identifier>)
+	* [Buffer](<https://www.google.com/search?q=buffer+class>)
+	* [Dynamic Link Library](<https://docs.microsoft.com/en-us/windows/win32/dlls/using-run-time-dynamic-linking>)
 	* Path
 	* Process
 	* Service
 	* Registry
-	* Sync/Async Socket
-	* Thread Pool
-	* INI File
-	* PE File
-	* Stop Watch
+	* [Sync/Async Socket](<https://docs.plm.automation.siemens.com/content/pl4x/18.1/T4EA/en_US/Teamcenter_Gateway-Technical_Connectivity_Guide/synchronous_vs_asynchronous.html>)
+	* [Thread Pool](<https://en.wikipedia.org/wiki/Thread_pool>)
+	* [INI File](<https://en.wikipedia.org/wiki/INI_file>)
+	* [PE File Parser](<https://en.wikipedia.org/wiki/Portable_Executable>)
+	* [Stop Watch](<https://www.google.com/search?q=stopwatch+execution+time>)
 	* File System
-	* File Mapping
-	* IAT/INL API Hooking
-	* Message Hooking
-	* Critical Section
-	* Singleton Template
-	* Input Dialog
-	* In-Memory Dialog
+	* [File Mapping](<https://docs.microsoft.com/en-us/windows/win32/memory/file-mapping>)
+	* [IAT/INL API Hooking](<https://en.wikipedia.org/wiki/Hooking>)
+	* [Windows Message Hooking](<https://docs.microsoft.com/en-us/windows/win32/winmsg/hooks>)
+	* [Critical Section](<https://en.wikipedia.org/wiki/Critical_section>)
+	* [Singleton Template](<https://en.wikipedia.org/wiki/Singleton_pattern>)
+	* [Input Dialog](<https://www.google.com/search?q=input+dialog&source=lnms&tbm=isch>)
+	* [In-Memory Dialog](<https://docs.microsoft.com/en-us/cpp/mfc/using-a-dialog-template-in-memory>)
 	* Miscellaneous
 
 * Functions
@@ -52,58 +52,51 @@ It helps your programming go easier, faster and simpler.
 	* File/Directory Manipulation
 	* Process Manipulation
 	* Window Manipulation
-	* Window Message Decoder
+	* [Window Message Decoder](<https://wiki.winehq.org/List_Of_Windows_Messages>)
 	* Miscellaneous
 
-# Requirements
+## Requirements
 
-Vutils requires the IDE / C++ Compiler that supported at least C++ 11.
-Belows are the IDE/Compiler that supported C++ 11.
+Vutils requires the C++ Compiler that supported at least C++ 11
+
+Belows are IDE minimum version that supported C++ 11
 
 * Microsoft Visual C++ 2012 or later
 * MinGW 4.6.2 or later
 * C++ Builder 10 or later
 
-# License
+## License
 
 Released under the [MIT](LICENSE.md) license
 
-# Installation
+## Installation
 
-* Checkout repository `Vutils` to `your\path\Vutils\` on your machine.
-
-* Add the enviroment `%Vutils%` = `your\path\Vutils\`
-
-* Configuration
-	* For `Microsoft Visual Studio C++` (in IDE)
-		* Include : `$(Vutils)include`
-		* Library : `$(Vutils)lib\$(Platform)`
-	* For `MinGW` (in Enviroment)
-		* Include : `%CPLUS_INCLUDE_PATH%` = `%Vutils%include`
-		* Library : `%LIBRARY_PATH%` = `%Vutils%lib`
-	* For `C++ Builder` (in IDE)
-		* \<Later\>
-
-* Usage
-	* Insert `#include <vu>` or `#include <boob>` or `#include <Vutils>` to your project.
-	* Use the namespace `vu` to start coding.
+* Checkout repository [`Vutils`](<https://github.com/vic4key/Vutils.git>) to your machine then run batch file `Vutils\tools\Getting.Started.CMD`
 
 * Build
 	* For `Microsoft Visual Studio C++`
-		* N/A
+		* Run batch file `VS<version>.Build.Static.Library.CMD` that `<version>` is your Visual Studio version
 	* For `MinGW`
-		* Insert `-lVutils` for linking.
-		* If enabled `SOCKET`, insert `-DVU_SOCKET_ENABLED -lws2_32` for linking.
-		* If enabled `GUID`, insert `-DVU_GUID_ENABLED -lrpcrt4` for linking.
-		* Eg. `G++ main.cpp -std=c++0x -lVutils -DVU_SOCKET_ENABLED -lws2_32 -DVU_GUID_ENABLED -lrpcrt4 -o Test.exe`
+		* Run batch file `MinGW.Build.Static.Library.CMD`
 	* For `C++ Builder`
-		* N/A
+		* \<later\>
 
-* More detail in [`INSTALL.md`](INSTALL.md)
+* Configuration
+	* For `Microsoft Visual Studio C++`
+		* Include : `$(Vutils)include`
+		* Library : `$(Vutils)lib\$(Platform)`
+	* For `MinGW` and `C++ Builder`
+		* You do nothing, but notes for MinGW
+			* If enabled `SOCKET`, insert option `-DVU_SOCKET_ENABLED -lws2_32` to your project for linking
+			* If enabled `GUID`, insert option `-DVU_GUID_ENABLED -lrpcrt4` to your project for linking
 
-# Examples
+* Usage
+	* Insert `#include <vu>` or `#include <boob>` to your project
+	* Let's get started the namespace `vu`
 
-See more examples in the [`Test`](Test) project.
+## Examples
 
-# Contact
-Feel free to contact via [Twitter](https://twitter.com/vic4key) or [Gmail](mailto:vic4key@gmail.com) or [Blog](https://vic.onl/)
+See examples in the [`Test`](Test) project
+
+## Contact
+Feel free to contact via [Twitter](https://twitter.com/vic4key) / [Gmail](mailto:vic4key@gmail.com) / [Blog](https://blog.vic.onl/) / [Website](https://vic.onl/)
