@@ -1,14 +1,15 @@
 @ECHO OFF
 
-SETLOCAL EnableDelayedExpansion
+SETLOCAL DisableDelayedExpansion
 
 SET VU_NAME=Vutils
 :: SET VU_VSVER=current
 
 ECHO *** %VU_NAME% static library for MSVC %VU_VSVER% ***
 
-IF "%VU_VSDEV%"=="" (
-	ECHO Please select a VS version to build the solution
+IF NOT EXIST "%VU_VSDEV%" (
+	ECHO VS Platform Toolset %VU_VSVER% %VU_TSVER% not found on your machine.
+	ECHO Please select an existing version to build the solution.
 	GOTO L_EXIT
 )
 
