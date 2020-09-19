@@ -55,6 +55,10 @@ It helps your programming go easier, faster and simpler.
 	* [Window Message Decoder](<https://wiki.winehq.org/List_Of_Windows_Messages>)
 	* Miscellaneous
 
+## License
+
+Released under the [MIT](LICENSE.md) license
+
 ## Requirements
 
 Vutils requires the C++ Compiler that supported at least C++ 11
@@ -64,10 +68,6 @@ Belows are IDE minimum version that supported C++ 11
 * Microsoft Visual C++ 2012 or later
 * MinGW 4.6.2 or later
 * C++ Builder 10 or later
-
-## License
-
-Released under the [MIT](LICENSE.md) license
 
 ## Installation
 
@@ -96,7 +96,10 @@ Released under the [MIT](LICENSE.md) license
 
 ## Examples
 
-See examples in the [`Test`](Test) project
+* [Test\Sample.Process.h](Test/Sample.Process.h)
+* [Test\Sample.Singleton.h](Test/Sample.Singleton.h)
+* [Test\Sample.APIIATHook.h](Test/Sample.APIIATHook.h)
+* See more examples in the [`Test`](Test) folder
 
 ## Contact
 Feel free to contact via [Twitter](https://twitter.com/vic4key) / [Gmail](mailto:vic4key@gmail.com) / [Blog](https://blog.vic.onl/) / [Website](https://vic.onl/)
