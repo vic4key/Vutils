@@ -71,13 +71,13 @@ Belows are IDE minimum version that supported C++ 11
 
 ## Installation
 
-* Checkout repository [`Vutils`](<https://github.com/vic4key/Vutils.git>) to your machine then run batch file `Vutils\tools\Getting.Started.CMD`
+* Checkout repository [`Vutils`](<https://github.com/vic4key/Vutils.git>) to your machine then run batch file `tools\Getting.Started.CMD`
 
-* Build
+* Build to static library
 	* For `Microsoft Visual Studio C++`
-		* Run batch file `VS<version>.Build.Static.Library.CMD` that `<version>` is your Visual Studio version
+		* Run batch file `tools\VS<version>.Build.Static.Library.CMD` that `<version>` is your Visual Studio version
 	* For `MinGW`
-		* Run batch file `MinGW.Build.Static.Library.CMD`
+		* Run batch file `tools\MinGW.Build.Static.Library.CMD`
 	* For `C++ Builder`
 		* \<later\>
 
