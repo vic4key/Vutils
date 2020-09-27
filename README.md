@@ -84,7 +84,7 @@ Belows are IDE minimum version that supported C++ 11
 * Configuration
 	* For `Microsoft Visual Studio C++`
 		* Include : `$(Vutils)include`
-		* Library : `$(Vutils)lib\$(Platform)`
+		* Library : `$(Vutils)lib\$(PlatformToolset)\$(Platform)`
 	* For `MinGW` and `C++ Builder`
 		* You do nothing, but notes for MinGW
 			* If enabled `SOCKET`, insert option `-DVU_SOCKET_ENABLED -lws2_32` to your project for linking
