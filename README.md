@@ -1,6 +1,7 @@
 # What is Vutils ?
 
 Vutils or Vic Utilities is an utility library written in [Modern C++](http://modernescpp.com/index.php/what-is-modern-c) and for [Modern C++](http://modernescpp.com/index.php/what-is-modern-c).
+
 It helps your programming go easier, faster and simpler.
 
 ## Information
