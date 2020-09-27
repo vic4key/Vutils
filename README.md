@@ -73,7 +73,7 @@ Belows are IDE minimum version that supported C++ 11
 
 * Checkout repository [`Vutils`](<https://github.com/vic4key/Vutils.git>) to your machine then run batch file `tools\Getting.Started.CMD`
 
-* Build to static library
+* Build
 	* For `Microsoft Visual Studio C++`
 		* Run batch file `tools\VS<version>.Build.Static.Library.CMD` that `<version>` is your Visual Studio version
 	* For `MinGW`
@@ -86,9 +86,12 @@ Belows are IDE minimum version that supported C++ 11
 		* Include : `$(Vutils)include`
 		* Library : `$(Vutils)lib\$(PlatformToolset)\$(Platform)`
 	* For `MinGW` and `C++ Builder`
-		* You do nothing, but notes for MinGW
-			* If enabled `SOCKET`, insert option `-DVU_SOCKET_ENABLED -lws2_32` to your project for linking
-			* If enabled `GUID`, insert option `-DVU_GUID_ENABLED -lrpcrt4` to your project for linking
+		* Include : \<You do nothing\>
+		* Library : `-lVutils`
+			* If `SOCKET` enabled, insert option`-DVU_SOCKET_ENABLED -lws2_32`
+			* If `GUID` enabled, insert option `-DVU_GUID_ENABLED -lrpcrt4`
+	* For `C++ Builder`
+		* \<later\>
 
 * Usage
 	* Insert `#include <vu>` or `#include <boob>` to your project
@@ -99,7 +102,7 @@ Belows are IDE minimum version that supported C++ 11
 * [Test\Sample.Process.h](Test/Sample.Process.h)
 * [Test\Sample.Singleton.h](Test/Sample.Singleton.h)
 * [Test\Sample.APIIATHook.h](Test/Sample.APIIATHook.h)
-* See more examples in the [`Test`](Test) folder
+* See more examples in the [`Test`](Test) project
 
 ## Contact
 Feel free to contact via [Twitter](https://twitter.com/vic4key) / [Gmail](mailto:vic4key@gmail.com) / [Blog](https://blog.vic.onl/) / [Website](https://vic.onl/)
