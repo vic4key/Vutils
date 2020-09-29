@@ -13,7 +13,7 @@ IF NOT EXIST "%VU_VSDEV%" (
 	GOTO L_EXIT
 )
 
-SET /p response=Are you sure to build solution ? 
+SET /p response=Are you sure to build solution (Y/[N]) ? 
 SET "confirm=0"
 IF [%response%]==[Y] SET confirm=1
 IF [%response%]==[y] SET confirm=1
