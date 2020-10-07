@@ -23,7 +23,7 @@ It helps your programming go easier, faster and simpler.
 * Classes
 	* [GUID - Globally/Universally Unique Identifier](<https://en.wikipedia.org/wiki/Universally_unique_identifier>)
 	* [Buffer](<https://www.google.com/search?q=buffer+class>)
-	* [Dynamic Link Library](<https://docs.microsoft.com/en-us/windows/win32/dlls/using-run-time-dynamic-linking>)
+	* [Run-time Link Library](<https://docs.microsoft.com/en-us/windows/win32/dlls/using-run-time-dynamic-linking>)
 	* Path
 	* Process
 	* Service
@@ -100,8 +100,10 @@ Belows are IDE minimum version that supported C++ 11
 
 ## Examples
 
+* [Test\Sample.WMHook.h](Test/Sample.WMHook.h)
 * [Test\Sample.Process.h](Test/Sample.Process.h)
 * [Test\Sample.Singleton.h](Test/Sample.Singleton.h)
+* [Test\Sample.StopWatch.h](Test/Sample.StopWatch.h)
 * [Test\Sample.AsyncSocket.h](Test/Sample.AsyncSocket.h)
 * See more examples in the [`Test`](Test/) project
 
