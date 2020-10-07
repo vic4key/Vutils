@@ -13,18 +13,18 @@
 000000013F0D2888 | 44 39 1C 25 35 21 91 77  | cmp dword ptr ds:[77912135],r11d                                           |
 */
 
-DEF_SAMPLE(APIINLHook)
+DEF_SAMPLE(INLHook)
 {
   vu::CAPIHook API[2];
 
-  VU_API_IL_OVERRIDE(API[0], user32.dll, MessageBoxA);
-  VU_API_IL_OVERRIDE(API[1], user32.dll, MessageBoxW);
+  VU_API_INL_OVERRIDE(API[0], user32.dll, MessageBoxA);
+  VU_API_INL_OVERRIDE(API[1], user32.dll, MessageBoxW);
 
   MessageBoxA(vu::GetConsoleWindow(),  "The first message.",  "A", MB_OK);
   MessageBoxW(vu::GetConsoleWindow(), L"The first message.", L"W", MB_OK);
 
-  VU_API_IL_RESTORE(API[0], user32.dll, MessageBoxA);
-  VU_API_IL_RESTORE(API[1], user32.dll, MessageBoxW);
+  VU_API_INL_RESTORE(API[0], user32.dll, MessageBoxA);
+  VU_API_INL_RESTORE(API[1], user32.dll, MessageBoxW);
 
   MessageBoxA(vu::GetConsoleWindow(),  "The second message.",  "A", MB_OK);
   MessageBoxW(vu::GetConsoleWindow(), L"The second message.", L"W", MB_OK);

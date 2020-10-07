@@ -497,7 +497,7 @@ std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator =
 #define ListToMultiString ListToMultiStringW
 #define LoadRSString LoadRSStringW
 #define TrimString TrimStringW
-#define Replace ReplaceW
+#define ReplaceString ReplaceW
 #define StartsWith StartsWithW
 #define EndsWith EndsWithW
 /* Window Working */
@@ -540,7 +540,7 @@ std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator =
 #define MultiStringToList MultiStringToListA
 #define LoadRSString LoadRSStringA
 #define TrimString TrimStringA
-#define Replace ReplaceA
+#define ReplaceString ReplaceA
 #define StartsWith StartsWithA
 #define EndsWith EndsWithA
 /* Window Working */
@@ -947,8 +947,8 @@ protected:
  * @param[in] F The function name.
  * @return  true if the function succeeds. Otherwise false.
  */
-#define VU_API_IL_OVERRIDE(O, M, F) O.Override(_T( # M ), _T( # F ), (void*)&Hfn ## F, (void**)&pfn ## F)
-#define VU_API_IL_RESTORE(O, M, F) O.Restore(_T( # M ), _T( # F ), (void**)&pfn ## F)
+#define VU_API_INL_OVERRIDE(O, M, F) O.Override(_T( # M ), _T( # F ), (void*)&Hfn ## F, (void**)&pfn ## F)
+#define VU_API_INL_RESTORE(O, M, F) O.Restore(_T( # M ), _T( # F ), (void**)&pfn ## F)
 
 typedef enum _MEMORY_ADDRESS_TYPE
 {

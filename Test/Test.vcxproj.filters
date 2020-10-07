@@ -84,10 +84,10 @@
     <ClInclude Include="Sample.StopWatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sample.APIIATHook.h">
+    <ClInclude Include="Sample.IATHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sample.APIINLHook.h">
+    <ClInclude Include="Sample.INLHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
