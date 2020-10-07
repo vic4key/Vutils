@@ -1,5 +1,7 @@
 #pragma once
 
+// https://github.com/vic4key/Async-Socket-Example-MFC
+
 #include "Sample.h"
 
 #if defined(VU_SOCKET_ENABLED)
