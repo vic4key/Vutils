@@ -1567,6 +1567,35 @@ private:
  * File Mapping
  */
 
+typedef enum _DESIRED_ACCESS
+{
+  DA_UNKNOWN = -1,
+  DA_ALL_ACCESS = FILE_MAP_ALL_ACCESS,
+  DA_READ = FILE_MAP_READ,
+  DA_WRITE = FILE_MAP_WRITE,
+  DA_COPY = FILE_MAP_COPY,
+  DA_EXECUTE = FILE_MAP_EXECUTE,
+  DA_LARGE_PAGES = FILE_MAP_LARGE_PAGES,
+  DA_TARGETS_INVALID = FILE_MAP_TARGETS_INVALID,
+} eFMDesiredAccess;
+
+typedef enum _PAGE_PROTECTION
+{
+  PP_EXECUTE_READ = PAGE_EXECUTE_READ,
+  PP_EXECUTE_READ_WRITE = PAGE_EXECUTE_READWRITE,
+  PP_EXECUTE_WRITE_COPY = PAGE_EXECUTE_WRITECOPY,
+  PP_READ_ONLY = PAGE_READONLY,
+  PP_READ_WRITE = PAGE_READWRITE,
+  PP_WRITE_COPY = PAGE_WRITECOPY,
+  PP_SEC_COMMIT = SEC_COMMIT,
+  PP_SEC_IMAGE = SEC_IMAGE,
+  PP_SEC_IMAGE_NO_EXECUTE = SEC_IMAGE_NO_EXECUTE,
+  PP_SEC_LARGE_PAGES = SEC_LARGE_PAGES,
+  PP_SEC_NO_CACHE = SEC_NOCACHE,
+  PP_SEC_RESERVE = SEC_RESERVE,
+  PP_SEC_WRITE_COMBINE = SEC_WRITECOMBINE,
+} ePageProtection;
+
 class CFileMappingX : public CLastError
 {
 public:
@@ -1574,7 +1603,7 @@ public:
   virtual ~CFileMappingX();
 
   void* vuapi View(
-    ulong ulDesiredAccess = FILE_MAP_ALL_ACCESS,
+    eFMDesiredAccess fmDesiredAccess = eFMDesiredAccess::DA_ALL_ACCESS,
     ulong ulMaxFileOffsetLow = 0,
     ulong ulMaxFileOffsetHigh = 0,
     ulong ulNumberOfBytesToMap = 0 // The mapping extends from the specified offset to the end.
@@ -1609,7 +1638,8 @@ public:
     eFSGenericFlags fgFlag = eFSGenericFlags::FG_ALL,
     eFSShareFlags fsFlag = eFSShareFlags::FS_ALLACCESS,
     eFSModeFlags fmFlag = eFSModeFlags::FM_OPENEXISTING,
-    eFSAttributeFlags faFlag = eFSAttributeFlags::FA_NORMAL
+    eFSAttributeFlags faFlag = eFSAttributeFlags::FA_NORMAL,
+    ePageProtection ppFlag = ePageProtection::PP_EXECUTE_READ_WRITE
   );
 
   /**
@@ -1620,7 +1650,7 @@ public:
     const std::string& MappingName,
     ulong ulMaxSizeLow, // The mapping size for file mapping object.
     ulong ulMaxSizeHigh = 0,
-    ulong ulProtect = PAGE_EXECUTE_READWRITE
+    ePageProtection ppFlag = ePageProtection::PP_EXECUTE_READ_WRITE
   );
 
   /**
@@ -1630,7 +1660,7 @@ public:
    */
   VUResult vuapi Open(
     const std::string& MappingName,
-    ulong ulDesiredAccess = FILE_MAP_ALL_ACCESS,
+    eFMDesiredAccess fmDesiredAccess = eFMDesiredAccess::DA_ALL_ACCESS,
     bool bInheritHandle = false
   );
 };
@@ -1652,7 +1682,8 @@ public:
     eFSGenericFlags fgFlag = eFSGenericFlags::FG_ALL,
     eFSShareFlags fsFlag = eFSShareFlags::FS_ALLACCESS,
     eFSModeFlags fmFlag = eFSModeFlags::FM_OPENEXISTING,
-    eFSAttributeFlags faFlag = eFSAttributeFlags::FA_NORMAL
+    eFSAttributeFlags faFlag = eFSAttributeFlags::FA_NORMAL,
+    ePageProtection ppFlag = ePageProtection::PP_EXECUTE_READ_WRITE
   );
 
   /**
@@ -1663,7 +1694,7 @@ public:
     const std::wstring& MappingName,
     ulong ulMaxSizeLow, // The mapping size for file mapping object.
     ulong ulMaxSizeHigh = 0,
-    ulong ulProtect = PAGE_EXECUTE_READWRITE
+    ePageProtection ppFlag = ePageProtection::PP_EXECUTE_READ_WRITE
   );
 
   /**
@@ -1673,7 +1704,7 @@ public:
    */
   VUResult vuapi Open(
     const std::wstring& MappingName,
-    ulong ulDesiredAccess = FILE_MAP_ALL_ACCESS,
+    eFMDesiredAccess fmDesiredAccess = eFMDesiredAccess::DA_ALL_ACCESS,
     bool bInheritHandle = false
   );
 };

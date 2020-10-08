@@ -31,7 +31,7 @@ bool CFileMappingX::Valid(HANDLE Handle)
 }
 
 void* vuapi CFileMappingX::View(
-  ulong ulDesiredAccess,
+  eFMDesiredAccess fmDesiredAccess,
   ulong ulMaxFileOffsetLow,
   ulong ulMaxFileOffsetHigh,
   ulong ulNumberOfBytesToMap
@@ -44,7 +44,7 @@ void* vuapi CFileMappingX::View(
 
   m_pData = MapViewOfFile(
     m_MapHandle,
-    ulDesiredAccess,
+    fmDesiredAccess,
     ulMaxFileOffsetHigh,
     ulMaxFileOffsetLow,
     ulNumberOfBytesToMap
@@ -109,7 +109,8 @@ VUResult vuapi CFileMappingA::CreateWithinFile(
   eFSGenericFlags fgFlag,
   eFSShareFlags fsFlag,
   eFSModeFlags fmFlag,
-  eFSAttributeFlags faFlag
+  eFSAttributeFlags faFlag,
+  ePageProtection ppFlag
 )
 {
   if (FileName.empty())
@@ -126,7 +127,7 @@ VUResult vuapi CFileMappingA::CreateWithinFile(
     return 2;
   }
 
-  auto ret = CreateNamedSharedMemory("", ulMaxSizeLow, ulMaxSizeHigh);
+  auto ret = CreateNamedSharedMemory("", ulMaxSizeLow, ulMaxSizeHigh, ppFlag);
   if (ret != VU_OK)
   {
     return ret;
@@ -139,7 +140,7 @@ VUResult vuapi CFileMappingA::CreateNamedSharedMemory(
   const std::string& MappingName,
   ulong ulMaxSizeLow,
   ulong ulMaxSizeHigh,
-  ulong ulProtect
+  ePageProtection ppFlag
 )
 {
   if (!this->Valid(m_FileHandle) && MappingName.empty())
@@ -150,7 +151,7 @@ VUResult vuapi CFileMappingA::CreateNamedSharedMemory(
   m_MapHandle = CreateFileMappingA(
     m_FileHandle,
     nullptr,
-    ulProtect,
+    ppFlag,
     ulMaxSizeHigh,
     ulMaxSizeLow,
     MappingName.empty() ? nullptr : MappingName.c_str()
@@ -168,7 +169,7 @@ VUResult vuapi CFileMappingA::CreateNamedSharedMemory(
 
 VUResult vuapi CFileMappingA::Open(
   const std::string& MappingName,
-  ulong ulDesiredAccess,
+  eFMDesiredAccess fmDesiredAccess,
   bool bInheritHandle
 )
 {
@@ -177,7 +178,7 @@ VUResult vuapi CFileMappingA::Open(
     return 1;
   }
 
-  m_MapHandle = OpenFileMappingA(FILE_MAP_ALL_ACCESS, bInheritHandle, MappingName.c_str());
+  m_MapHandle = OpenFileMappingA(fmDesiredAccess, bInheritHandle, MappingName.c_str());
 
   m_LastErrorCode = GetLastError();
 
@@ -208,7 +209,8 @@ VUResult vuapi CFileMappingW::CreateWithinFile(
   eFSGenericFlags fgFlag,
   eFSShareFlags fsFlag,
   eFSModeFlags fmFlag,
-  eFSAttributeFlags faFlag
+  eFSAttributeFlags faFlag,
+  ePageProtection ppFlag
 )
 {
   if (FileName.empty())
@@ -225,7 +227,7 @@ VUResult vuapi CFileMappingW::CreateWithinFile(
     return 2;
   }
 
-  auto ret = CreateNamedSharedMemory(L"", ulMaxSizeLow, ulMaxSizeHigh);
+  auto ret = CreateNamedSharedMemory(L"", ulMaxSizeLow, ulMaxSizeHigh, ppFlag);
   if (ret != VU_OK)
   {
     return ret;
@@ -238,7 +240,7 @@ VUResult vuapi CFileMappingW::CreateNamedSharedMemory(
   const std::wstring& MappingName,
   ulong ulMaxSizeLow,
   ulong ulMaxSizeHigh,
-  ulong ulProtect
+  ePageProtection ppFlag
 )
 {
   if (!this->Valid(m_FileHandle) && MappingName.empty())
@@ -249,7 +251,7 @@ VUResult vuapi CFileMappingW::CreateNamedSharedMemory(
   m_MapHandle = CreateFileMappingW(
     m_FileHandle,
     nullptr,
-    ulProtect,
+    ppFlag,
     ulMaxSizeHigh,
     ulMaxSizeLow,
     MappingName.empty() ? nullptr : MappingName.c_str()
@@ -267,7 +269,7 @@ VUResult vuapi CFileMappingW::CreateNamedSharedMemory(
 
 VUResult vuapi CFileMappingW::Open(
   const std::wstring& MappingName,
-  ulong ulDesiredAccess,
+  eFMDesiredAccess fmDesiredAccess,
   bool bInheritHandle
 )
 {
@@ -276,7 +278,7 @@ VUResult vuapi CFileMappingW::Open(
     return 1;
   }
 
-  m_MapHandle = OpenFileMappingW(FILE_MAP_ALL_ACCESS, bInheritHandle, MappingName.c_str());
+  m_MapHandle = OpenFileMappingW(fmDesiredAccess, bInheritHandle, MappingName.c_str());
 
   m_LastErrorCode = GetLastError();
 
