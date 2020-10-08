@@ -2268,23 +2268,22 @@ struct TPEHeaderT
   T      SizeOfHeapCommit;
   ulong  LoaderFlags;
   ulong  NumberOfRvaAndSizes;
-  // IMAGE_DATA_DIRECTORY
-  TDataDirectory Export;
-  TDataDirectory Import;
-  TDataDirectory Resource;
-  TDataDirectory Exception;
-  TDataDirectory Security;
-  TDataDirectory Basereloc;
-  TDataDirectory Debug;
-  TDataDirectory Copyright;
-  TDataDirectory Architecture;
-  TDataDirectory Globalptr;
-  TDataDirectory TLS;
-  TDataDirectory LoadConfig;
-  TDataDirectory BoundImport;
-  TDataDirectory IAT;
-  TDataDirectory DelayImport;
-  TDataDirectory ComDescriptor;
+  // IMAGE_DATA_DIRECTORY - https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/nf-dbghelp-imagedirectoryentrytodataex
+  TDataDirectory Export;        // IMAGE_DIRECTORY_ENTRY_EXPORT
+  TDataDirectory Import;        // IMAGE_DIRECTORY_ENTRY_IMPORT
+  TDataDirectory Resource;      // IMAGE_DIRECTORY_ENTRY_RESOURCE
+  TDataDirectory Exception;     // IMAGE_DIRECTORY_ENTRY_EXCEPTION
+  TDataDirectory Security;      // IMAGE_DIRECTORY_ENTRY_SECURITY
+  TDataDirectory Relocation;    // IMAGE_DIRECTORY_ENTRY_BASERELOC
+  TDataDirectory Debug;         // IMAGE_DIRECTORY_ENTRY_DEBUG
+  TDataDirectory Architecture;  // IMAGE_DIRECTORY_ENTRY_ARCHITECTURE
+  TDataDirectory Global;        // IMAGE_DIRECTORY_ENTRY_GLOBALPTR
+  TDataDirectory TLS;           // IMAGE_DIRECTORY_ENTRY_TLS
+  TDataDirectory Config;        // IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG
+  TDataDirectory Bound;         // IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT
+  TDataDirectory IAT;           // IMAGE_DIRECTORY_ENTRY_IAT
+  TDataDirectory Delay;         // IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT
+  TDataDirectory COM;           // IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR
 };
 
 template<> struct TPEHeaderT<pe64>
