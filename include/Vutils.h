@@ -2183,40 +2183,6 @@ struct TOptHeaderT
   TDataDirectory DataDirectory[MAX_IDD];
 };
 
-template<> struct TOptHeaderT<pe64>
-{
-  ushort  Magic;
-  uchar   MajorLinkerVersion;
-  uchar   MinorLinkerVersion;
-  ulong   SizeOfCode;
-  ulong   SizeOfInitializedData;
-  ulong   SizeOfUninitializedData;
-  ulong   AddressOfEntryPoint;
-  ulong   BaseOfCode;
-  ulong64 ImageBase;
-  ulong   SectionAlignment;
-  ulong   FileAlignment;
-  ushort  MajorOperatingSystemVersion;
-  ushort  MinorOperatingSystemVersion;
-  ushort  MajorImageVersion;
-  ushort  MinorImageVersion;
-  ushort  MajorSubsystemVersion;
-  ushort  MinorSubsystemVersion;
-  ulong   Win32VersionValue;
-  ulong   SizeOfImage;
-  ulong   SizeOfHeaders;
-  ulong   CheckSum;
-  ushort  Subsystem;
-  ushort  DllCharacteristics;
-  ulong64 SizeOfStackReserve;
-  ulong64 SizeOfStackCommit;
-  ulong64 SizeOfHeapReserve;
-  ulong64 SizeOfHeapCommit;
-  ulong   LoaderFlags;
-  ulong   NumberOfRvaAndSizes;
-  TDataDirectory DataDirectory[MAX_IDD];
-};
-
 // template <typename T>
 // typedef TOptHeaderT<T> *POptHeaderT;
 
@@ -2315,68 +2281,6 @@ struct TPEHeaderT
   TDataDirectory IAT;           // IMAGE_DIRECTORY_ENTRY_IAT
   TDataDirectory Delay;         // IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT
   TDataDirectory COM;           // IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR
-};
-
-template<> struct TPEHeaderT<pe64>
-{
-  // IMAGE_NT_HEADERS
-  ulong  Signature;
-  // IMAGE_FILE_HEADER
-  ushort Machine;
-  ushort NumberOfSections;
-  ulong  TimeDateStamp;
-  ulong  PointerToSymbolTable;
-  ulong  NumberOfSymbols;
-  ushort SizeOfOptionalHeader;
-  ushort Characteristics;
-  // IMAGE_OPTIONAL_HEADER
-  ushort Magic;
-  uchar  MajorLinkerVersion;
-  uchar  MinorLinkerVersion;
-  ulong  SizeOfCode;
-  ulong  SizeOfInitializedData;
-  ulong  SizeOfUninitializedData;
-  ulong  AddressOfEntryPoint;
-  ulong  BaseOfCode;
-  /* ulong  BaseOfData; // Non-exist for 64-bit */
-  ulong64 ImageBase;
-  ulong  SectionAlignment;
-  ulong  FileAlignment;
-  ushort MajorOperatingSystemVersion;
-  ushort MinorOperatingSystemVersion;
-  ushort MajorImageVersion;
-  ushort MinorImageVersion;
-  ushort MajorSubsystemVersion;
-  ushort MinorSubsystemVersion;
-  ulong  Win32VersionValue;
-  ulong  SizeOfImage;
-  ulong  SizeOfHeaders;
-  ulong  CheckSum;
-  ushort SubSystem;
-  ushort DllCharacteristics;
-  ulong64 SizeOfStackReserve;
-  ulong64 SizeOfStackCommit;
-  ulong64 SizeOfHeapReserve;
-  ulong64 SizeOfHeapCommit;
-  ulong  LoaderFlags;
-  ulong  NumberOfRvaAndSizes;
-  // IMAGE_DATA_DIRECTORY
-  TDataDirectory Export;
-  TDataDirectory Import;
-  TDataDirectory Resource;
-  TDataDirectory Exception;
-  TDataDirectory Security;
-  TDataDirectory Basereloc;
-  TDataDirectory Debug;
-  TDataDirectory Copyright;
-  TDataDirectory Architecture;
-  TDataDirectory Globalptr;
-  TDataDirectory TLS;
-  TDataDirectory LoadConfig;
-  TDataDirectory BoundImport;
-  TDataDirectory IAT;
-  TDataDirectory DelayImport;
-  TDataDirectory ComDescriptor;
 };
 
 // template <typename T>
