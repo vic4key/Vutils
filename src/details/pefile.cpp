@@ -79,7 +79,7 @@ const std::vector<PSectionHeader>& vuapi CPEFileTX<T>::GetSetionHeaders(bool InC
   }
 
   m_SectionHeaders.clear();
-  for (int i = 0; i < m_pPEHeader->NumberOfSections; i++)
+  for (int i = 0; i < m_pPEHeader->FileHeader.NumberOfSections; i++)
   {
     m_SectionHeaders.push_back(pSH);
     pSH++;
@@ -103,7 +103,7 @@ const std::vector<TExIID>& vuapi CPEFileTX<T>::GetExIIDs(bool InCache)
 
   m_ExIDDs.clear();
 
-  T ulIIDOffset = this->RVA2Offset(m_pPEHeader->Import.VirtualAddress);
+  T ulIIDOffset = this->RVA2Offset(m_pPEHeader->OptHeader.Import.VirtualAddress);
   if (ulIIDOffset == T(-1))
   {
     return m_ExIDDs;
@@ -484,14 +484,14 @@ VUResult vuapi CPEFileTA<T>::Parse(const std::string& PEFilePath)
 
   if (sizeof(T) == sizeof(pe32))
   {
-    if (CPEFileTX<T>::m_pPEHeader->Magic != IMAGE_NT_OPTIONAL_HDR32_MAGIC)
+    if (CPEFileTX<T>::m_pPEHeader->OptHeader.Magic != IMAGE_NT_OPTIONAL_HDR32_MAGIC)
     {
       return 7; // Used wrong type data for the current PE file
     }
   }
   else if (sizeof(T) == sizeof(pe64))
   {
-    if (CPEFileTX<T>::m_pPEHeader->Magic != IMAGE_NT_OPTIONAL_HDR64_MAGIC)
+    if (CPEFileTX<T>::m_pPEHeader->OptHeader.Magic != IMAGE_NT_OPTIONAL_HDR64_MAGIC)
     {
       return 7; // Used wrong type data for the current PE file
     }
@@ -573,14 +573,14 @@ VUResult vuapi CPEFileTW<T>::Parse()
 
   if (sizeof(T) == sizeof(pe32))
   {
-    if (CPEFileTX<T>::m_pPEHeader->Magic != IMAGE_NT_OPTIONAL_HDR32_MAGIC)
+    if (CPEFileTX<T>::m_pPEHeader->OptHeader.Magic != IMAGE_NT_OPTIONAL_HDR32_MAGIC)
     {
       return 7; // Used wrong type data for the current PE file
     }
   }
   else if (sizeof(T) == sizeof(pe64))
   {
-    if (CPEFileTX<T>::m_pPEHeader->Magic != IMAGE_NT_OPTIONAL_HDR64_MAGIC)
+    if (CPEFileTX<T>::m_pPEHeader->OptHeader.Magic != IMAGE_NT_OPTIONAL_HDR64_MAGIC)
     {
       return 7; // Used wrong type data for the current PE file
     }

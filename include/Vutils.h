@@ -2186,7 +2186,30 @@ struct TOptHeaderT
   T       SizeOfHeapCommit;
   ulong   LoaderFlags;
   ulong   NumberOfRvaAndSizes;
-  TDataDirectory DataDirectory[MAX_IDD];
+  // IMAGE_DATA_DIRECTORY - https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/nf-dbghelp-imagedirectoryentrytodataex
+  union
+  {
+    struct
+    {
+      TDataDirectory Export;        // IMAGE_DIRECTORY_ENTRY_EXPORT
+      TDataDirectory Import;        // IMAGE_DIRECTORY_ENTRY_IMPORT
+      TDataDirectory Resource;      // IMAGE_DIRECTORY_ENTRY_RESOURCE
+      TDataDirectory Exception;     // IMAGE_DIRECTORY_ENTRY_EXCEPTION
+      TDataDirectory Security;      // IMAGE_DIRECTORY_ENTRY_SECURITY
+      TDataDirectory Relocation;    // IMAGE_DIRECTORY_ENTRY_BASERELOC
+      TDataDirectory Debug;         // IMAGE_DIRECTORY_ENTRY_DEBUG
+      TDataDirectory Architecture;  // IMAGE_DIRECTORY_ENTRY_ARCHITECTURE
+      TDataDirectory Global;        // IMAGE_DIRECTORY_ENTRY_GLOBALPTR
+      TDataDirectory TLS;           // IMAGE_DIRECTORY_ENTRY_TLS
+      TDataDirectory Config;        // IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG
+      TDataDirectory Bound;         // IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT
+      TDataDirectory IAT;           // IMAGE_DIRECTORY_ENTRY_IAT
+      TDataDirectory Delay;         // IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT
+      TDataDirectory CLR;           // IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR
+      TDataDirectory Reversed;      // Reversed
+    };
+    TDataDirectory DataDirectory[MAX_IDD];
+  };
 };
 
 template<> struct TOptHeaderT<pe64>
@@ -2221,11 +2244,31 @@ template<> struct TOptHeaderT<pe64>
   ulong64 SizeOfHeapCommit;
   ulong   LoaderFlags;
   ulong   NumberOfRvaAndSizes;
-  TDataDirectory DataDirectory[MAX_IDD];
+  // IMAGE_DATA_DIRECTORY - https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/nf-dbghelp-imagedirectoryentrytodataex
+  union
+  {
+    struct
+    {
+      TDataDirectory Export;        // IMAGE_DIRECTORY_ENTRY_EXPORT
+      TDataDirectory Import;        // IMAGE_DIRECTORY_ENTRY_IMPORT
+      TDataDirectory Resource;      // IMAGE_DIRECTORY_ENTRY_RESOURCE
+      TDataDirectory Exception;     // IMAGE_DIRECTORY_ENTRY_EXCEPTION
+      TDataDirectory Security;      // IMAGE_DIRECTORY_ENTRY_SECURITY
+      TDataDirectory Relocation;    // IMAGE_DIRECTORY_ENTRY_BASERELOC
+      TDataDirectory Debug;         // IMAGE_DIRECTORY_ENTRY_DEBUG
+      TDataDirectory Architecture;  // IMAGE_DIRECTORY_ENTRY_ARCHITECTURE
+      TDataDirectory Global;        // IMAGE_DIRECTORY_ENTRY_GLOBALPTR
+      TDataDirectory TLS;           // IMAGE_DIRECTORY_ENTRY_TLS
+      TDataDirectory Config;        // IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG
+      TDataDirectory Bound;         // IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT
+      TDataDirectory IAT;           // IMAGE_DIRECTORY_ENTRY_IAT
+      TDataDirectory Delay;         // IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT
+      TDataDirectory CLR;           // IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR
+      TDataDirectory Reversed;      // Reversed
+    };
+    TDataDirectory DataDirectory[MAX_IDD];
+  };
 };
-
-// template <typename T>
-// typedef TOptHeaderT<T> *POptHeaderT;
 
 typedef TOptHeaderT<ulong32> TOptHeader32, *POptHeader32;
 typedef TOptHeaderT<ulong64> TOptHeader64, *POptHeader64;
@@ -2237,11 +2280,18 @@ struct TNTHeaderT
 {
   ulong Signature;
   TFileHeader FileHeader;
-  TOptHeaderT<T> OptionalHeader;
+  TOptHeaderT<T> OptHeader;
 };
 
 typedef TNTHeaderT<ulong32> TNTHeader32,  *PNTHeader32;
-typedef TNTHeaderT<ulong64> TNtTHeader64, *PNTHeader64;
+typedef TNTHeaderT<ulong64> TNTHeader64, *PNTHeader64;
+
+// PE_HEADER
+
+#define TPEHeaderT TNTHeaderT
+
+typedef TNTHeader32 TPEHeader32, *PPEHeader32;
+typedef TNTHeader64 TPEHeader64, *PPEHeader64;
 
 // IMAGE_THUNK_DATA
 
@@ -2260,141 +2310,10 @@ struct TThunkDataT
 typedef TThunkDataT<ulong32>  TThunkData32, *PThunkData32;
 typedef TThunkDataT<ulong64>  TThunkData64, *PThunkData64;
 
-// PE_HEADER
-
-template <typename T>
-struct TPEHeaderT
-{
-  // IMAGE_NT_HEADERS
-  ulong  Signature;
-  // IMAGE_FILE_HEADER
-  ushort Machine;
-  ushort NumberOfSections;
-  ulong  TimeDateStamp;
-  ulong  PointerToSymbolTable;
-  ulong  NumberOfSymbols;
-  ushort SizeOfOptionalHeader;
-  ushort Characteristics;
-  // IMAGE_OPTIONAL_HEADER
-  ushort Magic;
-  uchar  MajorLinkerVersion;
-  uchar  MinorLinkerVersion;
-  ulong  SizeOfCode;
-  ulong  SizeOfInitializedData;
-  ulong  SizeOfUninitializedData;
-  ulong  AddressOfEntryPoint;
-  ulong  BaseOfCode;
-  ulong  BaseOfData;
-  T      ImageBase;
-  ulong  SectionAlignment;
-  ulong  FileAlignment;
-  ushort MajorOperatingSystemVersion;
-  ushort MinorOperatingSystemVersion;
-  ushort MajorImageVersion;
-  ushort MinorImageVersion;
-  ushort MajorSubsystemVersion;
-  ushort MinorSubsystemVersion;
-  ulong  Win32VersionValue;
-  ulong  SizeOfImage;
-  ulong  SizeOfHeaders;
-  ulong  CheckSum;
-  ushort SubSystem;
-  ushort DllCharacteristics;
-  T      SizeOfStackReserve;
-  T      SizeOfStackCommit;
-  T      SizeOfHeapReserve;
-  T      SizeOfHeapCommit;
-  ulong  LoaderFlags;
-  ulong  NumberOfRvaAndSizes;
-  // IMAGE_DATA_DIRECTORY - https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/nf-dbghelp-imagedirectoryentrytodataex
-  TDataDirectory Export;        // IMAGE_DIRECTORY_ENTRY_EXPORT
-  TDataDirectory Import;        // IMAGE_DIRECTORY_ENTRY_IMPORT
-  TDataDirectory Resource;      // IMAGE_DIRECTORY_ENTRY_RESOURCE
-  TDataDirectory Exception;     // IMAGE_DIRECTORY_ENTRY_EXCEPTION
-  TDataDirectory Security;      // IMAGE_DIRECTORY_ENTRY_SECURITY
-  TDataDirectory Relocation;    // IMAGE_DIRECTORY_ENTRY_BASERELOC
-  TDataDirectory Debug;         // IMAGE_DIRECTORY_ENTRY_DEBUG
-  TDataDirectory Architecture;  // IMAGE_DIRECTORY_ENTRY_ARCHITECTURE
-  TDataDirectory Global;        // IMAGE_DIRECTORY_ENTRY_GLOBALPTR
-  TDataDirectory TLS;           // IMAGE_DIRECTORY_ENTRY_TLS
-  TDataDirectory Config;        // IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG
-  TDataDirectory Bound;         // IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT
-  TDataDirectory IAT;           // IMAGE_DIRECTORY_ENTRY_IAT
-  TDataDirectory Delay;         // IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT
-  TDataDirectory COM;           // IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR
-};
-
-template<> struct TPEHeaderT<pe64>
-{
-  // IMAGE_NT_HEADERS
-  ulong  Signature;
-  // IMAGE_FILE_HEADER
-  ushort Machine;
-  ushort NumberOfSections;
-  ulong  TimeDateStamp;
-  ulong  PointerToSymbolTable;
-  ulong  NumberOfSymbols;
-  ushort SizeOfOptionalHeader;
-  ushort Characteristics;
-  // IMAGE_OPTIONAL_HEADER
-  ushort Magic;
-  uchar  MajorLinkerVersion;
-  uchar  MinorLinkerVersion;
-  ulong  SizeOfCode;
-  ulong  SizeOfInitializedData;
-  ulong  SizeOfUninitializedData;
-  ulong  AddressOfEntryPoint;
-  ulong  BaseOfCode;
-  // ulong  BaseOfData; // not used for 64-bit
-  ulong64 ImageBase;
-  ulong  SectionAlignment;
-  ulong  FileAlignment;
-  ushort MajorOperatingSystemVersion;
-  ushort MinorOperatingSystemVersion;
-  ushort MajorImageVersion;
-  ushort MinorImageVersion;
-  ushort MajorSubsystemVersion;
-  ushort MinorSubsystemVersion;
-  ulong  Win32VersionValue;
-  ulong  SizeOfImage;
-  ulong  SizeOfHeaders;
-  ulong  CheckSum;
-  ushort SubSystem;
-  ushort DllCharacteristics;
-  ulong64 SizeOfStackReserve;
-  ulong64 SizeOfStackCommit;
-  ulong64 SizeOfHeapReserve;
-  ulong64 SizeOfHeapCommit;
-  ulong  LoaderFlags;
-  ulong  NumberOfRvaAndSizes;
-  // IMAGE_DATA_DIRECTORY - https://docs.microsoft.com/en-us/windows/win32/api/dbghelp/nf-dbghelp-imagedirectoryentrytodataex
-  TDataDirectory Export;        // IMAGE_DIRECTORY_ENTRY_EXPORT
-  TDataDirectory Import;        // IMAGE_DIRECTORY_ENTRY_IMPORT
-  TDataDirectory Resource;      // IMAGE_DIRECTORY_ENTRY_RESOURCE
-  TDataDirectory Exception;     // IMAGE_DIRECTORY_ENTRY_EXCEPTION
-  TDataDirectory Security;      // IMAGE_DIRECTORY_ENTRY_SECURITY
-  TDataDirectory Relocation;    // IMAGE_DIRECTORY_ENTRY_BASERELOC
-  TDataDirectory Debug;         // IMAGE_DIRECTORY_ENTRY_DEBUG
-  TDataDirectory Architecture;  // IMAGE_DIRECTORY_ENTRY_ARCHITECTURE
-  TDataDirectory Global;        // IMAGE_DIRECTORY_ENTRY_GLOBALPTR
-  TDataDirectory TLS;           // IMAGE_DIRECTORY_ENTRY_TLS
-  TDataDirectory Config;        // IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG
-  TDataDirectory Bound;         // IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT
-  TDataDirectory IAT;           // IMAGE_DIRECTORY_ENTRY_IAT
-  TDataDirectory Delay;         // IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT
-  TDataDirectory COM;           // IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR
-};
-
-// template <typename T>
-// typedef TPEHeaderT<T> *PTPEHeaderT;
-
-typedef TPEHeaderT<ulong32> TPEHeader32, *PPEHeader32;
-typedef TPEHeaderT<ulong64> TPEHeader64, *PPEHeader64;
-
 /* The common types (32-bit & 64-bit)  */
 
 #ifdef _WIN64
-typedef TNtTHeader64   TNTHeader,  *PNTHeader;
+typedef TNTHeader64   TNTHeader,  *PNTHeader;
 typedef TOptHeader64  TOptHeader, *POptHeader;
 typedef TThunkData64  TThunkData, *PThunkData;
 typedef TPEHeader64   TPEHeader,  *PPEHeader;
