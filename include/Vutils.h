@@ -2138,6 +2138,12 @@ const ulong MAX_IDD = IMAGE_NUMBEROF_DIRECTORY_ENTRIES;
 typedef ulong32 pe32;
 typedef ulong64 pe64;
 
+#ifdef _M_IX86
+typedef pe32 peX;
+#else  // _M_AMD64
+typedef pe64 peX;
+#endif // _M_IX86
+
 typedef IMAGE_DOS_HEADER TDOSHeader, *PDOSHeader;
 typedef IMAGE_FILE_HEADER TFileHeader, *PFileHeader;
 typedef _IMAGE_SECTION_HEADER TSectionHeader, *PSectionHeader;
