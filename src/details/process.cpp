@@ -1333,6 +1333,7 @@ const CProcessA::Modules& CProcessA::GetModules()
 const MODULEENTRY32 CProcessA::GetModuleInformation()
 {
   MODULEENTRY32 empty = { 0 };
+  ZeroMemory(&empty, sizeof(empty));
   return (m_Modules.empty() ? empty : m_Modules.front());
 }
 
@@ -1447,6 +1448,7 @@ const CProcessW::Modules& CProcessW::GetModules()
 const MODULEENTRY32W CProcessW::GetModuleInformation()
 {
   MODULEENTRY32W empty = { 0 };
+  ZeroMemory(&empty, sizeof(empty));
   return (m_Modules.empty() ? empty : m_Modules.front());
 }
 
