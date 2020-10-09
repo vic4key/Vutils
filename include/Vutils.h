@@ -2357,6 +2357,16 @@ typedef enum _IMPORTED_FUNCTION_FIND_BY
   IFFM_NAME,
 } eImportedFunctionFindMethod;
 
+template<typename T>
+struct TRelocationEntryT
+{
+  int Type;
+  // T Offset;
+  T RVA;
+  // T VA;
+  T Value;
+};
+
 template <typename T>
 class CPEFileTX
 {
@@ -2391,6 +2401,8 @@ public:
     eImportedFunctionFindMethod Method,
     bool InCache = true);
 
+  const std::vector<TRelocationEntryT<T>> vuapi GetRelocationEntries(bool InCache = true);
+
 protected:
   bool m_Initialized;
 
@@ -2405,9 +2417,10 @@ private:
   std::vector<TExIID> m_ExIDDs;
 
   std::vector<PSectionHeader> m_SectionHeaders;
-  std::vector<PImportDescriptor>  m_ImportDescriptors;
+  std::vector<PImportDescriptor> m_ImportDescriptors;
   std::vector<TImportModule> m_ImportModules;
-  std::vector<TImportFunctionT<T>>  m_ImportFunctions;
+  std::vector<TImportFunctionT<T>> m_ImportFunctions;
+  std::vector<TRelocationEntryT<T>> m_RelocationEntries;
 
 protected:
   const std::vector<TExIID>& vuapi GetExIIDs(bool InCache = true);

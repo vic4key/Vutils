@@ -6,9 +6,20 @@
 
 DEF_SAMPLE(PEFile)
 {
-  vu::CPEFileT<vu::pe32> pe(_T("C:\\Program Files\\Process Hacker 2\\x86\\ProcessHacker.exe"));
-  // vu::CPEFileT<vu::pe64> pe(_T("C:\\Program Files\\Process Hacker 2\\ProcessHacker.exe"));
+#ifdef _WIN64
+  #define PROCESS_NAME _T("x64dbg.exe")
+#else // _WIN32
+  #define PROCESS_NAME _T("x32dbg.exe")
+#endif // _WIN64
 
+  auto PIDs = vu::NameToPID(PROCESS_NAME);
+  assert(!PIDs.empty());
+
+  vu::CProcess process;
+  process.Attach(PIDs.back());
+  auto module = process.GetModuleInformation();
+
+  vu::CPEFileT<vu::peX> pe(module.szExePath);
   vu::VUResult result = pe.Parse();
   if (result != vu::VU_OK)
   {
@@ -110,6 +121,22 @@ DEF_SAMPLE(PEFile)
   if (pfn != nullptr)
   {
     printf("%08X, %04X, '%s'\n", pfn->IIDID, pfn->Hint, pfn->Name.c_str());
+  }
+
+  SEPERATOR()
+
+  for (const auto& Entry : pe.GetRelocationEntries())
+  {
+    auto Value = vu::peX(0);
+    vu::RPM(process.Handle(), LPVOID(vu::peX(module.modBaseAddr) + Entry.RVA), &Value, sizeof(Value));
+
+    #ifdef _WIN64
+    auto fmt = _T("%llX : %llX -> %llX");
+    #else // _WIN32
+    auto fmt = _T("%08X : %08X -> %08X");
+    #endif // _WIN64
+
+    std::tcout << vu::Fmt(fmt, Entry.RVA, Entry.Value, Value) << std::endl;
   }
 
   return vu::VU_OK;

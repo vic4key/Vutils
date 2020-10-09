@@ -14,6 +14,15 @@ namespace vu
 template class CPEFileTX<ulong32>;
 template class CPEFileTX<ulong64>;
 
+typedef struct _IMAGE_BASE_RELOCATION_ENTRY
+{
+  USHORT Offset : 12;
+  USHORT Type : 4;
+} IMAGE_BASE_RELOCATION_ENTRY, * PIMAGE_BASE_RELOCATION_ENTRY;
+
+#define COUNT_RELOCATION_ENTRY(ptr)\
+  (ptr == nullptr ? 0 : (PIMAGE_BASE_RELOCATION(ptr)->SizeOfBlock - sizeof(IMAGE_BASE_RELOCATION)) / sizeof(IMAGE_BASE_RELOCATION_ENTRY))
+
 template<typename T>
 CPEFileTX<T>::CPEFileTX()
 {
@@ -26,6 +35,7 @@ CPEFileTX<T>::CPEFileTX()
   m_ImportDescriptors.clear();
   m_ExIDDs.clear();
   m_ImportFunctions.clear();
+  m_RelocationEntries.clear();
 
   if (sizeof(T) == 4)
   {
@@ -86,6 +96,69 @@ const std::vector<PSectionHeader>& vuapi CPEFileTX<T>::GetSetionHeaders(bool InC
   }
 
   return m_SectionHeaders;
+}
+
+// IMAGE_REL_BASED_<X>
+// static const char* RelocationEntryTypes[] =
+// {
+//   "ABSOLUTE",
+//   "HIGH",
+//   "LOW",
+//   "HIGHLOW",
+//   "HIGHADJ",
+//   "MACHINE_SPECIFIC_5",
+//   "RESERVED",
+//   "MACHINE_SPECIFIC_7",
+//   "MACHINE_SPECIFIC_8",
+//   "MACHINE_SPECIFIC_9",
+//   "DIR64",
+// };
+
+template<typename T>
+const std::vector<TRelocationEntryT<T>> vuapi CPEFileTX<T>::GetRelocationEntries(bool InCache)
+{
+  if (!m_Initialized)
+  {
+    assert(0);
+  }
+
+  if (InCache && !m_RelocationEntries.empty())
+  {
+    return m_RelocationEntries;
+  }
+
+  auto IDD = this->GetpPEHeader()->OptHeader.Relocation;
+
+  for (DWORD Size = 0; Size < IDD.Size; )
+  {
+    auto ptr = PUCHAR(reinterpret_cast<ulong64>(this->GetpBase()) + this->RVA2Offset(IDD.VirtualAddress) + Size);
+    assert(ptr != nullptr);
+
+    auto pIBR = PIMAGE_BASE_RELOCATION(ptr);
+    assert(pIBR != nullptr);
+
+    auto nEntries = COUNT_RELOCATION_ENTRY(ptr);
+    ptr += sizeof(IMAGE_BASE_RELOCATION);
+
+    for (DWORD idx = 0; idx < nEntries; idx++)
+    {
+      const auto pEntry = PIMAGE_BASE_RELOCATION_ENTRY(ptr + idx * sizeof(IMAGE_BASE_RELOCATION_ENTRY));
+      assert(pEntry);
+
+      TRelocationEntryT<T> Entry = { 0 };
+      Entry.RVA = pIBR->VirtualAddress + pEntry->Offset;
+      auto Offset = this->RVA2Offset(Entry.RVA);
+      // Entry.Offset = this->RVA2Offset(Entry.RVA);
+      // Entry.VA = this->GetpPEHeader()->OptHeader.ImageBase + Entry.RVA;
+      Entry.Value = *reinterpret_cast<T*>(reinterpret_cast<ulong64>(this->GetpBase()) + Offset);
+
+      m_RelocationEntries.push_back(std::move(Entry));
+    }
+
+    Size += pIBR->SizeOfBlock;
+  }
+
+  return m_RelocationEntries;
 }
 
 template<typename T>
