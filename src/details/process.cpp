@@ -1330,6 +1330,12 @@ const CProcessA::Modules& CProcessA::GetModules()
   return m_Modules;
 }
 
+const MODULEENTRY32 CProcessA::GetModuleInformation()
+{
+  MODULEENTRY32 empty = { 0 };
+  return (m_Modules.empty() ? empty : m_Modules.front());
+}
+
 #pragma pop_macro("MODULEENTRY32")
 
 /**
@@ -1436,6 +1442,12 @@ const CProcessW::Modules& CProcessW::GetModules()
   }
 
   return m_Modules;
+}
+
+const MODULEENTRY32W CProcessW::GetModuleInformation()
+{
+  MODULEENTRY32W empty = { 0 };
+  return (m_Modules.empty() ? empty : m_Modules.front());
 }
 
 } // namespace vu

@@ -2779,6 +2779,8 @@ public:
   const std::string& Name() const;
   const Modules& GetModules();
 
+  const MODULEENTRY32 GetModuleInformation();
+
 protected:
   virtual void Parse();
 
@@ -2820,6 +2822,8 @@ public:
 
   const std::wstring& Name() const;
   const Modules& GetModules();
+
+  const MODULEENTRY32W GetModuleInformation();
 
 protected:
   virtual void Parse();
