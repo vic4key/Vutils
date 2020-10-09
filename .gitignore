@@ -31,9 +31,11 @@
 *.7z
 *.bak
 /lib
+/obj
 /MD
 /MDd
 /MT
 /MTd
 /Win32
 /x64
+packages/
