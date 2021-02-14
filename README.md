@@ -72,7 +72,7 @@ Belows are IDE minimum version that supported C++ 11
 
 ## Installation
 
-* Checkout repository [`Vutils`](<https://github.com/vic4key/Vutils.git>) to your machine
+* Clone/Download the repository [`Vutils`](<https://github.com/vic4key/Vutils.git>) to your machine
 * Run the batch file `tools\Getting.Started.CMD`
 
 * Build
