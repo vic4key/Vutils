@@ -11,7 +11,7 @@ It helps your programming go easier, faster and simpler.
 - [x] MinGW
 	- [x] for 32-bit application
 	- [x] for 64-bit application
-- [x] Microsoft Visual Studio
+- [x] MS Visual Studio
 	- [x] for 32-bit application
 	- [x] for 64-bit application
 - [x] C++ Builder
@@ -66,16 +66,17 @@ Vutils requires the C++ Compiler that supported at least C++ 11
 
 Belows are IDE minimum version that supported C++ 11
 
-* Microsoft Visual C++ 2012 or later
+* MS Visual C++ 2012 or later
 * MinGW 4.6.2 or later
 * C++ Builder 10 or later
 
 ## Installation
 
-* Checkout repository [`Vutils`](<https://github.com/vic4key/Vutils.git>) to your machine then run batch file `tools\Getting.Started.CMD`
+* Checkout repository [`Vutils`](<https://github.com/vic4key/Vutils.git>) to your machine
+* Run the batch file `tools\Getting.Started.CMD`
 
 * Build
-	* For `Microsoft Visual Studio C++`
+	* For `MS Visual Studio C++`
 		* Run batch file `tools\VS<version>.Build.Static.Library.CMD` that `<version>` is your Visual Studio version
 	* For `MinGW`
 		* Run batch file `tools\MinGW.Build.Static.Library.CMD`
@@ -83,19 +84,16 @@ Belows are IDE minimum version that supported C++ 11
 		* \<later\>
 
 * Configuration
-	* For `Microsoft Visual Studio C++`
-		* Include : `$(Vutils)include`
-		* Library : `$(Vutils)lib\$(PlatformToolset)\$(Platform)`
-	* For `MinGW` and `C++ Builder`
-		* Include : \<You do nothing\>
+	* For `MS Visual Studio C++` (optional - automatic included to the VS global settings)
+	* For `MinGW`
+		* Include : (optional)
 		* Library : `-lVutils`
 			* If `SOCKET` enabled, insert option`-DVU_SOCKET_ENABLED -lws2_32`
 			* If `GUID` enabled, insert option `-DVU_GUID_ENABLED -lrpcrt4`
-	* For `C++ Builder`
-		* \<later\>
+	* For `C++ Builder` (later)
 
 * Usage
-	* Insert `#include <vu>` or `#include <boob>` to your project
+	* Insert `#include <vu>` to your project
 	* Let's get started the namespace `vu`
 
 ## Examples
