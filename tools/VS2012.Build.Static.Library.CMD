@@ -4,4 +4,4 @@ SET VU_VSVER=2012
 SET VU_TSVER=v110
 SET VU_VSDEV=%VS110COMNTOOLS%VsDevCmd.bat
 
-CALL NOT-USED\VSX.Build.Static.Library.CMD
+CALL Others\VSX.Build.Static.Library.CMD
