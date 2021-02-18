@@ -91,6 +91,7 @@ Belows are IDE minimum version that supported C++ 11
 		* Library : `-lVutils`
 			* If `SOCKET` enabled, insert option`-DVU_SOCKET_ENABLED -lws2_32`
 			* If `GUID` enabled, insert option `-DVU_GUID_ENABLED -lrpcrt4`
+			* If `WMI` enabled, insert option `-DVU_WMI_ENABLED -lole32 -loleaut32 -lwbemuuid`
 	* For `C++ Builder` (later)
 
 * Usage
