@@ -50,6 +50,22 @@ IF [%conditions%]==[1] (
 
 ECHO.
 
+:: for WMI
+
+SET /p response=[+] Enable WMI (Y/[N]) ? 
+SET "conditions=0"
+IF [%response%]==[Y] SET conditions=1
+IF [%response%]==[y] SET conditions=1
+
+IF [%conditions%]==[1] (
+	ECHO     WMI -^> ENABLED
+	SET LIBs=%LIBs% -DVU_WMI_ENABLED -lrpcrt4
+) else (
+	ECHO     WMI -^> DISABLED
+)
+
+ECHO.
+
 :: Execute
 
 ECHO [+] Compiling	-^> OK

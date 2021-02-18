@@ -39,13 +39,15 @@
 
 // Default are enabled for MSVC and C++ Builder. For MinGW, see detail at README.md or INSTALL.md.
 // VU_SOCKET_ENABLED  - The Socket
-// VU_GUID_ENABLED    - The Globally/Universally Unique Identifier aka GUID
+// VU_GUID_ENABLED    - The Globally/Universally Unique Identifier a.k.a GUID
+// VU_WMI_ENABLED     - The Windows Management Instrumentation a.k.a WMI
 
 #ifndef VU_DISABLE_DEFAULT_CFG
 
 #if defined(_MSC_VER) || defined(__BCPLUSPLUS__)
 #define VU_SOCKET_ENABLED
 #define VU_GUID_ENABLED
+#define VU_WMI_ENABLED
 #endif
 
 #endif // VU_DISABLE_DEFAULT_CFG
@@ -2877,6 +2879,8 @@ private:
  * Windows Management Instrumentation
  */
 
+#ifdef VU_WMI_ENABLED
+
 class CCOMSentry
 {
 public:
@@ -2899,7 +2903,7 @@ public:
   bool Begin(const std::wstring& theObjectPath);
   bool End();
 
-  IEnumWbemClassObject* CWMIProvider::Query(const std::wstring& theQueryString);
+  IEnumWbemClassObject* Query(const std::wstring& theQueryString);
   bool Query(const std::wstring& theQueryString, const std::function<bool(IWbemClassObject& object)> fnCallback);
 
 private:
@@ -2909,6 +2913,8 @@ private:
   IWbemLocator*  m_pWbemLocator;
   IWbemServices* m_pWbemServices;
 };
+
+#endif // VU_WMI_ENABLED
 
 /*---------- The definition of common structure(s) which compatible both ANSI & UNICODE ----------*/
 

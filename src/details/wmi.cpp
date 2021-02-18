@@ -6,12 +6,18 @@
 
 #include "Vutils.h"
 
+#ifdef VU_WMI_ENABLED
 #include <comdef.h>
 #include <wbemidl.h>
+#if defined(_MSC_VER) || defined(__BCPLUSPLUS__)
 #pragma comment(lib, "wbemuuid.lib")
+#endif
+#endif // VU_WMI_ENABLED
 
 namespace vu
 {
+
+#ifdef VU_WMI_ENABLED
 
 /**
  * Implementation for Component Object Model a.k.a COM
@@ -68,12 +74,12 @@ CWMIProvider::~CWMIProvider()
 
 bool CWMIProvider::Ready()
 {
-  return __super::Ready() && m_pWbemServices != nullptr && m_pWbemLocator != nullptr;
+  return CCOMSentry::Ready() && m_pWbemServices != nullptr && m_pWbemLocator != nullptr;
 }
 
 bool CWMIProvider::Begin(const std::wstring& theObjectPath)
 {
-  if (!__super::Ready())
+  if (!CCOMSentry::Ready())
   {
     return false;
   }
@@ -116,16 +122,21 @@ bool CWMIProvider::SetupWBEM(const std::wstring& theObjectPath)
 
   // Connect to WMI
 
+  BSTR bstrObjectPath = SysAllocString(theObjectPath.c_str());
+
   ret = m_pWbemLocator->ConnectServer(
-    _bstr_t(theObjectPath.c_str()), // Object path of WMI namespace
+    bstrObjectPath, // Object path of WMI namespace
     NULL, // User name
     NULL, // User password
     0,    // Locale
-    NULL, // Security
+    0,    // Security
     0,    // Authority
     0,    // Context
     &m_pWbemServices // pointer to IWbemServices proxy
   );
+
+  SysFreeString(bstrObjectPath);
+
   if (FAILED(ret))
   {
     m_pWbemLocator->Release();
@@ -164,13 +175,20 @@ IEnumWbemClassObject* CWMIProvider::Query(const std::wstring& theQueryString)
 
   IEnumWbemClassObject* pEnumerator = nullptr;
 
+  BSTR bstrWQL = SysAllocString(L"WQL");
+  BSTR bstrSQL = SysAllocString(theQueryString.c_str());
+
   HRESULT ret = m_pWbemServices->ExecQuery(
-    bstr_t("WQL"),
-    bstr_t(theQueryString.c_str()),
+    bstrWQL,
+    bstrSQL,
     WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
     NULL,
     &pEnumerator
   );
+
+  SysFreeString(bstrSQL);
+  SysFreeString(bstrWQL);
+
   if (FAILED(ret))
   {
     return nullptr;
@@ -204,5 +222,7 @@ bool CWMIProvider::Query(const std::wstring& theQueryString,
 
   return true;
 }
+
+#endif // VU_WMI_ENABLED
 
 } // namespace vu
