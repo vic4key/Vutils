@@ -22,6 +22,7 @@ It helps your programming go easier, faster and simpler.
 
 * Classes
 	* [GUID - Globally/Universally Unique Identifier](<https://en.wikipedia.org/wiki/Universally_unique_identifier>)
+	* [WMI - Windows Management Instrumentation](<https://docs.microsoft.com/en-us/windows/win32/wmisdk/wmi-start-page>)
 	* [Buffer](<https://www.google.com/search?q=buffer+class>)
 	* [Run-time Link Library](<https://docs.microsoft.com/en-us/windows/win32/dlls/using-run-time-dynamic-linking>)
 	* Path
@@ -98,6 +99,7 @@ Belows are IDE minimum version that supported C++ 11
 
 ## Examples
 
+* [Test\Sample.WMI.h](Test/Sample.WMI.h)
 * [Test\Sample.WMHook.h](Test/Sample.WMHook.h)
 * [Test\Sample.INLHook.h](Test/Sample.INLHook.h)
 * [Test\Sample.IATHook.h](Test/Sample.IATHook.h)

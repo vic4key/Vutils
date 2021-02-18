@@ -350,6 +350,7 @@
     <ClCompile Include="src\details\threadpool.cpp" />
     <ClCompile Include="src\details\window.cpp" />
     <ClCompile Include="src\details\wmhook.cpp" />
+    <ClCompile Include="src\details\wmi.cpp" />
     <ClCompile Include="src\Vutils.cpp" />
   </ItemGroup>
   <ItemGroup>

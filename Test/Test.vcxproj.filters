@@ -90,6 +90,9 @@
     <ClInclude Include="Sample.INLHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sample.WMI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

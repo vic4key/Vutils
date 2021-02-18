@@ -98,6 +98,7 @@
 /* ----------------------------------- Vutils Declarations -------------------------------------- */
 
 #include "inline/std.inl"
+#include "inline/com.inl"
 
 namespace threadpool11
 {
@@ -2870,6 +2871,43 @@ public:
 private:
   ePathSep m_Sep;
   std::wstring m_Path;
+};
+
+/**
+ * Windows Management Instrumentation
+ */
+
+class CCOMSentry
+{
+public:
+  CCOMSentry();
+  virtual ~CCOMSentry();
+
+  virtual bool Ready();
+
+private:
+  bool m_Ready;
+};
+
+class CWMIProvider : public CCOMSentry
+{
+public:
+  CWMIProvider();
+  virtual ~CWMIProvider();
+
+  virtual bool Ready();
+  bool Begin(const std::wstring& theObjectPath);
+  bool End();
+
+  IEnumWbemClassObject* CWMIProvider::Query(const std::wstring& theQueryString);
+  bool Query(const std::wstring& theQueryString, const std::function<bool(IWbemClassObject& object)> fnCallback);
+
+private:
+  bool SetupWBEM(const std::wstring& theObjectPath);
+
+private:
+  IWbemLocator*  m_pWbemLocator;
+  IWbemServices* m_pWbemServices;
 };
 
 /*---------- The definition of common structure(s) which compatible both ANSI & UNICODE ----------*/
