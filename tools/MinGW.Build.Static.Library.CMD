@@ -59,7 +59,7 @@ IF [%response%]==[y] SET conditions=1
 
 IF [%conditions%]==[1] (
 	ECHO     WMI -^> ENABLED
-	SET LIBs=%LIBs% -DVU_WMI_ENABLED -lrpcrt4
+	SET LIBs=%LIBs% -DVU_WMI_ENABLED -lole32 -loleaut32 -lwbemuuid
 ) else (
 	ECHO     WMI -^> DISABLED
 )
