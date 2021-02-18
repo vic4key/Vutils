@@ -6,7 +6,11 @@
 
 #include "Vutils.h"
 
+#include <map>
+#include <cwctype>
 #include <shellapi.h>
+#include <comdef.h>
+#include <wbemidl.h>
 
 namespace vu
 {
@@ -266,6 +270,135 @@ std::wstring vuapi GetContainDirectoryW(bool Slash)
 {
   return ExtractFileDirectoryW(GetCurrentFilePathW(), Slash);
 }
+
+// wchar_t ExtractDriveLetter(const std::wstring& path)
+// {
+//   wchar_t result = L'';
+// 
+//   int idx = PathGetDriveNumberW(path.c_str());
+//   if (idx != -1)
+//   {
+//     result = static_cast<wchar_t>(idx + L'A');
+//   }
+// 
+//   return result;
+// }
+
+#if defined(VU_WMI_ENABLED)
+
+eDiskType GetDiskType(const wchar_t drive)
+{
+  if (std::iswalpha(drive) == 0)
+  {
+    return eDiskType::Unspecified;
+  }
+
+  static std::map<int, eDiskType> types;
+  static std::map<std::wstring, int> partitions;
+
+  // Once generate maps for Partition Names and Disk IDs and Partition Names
+
+  if (types.empty() || partitions.empty())
+  {
+    CWMIProvider WMI;
+
+    const auto fnIsNumber = [](const std::wstring& str)
+    {
+      return str.find_first_not_of(L"0123456789") == std::wstring::npos;
+    };
+
+    // Generate a map of Partition Names and Disk IDs
+
+    WMI.Begin(L"ROOT\\CIMV2");
+    {
+      WMI.Query(L"SELECT * FROM Win32_DiskDrive", [&](IWbemClassObject& object) -> bool
+      {
+        VARIANT s;
+        object.Get(L"DeviceID", 0, &s, 0, 0);
+        std::wstring tmp = s.bstrVal;
+        tmp = tmp.substr(4); // Remove `\.\` in `\.\PHYSICALDRIVE?`
+        std::wstring id = tmp;
+        id = id.substr(13); // Remove `PHYSICALDRIVE` in `PHYSICALDRIVE?`
+
+        std::wstring query = L"Associators of {Win32_DiskDrive.DeviceID='\\\\.\\";
+        query += tmp;
+        query += L"'} where AssocClass=Win32_DiskDriveToDiskPartition";
+        WMI.Query(query, [&](IWbemClassObject& object) -> bool
+        {
+          VARIANT s;
+          object.Get(L"DeviceID", 0, &s, 0, 0);
+
+          std::wstring query = L"Associators of {Win32_DiskPartition.DeviceID='";
+          query += s.bstrVal;
+          query += L"'} where AssocClass=Win32_LogicalDiskToPartition";
+          WMI.Query(query, [&](IWbemClassObject& object) -> bool
+          {
+            if (fnIsNumber(id))
+            {
+              VARIANT s;
+              object.Get(L"DeviceID", 0, &s, 0, 0);
+              std::wstring letter = s.bstrVal;
+
+              partitions[letter] = std::stoi(id);
+            }
+
+            return true;
+          });
+
+          return true;
+        });
+
+        return true;
+      });
+    }
+    WMI.End();
+
+    // Generate a map of Drive IDs and Disk Types
+
+    WMI.Begin(L"ROOT\\Microsoft\\Windows\\Storage");
+    {
+      WMI.Query(L"SELECT * FROM MSFT_PhysicalDisk", [&](IWbemClassObject& object) -> bool
+      {
+        VARIANT deviceId;
+        object.Get(L"DeviceId", 0, &deviceId, 0, 0);
+
+        VARIANT mediaType;
+        object.Get(L"MediaType", 0, &mediaType, 0, 0);
+
+        std::wstring id = deviceId.bstrVal;
+        if (fnIsNumber(id))
+        {
+          types[std::stoi(id)] = static_cast<eDiskType>(mediaType.uintVal);
+        }
+
+        return true;
+      });
+    }
+    WMI.End();
+  }
+
+  // Find the Disk Type of a Partition
+
+  eDiskType result = eDiskType::Unspecified;
+
+  std::wstring s = L"";
+  s += std::towupper(drive);
+  s += L':';
+
+  auto partition = partitions.find(s);
+  if (partition != partitions.cend())
+  {
+    auto type = types.find(partition->second);
+    if (type != types.cend())
+    {
+      result = type->second;
+    }
+  }
+
+  return result;
+}
+
+#endif // VU_WMI_ENABLED
 
 template <class std_string_t, typename char_t>
 std_string_t JoinPathT(

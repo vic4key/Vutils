@@ -23,8 +23,15 @@ namespace vu
  * Implementation for Component Object Model a.k.a COM
  */
 
-CCOMSentry::CCOMSentry() : m_Ready(false)
+bool CCOMSentry::m_Ready = false;
+
+CCOMSentry::CCOMSentry()
 {
+  if (m_Ready)
+  {
+    return;
+  }
+
   HRESULT ret = CoInitializeEx(0, COINIT_MULTITHREADED);
   if (FAILED(ret))
   {
@@ -52,7 +59,12 @@ CCOMSentry::CCOMSentry() : m_Ready(false)
 
 CCOMSentry::~CCOMSentry()
 {
-  CoUninitialize();
+  if (m_Ready)
+  {
+    CoUninitialize();
+  }
+
+  m_Ready = false;
 }
 
 bool CCOMSentry::Ready()

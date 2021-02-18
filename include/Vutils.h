@@ -447,6 +447,14 @@ enum ePathSep
   POSIX,
 };
 
+enum eDiskType : int
+{
+  Unspecified = 0,
+  HDD = 3,
+  SSD = 4,
+  SCM = 5,
+};
+
 bool vuapi IsDirectoryExistsA(const std::string& Directory);
 bool vuapi IsDirectoryExistsW(const std::wstring& Directory);
 bool vuapi IsFileExistsA(const std::string& FilePath);
@@ -463,6 +471,9 @@ std::string vuapi GetCurrentDirectoryA(bool Slash = true);
 std::wstring vuapi GetCurrentDirectoryW(bool Slash = true);
 std::string vuapi GetContainDirectoryA(bool Slash = true);
 std::wstring vuapi GetContainDirectoryW(bool Slash = true);
+#if defined(VU_WMI_ENABLED)
+eDiskType vuapi GetDiskType(const wchar_t drive);
+#endif // VU_WMI_ENABLED
 std::string vuapi JoinPathA(
   const std::string& Left,
   const std::string& Right,
@@ -2889,8 +2900,8 @@ public:
 
   virtual bool Ready();
 
-private:
-  bool m_Ready;
+// private:
+  static bool m_Ready;
 };
 
 class CWMIProvider : public CCOMSentry
