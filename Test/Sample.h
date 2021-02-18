@@ -51,6 +51,8 @@ vu::IResult sample::run()
 
 /*
 
+#pragma once
+
 #include "Sample.h"
 
 DEF_SAMPLE(Sample)
