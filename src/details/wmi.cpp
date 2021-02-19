@@ -51,7 +51,10 @@ CCOMSentry::CCOMSentry()
   );
   if (FAILED(ret))
   {
-    return;
+    if (ret != RPC_E_TOO_LATE)
+    {
+      return;
+    }
   }
 
   m_Ready = true;
