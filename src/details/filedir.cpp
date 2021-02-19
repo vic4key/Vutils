@@ -305,7 +305,7 @@ eDiskType GetDiskTypeW(const wchar_t drive)
 
   if (types.empty() || partitions.empty())
   {
-    CWMIProvider WMI;
+    CWMIProviderW WMI;
 
     const auto fnIsNumber = [](const std::wstring& str)
     {
