@@ -286,7 +286,12 @@ std::wstring vuapi GetContainDirectoryW(bool Slash)
 
 #if defined(VU_WMI_ENABLED)
 
-eDiskType GetDiskType(const wchar_t drive)
+eDiskType GetDiskTypeA(const char drive)
+{
+  return GetDiskTypeW(wchar_t(drive));
+}
+
+eDiskType GetDiskTypeW(const wchar_t drive)
 {
   if (std::iswalpha(drive) == 0)
   {

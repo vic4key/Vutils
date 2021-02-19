@@ -23,6 +23,22 @@ namespace vu
  * Implementation for Component Object Model a.k.a COM
  */
 
+/**
+ * CCOMSentry
+ */
+
+class CCOMSentry
+{
+public:
+  CCOMSentry();
+  virtual ~CCOMSentry();
+
+  virtual bool Ready();
+
+  // private:
+  static bool m_Ready;
+};
+
 bool CCOMSentry::m_Ready = false;
 
 CCOMSentry::CCOMSentry()
@@ -79,20 +95,45 @@ bool CCOMSentry::Ready()
  * Implementation for Windows Management Instrumentation a.k.a WMI
  */
 
-CWMIProvider::CWMIProvider() : CCOMSentry(), m_pWbemLocator(nullptr), m_pWbemServices(nullptr)
+/**
+ * CWMIProviderX
+ */
+
+class CWMIProviderX : public CCOMSentry
+{
+public:
+  CWMIProviderX();
+  virtual ~CWMIProviderX();
+
+  virtual bool Ready();
+  bool Begin(const std::wstring& theObjectPath);
+  bool End();
+
+  IEnumWbemClassObject* Query(const std::wstring& theQueryString);
+  bool Query(const std::wstring& theQueryString, const std::function<bool(IWbemClassObject& object)> fnCallback);
+
+private:
+  bool SetupWBEM(const std::wstring& theObjectPath);
+
+private:
+  IWbemLocator* m_pWbemLocator;
+  IWbemServices* m_pWbemServices;
+};
+
+CWMIProviderX::CWMIProviderX() : CCOMSentry(), m_pWbemLocator(nullptr), m_pWbemServices(nullptr)
 {
 }
 
-CWMIProvider::~CWMIProvider()
+CWMIProviderX::~CWMIProviderX()
 {
 }
 
-bool CWMIProvider::Ready()
+bool CWMIProviderX::Ready()
 {
   return CCOMSentry::Ready() && m_pWbemServices != nullptr && m_pWbemLocator != nullptr;
 }
 
-bool CWMIProvider::Begin(const std::wstring& theObjectPath)
+bool CWMIProviderX::Begin(const std::wstring& theObjectPath)
 {
   if (!CCOMSentry::Ready())
   {
@@ -102,7 +143,7 @@ bool CWMIProvider::Begin(const std::wstring& theObjectPath)
   return SetupWBEM(theObjectPath);
 }
 
-bool CWMIProvider::End()
+bool CWMIProviderX::End()
 {
   if (m_pWbemServices != nullptr)
   {
@@ -119,7 +160,7 @@ bool CWMIProvider::End()
   return true;
 }
 
-bool CWMIProvider::SetupWBEM(const std::wstring& theObjectPath)
+bool CWMIProviderX::SetupWBEM(const std::wstring& theObjectPath)
 {
   // Obtain the initial locater to WMI
 
@@ -181,7 +222,7 @@ bool CWMIProvider::SetupWBEM(const std::wstring& theObjectPath)
   return true;
 }
 
-IEnumWbemClassObject* CWMIProvider::Query(const std::wstring& theQueryString)
+IEnumWbemClassObject* CWMIProviderX::Query(const std::wstring& theQueryString)
 {
   if (!Ready() || theQueryString.empty())
   {
@@ -212,7 +253,7 @@ IEnumWbemClassObject* CWMIProvider::Query(const std::wstring& theQueryString)
   return pEnumerator;
 }
 
-bool CWMIProvider::Query(const std::wstring& theQueryString,
+bool CWMIProviderX::Query(const std::wstring& theQueryString,
                          const std::function<bool(IWbemClassObject& object)> fnCallback)
 {
   auto pEnumerator = Query(theQueryString);
@@ -236,6 +277,87 @@ bool CWMIProvider::Query(const std::wstring& theQueryString,
   }
 
   return true;
+}
+
+/**
+ * CWMIProviderA
+ */
+
+CWMIProviderA::CWMIProviderA()
+{
+  m_pImpl = new CWMIProviderX();
+}
+
+CWMIProviderA::~CWMIProviderA()
+{
+  delete m_pImpl;
+}
+
+bool CWMIProviderA::Ready()
+{
+  return m_pImpl->Ready();
+}
+
+bool CWMIProviderA::Begin(const std::string& ns)
+{
+  auto s = vu::ToStringW(ns);
+  return m_pImpl->Begin(s);
+}
+
+bool CWMIProviderA::End()
+{
+  return m_pImpl->End();
+}
+
+IEnumWbemClassObject* CWMIProviderA::Query(const std::string& qs)
+{
+  auto s = vu::ToStringW(qs);
+  return m_pImpl->Query(s);
+}
+
+bool CWMIProviderA::Query(const std::string& qs, const std::function<bool(IWbemClassObject& object)> fn)
+{
+  auto s = vu::ToStringW(qs);
+  return m_pImpl->Query(s, fn);
+}
+
+/**
+ * CWMIProviderW
+ */
+
+CWMIProviderW::CWMIProviderW()
+{
+  m_pImpl = new CWMIProviderX();
+}
+
+CWMIProviderW::~CWMIProviderW()
+{
+  delete m_pImpl;
+}
+
+bool CWMIProviderW::Ready()
+{
+  return m_pImpl->Ready();
+}
+
+bool CWMIProviderW::Begin(const std::wstring& ns)
+{
+  return m_pImpl->Begin(ns);
+}
+
+bool CWMIProviderW::End()
+{
+  return m_pImpl->End();
+}
+
+IEnumWbemClassObject* CWMIProviderW::Query(const std::wstring& qs)
+{
+  return m_pImpl->Query(qs);
+}
+
+bool CWMIProviderW::Query(const std::wstring& qs, const std::function<bool(IWbemClassObject& object)> fn)
+{
+  return m_pImpl->Query(qs, fn);
 }
 
 #endif // VU_WMI_ENABLED

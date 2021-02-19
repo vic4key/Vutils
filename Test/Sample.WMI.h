@@ -14,9 +14,9 @@ DEF_SAMPLE(WMIProvider)
   // Get-WmiObject -Class MSFT_PhysicalDisk -Namespace ROOT\Microsoft\Windows\Storage | Select FriendlyName
 
   vu::CWMIProvider WMI;
-  WMI.Begin(L"ROOT\\Microsoft\\Windows\\Storage");
+  WMI.Begin(_T("ROOT\\Microsoft\\Windows\\Storage"));
   {
-    WMI.Query(L"SELECT * FROM MSFT_PhysicalDisk", [](IWbemClassObject& object) -> bool
+    WMI.Query(_T("SELECT * FROM MSFT_PhysicalDisk"), [](IWbemClassObject& object) -> bool
     {
       VARIANT s;
       object.Get(L"FriendlyName", 0, &s, 0, 0);
@@ -29,17 +29,18 @@ DEF_SAMPLE(WMIProvider)
   // Example 2
   // Get Type of Disks
 
-  std::map<vu::eDiskType, std::wstring> types;
-  types[vu::eDiskType::Unspecified] = L"Unspecified";
-  types[vu::eDiskType::HDD] = L"HDD";
-  types[vu::eDiskType::SSD] = L"SSD";
-  types[vu::eDiskType::SCM] = L"SCM";
+  std::map<vu::eDiskType, std::tstring> types;
+  types[vu::eDiskType::Unspecified] = _T("Unspecified");
+  types[vu::eDiskType::HDD] = _T("HDD");
+  types[vu::eDiskType::SSD] = _T("SSD");
+  types[vu::eDiskType::SCM] = _T("SCM");
+  
+  std::tstring drives = _T("CDEFG?");
 
-  wchar_t drives[] = { L'C', L'D', L'E', L'F', L'G', L'?' };
-  for (auto drive : drives)
+  for (const auto drive : drives)
   {
     auto type = vu::GetDiskType(drive);
-    std::wcout << drive << " -> " << types[type] << std::endl;
+    std::tcout << drive << _T(" -> ") << types[type] << std::endl;
   }
 
   #endif // VU_WMI_ENABLED

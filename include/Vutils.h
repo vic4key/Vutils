@@ -472,7 +472,8 @@ std::wstring vuapi GetCurrentDirectoryW(bool Slash = true);
 std::string vuapi GetContainDirectoryA(bool Slash = true);
 std::wstring vuapi GetContainDirectoryW(bool Slash = true);
 #if defined(VU_WMI_ENABLED)
-eDiskType vuapi GetDiskType(const wchar_t drive);
+eDiskType vuapi GetDiskTypeA(const char drive);
+eDiskType vuapi GetDiskTypeW(const wchar_t drive);
 #endif // VU_WMI_ENABLED
 std::string vuapi JoinPathA(
   const std::string& Left,
@@ -484,8 +485,8 @@ std::wstring vuapi JoinPathW(
   const std::wstring& Right,
   const ePathSep Separator = ePathSep::WIN
 );
-std::string NormalizePathA(const std::string& Path, const ePathSep Separator = ePathSep::WIN);
-std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator = ePathSep::WIN);
+std::string vuapi NormalizePathA(const std::string& Path, const ePathSep Separator = ePathSep::WIN);
+std::wstring vuapi NormalizePathW(const std::wstring& Path, const ePathSep Separator = ePathSep::WIN);
 
 /*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
 
@@ -531,6 +532,7 @@ std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator =
 #define GetCurrentFilePath GetCurrentFilePathW
 #define GetCurDirectory GetCurrentDirectoryW
 #define GetContainDirectory GetContainDirectoryW
+#define GetDiskType GetDiskTypeW
 #define JoinPath JoinPathW
 #define NormalizePath NormalizePathW
 #else
@@ -574,6 +576,7 @@ std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator =
 #define GetCurrentFilePath GetCurrentFilePathA
 #define GetCurDirectory GetCurrentDirectoryA
 #define GetContainDirectory GetContainDirectoryA
+#define GetDiskType GetDiskTypeA
 #define JoinPath JoinPathA
 #define NormalizePath NormalizePathA
 #endif
@@ -2892,37 +2895,48 @@ private:
 
 #ifdef VU_WMI_ENABLED
 
-class CCOMSentry
+class CWMIProviderX;
+
+/**
+ * CWMIProviderA
+ */
+
+class CWMIProviderA
 {
 public:
-  CCOMSentry();
-  virtual ~CCOMSentry();
+  CWMIProviderA();
+  virtual ~CWMIProviderA();
 
   virtual bool Ready();
-
-// private:
-  static bool m_Ready;
-};
-
-class CWMIProvider : public CCOMSentry
-{
-public:
-  CWMIProvider();
-  virtual ~CWMIProvider();
-
-  virtual bool Ready();
-  bool Begin(const std::wstring& theObjectPath);
+  bool Begin(const std::string& ns);
   bool End();
 
-  IEnumWbemClassObject* Query(const std::wstring& theQueryString);
-  bool Query(const std::wstring& theQueryString, const std::function<bool(IWbemClassObject& object)> fnCallback);
+  IEnumWbemClassObject* Query(const std::string& qs);
+  bool Query(const std::string& qs, const std::function<bool(IWbemClassObject& object)> fn);
 
 private:
-  bool SetupWBEM(const std::wstring& theObjectPath);
+  CWMIProviderX* m_pImpl;
+};
+
+/**
+ * CWMIProviderW
+ */
+
+class CWMIProviderW
+{
+public:
+  CWMIProviderW();
+  virtual ~CWMIProviderW();
+
+  virtual bool Ready();
+  bool Begin(const std::wstring& ns);
+  bool End();
+
+  IEnumWbemClassObject* Query(const std::wstring& qs);
+  bool Query(const std::wstring& qs, const std::function<bool(IWbemClassObject& object)> fn);
 
 private:
-  IWbemLocator*  m_pWbemLocator;
-  IWbemServices* m_pWbemServices;
+  CWMIProviderX* m_pImpl;
 };
 
 #endif // VU_WMI_ENABLED
@@ -2952,6 +2966,7 @@ private:
 #define CPEFileT CPEFileTW
 #define CPath CPathW
 #define CScopeStopWatch CScopeStopWatchW
+#define CWMIProvider CWMIProviderW
 #else
 #define CGUID CGUIDA
 #define CAPIHook CAPIHookA
@@ -2967,6 +2982,7 @@ private:
 #define CPEFileT CPEFileTA
 #define CPath CPathA
 #define CScopeStopWatch CScopeStopWatchA
+#define CWMIProvider CWMIProviderA
 #endif
 
 } // namespace vu
