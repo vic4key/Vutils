@@ -355,6 +355,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Boob" />
+    <None Include="include\inline\com.inl" />
     <None Include="include\inline\defs.inl" />
     <None Include="include\inline\std.inl" />
     <None Include="include\inline\types.inl" />
