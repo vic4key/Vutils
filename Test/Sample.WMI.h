@@ -2,9 +2,11 @@
 
 #include "Sample.h"
 
+#if defined(VU_WMI_ENABLED)
 #include <map>
 #include <comdef.h>
 #include <wbemidl.h>
+#endif // VU_WMI_ENABLED
 
 DEF_SAMPLE(WMIProvider)
 {
