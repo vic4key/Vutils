@@ -32,7 +32,6 @@ G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_SOCKET_ENAB
 #include "Sample.INIFile.h"
 #include "Sample.Registry.h"
 #include "Sample.Process.h"
-#include "Sample.Service.h"
 #include "Sample.StopWatch.h"
 #include "Sample.FileSystem.h"
 #include "Sample.FileMapping.h"
@@ -42,6 +41,7 @@ G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_SOCKET_ENAB
 #include "Sample.InputDialog.h"
 #include "Sample.ThreadPool.h"
 #include "Sample.WMI.h"
+#include "Sample.Service.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
