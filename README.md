@@ -27,7 +27,7 @@ It helps your programming go easier, faster and simpler.
 	* [Run-time Link Library](<https://docs.microsoft.com/en-us/windows/win32/dlls/using-run-time-dynamic-linking>)
 	* Path
 	* Process
-	* Service
+	* [Service Manager](<https://docs.microsoft.com/en-us/windows-hardware/drivers/gettingstarted/what-is-a-driver->)
 	* Registry
 	* [Sync/Async Socket](<https://docs.plm.automation.siemens.com/content/pl4x/18.1/T4EA/en_US/Teamcenter_Gateway-Technical_Connectivity_Guide/synchronous_vs_asynchronous.html>)
 	* [Thread Pool](<https://en.wikipedia.org/wiki/Thread_pool>)
