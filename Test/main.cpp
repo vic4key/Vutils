@@ -72,7 +72,7 @@ int _tmain(int argc, _TCHAR* argv[])
   // VU_SM_ADD_SAMPLE(INIFile);
   // VU_SM_ADD_SAMPLE(Registry);
   // VU_SM_ADD_SAMPLE(Process);
-  // VU_SM_ADD_SAMPLE(Service);
+  // VU_SM_ADD_SAMPLE(ServiceManager);
   // VU_SM_ADD_SAMPLE(StopWatch);
   // VU_SM_ADD_SAMPLE(FileSystem);
   // VU_SM_ADD_SAMPLE(FileMapping);

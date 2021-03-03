@@ -1,10 +1,15 @@
 #pragma once
 
-#include "Sample.h"
+#include "Vutils.h"
 
 #include <conio.h>
 
-DEF_SAMPLE(Service)
+#include <vu>
+#include <algorithm>
+
+using namespace vu;
+
+DEF_SAMPLE(ServiceManager)
 {
   if (!vu::IsAdministrator())
   {
@@ -12,84 +17,39 @@ DEF_SAMPLE(Service)
   }
   else
   {
-    std::tcout << _T("You are Administrator") << std::endl;
+    std::tstring driver_name = _T("WKE Driver");
+    std::tstring driver_display_name = _T("Windows Kernel Explorer Driver");
+    std::tstring driver_path = vu::GetCurDirectory();
+    #ifdef _WIN64
+    driver_path += _T("WKE64.sys");
+    #else // _WIN32
+    driver_path += _T("WKE32.sys");
+    #endif // _WIN64
 
-    // CService
-    vu::CService srv;
+    CServiceManager::Instance().Create(driver_path, driver_name, driver_display_name);
 
-    if (srv.Init())
+    auto services = vu::CServiceManager::Instance().GetServices(SERVICE_ALL_TYPES, SERVICE_RUNNING);
+    assert(!services.empty());
+
+    auto pService = vu::CServiceManager::Instance().Query(driver_name);
+    assert(pService != nullptr);
+    
+    auto l = CServiceManager::Instance().Find(driver_name);
+    for (auto& e : l)
     {
-      std::tcout << _T("Service -> Initialize -> Success") << std::endl;
-    }
-    else
-    {
-      std::tcout << _T("Service -> Initialize -> Failure") << vu::LastError() << std::endl;
-    }
-
-    std::cout << std::endl;
-
-    std::tcout << _T("Enter to create service...") << std::endl; _getch();
-
-    if (srv.Create(_T("C:\\Windows\\System32\\drivers\\VBoxUSBMon.sys")))
-    {
-      std::tcout << _T("Service -> Create -> Success") << std::endl;
-    }
-    else
-    {
-      std::tcout << _T("Service -> Create -> Failure") << vu::LastError() << std::endl;
+      std::tcout << e.lpServiceName << _T(" - ") << e.lpDisplayName << std::endl;
     }
 
-    std::cout << std::endl;
+    std::tcout << _T("Press any key to start service ...") << std::endl; _getch();
+    CServiceManager::Instance().Start(driver_name);
+    vu::CServiceManager::Instance().GetState(driver_name);
+    
+    std::tcout << _T("Press any key to stop service ...") << std::endl; _getch();
+    vu::CServiceManager::Instance().Stop(driver_name);
+    vu::CServiceManager::Instance().GetState(driver_name);
 
-    std::tcout << _T("Enter to start service...") << std::endl; _getch();
-
-    if (srv.Start())
-    {
-      std::tcout << _T("Service -> Start -> Success") << std::endl;
-    }
-    else
-    {
-      std::tcout << _T("Service -> Start -> Failure") << vu::LastError() << std::endl;
-    }
-
-    std::cout << std::endl;
-
-    std::tcout << _T("Enter to stop service...") << std::endl; _getch();
-
-    if (srv.Stop())
-    {
-      std::tcout << _T("Service -> Stop -> Success") << std::endl;
-    }
-    else
-    {
-      std::tcout << _T("Service -> Stop -> Failure") << vu::LastError() << std::endl;
-    }
-
-    std::cout << std::endl;
-
-    std::tcout << _T("Enter to close service...") << std::endl; _getch();
-
-    if (srv.Close())
-    {
-      std::tcout << _T("Service -> Close -> Success") << std::endl;
-    }
-    else
-    {
-      std::tcout << _T("Service -> Close -> Failure") << vu::LastError() << std::endl;
-    }
-
-    std::cout << std::endl;
-
-    if (srv.Destroy())
-    {
-      std::tcout << _T("Service -> Release -> Success") << std::endl;
-    }
-    else
-    {
-      std::tcout << _T("Service -> Release -> Failure") << vu::LastError() << std::endl;
-    }
-
-    std::cout << std::endl;
+    std::tcout << _T("Press any key to delete service ...") << std::endl; _getch();
+    CServiceManager::Instance().Delete(driver_name);
   }
 
   return vu::VU_OK;

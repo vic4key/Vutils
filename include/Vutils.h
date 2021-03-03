@@ -1392,192 +1392,109 @@ public:
  * Service Working
  */
 
-typedef enum _SERVICE_ACCESS_TYPE
-{
-  SAT_UNKNOWN              = -1,
-  SAT_QUERY_CONFIG         = SERVICE_QUERY_CONFIG,
-  SAT_CHANGE_CONFIG        = SERVICE_CHANGE_CONFIG,
-  SAT_QUERY_STATUS         = SERVICE_QUERY_STATUS,
-  SAT_ENUMERATE_DEPENDENTS = SERVICE_ENUMERATE_DEPENDENTS,
-  SAT_START                = SERVICE_START,
-  SAT_STOP                 = SERVICE_STOP,
-  SAT_PAUSE_CONTINUE       = SERVICE_PAUSE_CONTINUE,
-  SAT_INTERROGATE          = SERVICE_INTERROGATE,
-  SAT_USER_DEFINED_CONTROL = SERVICE_USER_DEFINED_CONTROL,
-  SAT_ALL_ACCESS           = SERVICE_ALL_ACCESS,
-  SAT_DELETE               = DELETE,
-} eServiceAccessType;
+#define SERVICE_ALL_TYPES   -1
+#define SERVICE_ALL_STATES  -1
 
-typedef enum _SERVICE_TYPE
-{
-  ST_UNKNOWN             = -1,
-  ST_KERNEL_DRIVER       = SERVICE_KERNEL_DRIVER,
-  ST_SYSTEM_DRIVER       = SERVICE_FILE_SYSTEM_DRIVER,
-  ST_ADAPTER             = SERVICE_ADAPTER,
-  ST_RECOGNIZER_DRIVER   = SERVICE_RECOGNIZER_DRIVER,
-  ST_WIN32_OWN_PROCESS   = SERVICE_WIN32_OWN_PROCESS,
-  ST_WIN32_SHARE_PROCESS = SERVICE_WIN32_SHARE_PROCESS,
-} eServiceType;
+ /**
+  * CServiceManagerT
+  */
 
-typedef enum _SERVICE_STATE
-{
-  SS_UNKNOWN          = -1,
-  SS_STOPPED          = SERVICE_STOPPED,
-  SS_START_PENDING    = SERVICE_START_PENDING,
-  SS_STOP_PENDING     = SERVICE_STOP_PENDING,
-  SS_RUNNING          = SERVICE_RUNNING,
-  SS_CONTINUE_PENDING = SERVICE_CONTINUE_PENDING,
-  SS_PAUSE_PENDING    = SERVICE_PAUSE_PENDING,
-  SS_PAUSED           = SERVICE_PAUSED,
-} eServiceState;
+#define SMTypes template <typename ServiceT, typename StringT, typename CharT>
+#define SMDeclares ServiceT, StringT, CharT
 
-#ifndef SERVICE_CONTROL_PRESHUTDOWN
-#define SERVICE_CONTROL_PRESHUTDOWN 0x0000000F
-#endif
-
-#ifndef SERVICE_CONTROL_TIMECHANGE
-#define SERVICE_CONTROL_TIMECHANGE  0x00000010
-#endif
-
-#ifndef SERVICE_CONTROL_TRIGGEREVENT
-#define SERVICE_CONTROL_TRIGGEREVENT  0x00000020
-#endif
-
-typedef enum _SERVICE_CONTROL
-{
-  SC_STOP                  = SERVICE_CONTROL_STOP,
-  SC_PAUSE                 = SERVICE_CONTROL_PAUSE,
-  SC_CONTINUE              = SERVICE_CONTROL_CONTINUE,
-  SC_INTERROGATE           = SERVICE_CONTROL_INTERROGATE,
-  SC_SHUTDOWN              = SERVICE_CONTROL_SHUTDOWN,
-  SC_PARAMCHANGE           = SERVICE_CONTROL_PARAMCHANGE,
-  SC_NETBINDADD            = SERVICE_CONTROL_NETBINDADD,
-  SC_NETBINDREMOVE         = SERVICE_CONTROL_NETBINDREMOVE,
-  SC_NETBINDENABLE         = SERVICE_CONTROL_NETBINDENABLE,
-  SC_NETBINDDISABLE        = SERVICE_CONTROL_NETBINDDISABLE,
-  SC_DEVICEEVENT           = SERVICE_CONTROL_DEVICEEVENT,
-  SC_HARDWAREPROFILECHANGE = SERVICE_CONTROL_HARDWAREPROFILECHANGE,
-  SC_POWEREVENT            = SERVICE_CONTROL_POWEREVENT,
-  SC_SESSIONCHANGE         = SERVICE_CONTROL_SESSIONCHANGE,
-  SC_PRESHUTDOWN           = SERVICE_CONTROL_PRESHUTDOWN,
-  SC_TIMECHANGE            = SERVICE_CONTROL_TIMECHANGE,
-  SC_TRIGGEREVENT          = SERVICE_CONTROL_TRIGGEREVENT,
-} eServiceControl;
-
-typedef enum _SERVICE_START_TYPE
-{
-  SST_UNKNOWN      = -1,
-  SST_BOOT_START   = SERVICE_BOOT_START,
-  SST_SYSTEM_START = SERVICE_SYSTEM_START,
-  SST_AUTO_START   = SERVICE_AUTO_START,
-  SST_DEMAND_START = SERVICE_DEMAND_START,
-  SST_DISABLED     = SERVICE_DISABLED,
-} eServiceStartType;
-
-typedef enum _SERVICE_ERROR_CONTROL_TYPE
-{
-  SE_UNKNOWN  = -1,
-  SE_IGNORE   = SERVICE_ERROR_IGNORE,
-  SE_NORMAL   = SERVICE_ERROR_NORMAL,
-  SE_SEVERE   = SERVICE_ERROR_SEVERE,
-  SE_CRITICAL = SERVICE_ERROR_CRITICAL,
-} eServiceErrorControlType;
-
-typedef enum _SC_ACCESS_TYPE
-{
-  SC_CONNECT            = SC_MANAGER_CONNECT,
-  SC_CREATE_SERVICE     = SC_MANAGER_CREATE_SERVICE,
-  SC_ENUMERATE_SERVICE  = SC_MANAGER_ENUMERATE_SERVICE,
-  SC_LOCK               = SC_MANAGER_LOCK,
-  SC_QUERY_LOCK_STATUS  = SC_MANAGER_QUERY_LOCK_STATUS,
-  SC_MODIFY_BOOT_CONFIG = SC_MANAGER_MODIFY_BOOT_CONFIG,
-  SC_ALL_ACCESS         = SC_MANAGER_ALL_ACCESS,
-} eSCAccessType;
-
-typedef struct _SERVICE_STATUS TServiceStatus;
-
-class CServiceX : public CLastError
+template <typename ServiceT, typename StringT, typename CharT>
+class CServiceManagerT : public CLastError
 {
 public:
-  CServiceX();
-  virtual ~CServiceX();
+  typedef std::vector<ServiceT> TServices;
 
-  bool vuapi Init(eSCAccessType SCAccessType = eSCAccessType::SC_ALL_ACCESS);
-  bool vuapi Destroy();
-  bool vuapi Control(eServiceControl ServiceControl);
-  bool vuapi Start();
-  bool vuapi Stop();
-  bool vuapi Close();
+  CServiceManagerT();
+  virtual ~CServiceManagerT();
 
-  bool vuapi QueryStatus(TServiceStatus& ServiceStatus);
-
-  eServiceType vuapi GetType();
-  eServiceState vuapi GetState();
+  virtual void Refresh();
+  virtual TServices GetServices(ulong types = SERVICE_ALL_TYPES, ulong states = SERVICE_ALL_STATES);
 
 protected:
-  SC_HANDLE m_SCMHandle, m_ServiceHandle;
-  SERVICE_STATUS m_Status;
+  virtual VUResult Initialize() = 0;
+
+protected:
   bool m_Initialized;
+  SC_HANDLE m_Manager;
+  TServices m_Services;
 };
 
-class CServiceA: public CServiceX
+/**
+ * CServiceManagerA
+ */
+
+typedef CServiceManagerT<ENUM_SERVICE_STATUS_PROCESSA, std::string, char> CServiceManagerTA;
+
+class CServiceManagerA : public CServiceManagerTA, public CSingletonT<CServiceManagerA>
 {
 public:
-  CServiceA();
-  virtual ~CServiceA();
+  CServiceManagerA();
+  virtual ~CServiceManagerA();
 
-  bool vuapi Create(
-    const std::string ServiceFilePath,
-    eServiceAccessType ServiceAccessType = SAT_ALL_ACCESS,
-    eServiceType ServiceType = eServiceType::ST_KERNEL_DRIVER,
-    eServiceStartType ServiceStartType = eServiceStartType::SST_DEMAND_START,
-    eServiceErrorControlType ServiceErrorControlType = eServiceErrorControlType::SE_IGNORE
+  TServices Find(const std::string& str, bool exact = false, bool nameonly = false);
+  std::unique_ptr<TServices::value_type> Query(const std::string& service_name);
+  int GetState(const std::string& service_name);
+
+  std::unique_ptr<SERVICE_STATUS> Control(const TServices::value_type* pService, const ulong ctrlcode);
+  std::unique_ptr<SERVICE_STATUS> Control(const std::string& name, const ulong ctrlcode);
+
+  VUResult Create(
+    const std::string& file_path,
+    const std::string& service_name,
+    const std::string& display_name,
+    const ulong service_type = SERVICE_KERNEL_DRIVER,
+    const ulong access_type = SERVICE_ALL_ACCESS,
+    const ulong start_type = SERVICE_DEMAND_START,
+    const ulong ctrl_type = SERVICE_ERROR_NORMAL
   );
 
-  bool vuapi Open(
-    const std::string& ServiceName,
-    eServiceAccessType ServiceAccessType = eServiceAccessType::SAT_ALL_ACCESS
-  );
+  VUResult Delete(const std::string& name);
+  VUResult Start(const std::string& name);
+  VUResult Stop(const std::string& name);
 
-  std::string vuapi GetName(const std::string& AnotherServiceDisplayName = "");
-  std::string vuapi GetDisplayName(const std::string& AnotherServiceName = "");
-
-private:
-  std::string m_Name;
-  std::string m_DisplayName;
-  std::string m_ServiceName;
-  std::string m_ServiceFileName;
-  std::string m_ServiceFilePath;
+protected:
+  virtual VUResult Initialize();
 };
 
-class CServiceW: public CServiceX
+/**
+ * CServiceManagerW
+ */
+
+typedef CServiceManagerT<ENUM_SERVICE_STATUS_PROCESSW, std::wstring, wchar_t> CServiceManagerTW;
+
+class CServiceManagerW : public CServiceManagerTW, public CSingletonT<CServiceManagerW>
 {
 public:
-  CServiceW();
-  virtual ~CServiceW();
+  CServiceManagerW();
+  virtual ~CServiceManagerW();
 
-  bool vuapi Create(
-    const std::wstring& ServiceFilePath,
-    eServiceAccessType ServiceAccessType = eServiceAccessType::SAT_ALL_ACCESS,
-    eServiceType ServiceType = eServiceType::ST_KERNEL_DRIVER,
-    eServiceStartType ServiceStartType = eServiceStartType::SST_DEMAND_START,
-    eServiceErrorControlType ServiceErrorControlType = eServiceErrorControlType::SE_IGNORE
+  TServices Find(const std::wstring& str, bool exact = false, bool nameonly = false);
+  std::unique_ptr<TServices::value_type> Query(const std::wstring& service_name);
+  int GetState(const std::wstring& service_name); // https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-controlservice#remarks
+
+  std::unique_ptr<SERVICE_STATUS> Control(const TServices::value_type* pService, const ulong ctrlcode);
+  std::unique_ptr<SERVICE_STATUS> Control(const std::wstring& name, const ulong ctrlcode);
+
+  VUResult Create(
+    const std::wstring& file_path,
+    const std::wstring& service_name,
+    const std::wstring& display_name,
+    const ulong service_type = SERVICE_KERNEL_DRIVER,
+    const ulong access_type = SERVICE_ALL_ACCESS,
+    const ulong start_type = SERVICE_DEMAND_START,
+    const ulong ctrl_type = SERVICE_ERROR_NORMAL
   );
 
-  bool vuapi Open(
-    const std::wstring& ServiceName,
-    eServiceAccessType ServiceAccessType = eServiceAccessType::SAT_ALL_ACCESS
-  );
+  VUResult Delete(const std::wstring& name);
+  VUResult Start(const std::wstring& name);
+  VUResult Stop(const std::wstring& name);
 
-  std::wstring vuapi GetName(const std::wstring& AnotherServiceDisplayName = L"");
-  std::wstring vuapi GetDisplayName(const std::wstring& AnotherServiceName = L"");
-
-private:
-  std::wstring m_Name;
-  std::wstring m_DisplayName;
-  std::wstring m_ServiceName;
-  std::wstring m_ServiceFileName;
-  std::wstring m_ServiceFilePath;
+protected:
+  virtual VUResult Initialize();
 };
 
 /**
@@ -2957,7 +2874,7 @@ private:
 #define CIATHookManager CIATHookManagerW
 #define CWMHook CWMHookW
 #define CProcess CProcessW
-#define CService CServiceW
+#define CServiceManager CServiceManagerW
 #define CLibrary CLibraryW
 #define CFileSystem CFileSystemW
 #define CFileMapping CFileMappingW
@@ -2973,7 +2890,7 @@ private:
 #define CIATHookManager CIATHookManagerA
 #define CWMHook CWMHookA
 #define CProcess CProcessA
-#define CService CServiceA
+#define CServiceManager CServiceManagerA
 #define CLibrary CLibraryA
 #define CFileSystem CFileSystemA
 #define CFileMapping CFileMappingA
