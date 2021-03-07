@@ -355,12 +355,12 @@ VUResult CServiceManagerA::Delete(const std::string& name)
 
   m_LastErrorCode = GetLastError();
 
+  CloseServiceHandle(hService);
+
   if (result == FALSE)
   {
     return __LINE__;
   }
-
-  CloseServiceHandle(hService);
 
   this->Refresh();
 
@@ -762,12 +762,12 @@ VUResult CServiceManagerW::Delete(const std::wstring& name)
 
   m_LastErrorCode = GetLastError();
 
+  CloseServiceHandle(hService);
+
   if (result == FALSE)
   {
     return __LINE__;
   }
-
-  CloseServiceHandle(hService);
 
   this->Refresh();
 
