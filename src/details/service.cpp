@@ -276,6 +276,62 @@ int CServiceManagerA::GetState(const std::string& service_name)
   return pService->ServiceStatusProcess.dwCurrentState;
 }
 
+CServiceManagerA::TDependents CServiceManagerA::GetDependents(
+  const std::string& service_name, const ulong states)
+{
+  TDependents result;
+
+  auto pService = this->Query(service_name);
+  if (pService == nullptr)
+  {
+    return result;
+  }
+
+  auto hService = OpenServiceA(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
+
+  m_LastErrorCode = GetLastError();
+
+  if (hService == nullptr)
+  {
+    return result;
+  }
+
+  DWORD cbBytesNeeded = 0, nServicesReturned = 0;
+
+  EnumDependentServicesA(
+    hService,
+    states,
+    nullptr,
+    0,
+    &cbBytesNeeded,
+    &nServicesReturned
+  );
+
+  m_LastErrorCode = GetLastError();
+
+  if (cbBytesNeeded > 0)
+  {
+    result.resize(cbBytesNeeded / sizeof(TDependents::value_type) + 1); // +1 for padding
+
+    EnumDependentServicesA(
+      hService,
+      states,
+      result.data(),
+      cbBytesNeeded,
+      &cbBytesNeeded,
+      &nServicesReturned
+    );
+
+    m_LastErrorCode = GetLastError();
+
+    result.resize(nServicesReturned);
+  }
+
+  CloseServiceHandle(hService);
+
+  return result;
+}
+
 VUResult CServiceManagerA::Delete(const std::string& name)
 {
   auto pService = this->Query(name);
@@ -625,6 +681,62 @@ int CServiceManagerW::GetState(const std::wstring& service_name)
   }
 
   return pService->ServiceStatusProcess.dwCurrentState;
+}
+
+CServiceManagerW::TDependents CServiceManagerW::GetDependents(
+  const std::wstring& service_name, const ulong states)
+{
+  TDependents result;
+
+  auto pService = this->Query(service_name);
+  if (pService == nullptr)
+  {
+    return result;
+  }
+
+  auto hService = OpenServiceW(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
+
+  m_LastErrorCode = GetLastError();
+
+  if (hService == nullptr)
+  {
+    return result;
+  }
+
+  DWORD cbBytesNeeded = 0, nServicesReturned = 0;
+
+  EnumDependentServicesW(
+    hService,
+    states,
+    nullptr,
+    0,
+    &cbBytesNeeded,
+    &nServicesReturned
+  );
+
+  m_LastErrorCode = GetLastError();
+
+  if (cbBytesNeeded > 0)
+  {
+    result.resize(cbBytesNeeded / sizeof(TDependents::value_type) + 1); // +1 for padding
+
+    EnumDependentServicesW(
+      hService,
+      states,
+      result.data(),
+      cbBytesNeeded,
+      &cbBytesNeeded,
+      &nServicesReturned
+    );
+
+    m_LastErrorCode = GetLastError();
+
+    result.resize(nServicesReturned);
+  }
+
+  CloseServiceHandle(hService);
+
+  return result;
 }
 
 VUResult CServiceManagerW::Delete(const std::wstring& name)

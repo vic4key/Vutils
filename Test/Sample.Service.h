@@ -50,6 +50,12 @@ DEF_SAMPLE(ServiceManager)
 
     std::tcout << _T("Press any key to delete service ...") << std::endl; _getch();
     CServiceManager::Instance().Delete(driver_name);
+
+    auto l = CServiceManager::Instance().GetDependents(_T("WSearch"));
+    for (auto& e : l)
+    {
+      std::tcout << e.lpServiceName << _T(" - ") << e.lpDisplayName << std::endl;
+    }
   }
 
   return vu::VU_OK;
