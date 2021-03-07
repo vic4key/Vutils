@@ -26,6 +26,7 @@ DEF_SAMPLE(ServiceManager)
     driver_path += _T("WKE32.sys");
     #endif // _WIN64
 
+    std::tcout << _T("Press any key to create service ...") << std::endl; _getch();
     CServiceManager::Instance().Create(driver_path, driver_name, driver_display_name);
 
     auto services = vu::CServiceManager::Instance().GetServices(SERVICE_ALL_TYPES, SERVICE_RUNNING);
