@@ -107,9 +107,11 @@ VUResult CServiceManagerA::Initialize()
 
   m_Services.clear();
 
-  m_Manager = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
-
-  m_LastErrorCode = GetLastError();
+  if (m_Manager == nullptr)
+  {
+    m_Manager = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
+    m_LastErrorCode = GetLastError();
+  }
 
   if (m_Manager == nullptr)
   {
