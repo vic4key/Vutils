@@ -290,10 +290,10 @@ int CServiceManagerA::GetState(const std::string& service_name)
   return pService->ServiceStatusProcess.dwCurrentState;
 }
 
-CServiceManagerA::TDependents CServiceManagerA::GetDependents(
+CServiceManagerA::TDepends CServiceManagerA::GetDependents(
   const std::string& service_name, const ulong states)
 {
-  TDependents result;
+  TDepends result;
 
   auto pService = this->Query(service_name);
   if (pService == nullptr)
@@ -325,7 +325,7 @@ CServiceManagerA::TDependents CServiceManagerA::GetDependents(
 
   if (cbBytesNeeded > 0)
   {
-    result.resize(cbBytesNeeded / sizeof(TDependents::value_type) + 1); // +1 for padding
+    result.resize(cbBytesNeeded / sizeof(TDepends::value_type) + 1); // +1 for padding
 
     EnumDependentServicesA(
       hService,
@@ -346,10 +346,10 @@ CServiceManagerA::TDependents CServiceManagerA::GetDependents(
   return result;
 }
 
-CServiceManagerA::TDependents CServiceManagerA::GetDependencies(
+CServiceManagerA::TDepends CServiceManagerA::GetDependencies(
   const std::string& service_name, const ulong states)
 {
-  TDependents result;
+  TDepends result;
 
   auto pService = this->Query(service_name);
   if (pService == nullptr)
@@ -387,7 +387,7 @@ CServiceManagerA::TDependents CServiceManagerA::GetDependencies(
       auto pService = this->Query(dependency);
       if (pService != nullptr)
       {
-        TDependents::value_type tmp = { 0 };
+        TDepends::value_type tmp = { 0 };
         tmp.lpServiceName = pService->lpServiceName;
         tmp.lpDisplayName = pService->lpDisplayName;
         fnAssign(pService->ServiceStatusProcess, tmp.ServiceStatus);
@@ -752,10 +752,10 @@ int CServiceManagerW::GetState(const std::wstring& service_name)
   return pService->ServiceStatusProcess.dwCurrentState;
 }
 
-CServiceManagerW::TDependents CServiceManagerW::GetDependents(
+CServiceManagerW::TDepends CServiceManagerW::GetDependents(
   const std::wstring& service_name, const ulong states)
 {
-  TDependents result;
+  TDepends result;
 
   auto pService = this->Query(service_name);
   if (pService == nullptr)
@@ -787,7 +787,7 @@ CServiceManagerW::TDependents CServiceManagerW::GetDependents(
 
   if (cbBytesNeeded > 0)
   {
-    result.resize(cbBytesNeeded / sizeof(TDependents::value_type) + 1); // +1 for padding
+    result.resize(cbBytesNeeded / sizeof(TDepends::value_type) + 1); // +1 for padding
 
     EnumDependentServicesW(
       hService,
@@ -808,10 +808,10 @@ CServiceManagerW::TDependents CServiceManagerW::GetDependents(
   return result;
 }
 
-CServiceManagerW::TDependents CServiceManagerW::GetDependencies(
+CServiceManagerW::TDepends CServiceManagerW::GetDependencies(
   const std::wstring& service_name, const ulong states)
 {
-  TDependents result;
+  TDepends result;
 
   auto pService = this->Query(service_name);
   if (pService == nullptr)
@@ -849,7 +849,7 @@ CServiceManagerW::TDependents CServiceManagerW::GetDependencies(
       auto pService = this->Query(dependency);
       if (pService != nullptr)
       {
-        TDependents::value_type tmp = { 0 };
+        TDepends::value_type tmp = { 0 };
         tmp.lpServiceName = pService->lpServiceName;
         tmp.lpDisplayName = pService->lpDisplayName;
         fnAssign(pService->ServiceStatusProcess, tmp.ServiceStatus);
