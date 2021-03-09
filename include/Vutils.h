@@ -1441,6 +1441,7 @@ public:
   int GetState(const std::string& service_name);
 
   TDependents GetDependents(const std::string& service_name, const ulong states = SERVICE_STATE_ALL);
+  TDependents GetDependencies(const std::string& service_name, const ulong states = SERVICE_STATE_ALL);
 
   std::unique_ptr<SERVICE_STATUS> Control(const TServices::value_type* pService, const ulong ctrlcode);
   std::unique_ptr<SERVICE_STATUS> Control(const std::string& name, const ulong ctrlcode);
@@ -1480,6 +1481,7 @@ public:
   int GetState(const std::wstring& service_name); // https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-controlservice#remarks
 
   TDependents GetDependents(const std::wstring& service_name, const ulong states = SERVICE_STATE_ALL);
+  TDependents GetDependencies(const std::wstring& service_name, const ulong states = SERVICE_STATE_ALL);
 
   std::unique_ptr<SERVICE_STATUS> Control(const TServices::value_type* pService, const ulong ctrlcode);
   std::unique_ptr<SERVICE_STATUS> Control(const std::wstring& name, const ulong ctrlcode);

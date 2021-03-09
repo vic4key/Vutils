@@ -43,6 +43,18 @@ bool fnContains(const StringT& _1, const StringT& _2, bool exact)
   return false;
 };
 
+template<class SS, class SSP>
+void fnAssign(const SSP& src, SS& dst)
+{
+  dst.dwServiceType = src.dwServiceType;
+  dst.dwCurrentState = src.dwCurrentState;
+  dst.dwControlsAccepted = src.dwControlsAccepted;
+  dst.dwWin32ExitCode = src.dwWin32ExitCode;
+  dst.dwServiceSpecificExitCode = src.dwServiceSpecificExitCode;
+  dst.dwCheckPoint = src.dwCheckPoint;
+  dst.dwWaitHint = src.dwWaitHint;
+};
+
 /**
  * CServiceManagerT
  */
@@ -327,6 +339,61 @@ CServiceManagerA::TDependents CServiceManagerA::GetDependents(
     m_LastErrorCode = GetLastError();
 
     result.resize(nServicesReturned);
+  }
+
+  CloseServiceHandle(hService);
+
+  return result;
+}
+
+CServiceManagerA::TDependents CServiceManagerA::GetDependencies(
+  const std::string& service_name, const ulong states)
+{
+  TDependents result;
+
+  auto pService = this->Query(service_name);
+  if (pService == nullptr)
+  {
+    return result;
+  }
+
+  auto hService = OpenServiceA(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
+
+  m_LastErrorCode = GetLastError();
+
+  if (hService == nullptr)
+  {
+    return result;
+  }
+
+  DWORD cbBytesNeeded = 0;
+
+  QueryServiceConfigA(hService, nullptr, 0, &cbBytesNeeded);
+
+  m_LastErrorCode = GetLastError();
+
+  if (cbBytesNeeded > 0)
+  {
+    std::vector<char> buffer(cbBytesNeeded);
+    auto ptr = LPQUERY_SERVICE_CONFIGA(buffer.data());
+
+    QueryServiceConfigA(hService, ptr, cbBytesNeeded, &cbBytesNeeded);
+
+    m_LastErrorCode = GetLastError();
+
+    const auto dependencies = MultiStringToListA(ptr->lpDependencies);
+    for (const auto& dependency : dependencies)
+    {
+      auto pService = this->Query(dependency);
+      if (pService != nullptr)
+      {
+        TDependents::value_type tmp = { 0 };
+        tmp.lpServiceName = pService->lpServiceName;
+        tmp.lpDisplayName = pService->lpDisplayName;
+        fnAssign(pService->ServiceStatusProcess, tmp.ServiceStatus);
+        result.push_back(tmp);
+      }
+    }
   }
 
   CloseServiceHandle(hService);
@@ -734,6 +801,61 @@ CServiceManagerW::TDependents CServiceManagerW::GetDependents(
     m_LastErrorCode = GetLastError();
 
     result.resize(nServicesReturned);
+  }
+
+  CloseServiceHandle(hService);
+
+  return result;
+}
+
+CServiceManagerW::TDependents CServiceManagerW::GetDependencies(
+  const std::wstring& service_name, const ulong states)
+{
+  TDependents result;
+
+  auto pService = this->Query(service_name);
+  if (pService == nullptr)
+  {
+    return result;
+  }
+
+  auto hService = OpenServiceW(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
+
+  m_LastErrorCode = GetLastError();
+
+  if (hService == nullptr)
+  {
+    return result;
+  }
+
+  DWORD cbBytesNeeded = 0;
+
+  QueryServiceConfigW(hService, nullptr, 0, &cbBytesNeeded);
+
+  m_LastErrorCode = GetLastError();
+
+  if (cbBytesNeeded > 0)
+  {
+    std::vector<char> buffer(cbBytesNeeded);
+    auto ptr = LPQUERY_SERVICE_CONFIGW(buffer.data());
+
+    QueryServiceConfigW(hService, ptr, cbBytesNeeded, &cbBytesNeeded);
+
+    m_LastErrorCode = GetLastError();
+
+    const auto dependencies = MultiStringToListW(ptr->lpDependencies);
+    for (const auto& dependency : dependencies)
+    {
+      auto pService = this->Query(dependency);
+      if (pService != nullptr)
+      {
+        TDependents::value_type tmp = { 0 };
+        tmp.lpServiceName = pService->lpServiceName;
+        tmp.lpDisplayName = pService->lpDisplayName;
+        fnAssign(pService->ServiceStatusProcess, tmp.ServiceStatus);
+        result.push_back(tmp);
+      }
+    }
   }
 
   CloseServiceHandle(hService);
