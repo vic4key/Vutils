@@ -1399,8 +1399,8 @@ public:
   * CServiceManagerT
   */
 
-#define SMTypes template <typename ServiceT, typename TDependT, typename StringT, typename CharT>
-#define SMDeclares ServiceT, TDependT, StringT, CharT
+#define SMTypes template <typename ServiceT, typename TDependT>
+#define SMDeclares ServiceT, TDependT
 
 SMTypes
 class CServiceManagerT : public CLastError
@@ -1428,7 +1428,7 @@ protected:
  * CServiceManagerA
  */
 
-typedef CServiceManagerT<ENUM_SERVICE_STATUS_PROCESSA, ENUM_SERVICE_STATUSA, std::string, char> CServiceManagerTA;
+typedef CServiceManagerT<ENUM_SERVICE_STATUS_PROCESSA, ENUM_SERVICE_STATUSA> CServiceManagerTA;
 
 class CServiceManagerA : public CServiceManagerTA, public CSingletonT<CServiceManagerA>
 {
@@ -1468,7 +1468,7 @@ protected:
  * CServiceManagerW
  */
 
-typedef CServiceManagerT<ENUM_SERVICE_STATUS_PROCESSW, ENUM_SERVICE_STATUSW, std::wstring, wchar_t> CServiceManagerTW;
+typedef CServiceManagerT<ENUM_SERVICE_STATUS_PROCESSW, ENUM_SERVICE_STATUSW> CServiceManagerTW;
 
 class CServiceManagerW : public CServiceManagerTW, public CSingletonT<CServiceManagerW>
 {
