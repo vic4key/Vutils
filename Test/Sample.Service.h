@@ -29,7 +29,7 @@ DEF_SAMPLE(ServiceManager)
     std::tcout << _T("Press any key to create service ...") << std::endl; _getch();
     CServiceManager::Instance().Create(driver_path, driver_name, driver_display_name);
 
-    auto services = vu::CServiceManager::Instance().GetServices(SERVICE_ALL_TYPES, SERVICE_RUNNING);
+    auto services = vu::CServiceManager::Instance().GetServices();
     assert(!services.empty());
 
     auto pService = vu::CServiceManager::Instance().Query(driver_name);

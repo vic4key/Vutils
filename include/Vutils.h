@@ -1392,8 +1392,8 @@ public:
  * Service Working
  */
 
-#define SERVICE_ALL_TYPES   -1
-#define SERVICE_ALL_STATES  -1
+#define VU_SERVICE_ALL_TYPES  -1
+#define VU_SERVICE_ALL_STATES -1
 
  /**
   * CServiceManagerT
@@ -1413,7 +1413,8 @@ public:
   virtual ~CServiceManagerT();
 
   virtual void Refresh();
-  virtual TServices GetServices(ulong types = SERVICE_ALL_TYPES, ulong states = SERVICE_ALL_STATES);
+  virtual TServices GetServices(
+    ulong types = VU_SERVICE_ALL_TYPES, ulong states = VU_SERVICE_ALL_STATES);
 
 protected:
   virtual VUResult Initialize() = 0;
@@ -1440,8 +1441,8 @@ public:
   std::unique_ptr<TServices::value_type> Query(const std::string& service_name);
   int GetState(const std::string& service_name);
 
-  TDepends GetDependents(const std::string& service_name, const ulong states = SERVICE_STATE_ALL);
-  TDepends GetDependencies(const std::string& service_name, const ulong states = SERVICE_STATE_ALL);
+  TDepends GetDependents(const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
+  TDepends GetDependencies(const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
 
   std::unique_ptr<SERVICE_STATUS> Control(const TServices::value_type* pService, const ulong ctrlcode);
   std::unique_ptr<SERVICE_STATUS> Control(const std::string& name, const ulong ctrlcode);
@@ -1480,8 +1481,8 @@ public:
   std::unique_ptr<TServices::value_type> Query(const std::wstring& service_name);
   int GetState(const std::wstring& service_name); // https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-controlservice#remarks
 
-  TDepends GetDependents(const std::wstring& service_name, const ulong states = SERVICE_STATE_ALL);
-  TDepends GetDependencies(const std::wstring& service_name, const ulong states = SERVICE_STATE_ALL);
+  TDepends GetDependents(const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
+  TDepends GetDependencies(const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
 
   std::unique_ptr<SERVICE_STATUS> Control(const TServices::value_type* pService, const ulong ctrlcode);
   std::unique_ptr<SERVICE_STATUS> Control(const std::wstring& name, const ulong ctrlcode);

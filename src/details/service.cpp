@@ -79,7 +79,7 @@ SMTypes typename CServiceManagerT<SMDeclares>::TServices CServiceManagerT<SMDecl
   ulong states
 )
 {
-  if (types == SERVICE_ALL_TYPES && states == SERVICE_ALL_STATES)
+  if (types == VU_SERVICE_ALL_TYPES && states == VU_SERVICE_ALL_STATES)
   {
     return m_Services;
   }
@@ -314,7 +314,7 @@ CServiceManagerA::TDepends CServiceManagerA::GetDependents(
 
   EnumDependentServicesA(
     hService,
-    states,
+    states == VU_SERVICE_ALL_STATES ? SERVICE_STATE_ALL : states,
     nullptr,
     0,
     &cbBytesNeeded,
@@ -329,7 +329,7 @@ CServiceManagerA::TDepends CServiceManagerA::GetDependents(
 
     EnumDependentServicesA(
       hService,
-      states,
+      states == VU_SERVICE_ALL_STATES ? SERVICE_STATE_ALL : states,
       result.data(),
       cbBytesNeeded,
       &cbBytesNeeded,
@@ -387,11 +387,14 @@ CServiceManagerA::TDepends CServiceManagerA::GetDependencies(
       auto pService = this->Query(dependency);
       if (pService != nullptr)
       {
-        TDepends::value_type tmp = { 0 };
-        tmp.lpServiceName = pService->lpServiceName;
-        tmp.lpDisplayName = pService->lpDisplayName;
-        fnAssign(pService->ServiceStatusProcess, tmp.ServiceStatus);
-        result.push_back(tmp);
+        if (states & pService->ServiceStatusProcess.dwCurrentState)
+        {
+          TDepends::value_type tmp = { 0 };
+          tmp.lpServiceName = pService->lpServiceName;
+          tmp.lpDisplayName = pService->lpDisplayName;
+          fnAssign(pService->ServiceStatusProcess, tmp.ServiceStatus);
+          result.push_back(tmp);
+        }
       }
     }
   }
@@ -776,7 +779,7 @@ CServiceManagerW::TDepends CServiceManagerW::GetDependents(
 
   EnumDependentServicesW(
     hService,
-    states,
+    states == VU_SERVICE_ALL_STATES ? SERVICE_STATE_ALL : states,
     nullptr,
     0,
     &cbBytesNeeded,
@@ -791,7 +794,7 @@ CServiceManagerW::TDepends CServiceManagerW::GetDependents(
 
     EnumDependentServicesW(
       hService,
-      states,
+      states == VU_SERVICE_ALL_STATES ? SERVICE_STATE_ALL : states,
       result.data(),
       cbBytesNeeded,
       &cbBytesNeeded,
@@ -849,11 +852,14 @@ CServiceManagerW::TDepends CServiceManagerW::GetDependencies(
       auto pService = this->Query(dependency);
       if (pService != nullptr)
       {
-        TDepends::value_type tmp = { 0 };
-        tmp.lpServiceName = pService->lpServiceName;
-        tmp.lpDisplayName = pService->lpDisplayName;
-        fnAssign(pService->ServiceStatusProcess, tmp.ServiceStatus);
-        result.push_back(tmp);
+        if (states & pService->ServiceStatusProcess.dwCurrentState)
+        {
+          TDepends::value_type tmp = { 0 };
+          tmp.lpServiceName = pService->lpServiceName;
+          tmp.lpDisplayName = pService->lpDisplayName;
+          fnAssign(pService->ServiceStatusProcess, tmp.ServiceStatus);
+          result.push_back(tmp);
+        }
       }
     }
   }
