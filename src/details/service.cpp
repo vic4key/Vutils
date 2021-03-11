@@ -43,38 +43,30 @@ bool fnContains(const StringT& _1, const StringT& _2, bool exact)
   return false;
 };
 
-template<class SS, class SSP>
-void fnAssign(const SSP& src, SS& dst)
-{
-  dst.dwServiceType = src.dwServiceType;
-  dst.dwCurrentState = src.dwCurrentState;
-  dst.dwControlsAccepted = src.dwControlsAccepted;
-  dst.dwWin32ExitCode = src.dwWin32ExitCode;
-  dst.dwServiceSpecificExitCode = src.dwServiceSpecificExitCode;
-  dst.dwCheckPoint = src.dwCheckPoint;
-  dst.dwWaitHint = src.dwWaitHint;
-};
-
 /**
  * CServiceManagerT
  */
 
-SMTypes CServiceManagerT<SMDeclares>::CServiceManagerT() : m_Manager(nullptr), m_Initialized(false)
+template <typename ServiceT>
+CServiceManagerT<ServiceT>::CServiceManagerT() : m_Manager(nullptr), m_Initialized(false)
 {
   // this->Refresh();
 }
 
-SMTypes CServiceManagerT<SMDeclares>::~CServiceManagerT()
+template <typename ServiceT>
+CServiceManagerT<ServiceT>::~CServiceManagerT()
 {
 }
 
-SMTypes void CServiceManagerT<SMDeclares>::Refresh()
+template <typename ServiceT>
+void CServiceManagerT<ServiceT>::Refresh()
 {
   m_Initialized = false;
   this->Initialize();
 }
 
-SMTypes typename CServiceManagerT<SMDeclares>::TServices CServiceManagerT<SMDeclares>::GetServices(
+template <typename ServiceT>
+typename CServiceManagerT<ServiceT>::TServices CServiceManagerT<ServiceT>::GetServices(
   ulong types,
   ulong states
 )
@@ -290,10 +282,10 @@ int CServiceManagerA::GetState(const std::string& service_name)
   return pService->ServiceStatusProcess.dwCurrentState;
 }
 
-CServiceManagerA::TDepends CServiceManagerA::GetDependents(
+CServiceManagerA::TServices CServiceManagerA::GetDependents(
   const std::string& service_name, const ulong states)
 {
-  TDepends result;
+  TServices result;
 
   auto pService = this->Query(service_name);
   if (pService == nullptr)
@@ -325,12 +317,13 @@ CServiceManagerA::TDepends CServiceManagerA::GetDependents(
 
   if (cbBytesNeeded > 0)
   {
-    result.resize(cbBytesNeeded / sizeof(TDepends::value_type) + 1); // +1 for padding
+    std::vector<ENUM_SERVICE_STATUSA> dependents;
+    dependents.resize(cbBytesNeeded / sizeof(ENUM_SERVICE_STATUSA) + 1); // +1 for zero padding
 
     EnumDependentServicesA(
       hService,
       states == VU_SERVICE_ALL_STATES ? SERVICE_STATE_ALL : states,
-      result.data(),
+      dependents.data(),
       cbBytesNeeded,
       &cbBytesNeeded,
       &nServicesReturned
@@ -338,7 +331,16 @@ CServiceManagerA::TDepends CServiceManagerA::GetDependents(
 
     m_LastErrorCode = GetLastError();
 
-    result.resize(nServicesReturned);
+    dependents.resize(nServicesReturned);
+
+    for (const auto& dependent : dependents)
+    {
+      auto pService = this->Query(dependent.lpServiceName);
+      if (pService != nullptr)
+      {
+        result.push_back(*pService);
+      }
+    }
   }
 
   CloseServiceHandle(hService);
@@ -346,10 +348,10 @@ CServiceManagerA::TDepends CServiceManagerA::GetDependents(
   return result;
 }
 
-CServiceManagerA::TDepends CServiceManagerA::GetDependencies(
+CServiceManagerA::TServices CServiceManagerA::GetDependencies(
   const std::string& service_name, const ulong states)
 {
-  TDepends result;
+  TServices result;
 
   auto pService = this->Query(service_name);
   if (pService == nullptr)
@@ -389,11 +391,7 @@ CServiceManagerA::TDepends CServiceManagerA::GetDependencies(
       {
         if (states & pService->ServiceStatusProcess.dwCurrentState)
         {
-          TDepends::value_type tmp = { 0 };
-          tmp.lpServiceName = pService->lpServiceName;
-          tmp.lpDisplayName = pService->lpDisplayName;
-          fnAssign(pService->ServiceStatusProcess, tmp.ServiceStatus);
-          result.push_back(tmp);
+          result.push_back(*pService);
         }
       }
     }
@@ -617,7 +615,7 @@ VUResult CServiceManagerW::Initialize()
     return __LINE__;
   }
 
-  m_Services.resize(cbBytesNeeded / sizeof(TServices::value_type) + 1); // +1 for padding
+  m_Services.resize(cbBytesNeeded / sizeof(TServices::value_type) + 1); // +1 for zero padding
 
   EnumServicesStatusExW(
     m_Manager,
@@ -755,10 +753,10 @@ int CServiceManagerW::GetState(const std::wstring& service_name)
   return pService->ServiceStatusProcess.dwCurrentState;
 }
 
-CServiceManagerW::TDepends CServiceManagerW::GetDependents(
+CServiceManagerW::TServices CServiceManagerW::GetDependents(
   const std::wstring& service_name, const ulong states)
 {
-  TDepends result;
+  TServices result;
 
   auto pService = this->Query(service_name);
   if (pService == nullptr)
@@ -790,12 +788,13 @@ CServiceManagerW::TDepends CServiceManagerW::GetDependents(
 
   if (cbBytesNeeded > 0)
   {
-    result.resize(cbBytesNeeded / sizeof(TDepends::value_type) + 1); // +1 for padding
+    std::vector<ENUM_SERVICE_STATUSW> dependents;
+    dependents.resize(cbBytesNeeded / sizeof(ENUM_SERVICE_STATUSW) + 1); // +1 for padding
 
     EnumDependentServicesW(
       hService,
       states == VU_SERVICE_ALL_STATES ? SERVICE_STATE_ALL : states,
-      result.data(),
+      dependents.data(),
       cbBytesNeeded,
       &cbBytesNeeded,
       &nServicesReturned
@@ -803,7 +802,16 @@ CServiceManagerW::TDepends CServiceManagerW::GetDependents(
 
     m_LastErrorCode = GetLastError();
 
-    result.resize(nServicesReturned);
+    dependents.resize(nServicesReturned);
+
+    for (const auto& dependent : dependents)
+    {
+      auto pService = this->Query(dependent.lpServiceName);
+      if (pService != nullptr)
+      {
+        result.push_back(*pService);
+      }
+    }
   }
 
   CloseServiceHandle(hService);
@@ -811,10 +819,10 @@ CServiceManagerW::TDepends CServiceManagerW::GetDependents(
   return result;
 }
 
-CServiceManagerW::TDepends CServiceManagerW::GetDependencies(
+CServiceManagerW::TServices CServiceManagerW::GetDependencies(
   const std::wstring& service_name, const ulong states)
 {
-  TDepends result;
+  TServices result;
 
   auto pService = this->Query(service_name);
   if (pService == nullptr)
@@ -854,11 +862,7 @@ CServiceManagerW::TDepends CServiceManagerW::GetDependencies(
       {
         if (states & pService->ServiceStatusProcess.dwCurrentState)
         {
-          TDepends::value_type tmp = { 0 };
-          tmp.lpServiceName = pService->lpServiceName;
-          tmp.lpDisplayName = pService->lpDisplayName;
-          fnAssign(pService->ServiceStatusProcess, tmp.ServiceStatus);
-          result.push_back(tmp);
+          result.push_back(*pService);
         }
       }
     }

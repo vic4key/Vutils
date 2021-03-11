@@ -1399,15 +1399,11 @@ public:
   * CServiceManagerT
   */
 
-#define SMTypes template <typename ServiceT, typename TDependT>
-#define SMDeclares ServiceT, TDependT
-
-SMTypes
+template <typename ServiceT>
 class CServiceManagerT : public CLastError
 {
 public:
   typedef std::vector<ServiceT> TServices;
-  typedef std::vector<TDependT> TDepends;
 
   CServiceManagerT();
   virtual ~CServiceManagerT();
@@ -1429,7 +1425,7 @@ protected:
  * CServiceManagerA
  */
 
-typedef CServiceManagerT<ENUM_SERVICE_STATUS_PROCESSA, ENUM_SERVICE_STATUSA> CServiceManagerTA;
+typedef CServiceManagerT<ENUM_SERVICE_STATUS_PROCESSA> CServiceManagerTA;
 
 class CServiceManagerA : public CServiceManagerTA, public CSingletonT<CServiceManagerA>
 {
@@ -1441,8 +1437,8 @@ public:
   std::unique_ptr<TServices::value_type> Query(const std::string& service_name);
   int GetState(const std::string& service_name);
 
-  TDepends GetDependents(const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
-  TDepends GetDependencies(const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
+  TServices GetDependents(const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
+  TServices GetDependencies(const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
 
   std::unique_ptr<SERVICE_STATUS> Control(const TServices::value_type* pService, const ulong ctrlcode);
   std::unique_ptr<SERVICE_STATUS> Control(const std::string& name, const ulong ctrlcode);
@@ -1469,7 +1465,7 @@ protected:
  * CServiceManagerW
  */
 
-typedef CServiceManagerT<ENUM_SERVICE_STATUS_PROCESSW, ENUM_SERVICE_STATUSW> CServiceManagerTW;
+typedef CServiceManagerT<ENUM_SERVICE_STATUS_PROCESSW> CServiceManagerTW;
 
 class CServiceManagerW : public CServiceManagerTW, public CSingletonT<CServiceManagerW>
 {
@@ -1481,8 +1477,8 @@ public:
   std::unique_ptr<TServices::value_type> Query(const std::wstring& service_name);
   int GetState(const std::wstring& service_name); // https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-controlservice#remarks
 
-  TDepends GetDependents(const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
-  TDepends GetDependencies(const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
+  TServices GetDependents(const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
+  TServices GetDependencies(const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
 
   std::unique_ptr<SERVICE_STATUS> Control(const TServices::value_type* pService, const ulong ctrlcode);
   std::unique_ptr<SERVICE_STATUS> Control(const std::wstring& name, const ulong ctrlcode);

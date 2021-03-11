@@ -26,20 +26,10 @@ DEF_SAMPLE(ServiceManager)
     driver_path += _T("WKE32.sys");
     #endif // _WIN64
 
+    // Create / Start / Stop / Delete
+
     std::tcout << _T("Press any key to create service ...") << std::endl; _getch();
     CServiceManager::Instance().Create(driver_path, driver_name, driver_display_name);
-
-    auto services = vu::CServiceManager::Instance().GetServices();
-    assert(!services.empty());
-
-    auto pService = vu::CServiceManager::Instance().Query(driver_name);
-    assert(pService != nullptr);
-    
-    auto l = CServiceManager::Instance().Find(driver_name);
-    for (auto& e : l)
-    {
-      std::tcout << e.lpServiceName << _T(" - ") << e.lpDisplayName << std::endl;
-    }
 
     std::tcout << _T("Press any key to start service ...") << std::endl; _getch();
     CServiceManager::Instance().Start(driver_name);
@@ -51,6 +41,8 @@ DEF_SAMPLE(ServiceManager)
 
     std::tcout << _T("Press any key to delete service ...") << std::endl; _getch();
     CServiceManager::Instance().Delete(driver_name);
+
+    // Dependents / Dependencies
 
     std::tstring example = _T("WSearch");
 
@@ -72,6 +64,20 @@ DEF_SAMPLE(ServiceManager)
     {
       std::tcout << _T("  ")
         << dependency.lpServiceName << _T(" - ") << dependency.lpDisplayName << std::endl;
+    }
+
+    // List Services
+
+    std::tcout << _T("*Services:") << std::endl;
+
+    auto pService = vu::CServiceManager::Instance().Query(example);
+    assert(pService != nullptr);
+
+    auto services = vu::CServiceManager::Instance().GetServices(VU_SERVICE_ALL_TYPES, SERVICE_RUNNING);
+    for (auto& e : services)
+    {
+      std::tcout << _T("  ")
+        << e.lpServiceName << _T(" - ") << e.lpDisplayName << std::endl;
     }
   }
 
