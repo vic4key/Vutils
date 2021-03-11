@@ -33,11 +33,9 @@ DEF_SAMPLE(ServiceManager)
 
     std::tcout << _T("Press any key to start service ...") << std::endl; _getch();
     CServiceManager::Instance().Start(driver_name);
-    vu::CServiceManager::Instance().GetState(driver_name);
     
     std::tcout << _T("Press any key to stop service ...") << std::endl; _getch();
     vu::CServiceManager::Instance().Stop(driver_name);
-    vu::CServiceManager::Instance().GetState(driver_name);
 
     std::tcout << _T("Press any key to delete service ...") << std::endl; _getch();
     CServiceManager::Instance().Delete(driver_name);
