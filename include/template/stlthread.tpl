@@ -9,7 +9,7 @@
   */
 
 #define TypeNone
-#define CSTLThreadTArgTypes(type) type TypeItem, type TypeInput, type TypeResult
+#define CSTLThreadTArgTypes(type) type TypeItem, type TypeInput
 
 enum eReturn
 {
@@ -26,33 +26,33 @@ public:
   virtual ~CSTLThreadT();
   virtual void Initialize();
   virtual void Execute(int iteration, int threadID);
+  virtual void Launch();
   virtual const eReturn Task(TypeItem& item, void* pdata, int iteration, int threadid);
-  virtual const TypeResult& Result() const;
-  virtual void  Launch();
+
+  int Threads() const;
+  int Iterations() const;
 
 protected:
   CThreadPool* m_pTP;
   std::mutex m_Mutex;
 
   int m_nThreads;
+  int m_nIterations;
   int m_nItemsPerThread;
 
   void* m_pData;
-  TypeResult m_Result;
   const TypeInput& m_Items;
 };
 
 template <CSTLThreadTArgTypes(typename)>
 CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::CSTLThreadT(
   const TypeInput& items, void* pData, int nThreads)
-  : m_Items(items), m_pData(pData) , m_nThreads(nThreads)
+  : m_Items(items), m_pData(pData) , m_nThreads(nThreads), m_nIterations(0)
 {
   if (m_nThreads == MAX_NTHREADS)
   {
     m_nThreads = std::thread::hardware_concurrency();
   }
-
-  m_pTP = new CThreadPool(m_nThreads);
 
   if (m_nThreads > m_Items.size())
   {
@@ -61,10 +61,13 @@ CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::CSTLThreadT(
 
   m_nItemsPerThread = static_cast<int>(m_Items.size() / m_nThreads);
 
-  if (std::is_fundamental<TypeResult>::value)
+  m_nIterations = m_nThreads;
+  if (m_Items.size() % m_nThreads != 0)
   {
-    memset(&m_Result, 0, sizeof(m_Result));
+    m_nIterations += 1; // + 1 for remainder items
   }
+
+  m_pTP = new CThreadPool(m_nThreads);
 }
 
 template <CSTLThreadTArgTypes(typename)>
@@ -74,9 +77,15 @@ CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::~CSTLThreadT()
 }
 
 template <CSTLThreadTArgTypes(typename)>
-const TypeResult& CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Result() const
+int CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Threads() const
 {
-  return m_Result;
+  return m_nThreads;
+}
+
+template <CSTLThreadTArgTypes(typename)>
+int CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Iterations() const
+{
+  return m_nIterations;
 }
 
 template <CSTLThreadTArgTypes(typename)>
@@ -97,13 +106,7 @@ void CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Launch()
 template <CSTLThreadTArgTypes(typename)>
 void CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Initialize()
 {
-  int nIterations = m_nThreads;
-  if (m_Items.size() % m_nThreads != 0)
-  {
-    nIterations += 1;
-  }
-
-  for (int iteration = 0; iteration < nIterations; iteration++)
+  for (int iteration = 0; iteration < m_nIterations; iteration++)
   {
     m_pTP->AddTask([=]()
     {
@@ -119,7 +122,7 @@ void CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Initialize()
 template <CSTLThreadTArgTypes(typename)>
 void CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Execute(int iteration, int threadid)
 {
-  // std::lock_guard<std::mutex> lg(m_Mutex); // TODO: Vic. Recheck. Avoid race condition m_Result.
+  // std::lock_guard<std::mutex> lg(m_Mutex); // TODO: Vic. Recheck. Avoid race condition.
 
   auto nItems = static_cast<int>(m_Items.size());
 

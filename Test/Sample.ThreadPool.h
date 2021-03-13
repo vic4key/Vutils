@@ -24,7 +24,7 @@ DEF_SAMPLE(ThreadPool)
   sw.Stop();
   std::cout << "Total Time : " << sw.Duration().second << " seconds" << std::endl;
 
-  // Multi-threading
+  // Default Multi-threading
 
   sw.Start();
 
@@ -38,22 +38,33 @@ DEF_SAMPLE(ThreadPool)
   sw.Stop();
   std::cout << "Total Time : " << sw.Duration().second << " seconds" << std::endl;
 
-  // Multi-threading
+  // STL Multi-threading
 
-  class CSampleTask : public vu::CSTLThreadT<int, std::vector<int>, int>
+  class CSampleTask : public vu::CSTLThreadT<int, std::vector<int>>
   {
   public:
-    CSampleTask(const std::vector<int>& items) : CSTLThreadT(items) { };
+    CSampleTask(const std::vector<int>& items) : CSTLThreadT(items)
+    {
+      m_Results.resize(this->Iterations());
+    };
+
+    int Result()
+    {
+      return std::accumulate(m_Results.cbegin(), m_Results.cend(), 0);
+    }
 
     virtual const vu::eReturn Task(int& item, void* pdata, int iteration, int threadid)
     {
       std::this_thread::sleep_for(std::chrono::seconds(1));
       std::cout << VU_FUNC_NAME << std::endl;
 
-      m_Result += item;
+      m_Results[iteration] += item;
 
       return vu::eReturn::Ok;
     }
+
+  private:
+    std::vector<int> m_Results;
   };
 
   sw.Start();
