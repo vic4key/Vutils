@@ -48,7 +48,10 @@ DEF_SAMPLE(ThreadPool)
     virtual const vu::eReturn Task(int& item, void* pdata, int iteration, int threadid)
     {
       std::this_thread::sleep_for(std::chrono::seconds(1));
+      std::cout << VU_FUNC_NAME << std::endl;
+
       m_Result += item;
+
       return vu::eReturn::Ok;
     }
   };
