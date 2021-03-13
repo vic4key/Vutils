@@ -6,19 +6,6 @@
 
 // Singleton
 
-/* Eg.
-class CObject : public vu::CSingletonT<CObject>
-{
-public:
-  void Method()
-  {
-    // YOUR CODE HERE
-  }
-}
-
-CObject::Instance().Method();
-*/
-
 template<typename T>
 class CSingletonT
 {

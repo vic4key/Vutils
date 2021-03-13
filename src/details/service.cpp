@@ -471,7 +471,7 @@ VUResult CServiceManagerA::Start(const std::string& name)
       return __LINE__;
     }
 
-    // TODO: RiGa. Recheck. Wait for finish here.
+    // TODO: Vic. Recheck. Wait for finish here.
 
     this->Refresh();
 
@@ -942,7 +942,7 @@ VUResult CServiceManagerW::Start(const std::wstring& name)
       return __LINE__;
     }
 
-    // TODO: RiGa. Recheck. Wait for finish here.
+    // TODO: Vic. Recheck. Wait for finish here.
 
     this->Refresh();
 
