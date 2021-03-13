@@ -4,7 +4,9 @@
  * @brief  Template for Singleton Design Pattern
  */
 
-// Singleton
+ /**
+  * CSingletonT
+  */
 
 template<typename T>
 class CSingletonT
