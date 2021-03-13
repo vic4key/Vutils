@@ -107,6 +107,7 @@ Belows are IDE minimum version that supported C++ 11
 * [Test\Sample.Process.h](Test/Sample.Process.h)
 * [Test\Sample.Singleton.h](Test/Sample.Singleton.h)
 * [Test\Sample.StopWatch.h](Test/Sample.StopWatch.h)
+* [Test\Sample.ThreadPool.h](Test/Sample.ThreadPool.h)
 * [Test\Sample.AsyncSocket.h](Test/Sample.AsyncSocket.h)
 * See more examples in the [`Test`](Test/) project
 
