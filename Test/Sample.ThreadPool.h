@@ -2,10 +2,6 @@
 
 #include "Sample.h"
 
-#include <thread>
-
-#include <vu>
-
 DEF_SAMPLE(ThreadPool)
 {
   const auto fn = []()
@@ -16,21 +12,56 @@ DEF_SAMPLE(ThreadPool)
 
   vu::CStopWatch sw;
 
+  // Single-threading
+
   sw.Start();
+
   for (int i = 0; i < 10; i++)
   {
     fn();
   }
+
   sw.Stop();
   std::cout << "Total Time : " << sw.Duration().second << " seconds" << std::endl;
 
+  // Multi-threading
+
   sw.Start();
+
   vu::CThreadPool pool;
   for (int i = 0; i < 10; i++)
   {
     pool.AddTask(fn);
   }
   pool.Launch();
+
+  sw.Stop();
+  std::cout << "Total Time : " << sw.Duration().second << " seconds" << std::endl;
+
+  // Multi-threading
+
+  class CSampleTask : public vu::CSTLThreadT<int, std::vector<int>, int>
+  {
+  public:
+    CSampleTask(const std::vector<int>& items) : CSTLThreadT(items) { };
+
+    virtual const vu::eReturn Task(int& item, void* pdata, int iteration, int threadid)
+    {
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+      m_Result += item;
+      return vu::eReturn::Ok;
+    }
+  };
+
+  sw.Start();
+
+  std::vector<int> items(10);
+  std::iota(items.begin(), items.end(), 0);
+
+  CSampleTask task(items);
+  task.Launch();
+  std::cout << "Result is " << task.Result() << std::endl;
+
   sw.Stop();
   std::cout << "Total Time : " << sw.Duration().second << " seconds" << std::endl;
 

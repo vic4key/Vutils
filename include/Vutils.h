@@ -75,6 +75,9 @@
 #include <sstream>
 #include <cassert>
 #include <functional>
+#include <thread>
+#include <numeric>
+#include <type_traits>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -2733,6 +2736,8 @@ public:
 private:
   Pool* m_pTP;
 };
+
+#include "template/stlthread.tpl"
 
 /**
  * CPath

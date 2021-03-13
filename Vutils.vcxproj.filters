@@ -208,5 +208,8 @@
     <None Include="include\inline\com.inl">
       <Filter>Header Files\Inline Files</Filter>
     </None>
+    <None Include="include\template\stlthread.tpl">
+      <Filter>Header Files\Template Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
