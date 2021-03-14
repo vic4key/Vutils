@@ -19,7 +19,7 @@ template <typename TypeInput>
 class CSTLThreadT
 {
 public:
-  CSTLThreadT(const TypeInput& items, int nThreads = MAX_NTHREADS);
+  CSTLThreadT(TypeInput& items, int nThreads = MAX_NTHREADS);
   virtual ~CSTLThreadT();
 
   virtual void Initialize();
@@ -39,11 +39,11 @@ protected:
   int m_nThreads;
   int m_nIterations;
   int m_nItemsPerThread;
-  const TypeInput& m_Items;
+  TypeInput& m_Items;
 };
 
 template <class TypeInput>
-CSTLThreadT<TypeInput>::CSTLThreadT(const TypeInput& items, int nThreads)
+CSTLThreadT<TypeInput>::CSTLThreadT(TypeInput& items, int nThreads)
   : m_Items(items),  m_nThreads(nThreads), m_nIterations(0)
 {
   if (m_nThreads == MAX_NTHREADS)
@@ -139,8 +139,7 @@ void CSTLThreadT<TypeInput>::Execute(int iteration, int threadid)
 
   for (auto it = itstart; it != itstop; it++)
   {
-    auto item = *it;
-    auto ret = Task(item, iteration, threadid);
+    auto ret = this->Task(*it, iteration, threadid);
     if (ret == eReturn::Break)
     {
       break;

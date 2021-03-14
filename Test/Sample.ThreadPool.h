@@ -43,7 +43,7 @@ DEF_SAMPLE(ThreadPool)
   class CSampleTask : public vu::CSTLThreadT<std::vector<int>>
   {
   public:
-    CSampleTask(const std::vector<int>& items) : CSTLThreadT(items)
+    CSampleTask(std::vector<int>& items) : CSTLThreadT(items)
     {
       m_Results.resize(this->Iterations());
     };
