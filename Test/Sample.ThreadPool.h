@@ -40,7 +40,7 @@ DEF_SAMPLE(ThreadPool)
 
   // STL Multi-threading
 
-  class CSampleTask : public vu::CSTLThreadT<int, std::vector<int>>
+  class CSampleTask : public vu::CSTLThreadT<std::vector<int>>
   {
   public:
     CSampleTask(const std::vector<int>& items) : CSTLThreadT(items)
@@ -53,7 +53,7 @@ DEF_SAMPLE(ThreadPool)
       return std::accumulate(m_Results.cbegin(), m_Results.cend(), 0);
     }
 
-    virtual const vu::eReturn Task(int& item, void* pdata, int iteration, int threadid)
+    virtual const vu::eReturn Task(int& item, int iteration, int threadid)
     {
       std::this_thread::sleep_for(std::chrono::seconds(1));
       std::cout << VU_FUNC_NAME << std::endl;

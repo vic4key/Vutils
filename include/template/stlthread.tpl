@@ -8,9 +8,6 @@
   * CSTLThreadT
   */
 
-#define TypeNone
-#define CSTLThreadTArgTypes(type) type TypeItem, type TypeInput
-
 enum eReturn
 {
   Ok,
@@ -18,36 +15,36 @@ enum eReturn
   Continue,
 };
 
-template <CSTLThreadTArgTypes(typename)>
+template <typename TypeInput>
 class CSTLThreadT
 {
 public:
-  CSTLThreadT(const TypeInput& items, void* pData = nullptr, int nThreads = MAX_NTHREADS);
+  CSTLThreadT(const TypeInput& items, int nThreads = MAX_NTHREADS);
   virtual ~CSTLThreadT();
+
   virtual void Initialize();
-  virtual void Execute(int iteration, int threadID);
   virtual void Launch();
-  virtual const eReturn Task(TypeItem& item, void* pdata, int iteration, int threadid);
+
+  virtual const eReturn Task(typename TypeInput::value_type& item, int iteration, int threadid);
 
   int Threads() const;
   int Iterations() const;
 
 protected:
-  CThreadPool* m_pTP;
-  std::mutex m_Mutex;
+  virtual void Execute(int iteration, int threadID);
 
+protected:
+  CThreadPool* m_pTP;
+  // std::mutex m_Mutex;
   int m_nThreads;
   int m_nIterations;
   int m_nItemsPerThread;
-
-  void* m_pData;
   const TypeInput& m_Items;
 };
 
-template <CSTLThreadTArgTypes(typename)>
-CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::CSTLThreadT(
-  const TypeInput& items, void* pData, int nThreads)
-  : m_Items(items), m_pData(pData) , m_nThreads(nThreads), m_nIterations(0)
+template <class TypeInput>
+CSTLThreadT<TypeInput>::CSTLThreadT(const TypeInput& items, int nThreads)
+  : m_Items(items),  m_nThreads(nThreads), m_nIterations(0)
 {
   if (m_nThreads == MAX_NTHREADS)
   {
@@ -70,42 +67,37 @@ CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::CSTLThreadT(
   m_pTP = new CThreadPool(m_nThreads);
 }
 
-template <CSTLThreadTArgTypes(typename)>
-CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::~CSTLThreadT()
+template <class TypeInput>
+CSTLThreadT<TypeInput>::~CSTLThreadT()
 {
   delete m_pTP;
 }
 
-template <CSTLThreadTArgTypes(typename)>
-int CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Threads() const
+template <class TypeInput>
+int CSTLThreadT<TypeInput>::Threads() const
 {
   return m_nThreads;
 }
 
-template <CSTLThreadTArgTypes(typename)>
-int CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Iterations() const
+template <class TypeInput>
+int CSTLThreadT<TypeInput>::Iterations() const
 {
   return m_nIterations;
 }
 
-template <CSTLThreadTArgTypes(typename)>
-const eReturn CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Task(
-  TypeItem& item, void* pdata, int iteration, int threadid)
+template <class TypeInput>
+const eReturn CSTLThreadT<TypeInput>::Task(
+  typename TypeInput::value_type& item, int iteration, int threadid)
 {
-  assert(0 && "This method must be overridden");
+  assert(NULL && "This method must be overridden");
   return eReturn::Ok;
 }
 
-template <CSTLThreadTArgTypes(typename)>
-void CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Launch()
+template <class TypeInput>
+void CSTLThreadT<TypeInput>::Launch()
 {
   this->Initialize();
-  m_pTP->Launch();
-}
 
-template <CSTLThreadTArgTypes(typename)>
-void CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Initialize()
-{
   for (int iteration = 0; iteration < m_nIterations; iteration++)
   {
     m_pTP->AddTask([=]()
@@ -117,10 +109,18 @@ void CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Initialize()
       this->Execute(iteration, threadid);
     });
   }
+
+  m_pTP->Launch();
 }
 
-template <CSTLThreadTArgTypes(typename)>
-void CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Execute(int iteration, int threadid)
+template <class TypeInput>
+void CSTLThreadT<TypeInput>::Initialize()
+{
+  // Override this method to do anything before launching
+}
+
+template <class TypeInput>
+void CSTLThreadT<TypeInput>::Execute(int iteration, int threadid)
 {
   // std::lock_guard<std::mutex> lg(m_Mutex); // TODO: Vic. Recheck. Avoid race condition.
 
@@ -140,7 +140,7 @@ void CSTLThreadT<CSTLThreadTArgTypes(TypeNone)>::Execute(int iteration, int thre
   for (auto it = itstart; it != itstop; it++)
   {
     auto item = *it;
-    auto ret = Task(item, m_pData, iteration, threadid);
+    auto ret = Task(item, iteration, threadid);
     if (ret == eReturn::Break)
     {
       break;
