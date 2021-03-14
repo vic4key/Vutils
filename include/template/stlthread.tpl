@@ -44,7 +44,7 @@ protected:
 
 template <class TypeInput>
 CSTLThreadT<TypeInput>::CSTLThreadT(TypeInput& items, int nThreads)
-  : m_Items(items),  m_nThreads(nThreads), m_nIterations(0)
+  : m_Items(items),  m_nThreads(nThreads), m_nIterations(0), m_pTP(nullptr)
 {
   if (m_nThreads == MAX_NTHREADS)
   {
@@ -70,7 +70,10 @@ CSTLThreadT<TypeInput>::CSTLThreadT(TypeInput& items, int nThreads)
 template <class TypeInput>
 CSTLThreadT<TypeInput>::~CSTLThreadT()
 {
-  delete m_pTP;
+  if (m_pTP != nullptr)
+  {
+    delete m_pTP;
+  }
 }
 
 template <class TypeInput>
