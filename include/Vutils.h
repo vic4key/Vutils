@@ -2011,6 +2011,27 @@ private:
   std::vector<std::clock_t> m_DeltaHistory;
 };
 
+/**
+ * Default Logging Functions
+ */
+
+void MessageLoggingA(const std::string&  id, const CStopWatch::TDuration& duration);
+void ConsoleLoggingA(const std::string&  id, const CStopWatch::TDuration& duration);
+void MessageLoggingW(const std::wstring& id, const CStopWatch::TDuration& duration);
+void ConsoleLoggingW(const std::wstring& id, const CStopWatch::TDuration& duration);
+
+#ifdef _UNICODE
+#define MessageLogging MessageLoggingW
+#define ConsoleLogging ConsoleLoggingW
+#else
+#define MessageLogging MessageLoggingA
+#define ConsoleLogging ConsoleLoggingA
+#endif
+
+/**
+ * CScopeStopWatchX
+ */
+
 class CScopeStopWatchX
 {
 public:
@@ -2018,20 +2039,15 @@ public:
   virtual ~CScopeStopWatchX();
 
   void Active(bool state = true);
+  void Reset();
 
 protected:
   virtual void Start(bool reset = false);
   virtual void Stop();
 
 protected:
-  CStopWatch m_Watcher;
   bool m_Activated;
-};
-
-static auto DefaultFnStopWatchA = [](
-  const std::string& id, const CStopWatch::TDuration& duration) -> void
-{
-  vu::MsgA(id + " %.3fs", duration.second);
+  CStopWatch m_Watcher;
 };
 
 class CScopeStopWatchA : public CScopeStopWatchX
@@ -2039,7 +2055,7 @@ class CScopeStopWatchA : public CScopeStopWatchX
 public:
   typedef std::function<void(const std::string& id, const CStopWatch::TDuration& duration)> FnLogging;
 
-  CScopeStopWatchA(const std::string& prefix, const FnLogging fnLogging = DefaultFnStopWatchA);
+  CScopeStopWatchA(const std::string& prefix, const FnLogging fnLogging = MessageLoggingA);
   virtual ~CScopeStopWatchA();
 
   void Log(const std::string& id = "");
@@ -2049,18 +2065,12 @@ private:
   FnLogging m_fnLogging;
 };
 
-static auto DefaultFnStopWatchW = [](
-  const std::wstring& id, const CStopWatch::TDuration& duration) -> void
-{
-  vu::MsgW(id + L" %.3fs", duration.second);
-};
-
 class CScopeStopWatchW : public CScopeStopWatchX
 {
 public:
   typedef std::function<void(const std::wstring& id, const CStopWatch::TDuration& duration)> FnLogging;
 
-  CScopeStopWatchW(const std::wstring& prefix, const FnLogging fnLogging = DefaultFnStopWatchW);
+  CScopeStopWatchW(const std::wstring& prefix, const FnLogging fnLogging = MessageLoggingW);
   virtual ~CScopeStopWatchW();
 
   void Log(const std::wstring& id = L"");

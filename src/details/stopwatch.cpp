@@ -6,7 +6,10 @@
 
 #include "Vutils.h"
 
+#include <cstdio>
+#include <cwchar>
 #include <numeric>
+#include <iostream>
 
 namespace vu
 {
@@ -62,6 +65,32 @@ const vu::CStopWatch::TDuration CStopWatch::Total()
   return duration;
 }
 
+void MessageLoggingA(const std::string& id, const CStopWatch::TDuration& duration)
+{
+  vu::MsgA(id + "%.3fs", duration.second);
+}
+
+void ConsoleLoggingA(const std::string& id, const CStopWatch::TDuration& duration)
+{
+  char s[KB] = { 0 };
+  memset(s, 0, sizeof(s));
+  sprintf_s(s, lengthof(s), "%.3fs", duration.second);
+  std::cout << id << s << std::endl;
+}
+
+void MessageLoggingW(const std::wstring& id, const CStopWatch::TDuration& duration)
+{
+  vu::MsgW(id + L"%.3fs", duration.second);
+}
+
+void ConsoleLoggingW(const std::wstring& id, const CStopWatch::TDuration& duration)
+{
+  wchar_t s[KB] = { 0 };
+  memset(s, 0, sizeof(s));
+  swprintf_s(s, lengthof(s), L"%.3fs", duration.second);
+  std::wcout << id << s << std::endl;
+}
+
 /**
  * CScopeStopWatchX
  */
@@ -90,6 +119,12 @@ void CScopeStopWatchX::Active(bool state)
   m_Activated = state;
 }
 
+void CScopeStopWatchX::Reset()
+{
+  this->Stop();
+  this->Start(false);
+}
+
 CScopeStopWatchA::CScopeStopWatchA(const std::string& prefix, const FnLogging fnLogging)
   : CScopeStopWatchX(), m_Prefix(prefix), m_fnLogging(fnLogging)
 {
@@ -101,7 +136,7 @@ CScopeStopWatchA::~CScopeStopWatchA()
 
   if (m_Activated)
   {
-    m_fnLogging(m_Prefix + "Total", m_Watcher.Total());
+    m_fnLogging(m_Prefix + "TOTAL : ", m_Watcher.Total());
   }
 }
 
@@ -128,7 +163,7 @@ CScopeStopWatchW::~CScopeStopWatchW()
 
   if (m_Activated)
   {
-    m_fnLogging(m_Prefix + L"Total", m_Watcher.Total());
+    m_fnLogging(m_Prefix + L"TOTAL : ", m_Watcher.Total());
   }
 }
 

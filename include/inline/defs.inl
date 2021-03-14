@@ -29,6 +29,8 @@
 
 /* Other Definitions */
 
+#define lengthof(a) (sizeof(a) / sizeof(a[0]))
+
 #define VU_ALIGN_UP(v, a) (((v) + ((a) - 1)) & ~((a) - 1))
 
 #ifndef ERROR_INCORRECT_SIZE

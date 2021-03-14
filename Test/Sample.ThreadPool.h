@@ -10,23 +10,22 @@ DEF_SAMPLE(ThreadPool)
     std::cout << VU_FUNC_NAME << std::endl;
   };
 
-  vu::CStopWatch sw;
+  vu::CScopeStopWatch logger(_T("ThreadPool => "), vu::ConsoleLogging);
 
   // Single-threading
 
-  sw.Start();
+  logger.Reset();
 
   for (int i = 0; i < 10; i++)
   {
     fn();
   }
 
-  sw.Stop();
-  std::cout << "Total Time : " << sw.Duration().second << " seconds" << std::endl;
+  logger.Log(_T("Taken : "));
 
   // Default Multi-threading
 
-  sw.Start();
+  logger.Reset();
 
   vu::CThreadPool pool;
   for (int i = 0; i < 10; i++)
@@ -35,8 +34,7 @@ DEF_SAMPLE(ThreadPool)
   }
   pool.Launch();
 
-  sw.Stop();
-  std::cout << "Total Time : " << sw.Duration().second << " seconds" << std::endl;
+  logger.Log(_T("Taken : "));
 
   // STL Multi-threading
 
@@ -67,7 +65,7 @@ DEF_SAMPLE(ThreadPool)
     std::vector<int> m_Results;
   };
 
-  sw.Start();
+  logger.Reset();
 
   std::vector<int> items(10);
   std::iota(items.begin(), items.end(), 0);
@@ -76,8 +74,7 @@ DEF_SAMPLE(ThreadPool)
   task.Launch();
   std::cout << "Result is " << task.Result() << std::endl;
 
-  sw.Stop();
-  std::cout << "Total Time : " << sw.Duration().second << " seconds" << std::endl;
+  logger.Log(_T("Taken : "));
 
   return vu::VU_OK;
 }

@@ -4,16 +4,16 @@
 
 DEF_SAMPLE(StopWatch)
 {
-  vu::CScopeStopWatch watcher(_T("StopWatch -> "));
+  vu::CScopeStopWatch logger(_T("StopWatch -> "), vu::ConsoleLogging);
 
   Sleep(200);
-  watcher.Log(_T("Test 1"));
+  logger.Log(_T("Test 1 : "));
 
   Sleep(300);
-  watcher.Log(_T("Test 2"));
+  logger.Log(_T("Test 2 : "));
 
   Sleep(500);
-  watcher.Log(_T("Test 3"));
+  logger.Log(_T("Test 3 : "));
 
   return vu::VU_OK;
 }
