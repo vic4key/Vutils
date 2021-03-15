@@ -146,7 +146,7 @@ void CSTLThreadT<TypeInput>::Execute(int iteration, int thread_id)
   // {
   //   auto ret = this->Task(ptr[i], iteration, thread_id);
 
-  for (auto it = itstart; it != itstop; it++)
+  for (auto it = itstart; it != itstop; ++it)
   {
     auto ret = this->Task(*it, iteration, thread_id);
     if (ret == eReturn::Break)
