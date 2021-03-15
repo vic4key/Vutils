@@ -43,12 +43,12 @@ DEF_SAMPLE(ThreadPool)
   public:
     CSampleTask(std::vector<int>& items) : CSTLThreadT(items)
     {
-      m_Results.resize(this->Iterations());
+      m_results.resize(this->Iterations());
     };
 
     int Result()
     {
-      return std::accumulate(m_Results.cbegin(), m_Results.cend(), 0);
+      return std::accumulate(m_results.cbegin(), m_results.cend(), 0);
     }
 
     virtual const vu::eReturn Task(int& item, int iteration, int threadid)
@@ -56,13 +56,13 @@ DEF_SAMPLE(ThreadPool)
       std::this_thread::sleep_for(std::chrono::seconds(1));
       std::cout << VU_FUNC_NAME << std::endl;
 
-      m_Results[iteration] += item;
+      m_results[iteration] += item;
 
       return vu::eReturn::Ok;
     }
 
   private:
-    std::vector<int> m_Results;
+    std::vector<int> m_results;
   };
 
   logger.Reset();
