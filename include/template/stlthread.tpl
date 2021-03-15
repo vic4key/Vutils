@@ -127,14 +127,14 @@ void CSTLThreadT<TypeInput>::Execute(int iteration, int thread_id)
 {
   // std::lock_guard<std::mutex> lg(m_mutex); // TODO: Vic. Recheck. Avoid race condition.
 
-  auto nItems = static_cast<int>(m_items.size());
+  auto num_items = static_cast<int>(m_items.size());
 
   int start = m_num_items_per_thread * iteration;
   int stop  = m_num_items_per_thread * (iteration + 1) - 1; // - 1 because the index is itstarted at 0
 
-  if (stop > nItems - 1)
+  if (stop > num_items - 1)
   {
-    stop = nItems - 1;
+    stop = num_items - 1;
   }
 
   auto itstart = std::next(m_items.begin(), start);
