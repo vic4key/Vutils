@@ -97,6 +97,7 @@ Belows are IDE minimum version that supported C++ 11
 * Usage
 	* Insert `#include <vu>` to your project
 	* Let's get started the namespace `vu`
+	* *Note: If building error or conflict, add `#define VU_NO_EX` before `#include <vu>` to disable all extended utilities*
 
 ## Examples
 
