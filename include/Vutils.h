@@ -35,14 +35,14 @@
 
 /* Vutils Configurations */
 
-// VU_DISABLE_DEFAULT_CFG - To disable all default configurations
+// VU_NO_EX - To disable all extended utilities
 
 // Default are enabled for MSVC and C++ Builder. For MinGW, see detail at README.md or INSTALL.md.
 // VU_SOCKET_ENABLED  - The Socket
 // VU_GUID_ENABLED    - The Globally/Universally Unique Identifier a.k.a GUID
 // VU_WMI_ENABLED     - The Windows Management Instrumentation a.k.a WMI
 
-#ifndef VU_DISABLE_DEFAULT_CFG
+#ifndef VU_NO_EX
 
 #if defined(_MSC_VER) || defined(__BCPLUSPLUS__)
 #define VU_SOCKET_ENABLED
@@ -50,7 +50,7 @@
 #define VU_WMI_ENABLED
 #endif
 
-#endif // VU_DISABLE_DEFAULT_CFG
+#endif // VU_NO_EX
 
 /* Header Inclusions */
 
