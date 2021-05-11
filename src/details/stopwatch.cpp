@@ -65,32 +65,6 @@ const vu::CStopWatch::TDuration CStopWatch::Total()
   return duration;
 }
 
-void MessageLoggingA(const std::string& id, const CStopWatch::TDuration& duration)
-{
-  vu::MsgA(id + "%.3fs", duration.second);
-}
-
-void ConsoleLoggingA(const std::string& id, const CStopWatch::TDuration& duration)
-{
-  char s[KB] = { 0 };
-  memset(s, 0, sizeof(s));
-  sprintf_s(s, lengthof(s), "%.3fs", duration.second);
-  std::cout << id << s << std::endl;
-}
-
-void MessageLoggingW(const std::wstring& id, const CStopWatch::TDuration& duration)
-{
-  vu::MsgW(id + L"%.3fs", duration.second);
-}
-
-void ConsoleLoggingW(const std::wstring& id, const CStopWatch::TDuration& duration)
-{
-  wchar_t s[KB] = { 0 };
-  memset(s, 0, sizeof(s));
-  swprintf_s(s, lengthof(s), L"%.3fs", duration.second);
-  std::wcout << id << s << std::endl;
-}
-
 /**
  * CScopeStopWatchX
  */
@@ -126,7 +100,7 @@ void CScopeStopWatchX::Reset()
 }
 
 CScopeStopWatchA::CScopeStopWatchA(const std::string& prefix, const FnLogging fnLogging)
-  : CScopeStopWatchX(), m_Prefix(prefix), m_fnLogging(fnLogging)
+  : CScopeStopWatchX(), m_Prefix(prefix + ' '), m_fnLogging(fnLogging)
 {
 }
 
@@ -152,8 +126,21 @@ void CScopeStopWatchA::Log(const std::string& id)
   this->Start(false);
 }
 
+void CScopeStopWatchA::Message(const std::string& id, const CStopWatch::TDuration& duration)
+{
+  vu::MsgA(id + "%.3fs", duration.second);
+}
+
+void CScopeStopWatchA::Console(const std::string& id, const CStopWatch::TDuration& duration)
+{
+  char s[KB] = { 0 };
+  memset(s, 0, sizeof(s));
+  sprintf_s(s, lengthof(s), "%.3fs", duration.second);
+  std::cout << id << s << std::endl;
+}
+
 CScopeStopWatchW::CScopeStopWatchW(const std::wstring& prefix, const FnLogging fnLogging)
-  : CScopeStopWatchX(), m_Prefix(prefix),m_fnLogging(fnLogging)
+  : CScopeStopWatchX(), m_Prefix(prefix + L' '),m_fnLogging(fnLogging)
 {
 }
 
@@ -177,6 +164,19 @@ void CScopeStopWatchW::Log(const std::wstring& id)
   }
 
   this->Start(false);
+}
+
+void CScopeStopWatchW::Message(const std::wstring& id, const CStopWatch::TDuration& duration)
+{
+  vu::MsgW(id + L"%.3fs", duration.second);
+}
+
+void CScopeStopWatchW::Console(const std::wstring& id, const CStopWatch::TDuration& duration)
+{
+  wchar_t s[KB] = { 0 };
+  memset(s, 0, sizeof(s));
+  swprintf_s(s, lengthof(s), L"%.3fs", duration.second);
+  std::wcout << id << s << std::endl;
 }
 
 } // namespace vu

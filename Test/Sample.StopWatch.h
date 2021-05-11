@@ -4,7 +4,7 @@
 
 DEF_SAMPLE(StopWatch)
 {
-  vu::CScopeStopWatch logger(_T("StopWatch -> "), vu::ConsoleLogging);
+  vu::CScopeStopWatch logger(_T("StopWatch ->"), vu::CScopeStopWatch::Console);
 
   Sleep(200);
   logger.Log(_T("Test 1 : "));

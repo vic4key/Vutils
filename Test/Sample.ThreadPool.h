@@ -10,7 +10,7 @@ DEF_SAMPLE(ThreadPool)
     std::cout << VU_FUNC_NAME << std::endl;
   };
 
-  vu::CScopeStopWatch logger(_T("ThreadPool => "), vu::ConsoleLogging);
+  vu::CScopeStopWatch logger(_T("ThreadPool =>"), vu::CScopeStopWatch::Console);
 
   // Single-threading
 

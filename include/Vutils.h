@@ -2012,23 +2012,6 @@ private:
 };
 
 /**
- * Default Logging Functions
- */
-
-void MessageLoggingA(const std::string&  id, const CStopWatch::TDuration& duration);
-void ConsoleLoggingA(const std::string&  id, const CStopWatch::TDuration& duration);
-void MessageLoggingW(const std::wstring& id, const CStopWatch::TDuration& duration);
-void ConsoleLoggingW(const std::wstring& id, const CStopWatch::TDuration& duration);
-
-#ifdef _UNICODE
-#define MessageLogging MessageLoggingW
-#define ConsoleLogging ConsoleLoggingW
-#else
-#define MessageLogging MessageLoggingA
-#define ConsoleLogging ConsoleLoggingA
-#endif
-
-/**
  * CScopeStopWatchX
  */
 
@@ -2055,10 +2038,13 @@ class CScopeStopWatchA : public CScopeStopWatchX
 public:
   typedef std::function<void(const std::string& id, const CStopWatch::TDuration& duration)> FnLogging;
 
-  CScopeStopWatchA(const std::string& prefix, const FnLogging fnLogging = MessageLoggingA);
+  CScopeStopWatchA(const std::string& prefix, const FnLogging fnLogging = Message);
   virtual ~CScopeStopWatchA();
 
   void Log(const std::string& id = "");
+
+  static void Message(const std::string& id, const CStopWatch::TDuration& duration);
+  static void Console(const std::string& id, const CStopWatch::TDuration& duration);
 
 private:
   std::string m_Prefix;
@@ -2070,10 +2056,13 @@ class CScopeStopWatchW : public CScopeStopWatchX
 public:
   typedef std::function<void(const std::wstring& id, const CStopWatch::TDuration& duration)> FnLogging;
 
-  CScopeStopWatchW(const std::wstring& prefix, const FnLogging fnLogging = MessageLoggingW);
+  CScopeStopWatchW(const std::wstring& prefix, const FnLogging fnLogging = Message);
   virtual ~CScopeStopWatchW();
 
   void Log(const std::wstring& id = L"");
+
+  static void Message(const std::wstring& id, const CStopWatch::TDuration& duration);
+  static void Console(const std::wstring& id, const CStopWatch::TDuration& duration);
 
 private:
   std::wstring m_Prefix;
