@@ -25,7 +25,7 @@ public:
   virtual void Initialize();
   virtual void Launch();
 
-  virtual const eReturn Task(typename TypeInput::value_type& item, int iteration, int thread_id);
+  virtual eReturn Task(typename TypeInput::value_type& item, int iteration, int thread_id);
 
   int Threads() const;
   int Iterations() const;
@@ -91,11 +91,10 @@ int CSTLThreadT<TypeInput>::Iterations() const
 }
 
 template <class TypeInput>
-const eReturn CSTLThreadT<TypeInput>::Task(
-  typename TypeInput::value_type& item, int iteration, int thread_id)
+vu::eReturn CSTLThreadT<TypeInput>::Task(typename TypeInput::value_type& item, int iteration, int thread_id)
 {
   assert(NULL && "This method must be overridden");
-  return eReturn::Ok;
+  return vu::eReturn::Ok;
 }
 
 template <class TypeInput>
@@ -151,11 +150,11 @@ void CSTLThreadT<TypeInput>::Execute(int iteration, int thread_id)
   for (auto it = itstart; it != itstop; ++it)
   {
     auto ret = this->Task(*it, iteration, thread_id);
-    if (ret == eReturn::Break)
+    if (ret == vu::eReturn::Break)
     {
       break;
     }
-    else if (ret == eReturn::Continue)
+    else if (ret == vu::eReturn::Continue)
     {
       continue;
     }
