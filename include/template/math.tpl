@@ -27,34 +27,16 @@ T AlignUp(T v, T a = T(sizeof(size_t)))
 
 // Range Operation
 
-template <typename Tfrom, typename Tto>
-Tto ConvRange(Tfrom v, Tfrom l1, Tfrom h1, Tto l2, Tto h2)
+template <typename TypeFrom, typename TypeTo>
+TypeTo ConvRange(TypeFrom v, TypeFrom lo1, TypeFrom hi1, TypeTo lo2, TypeTo hi2)
 {
-  return Tto(l2 + double(v - l1) * double(h2 - l2) / double(h1 - l1));
+  return TypeTo(lo2 + double(v - lo1) * double(hi2 - lo2) / double(hi1 - lo1));
 }
 
-template <typename T>
-bool InRange(const T lo, const T hi, const T v)
+template <typename TypeFrom, typename TypeTo>
+TypeTo ConvRange(TypeFrom v, const std::pair<TypeFrom, TypeFrom>& from, const std::pair<TypeTo, TypeTo>& to)
 {
-  return (v > lo) && (v < hi);
-}
-
-template <typename T>
-bool InRange(const std::pair<T, T>& range, const T v)
-{
-  return (v > range.first) && (v < range.second);
-}
-
-template <typename T>
-bool InERange(const T lo, const T hi, const T v)
-{
-  return (v >= lo) && (v <= hi);
-}
-
-template <typename T>
-bool InERange(const std::pair<T, T>& range, const T v)
-{
-  return (v >= range.first) && (v <= range.second);
+  return TypeTo(to.second + double(v - from.first) * double(to.second - to.first) / double(from.second - from.first));
 }
 
 // PointT - The point template
