@@ -19,7 +19,19 @@ T absT(const T v)
   return v < T(0) ? -T(v) : T(v);
 }
 
-// Range Validation
+template <typename T>
+T AlignUp(T v, T a = T(sizeof(size_t)))
+{
+  return ((v + (a - 1)) & ~(a - 1));
+}
+
+// Range Operation
+
+template <typename Tfrom, typename Tto>
+Tto ConvRange(Tfrom v, Tfrom l1, Tfrom h1, Tto l2, Tto h2)
+{
+  return Tto(l2 + double(v - l1) * double(h2 - l2) / double(h1 - l1));
+}
 
 template <typename T>
 bool InRange(const T lo, const T hi, const T v)
@@ -162,7 +174,12 @@ public:
     return m_v[2];
   }
 
-  T* Data()
+  const T& W() const
+  {
+    return m_v[3];
+  }
+
+  const T* Data() const
   {
     return reinterpret_cast<T*>(&m_v);
   }
@@ -267,6 +284,10 @@ public:
   }
 };
 
+typedef Point2DT<int> P2I;
+typedef Point2DT<float> P2F;
+typedef Point2DT<double> P2D;
+
 // Point3DT - The 3D point template
 
 template <typename T>
@@ -290,6 +311,10 @@ public:
     *this += v;
   }
 };
+
+typedef Point3DT<int> P3I;
+typedef Point3DT<float> P3F;
+typedef Point3DT<double> P3D;
 
 // Point4DT - The 4D point template
 
@@ -315,6 +340,10 @@ public:
   }
 };
 
+typedef Point4DT<int> P4I;
+typedef Point4DT<float> P4F;
+typedef Point4DT<double> P4D;
+
 // VectorT - The vector template
 
 template <int N, typename T>
@@ -325,6 +354,11 @@ public:
 
   VectorT() : PointT<N, T>()
   {
+  }
+
+  VectorT(const PointT<N, T>& right)
+  {
+    static_cast<PointT<N, T>&>(*this) = right;
   }
 
   VectorT operator*(const VectorT& v)
@@ -433,11 +467,20 @@ public:
     this->SetEx(D, X, Y);
   }
 
+  Vector2DT(const PointT<2, T>& right)
+  {
+    static_cast<PointT<2, T>&>(*this) = right;
+  }
+
   T Cross(const Vector2DT& v)
   {
     return this->X() * v.Y() - this->Y() * v.X();
   }
 };
+
+typedef Vector2DT<int> V2I;
+typedef Vector2DT<float> V2F;
+typedef Vector2DT<double> V2D;
 
 // Vector3DT - The 3D vector template
 
@@ -456,6 +499,11 @@ public:
     this->SetEx(D, X, Y, Z);
   }
 
+  Vector3DT(const PointT<2, T>& right)
+  {
+    static_cast<PointT<3, T>&>(*this) = right;
+  }
+
   Vector3DT Cross(const Vector3DT& v)
   {
     Vector3DT result(
@@ -466,6 +514,10 @@ public:
     return result;
   }
 };
+
+typedef Vector3DT<int> V3I;
+typedef Vector3DT<float> V3F;
+typedef Vector3DT<double> V3D;
 
 // Vector4DT - The 4D vector template
 
@@ -484,6 +536,11 @@ public:
     this->SetEx(D, X, Y, Z, W);
   }
 
+  Vector4DT(const PointT<4, T>& right)
+  {
+    static_cast<PointT<4, T>&>(*this) = right;
+  }
+
   Vector4DT Cross(const Vector4DT& v)
   {
     Vector4DT result;
@@ -492,7 +549,17 @@ public:
   }
 };
 
+typedef Vector4DT<int> V4I;
+typedef Vector4DT<float> V4F;
+typedef Vector4DT<double> V4D;
+
 // RectT - The rectangle template (Window Coordinate System)
+
+// .-----> X
+// |
+// |
+// v
+// Y
 
 template <typename T>
 class RectT
@@ -624,3 +691,7 @@ private:
   T m_right;
   T m_bottom;
 };
+
+typedef RectT<int> R4I;
+typedef RectT<float> R4F;
+typedef RectT<double> R4D;

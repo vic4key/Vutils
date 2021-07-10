@@ -108,7 +108,7 @@
 namespace threadpool11
 {
   class Pool;
-  typedef std::function<void()> Task;
+  typedef std::function<void()> FnTask;
 }
 
 using namespace threadpool11;
@@ -2723,7 +2723,7 @@ public:
   CThreadPool(size_t nthreads = MAX_NTHREADS);
   virtual ~CThreadPool();
 
-  void AddTask(Task&& fn);
+  void AddTask(FnTask&& fn);
   void Launch();
 
   size_t WorkerCount() const;

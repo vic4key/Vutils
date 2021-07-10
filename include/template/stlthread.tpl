@@ -51,12 +51,14 @@ CSTLThreadT<TypeInput>::CSTLThreadT(TypeInput& items, int nThreads)
     m_num_threads = std::thread::hardware_concurrency();
   }
 
-  if (m_num_threads > m_items.size())
+  const int n_items = static_cast<int>(m_items.size());
+
+  if (m_num_threads > n_items)
   {
-    m_num_threads = static_cast<int>(m_items.size());
+    m_num_threads = n_items;
   }
 
-  m_num_items_per_thread = static_cast<int>(m_items.size() / m_num_threads);
+  m_num_items_per_thread = n_items / m_num_threads;
 
   m_num_iterations = m_num_threads;
   if (m_items.size() % m_num_threads != 0)

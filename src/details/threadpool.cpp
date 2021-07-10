@@ -29,7 +29,7 @@ CThreadPool::~CThreadPool()
   delete m_pTP;
 }
 
-void CThreadPool::AddTask(Task&& fn)
+void CThreadPool::AddTask(FnTask&& fn)
 {
   m_pTP->postWork(static_cast<Worker::WorkType>(fn));
 }
