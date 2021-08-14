@@ -120,10 +120,13 @@ typedef DWORD (WINAPI* PfnGetModuleFileNameExW)(HANDLE hProcess, HMODULE hModule
 
 typedef BOOL  (WINAPI *PfnGetModuleInformation)(HANDLE hProcess, HMODULE hModule, LPMODULEINFO_PTR lpmodinfo, DWORD cb);
 
+typedef BOOL (WINAPI *PfnGetProcessMemoryInfo)(HANDLE Process, PPROCESS_MEMORY_COUNTERS ppsmemCounters, DWORD cb);
+
 typedef BOOL (WINAPI *PfnQueryFullProcessImageNameA)(HANDLE hProcess, DWORD  dwFlags, LPSTR lpExeName, PDWORD lpdwSize);
 typedef BOOL (WINAPI *PfnQueryFullProcessImageNameW)(HANDLE hProcess, DWORD  dwFlags, LPWSTR lpExeName, PDWORD lpdwSize);
 
-typedef BOOL (WINAPI *PfnGetProcessMemoryInfo)(HANDLE Process, PPROCESS_MEMORY_COUNTERS ppsmemCounters, DWORD cb);
+typedef DWORD (WINAPI * PfnGetMappedFileNameA)(HANDLE hProcess, LPVOID lpv, LPSTR  lpFilename, DWORD nSize);
+typedef DWORD (WINAPI * PfnGetMappedFileNameW)(HANDLE hProcess, LPVOID lpv, LPWSTR lpFilename, DWORD nSize);
 
 /**
  * Variables
@@ -154,10 +157,13 @@ extern PfnGetModuleFileNameExW pfnGetModuleFileNameExW;
 
 extern PfnGetModuleInformation pfnGetModuleInformation;
 
+extern PfnGetProcessMemoryInfo pfnGetProcessMemoryInfo;
+
 extern PfnQueryFullProcessImageNameA pfnQueryFullProcessImageNameA;
 extern PfnQueryFullProcessImageNameW pfnQueryFullProcessImageNameW;
 
-extern PfnGetProcessMemoryInfo pfnGetProcessMemoryInfo;
+extern PfnGetMappedFileNameA pfnGetMappedFileNameA;
+extern PfnGetMappedFileNameW pfnGetMappedFileNameW;
 
 /**
  * Initialize Tool Help 32 functions.

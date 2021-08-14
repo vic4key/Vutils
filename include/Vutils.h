@@ -474,6 +474,8 @@ std::string vuapi GetCurrentDirectoryA(bool Slash = true);
 std::wstring vuapi GetCurrentDirectoryW(bool Slash = true);
 std::string vuapi GetContainDirectoryA(bool Slash = true);
 std::wstring vuapi GetContainDirectoryW(bool Slash = true);
+std::string vuapi GetFileNameFromHandleA(HANDLE hFile);
+std::wstring vuapi GetFileNameFromHandleW(HANDLE hFile);
 #if defined(VU_WMI_ENABLED)
 eDiskType vuapi GetDiskTypeA(const char drive);
 eDiskType vuapi GetDiskTypeW(const wchar_t drive);
@@ -506,7 +508,6 @@ std::wstring vuapi NormalizePathW(const std::wstring& Path, const ePathSep Separ
 #define DateTimeToString DateTimeToStringW
 #define FormatDateTime FormatDateTimeW
 #define FormatBytes FormatBytesW
-#define CFundamental CFundamentalW
 /* String Working */
 #define LowerString LowerStringW
 #define UpperString UpperStringW
@@ -535,6 +536,7 @@ std::wstring vuapi NormalizePathW(const std::wstring& Path, const ePathSep Separ
 #define GetCurrentFilePath GetCurrentFilePathW
 #define GetCurDirectory GetCurrentDirectoryW
 #define GetContainDirectory GetContainDirectoryW
+#define GetFileNameFromHandle GetFileNameFromHandleW
 #define GetDiskType GetDiskTypeW
 #define JoinPath JoinPathW
 #define NormalizePath NormalizePathW
@@ -551,7 +553,6 @@ std::wstring vuapi NormalizePathW(const std::wstring& Path, const ePathSep Separ
 #define DateTimeToString DateTimeToStringA
 #define FormatDateTime FormatDateTimeA
 #define FormatBytes FormatBytesA
-#define CFundamental CFundamentalA
 /* String Working */
 #define LowerString LowerStringA
 #define UpperString UpperStringA
@@ -579,6 +580,7 @@ std::wstring vuapi NormalizePathW(const std::wstring& Path, const ePathSep Separ
 #define GetCurrentFilePath GetCurrentFilePathA
 #define GetCurDirectory GetCurrentDirectoryA
 #define GetContainDirectory GetContainDirectoryA
+#define GetFileNameFromHandle GetFileNameFromHandleA
 #define GetDiskType GetDiskTypeA
 #define JoinPath JoinPathA
 #define NormalizePath NormalizePathA
@@ -2892,6 +2894,7 @@ private:
 #define CPath CPathW
 #define CScopeStopWatch CScopeStopWatchW
 #define CWMIProvider CWMIProviderW
+#define CFundamental CFundamentalW
 #else
 #define CGUID CGUIDA
 #define CAPIHook CAPIHookA
@@ -2908,6 +2911,7 @@ private:
 #define CPath CPathA
 #define CScopeStopWatch CScopeStopWatchA
 #define CWMIProvider CWMIProviderA
+#define CFundamental CFundamentalA
 #endif
 
 } // namespace vu
