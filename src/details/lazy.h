@@ -21,11 +21,6 @@
 namespace vu
 {
 
-extern bool g_HasToolHelp32;
-extern bool g_HasMiscRoutine;
-
-/* --------------------------------------------- Initialize ToolHelp32 --------------------------------------------- */
-
 #ifndef PSAPI_VERSION
 #define LIST_MODULES_32BIT    0x01
 #define LIST_MODULES_64BIT    0x02
@@ -95,6 +90,8 @@ typedef struct _MODULEENTRY32W
  * Types
  */
 
+// THHELP32
+
 typedef HANDLE (WINAPI *PfnCreateToolhelp32Snapshot)(DWORD dwFlags, DWORD th32ProcessID);
 
 typedef BOOL (WINAPI *PfnProcess32FirstA)(HANDLE hSnapshot, PProcessEntry32A lppe);
@@ -112,6 +109,8 @@ typedef BOOL (WINAPI *PfnEnumProcessModulesEx)(HANDLE hProcess, HMODULE *lphModu
 
 typedef BOOL (WINAPI *PfnEnumProcesses)(DWORD *pProcessIds, DWORD cb, DWORD *pBytesReturned);
 
+// PSAPI
+
 typedef DWORD (WINAPI *PfnGetModuleBaseNameA)(HANDLE hProcess, HMODULE hModule, LPSTR lpBaseName, DWORD nSize);
 typedef DWORD (WINAPI *PfnGetModuleBaseNameW)(HANDLE hProcess, HMODULE hModule, LPWSTR lpBaseName, DWORD nSize);
 
@@ -128,9 +127,22 @@ typedef BOOL (WINAPI *PfnQueryFullProcessImageNameW)(HANDLE hProcess, DWORD  dwF
 typedef DWORD (WINAPI * PfnGetMappedFileNameA)(HANDLE hProcess, LPVOID lpv, LPSTR  lpFilename, DWORD nSize);
 typedef DWORD (WINAPI * PfnGetMappedFileNameW)(HANDLE hProcess, LPVOID lpv, LPWSTR lpFilename, DWORD nSize);
 
+// MISC
+
+typedef int(__cdecl* Pfn_vscprintf)(const char* format, va_list argptr);
+typedef int(__cdecl* Pfn_vscwprintf)(const wchar_t* format, va_list argptr);
+typedef int(__cdecl* Pfn_vsnprintf)(char* s, size_t n, const char* format, va_list arg);
+typedef int(__cdecl* Pfn_vswprintf)(wchar_t* s, size_t len, const wchar_t* format, va_list arg);
+typedef BOOL(WINAPI* PfnCheckTokenMembership)(HANDLE TokenHandle, PSID SidToCheck, PBOOL IsMember);
+typedef LONG(WINAPI* PfnRegQueryReflectionKey)(HKEY hBase, BOOL* bIsReflectionDisabled);
+typedef LONG(WINAPI* PfnRegEnableReflectionKey)(HKEY hBase);
+typedef LONG(WINAPI* PfnRegDisableReflectionKey)(HKEY hBase);
+
 /**
  * Variables
  */
+
+// THHELP32
 
 extern PfnCreateToolhelp32Snapshot pfnCreateToolhelp32Snapshot;
 
@@ -149,6 +161,8 @@ extern PfnEnumProcessModulesEx pfnEnumProcessModulesEx;
 
 extern PfnEnumProcesses pfnEnumProcesses;
 
+// PSAPI
+
 extern PfnGetModuleBaseNameA pfnGetModuleBaseNameA;
 extern PfnGetModuleBaseNameW pfnGetModuleBaseNameW;
 
@@ -165,30 +179,7 @@ extern PfnQueryFullProcessImageNameW pfnQueryFullProcessImageNameW;
 extern PfnGetMappedFileNameA pfnGetMappedFileNameA;
 extern PfnGetMappedFileNameW pfnGetMappedFileNameW;
 
-/**
- * Initialize Tool Help 32 functions.
- * return VU_OK if the function succeeds. Otherwise the error code 1xx.
- */
-VUResult vuapi InitTlHelp32();
-
-/* ------------------------------------------- Initialize Misc Routines -------------------------------------------- */
-
-/**
- * Types
- */
-
-typedef int (__cdecl *Pfn_vscprintf)(const char* format, va_list argptr);
-typedef int (__cdecl *Pfn_vscwprintf)(const wchar_t* format, va_list argptr);
-typedef int (__cdecl *Pfn_vsnprintf)(char* s, size_t n, const char* format, va_list arg);
-typedef int (__cdecl *Pfn_vswprintf)(wchar_t* s, size_t len, const wchar_t* format, va_list arg);
-typedef BOOL (WINAPI *PfnCheckTokenMembership)(HANDLE TokenHandle, PSID SidToCheck, PBOOL IsMember);
-typedef LONG (WINAPI *PfnRegQueryReflectionKey)(HKEY hBase, BOOL* bIsReflectionDisabled);
-typedef LONG (WINAPI *PfnRegEnableReflectionKey)(HKEY hBase);
-typedef LONG (WINAPI *PfnRegDisableReflectionKey)(HKEY hBase);
-
-/**
- * Variables
- */
+// MISC
 
 extern Pfn_vsnprintf pfn_vsnprintf;
 extern Pfn_vswprintf pfn_vswprintf;
@@ -200,9 +191,17 @@ extern PfnRegEnableReflectionKey pfnRegEnableReflectionKey;
 extern PfnRegDisableReflectionKey pfnRegDisableReflectionKey;
 
 /**
-* Initialize miscellaneous functions.
-* return VU_OK if the function succeeds. Otherwise the error code 2xx.
-*/
-VUResult vuapi InitMiscRoutine();
+ * Initialize dynamic functions.
+ * return VU_OK if the function succeeds. Otherwise the error code 1xx.
+ */
+
+VUResult vuapi Initialize_DLL_LAZY();
+VUResult vuapi Initialize_DLL_MISC();
+VUResult vuapi Initialize_DLL_PSAPI();
+VUResult vuapi Initialize_DLL_TLHELP32();
+
+extern bool g_Initialized_DLL_TLHELP32;
+extern bool g_Initialized_DLL_PSAPI;
+extern bool g_Initialized_DLL_MISC;
 
 } // namespace vu

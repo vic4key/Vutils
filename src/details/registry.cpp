@@ -29,7 +29,7 @@ eRegReflection vuapi CRegistryX::QueryReflectionKey()
 {
   BOOL bReflectedDisabled = FALSE;
 
-  if (InitMiscRoutine() != VU_OK)
+  if (Initialize_DLL_MISC() != VU_OK)
   {
     return eRegReflection::RR_ERROR;
   }
@@ -53,7 +53,7 @@ bool vuapi CRegistryX::SetReflectionKey(eRegReflection RegReflection)
 {
   bool result = false;
 
-  if (InitMiscRoutine() != VU_OK)
+  if (Initialize_DLL_MISC() != VU_OK)
   {
     return result;
   }

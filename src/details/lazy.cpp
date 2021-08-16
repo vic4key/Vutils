@@ -7,21 +7,24 @@
 #include "lazy.h"
 #include "defs.h"
 
-#define ErrorCode(code) (ECBase + code)
+#define ERROR_CODE(code) (ECBase + code)
 
-#define VU_OBJ_GET_API(O, F) pfn ## F = (Pfn ## F)O.GetProcAddress(_T( # F ));
+#define VU_OBJ_GET_API(O, F)  pfn ## F = (Pfn ## F)O.GetProcAddress(_T( # F ));
 #define VU_OBJ_GET_APIA(O, F) pfn ## F ## A = (Pfn ## F ## A)O.GetProcAddress(_T( # F ));
 #define VU_OBJ_GET_APIW(O, F) pfn ## F ## W = (Pfn ## F ## W)O.GetProcAddress(_T( # F ));
 
 namespace vu
 {
 
-bool g_HasToolHelp32  = false;
-bool g_HasMiscRoutine = false;
+bool g_Initialized_DLL_TLHELP32 = false;
+bool g_Initialized_DLL_PSAPI = false;
+bool g_Initialized_DLL_MISC = false;
 
 /**
  * Variables
  */
+
+// THHELP32
 
 PfnCreateToolhelp32Snapshot pfnCreateToolhelp32Snapshot = nullptr;
 
@@ -39,6 +42,8 @@ PfnEnumProcessModules pfnEnumProcessModules = nullptr;
 PfnEnumProcessModulesEx pfnEnumProcessModulesEx = nullptr;
 
 PfnEnumProcesses pfnEnumProcesses = nullptr;
+
+// PSAPI
 
 PfnGetModuleBaseNameA pfnGetModuleBaseNameA = nullptr;
 PfnGetModuleBaseNameW pfnGetModuleBaseNameW = nullptr;
@@ -74,11 +79,21 @@ PfnRegDisableReflectionKey pfnRegDisableReflectionKey = nullptr;
  * Functions
  */
 
-VUResult vuapi InitTlHelp32()
+VUResult vuapi Initialize_DLL_LAZY()
+{
+  VUResult result = VU_OK;
+
+  result |= Initialize_DLL_PSAPI();
+  result |= Initialize_DLL_TLHELP32();
+
+  return result;
+}
+
+VUResult vuapi Initialize_DLL_TLHELP32()
 {
   const VUResult ECBase = 100;
 
-  if (g_HasToolHelp32)
+  if (g_Initialized_DLL_TLHELP32)
   {
     return VU_OK;
   }
@@ -86,67 +101,61 @@ VUResult vuapi InitTlHelp32()
   CLibrary kernel32(_T("kernel32.dll"));
   if (!kernel32.IsAvailable())
   {
-    return ErrorCode(1);
-  }
-
-  CLibrary psapi(_T("psapi.dll"));
-  if (!psapi.IsAvailable())
-  {
-    return ErrorCode(1);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_OBJ_GET_API(kernel32, CreateToolhelp32Snapshot);
   if (pfnCreateToolhelp32Snapshot == nullptr)
   {
-    return ErrorCode(2);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_OBJ_GET_APIA(kernel32, Process32First);
   if (pfnProcess32FirstA == nullptr)
   {
-    return ErrorCode(3);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_OBJ_GET_APIA(kernel32, Process32Next);
   if (pfnProcess32NextA == nullptr)
   {
-    return ErrorCode(4);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_OBJ_GET_API(kernel32, Process32FirstW);
   if (pfnProcess32FirstA == nullptr)
   {
-    return ErrorCode(5);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_OBJ_GET_API(kernel32, Process32NextW);
   if (pfnProcess32NextW == nullptr)
   {
-    return ErrorCode(6);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_OBJ_GET_APIA(kernel32, Module32First);
   if (pfnModule32FirstA == nullptr)
   {
-    return ErrorCode(7);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_OBJ_GET_APIA(kernel32, Module32Next);
   if (pfnModule32NextA == nullptr)
   {
-    return ErrorCode(8);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_OBJ_GET_API(kernel32, Module32FirstW);
   if (pfnModule32FirstW == nullptr)
   {
-    return ErrorCode(9);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_OBJ_GET_API(kernel32, Module32NextW);
   if (pfnModule32NextW == nullptr)
   {
-    return ErrorCode(10);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_OBJ_GET_API(kernel32, EnumProcessModules);
@@ -155,7 +164,7 @@ VUResult vuapi InitTlHelp32()
     pfnEnumProcessModules = (PfnEnumProcessModules)kernel32.GetProcAddress(_T("K32EnumProcessModules"));
     if (pfnEnumProcessModules == nullptr)
     {
-      return ErrorCode(11);
+      return ERROR_CODE(__LINE__);
     }
   }
 
@@ -165,7 +174,7 @@ VUResult vuapi InitTlHelp32()
     pfnEnumProcessModulesEx = (PfnEnumProcessModulesEx)kernel32.GetProcAddress(_T("K32EnumProcessModulesEx"));
     if (pfnEnumProcessModulesEx == nullptr)
     {
-      return ErrorCode(12);
+      return ERROR_CODE(__LINE__);
     }
   }
 
@@ -175,7 +184,7 @@ VUResult vuapi InitTlHelp32()
     pfnEnumProcesses = (PfnEnumProcesses)kernel32.GetProcAddress(_T("K32EnumProcesses"));
     if (pfnEnumProcesses == nullptr)
     {
-      return ErrorCode(13);
+      return ERROR_CODE(__LINE__);
     }
   }
 
@@ -185,7 +194,7 @@ VUResult vuapi InitTlHelp32()
     pfnGetModuleBaseNameA = (PfnGetModuleBaseNameA)kernel32.GetProcAddress(_T("K32GetModuleBaseNameA"));
     if (pfnGetModuleBaseNameA == nullptr)
     {
-      return ErrorCode(14);
+      return ERROR_CODE(__LINE__);
     }
   }
 
@@ -195,20 +204,46 @@ VUResult vuapi InitTlHelp32()
     pfnGetModuleBaseNameW = (PfnGetModuleBaseNameW)kernel32.GetProcAddress(_T("K32GetModuleBaseNameW"));
     if (pfnGetModuleBaseNameW == nullptr)
     {
-      return ErrorCode(15);
+      return ERROR_CODE(__LINE__);
     }
   }
 
   VU_OBJ_GET_API(kernel32, QueryFullProcessImageNameA);
   if (pfnQueryFullProcessImageNameA == nullptr)
   {
-    return ErrorCode(16);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_OBJ_GET_API(kernel32, QueryFullProcessImageNameW)
   if (pfnQueryFullProcessImageNameW == nullptr)
   {
-    return ErrorCode(17);
+    return ERROR_CODE(__LINE__);
+  }
+
+  g_Initialized_DLL_TLHELP32 = true;
+
+  return VU_OK;
+}
+
+VUResult vuapi Initialize_DLL_PSAPI()
+{
+  const VUResult ECBase = 200;
+
+  if (g_Initialized_DLL_PSAPI)
+  {
+    return VU_OK;
+  }
+
+  CLibrary kernel32(_T("kernel32.dll"));
+  if (!kernel32.IsAvailable())
+  {
+    return ERROR_CODE(__LINE__);
+  }
+
+  CLibrary psapi(_T("psapi.dll"));
+  if (!psapi.IsAvailable())
+  {
+    return ERROR_CODE(__LINE__);
   }
 
   pfnGetProcessMemoryInfo = (PfnGetProcessMemoryInfo)kernel32.GetProcAddress(_T("K32GetProcessMemoryInfo"));
@@ -217,7 +252,7 @@ VUResult vuapi InitTlHelp32()
     VU_OBJ_GET_API(psapi, GetProcessMemoryInfo);
     if (pfnGetProcessMemoryInfo == nullptr)
     {
-      return ErrorCode(18);
+      return ERROR_CODE(__LINE__);
     }
   }
 
@@ -227,7 +262,7 @@ VUResult vuapi InitTlHelp32()
     VU_OBJ_GET_API(psapi, GetModuleFileNameExA);
     if (pfnGetModuleFileNameExA == nullptr)
     {
-      return ErrorCode(19);
+      return ERROR_CODE(__LINE__);
     }
   }
 
@@ -237,7 +272,7 @@ VUResult vuapi InitTlHelp32()
     VU_OBJ_GET_API(psapi, GetModuleFileNameExW);
     if (pfnGetModuleFileNameExW == nullptr)
     {
-      return ErrorCode(20);
+      return ERROR_CODE(__LINE__);
     }
   }
 
@@ -247,7 +282,7 @@ VUResult vuapi InitTlHelp32()
     VU_OBJ_GET_API(psapi, GetModuleInformation)
     if (pfnGetModuleInformation == nullptr)
     {
-      return ErrorCode(21);
+      return ERROR_CODE(__LINE__);
     }
   }
 
@@ -257,7 +292,7 @@ VUResult vuapi InitTlHelp32()
     VU_OBJ_GET_API(psapi, GetMappedFileNameA)
     if (pfnGetMappedFileNameA == nullptr)
     {
-      return ErrorCode(23);
+      return ERROR_CODE(__LINE__);
     }
   }
 
@@ -267,20 +302,20 @@ VUResult vuapi InitTlHelp32()
     VU_OBJ_GET_API(psapi, GetMappedFileNameW)
     if (pfnGetMappedFileNameW == nullptr)
     {
-      return ErrorCode(24);
+      return ERROR_CODE(__LINE__);
     }
   }
 
-  g_HasToolHelp32 = true;
+  g_Initialized_DLL_PSAPI = true;
 
   return VU_OK;
 }
 
-VUResult vuapi InitMiscRoutine()
+VUResult vuapi Initialize_DLL_MISC()
 {
-  const VUResult ECBase = 200;
+  const VUResult ECBase = 300;
 
-  if (g_HasMiscRoutine)
+  if (g_Initialized_DLL_MISC)
   {
     return VU_OK;
   }
@@ -288,52 +323,52 @@ VUResult vuapi InitMiscRoutine()
   VU_GET_API(msvcrt.dll, _vscwprintf);
   if (pfn_vscwprintf == nullptr)
   {
-    return ErrorCode(1);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_GET_API(msvcrt.dll, _vscprintf);
   if (pfn_vscprintf == nullptr)
   {
-    return ErrorCode(2);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_GET_API(msvcrt.dll, _vscwprintf);
   if (pfn_vscwprintf == nullptr)
   {
-    return ErrorCode(3);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_GET_API(msvcrt.dll, _vsnprintf);
   if (pfn_vsnprintf == nullptr)
   {
-    return ErrorCode(4);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_GET_API(advapi32.dll, CheckTokenMembership);
   if (pfnCheckTokenMembership == nullptr)
   {
-    return ErrorCode(10);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_GET_API(advapi32.dll, RegQueryReflectionKey);
   if (pfnRegQueryReflectionKey == nullptr)
   {
-    return ErrorCode(11);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_GET_API(advapi32.dll, RegEnableReflectionKey);
   if (pfnRegEnableReflectionKey == nullptr)
   {
-    return ErrorCode(12);
+    return ERROR_CODE(__LINE__);
   }
 
   VU_GET_API(advapi32.dll, RegDisableReflectionKey);
   if (pfnRegDisableReflectionKey == nullptr)
   {
-    return ErrorCode(13);
+    return ERROR_CODE(__LINE__);
   }
 
-  g_HasMiscRoutine = true;
+  g_Initialized_DLL_MISC = true;
 
   return VU_OK;
 }

@@ -208,7 +208,7 @@ bool vuapi WPMEX(
 
 ulong vuapi GetParentPID(ulong ulChildPID)
 {
-  if (InitTlHelp32() != VU_OK)
+  if (Initialize_DLL_LAZY() != VU_OK)
   {
     return (ulong)-1;
   }
@@ -276,7 +276,7 @@ std::vector<ulong> vuapi NameToPIDA(const std::string& ProcessName, ulong ulMaxP
   std::vector<ulong> l;
   l.clear();
 
-  if (InitTlHelp32() != VU_OK)
+  if (Initialize_DLL_LAZY() != VU_OK)
   {
     return l;
   }
@@ -324,7 +324,7 @@ std::vector<ulong> vuapi NameToPIDW(const std::wstring& ProcessName, ulong ulMax
   std::vector<ulong> l;
   l.clear();
 
-  if (InitTlHelp32() != VU_OK)
+  if (Initialize_DLL_LAZY() != VU_OK)
   {
     return l;
   }
@@ -372,7 +372,7 @@ std::string vuapi PIDToNameA(ulong ulPID)
   std::string s;
   s.clear();
 
-  if (InitTlHelp32() != VU_OK)
+  if (Initialize_DLL_LAZY() != VU_OK)
   {
     return s;
   }
@@ -411,7 +411,7 @@ std::wstring vuapi PIDToNameW(ulong ulPID)
   std::wstring s;
   s.clear();
 
-  if (InitTlHelp32() != VU_OK)
+  if (Initialize_DLL_LAZY() != VU_OK)
   {
     return s;
   }
@@ -516,7 +516,7 @@ HMODULE vuapi RemoteGetModuleHandleA(ulong ulPID, const std::string& ModuleName)
 {
   HMODULE result = (HMODULE)-1;
 
-  if (InitTlHelp32() != VU_OK)
+  if (Initialize_DLL_LAZY() != VU_OK)
   {
     return (HMODULE)-1;
   }
@@ -566,7 +566,7 @@ HMODULE vuapi RemoteGetModuleHandleW(const ulong ulPID, const std::wstring& Modu
 {
   HMODULE result = (HMODULE)-1;
 
-  if (InitTlHelp32() != VU_OK)
+  if (Initialize_DLL_LAZY() != VU_OK)
   {
     return (HMODULE)-1;
   }
@@ -1126,7 +1126,7 @@ PROCESS_MEMORY_COUNTERS CProcessX::GetMemoryInformation()
 {
   PROCESS_MEMORY_COUNTERS result = { 0 };
 
-  if (InitTlHelp32() != VU_OK)
+  if (Initialize_DLL_LAZY() != VU_OK)
   {
     return result;
   }

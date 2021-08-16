@@ -123,7 +123,7 @@ std::wstring GetFileNameFromHandleX(HANDLE hFile)
     return result;
   }
 
-  if (InitTlHelp32() != VU_OK)
+  if (Initialize_DLL_LAZY() != VU_OK)
   {
     return result;
   }

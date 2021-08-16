@@ -16,7 +16,7 @@ bool vuapi IsAdministrator()
   SID_IDENTIFIER_AUTHORITY IA = SECURITY_NT_AUTHORITY;
   PSID SID;
 
-  if (InitMiscRoutine() != VU_OK)
+  if (Initialize_DLL_MISC() != VU_OK)
   {
     return FALSE;
   }

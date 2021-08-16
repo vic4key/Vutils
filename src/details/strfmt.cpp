@@ -26,7 +26,7 @@ int vuapi GetFormatLengthVLA(const std::string Format, va_list args)
 {
   int N = -1;
 
-  if (InitMiscRoutine() != VU_OK)
+  if (Initialize_DLL_MISC() != VU_OK)
   {
     return N;
   }
@@ -44,7 +44,7 @@ int vuapi GetFormatLengthVLW(const std::wstring Format, va_list args)
 {
   int N = -1;
 
-  if (InitMiscRoutine() != VU_OK)
+  if (Initialize_DLL_MISC() != VU_OK)
   {
     return N;
   }
