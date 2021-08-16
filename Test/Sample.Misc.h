@@ -138,5 +138,7 @@ DEF_SAMPLE(Misc)
   std::cout << slicer(-9, 10).ToStringA() << std::endl;
   std::cout << slicer(-10, 10).ToStringA() << std::endl;
 
+  std::tcout << vu::DecorateCppSymbol(_T("?func1@a@@AAEXH@Z")) << std::endl;
+
   return vu::VU_OK;
 }

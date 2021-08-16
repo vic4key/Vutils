@@ -312,6 +312,7 @@
     <ClInclude Include="3rdparty\TP11\include\threadpool11\Pool.h" />
     <ClInclude Include="3rdparty\TP11\include\threadpool11\threadpool11.h" />
     <ClInclude Include="3rdparty\TP11\include\threadpool11\Worker.h" />
+    <ClInclude Include="3rdparty\UND\include\undname.h" />
     <ClInclude Include="include\Boob.h" />
     <ClInclude Include="include\Vu.h" />
     <ClInclude Include="include\Vutils.h" />
@@ -325,6 +326,7 @@
     <ClCompile Include="3rdparty\MH\src\buffer.cpp" />
     <ClCompile Include="3rdparty\TP11\src\Pool.cpp" />
     <ClCompile Include="3rdparty\TP11\src\Worker.cpp" />
+    <ClCompile Include="3rdparty\UND\src\undname.cpp" />
     <ClCompile Include="src\details\asyncsocket.cpp" />
     <ClCompile Include="src\details\apihookiat.cpp" />
     <ClCompile Include="src\details\mbuffer.cpp" />

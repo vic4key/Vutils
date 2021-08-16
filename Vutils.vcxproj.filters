@@ -34,6 +34,9 @@
     <Filter Include="Header Files\Inline Files">
       <UniqueIdentifier>{842f4f8a-4b2a-4ed5-aabf-5d7b6956aaee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Third Party Files\UND">
+      <UniqueIdentifier>{70d999d8-5265-4f36-96dc-d37d5c7ac85a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Vutils.h">
@@ -77,6 +80,9 @@
     </ClInclude>
     <ClInclude Include="3rdparty\TP11\include\threadpool11\Worker.h">
       <Filter>Third Party Files\TP11</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\UND\include\undname.h">
+      <Filter>Third Party Files\UND</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +181,9 @@
     </ClCompile>
     <ClCompile Include="src\details\wmi.cpp">
       <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\UND\src\undname.cpp">
+      <Filter>Third Party Files\UND</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

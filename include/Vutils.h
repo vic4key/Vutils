@@ -480,18 +480,13 @@ std::wstring vuapi GetFileNameFromHandleW(HANDLE hFile);
 eDiskType vuapi GetDiskTypeA(const char drive);
 eDiskType vuapi GetDiskTypeW(const wchar_t drive);
 #endif // VU_WMI_ENABLED
-std::string vuapi JoinPathA(
-  const std::string& Left,
-  const std::string& Right,
-  const ePathSep Separator = ePathSep::WIN
-);
-std::wstring vuapi JoinPathW(
-  const std::wstring& Left,
-  const std::wstring& Right,
-  const ePathSep Separator = ePathSep::WIN
-);
+std::string vuapi JoinPathA(const std::string& Left, const std::string& Right, const ePathSep Separator = ePathSep::WIN);
+std::wstring vuapi JoinPathW(const std::wstring& Left, const std::wstring& Right, const ePathSep Separator = ePathSep::WIN);
 std::string vuapi NormalizePathA(const std::string& Path, const ePathSep Separator = ePathSep::WIN);
 std::wstring vuapi NormalizePathW(const std::wstring& Path, const ePathSep Separator = ePathSep::WIN);
+
+std::string vuapi DecorateCppSymbolA(const std::string& name, const ushort flags = 0);   // UNDNAME_COMPLETE
+std::wstring vuapi DecorateCppSymbolW(const std::wstring& name, const ushort flags = 0); // UNDNAME_COMPLETE
 
 /*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
 
@@ -540,6 +535,7 @@ std::wstring vuapi NormalizePathW(const std::wstring& Path, const ePathSep Separ
 #define GetDiskType GetDiskTypeW
 #define JoinPath JoinPathW
 #define NormalizePath NormalizePathW
+#define DecorateCppSymbol DecorateCppSymbolW
 #else
 /* Misc Working */
 #define SetPrivilege SetPrivilegeA
@@ -584,6 +580,7 @@ std::wstring vuapi NormalizePathW(const std::wstring& Path, const ePathSep Separ
 #define GetDiskType GetDiskTypeA
 #define JoinPath JoinPathA
 #define NormalizePath NormalizePathA
+#define DecorateCppSymbol DecorateCppSymbolA
 #endif
 
 /* -------------------------------------- Public Class(es) -------------------------------------- */
@@ -803,8 +800,9 @@ private:
 
 #ifdef VU_SOCKET_ENABLED
 
-#define IPPROTO_NONE 0
+#ifndef MSG_NONE
 #define MSG_NONE 0
+#endif // MSG_NONE
 
 class CSocket : public CLastError
 {

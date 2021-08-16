@@ -6,6 +6,9 @@
 
 #include "Vutils.h"
 #include "lazy.h"
+#include "defs.h"
+
+#include VU_3RD_INCL(UND/include/undname.h)
 
 namespace vu
 {
@@ -257,6 +260,21 @@ std::pair<bool, size_t> FindPatternW(const void* Pointer, const size_t Size, con
 {
   const auto s = ToStringA(Pattern);
   return FindPatternA(Pointer, Size, s);
+}
+
+std::string DecorateCppSymbolA(const std::string& name, const ushort flags)
+{
+  char s[KB] = { 0 };
+  memset(&s, 0, sizeof(s));
+  undname(reinterpret_cast<char*>(&s), const_cast<char*>(name.c_str()), sizeof(s), flags);
+  return std::string(s);
+}
+
+std::wstring DecorateCppSymbolW(const std::wstring& name, const ushort flags)
+{
+  auto s = ToStringA(name);
+  auto r = DecorateCppSymbolA(s, flags);
+  return ToStringW(r);
 }
 
 } // namespace vu
