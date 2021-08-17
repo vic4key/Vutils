@@ -19,8 +19,8 @@ DEF_SAMPLE(Process)
 
   auto cpu  = process.GetCPUInformation();
   auto mem  = process.GetMemoryInformation();
-  auto time = process.GetTimeInformation();
-  auto io   = process.GetIOInformation();
+  // auto time = process.GetTimeInformation();
+  // auto io   = process.GetIOInformation();
 
   std::tcout << _T("CPU : ") << cpu.Usage << std::endl;
   std::tcout << _T("WS  : ") << vu::FormatBytes(mem.WorkingSetSize) << std::endl;

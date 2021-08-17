@@ -33,13 +33,41 @@
 			<Add option="-std=c++11" />
 			<Add option="-fexceptions" />
 			<Add option="-DVU_SOCKET_ENABLED" />
-			<Add option="-DDVU_GUID_ENABLED" />
+			<Add option="-DVU_GUID_ENABLED" />
+			<Add option="-DVU_WMI_ENABLED" />
 		</Compiler>
 		<Linker>
 			<Add library="Vutils" />
 			<Add library="ws2_32" />
+			<Add library="gdi32" />
 			<Add library="rpcrt4" />
+			<Add library="ole32" />
+			<Add library="oleaut32" />
+			<Add library="wbemuuid" />
 		</Linker>
+		<Unit filename="Sample.AsyncSocket.h" />
+		<Unit filename="Sample.DF.h" />
+		<Unit filename="Sample.FileMapping.h" />
+		<Unit filename="Sample.FileSystem.h" />
+		<Unit filename="Sample.GUID.h" />
+		<Unit filename="Sample.IATHook.h" />
+		<Unit filename="Sample.INIFile.h" />
+		<Unit filename="Sample.INLHook.h" />
+		<Unit filename="Sample.InputDialog.h" />
+		<Unit filename="Sample.Manager.h" />
+		<Unit filename="Sample.Math.h" />
+		<Unit filename="Sample.Misc.h" />
+		<Unit filename="Sample.PEFile.h" />
+		<Unit filename="Sample.Process.h" />
+		<Unit filename="Sample.Registry.h" />
+		<Unit filename="Sample.Service.h" />
+		<Unit filename="Sample.Singleton.h" />
+		<Unit filename="Sample.Socket.h" />
+		<Unit filename="Sample.StopWatch.h" />
+		<Unit filename="Sample.ThreadPool.h" />
+		<Unit filename="Sample.WMHook.h" />
+		<Unit filename="Sample.WMI.h" />
+		<Unit filename="Sample.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
