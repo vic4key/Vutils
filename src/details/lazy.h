@@ -90,7 +90,7 @@ typedef struct _MODULEENTRY32W
  * Types
  */
 
-// THHELP32
+// TLHELP32
 
 typedef HANDLE (WINAPI *PfnCreateToolhelp32Snapshot)(DWORD dwFlags, DWORD th32ProcessID);
 
@@ -143,7 +143,7 @@ typedef LONG(WINAPI* PfnRegDisableReflectionKey)(HKEY hBase);
  */
 
 #define DECLARE_LAZY(prefix, suffix)\
-	/* THHELP32 */\
+	/* TLHELP32 */\
 	\
 	prefix PfnCreateToolhelp32Snapshot pfnCreateToolhelp32Snapshot suffix \
 	\
