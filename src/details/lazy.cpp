@@ -16,13 +16,13 @@
 namespace vu
 {
 
-bool g_Initialized_DLL_TLHELP32 = false;
-bool g_Initialized_DLL_PSAPI = false;
-bool g_Initialized_DLL_MISC = false;
-
 /**
  * Variables
  */
+
+bool g_Initialized_DLL_TLHELP32 = false;
+bool g_Initialized_DLL_PSAPI = false;
+bool g_Initialized_DLL_MISC = false;
 
 // THHELP32
 
@@ -61,9 +61,7 @@ PfnQueryFullProcessImageNameW pfnQueryFullProcessImageNameW = nullptr;
 PfnGetMappedFileNameA pfnGetMappedFileNameA = nullptr;
 PfnGetMappedFileNameW pfnGetMappedFileNameW = nullptr;
 
-/**
- * Variables
- */
+// MISC
 
 Pfn_vsnprintf pfn_vsnprintf = nullptr;
 Pfn_vswprintf pfn_vswprintf = nullptr;

@@ -142,6 +142,10 @@ typedef LONG(WINAPI* PfnRegDisableReflectionKey)(HKEY hBase);
  * Variables
  */
 
+extern bool g_Initialized_DLL_TLHELP32;
+extern bool g_Initialized_DLL_PSAPI;
+extern bool g_Initialized_DLL_MISC;
+
 // THHELP32
 
 extern PfnCreateToolhelp32Snapshot pfnCreateToolhelp32Snapshot;
@@ -199,9 +203,5 @@ VUResult vuapi Initialize_DLL_LAZY();
 VUResult vuapi Initialize_DLL_MISC();
 VUResult vuapi Initialize_DLL_PSAPI();
 VUResult vuapi Initialize_DLL_TLHELP32();
-
-extern bool g_Initialized_DLL_TLHELP32;
-extern bool g_Initialized_DLL_PSAPI;
-extern bool g_Initialized_DLL_MISC;
 
 } // namespace vu
