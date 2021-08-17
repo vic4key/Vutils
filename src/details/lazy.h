@@ -142,61 +142,74 @@ typedef LONG(WINAPI* PfnRegDisableReflectionKey)(HKEY hBase);
  * Variables
  */
 
+#define DECLARE_LAZY(prefix, suffix)\
+	/* THHELP32 */\
+	\
+	prefix PfnCreateToolhelp32Snapshot pfnCreateToolhelp32Snapshot suffix \
+	\
+	prefix PfnProcess32FirstA pfnProcess32FirstA suffix \
+	prefix PfnProcess32NextA pfnProcess32NextA   suffix \
+	prefix PfnProcess32FirstW pfnProcess32FirstW suffix \
+	prefix PfnProcess32NextW pfnProcess32NextW   suffix \
+	\
+	prefix PfnModule32FirstA pfnModule32FirstA suffix \
+	prefix PfnModule32NextA pfnModule32NextA   suffix \
+	prefix PfnModule32FirstW pfnModule32FirstW suffix \
+	prefix PfnModule32NextW pfnModule32NextW   suffix \
+	\
+	prefix PfnEnumProcessModules pfnEnumProcessModules suffix \
+	prefix PfnEnumProcessModulesEx pfnEnumProcessModulesEx suffix \
+	\
+	prefix PfnEnumProcesses pfnEnumProcesses suffix \
+	\
+	/* PSAPI */\
+	\
+	prefix PfnGetModuleBaseNameA pfnGetModuleBaseNameA suffix \
+	prefix PfnGetModuleBaseNameW pfnGetModuleBaseNameW suffix \
+	\
+	prefix PfnGetModuleFileNameExA pfnGetModuleFileNameExA suffix \
+	prefix PfnGetModuleFileNameExW pfnGetModuleFileNameExW suffix \
+	\
+	prefix PfnGetModuleInformation pfnGetModuleInformation suffix \
+	\
+	prefix PfnGetProcessMemoryInfo pfnGetProcessMemoryInfo suffix \
+	\
+	prefix PfnQueryFullProcessImageNameA pfnQueryFullProcessImageNameA suffix \
+	prefix PfnQueryFullProcessImageNameW pfnQueryFullProcessImageNameW suffix \
+	\
+	prefix PfnGetMappedFileNameA pfnGetMappedFileNameA suffix \
+	prefix PfnGetMappedFileNameW pfnGetMappedFileNameW suffix \
+	\
+	/* MISC */\
+	\
+	prefix Pfn_vsnprintf pfn_vsnprintf suffix \
+	prefix Pfn_vswprintf pfn_vswprintf suffix \
+	prefix Pfn_vscprintf pfn_vscprintf suffix \
+	prefix Pfn_vscwprintf pfn_vscwprintf suffix \
+	\
+	prefix PfnCheckTokenMembership pfnCheckTokenMembership suffix \
+	prefix PfnRegQueryReflectionKey pfnRegQueryReflectionKey suffix \
+	prefix PfnRegEnableReflectionKey pfnRegEnableReflectionKey suffix \
+	prefix PfnRegDisableReflectionKey pfnRegDisableReflectionKey suffix \
+	\
+	/* END */
+
+DECLARE_LAZY(extern,;)
+
 extern bool g_Initialized_DLL_TLHELP32;
 extern bool g_Initialized_DLL_PSAPI;
 extern bool g_Initialized_DLL_MISC;
 
-// THHELP32
-
-extern PfnCreateToolhelp32Snapshot pfnCreateToolhelp32Snapshot;
-
-extern PfnProcess32FirstA pfnProcess32FirstA;
-extern PfnProcess32NextA pfnProcess32NextA;
-extern PfnProcess32FirstW pfnProcess32FirstW;
-extern PfnProcess32NextW pfnProcess32NextW;
-
-extern PfnModule32FirstA pfnModule32FirstA;
-extern PfnModule32NextA pfnModule32NextA;
-extern PfnModule32FirstW pfnModule32FirstW;
-extern PfnModule32NextW pfnModule32NextW;
-
-extern PfnEnumProcessModules pfnEnumProcessModules;
-extern PfnEnumProcessModulesEx pfnEnumProcessModulesEx;
-
-extern PfnEnumProcesses pfnEnumProcesses;
-
-// PSAPI
-
-extern PfnGetModuleBaseNameA pfnGetModuleBaseNameA;
-extern PfnGetModuleBaseNameW pfnGetModuleBaseNameW;
-
-extern PfnGetModuleFileNameExA pfnGetModuleFileNameExA;
-extern PfnGetModuleFileNameExW pfnGetModuleFileNameExW;
-
-extern PfnGetModuleInformation pfnGetModuleInformation;
-
-extern PfnGetProcessMemoryInfo pfnGetProcessMemoryInfo;
-
-extern PfnQueryFullProcessImageNameA pfnQueryFullProcessImageNameA;
-extern PfnQueryFullProcessImageNameW pfnQueryFullProcessImageNameW;
-
-extern PfnGetMappedFileNameA pfnGetMappedFileNameA;
-extern PfnGetMappedFileNameW pfnGetMappedFileNameW;
-
-// MISC
-
-extern Pfn_vsnprintf pfn_vsnprintf;
-extern Pfn_vswprintf pfn_vswprintf;
-extern Pfn_vscprintf pfn_vscprintf;
-extern Pfn_vscwprintf pfn_vscwprintf;
-extern PfnCheckTokenMembership pfnCheckTokenMembership;
-extern PfnRegQueryReflectionKey pfnRegQueryReflectionKey;
-extern PfnRegEnableReflectionKey pfnRegEnableReflectionKey;
-extern PfnRegDisableReflectionKey pfnRegDisableReflectionKey;
+/**
+ * Functions
+ */
 
 /**
  * Initialize dynamic functions.
- * return VU_OK if the function succeeds. Otherwise the error code 1xx.
+ * return VU_OK if succeeds otherwise return the following error codes :
+ *	- 1xx - TLHELP32
+ *	- 2xx - PSAPI
+ *	- 3xx - MISC
  */
 
 VUResult vuapi Initialize_DLL_LAZY();

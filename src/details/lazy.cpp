@@ -24,54 +24,7 @@ bool g_Initialized_DLL_TLHELP32 = false;
 bool g_Initialized_DLL_PSAPI = false;
 bool g_Initialized_DLL_MISC = false;
 
-// THHELP32
-
-PfnCreateToolhelp32Snapshot pfnCreateToolhelp32Snapshot = nullptr;
-
-PfnProcess32FirstA pfnProcess32FirstA = nullptr;
-PfnProcess32NextA pfnProcess32NextA   = nullptr;
-PfnProcess32FirstW pfnProcess32FirstW = nullptr;
-PfnProcess32NextW pfnProcess32NextW   = nullptr;
-
-PfnModule32FirstA pfnModule32FirstA = nullptr;
-PfnModule32NextA pfnModule32NextA   = nullptr;
-PfnModule32FirstW pfnModule32FirstW = nullptr;
-PfnModule32NextW pfnModule32NextW   = nullptr;
-
-PfnEnumProcessModules pfnEnumProcessModules = nullptr;
-PfnEnumProcessModulesEx pfnEnumProcessModulesEx = nullptr;
-
-PfnEnumProcesses pfnEnumProcesses = nullptr;
-
-// PSAPI
-
-PfnGetModuleBaseNameA pfnGetModuleBaseNameA = nullptr;
-PfnGetModuleBaseNameW pfnGetModuleBaseNameW = nullptr;
-
-PfnGetModuleFileNameExA pfnGetModuleFileNameExA = nullptr;
-PfnGetModuleFileNameExW pfnGetModuleFileNameExW = nullptr;
-
-PfnGetModuleInformation pfnGetModuleInformation = nullptr;
-
-PfnGetProcessMemoryInfo pfnGetProcessMemoryInfo = nullptr;
-
-PfnQueryFullProcessImageNameA pfnQueryFullProcessImageNameA = nullptr;
-PfnQueryFullProcessImageNameW pfnQueryFullProcessImageNameW = nullptr;
-
-PfnGetMappedFileNameA pfnGetMappedFileNameA = nullptr;
-PfnGetMappedFileNameW pfnGetMappedFileNameW = nullptr;
-
-// MISC
-
-Pfn_vsnprintf pfn_vsnprintf = nullptr;
-Pfn_vswprintf pfn_vswprintf = nullptr;
-Pfn_vscprintf pfn_vscprintf = nullptr;
-Pfn_vscwprintf pfn_vscwprintf = nullptr;
-
-PfnCheckTokenMembership pfnCheckTokenMembership = nullptr;
-PfnRegQueryReflectionKey pfnRegQueryReflectionKey = nullptr;
-PfnRegEnableReflectionKey pfnRegEnableReflectionKey = nullptr;
-PfnRegDisableReflectionKey pfnRegDisableReflectionKey = nullptr;
+DECLARE_LAZY(,= nullptr;)
 
 /**
  * Functions
