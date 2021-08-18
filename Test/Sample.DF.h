@@ -4,11 +4,11 @@
 
 DEF_SAMPLE(DF)
 {
-  const std::tstring FILE_DIR  = _T("C:\\Intel\\Logs\\");
-  const std::tstring FILE_PATH = _T("C:\\Intel\\Logs\\IntelGFX.log");
+  const std::tstring FILE_DIR  = ts("C:\\Intel\\Logs\\");
+  const std::tstring FILE_PATH = ts("C:\\Intel\\Logs\\IntelGFX.log");
 
-  std::tcout << (vu::is_directory_exists(FILE_DIR) ? _T("Directory is exist") : _T("Directory isn't exist")) << std::endl;
-  std::tcout << (vu::is_file_exists(FILE_PATH) ? _T("File is exist") : _T("File isn't exist")) << std::endl;
+  std::tcout << (vu::is_directory_exists(FILE_DIR) ? ts("Directory is exist") : ts("Directory isn't exist")) << std::endl;
+  std::tcout << (vu::is_file_exists(FILE_PATH) ? ts("File is exist") : ts("File isn't exist")) << std::endl;
 
   std::tcout << vu::get_file_type(FILE_PATH) << std::endl;
 
@@ -26,34 +26,34 @@ DEF_SAMPLE(DF)
 
   std::tcout << vu::get_current_file_path() << std::endl;
 
-  std::tcout << vu::join_path(_T("C:\\path\\to\\"), _T("\\file.exe")) << std::endl;
-  std::tcout << vu::join_path(_T("C:\\path\\to\\"), _T("file.exe")) << std::endl;
-  std::tcout << vu::join_path(_T("C:\\path\\to"), _T("\\file.exe")) << std::endl;
-  std::tcout << vu::join_path(_T("C:\\path\\to"), _T("file.exe")) << std::endl;
+  std::tcout << vu::join_path(ts("C:\\path\\to\\"), ts("\\file.exe")) << std::endl;
+  std::tcout << vu::join_path(ts("C:\\path\\to\\"), ts("file.exe")) << std::endl;
+  std::tcout << vu::join_path(ts("C:\\path\\to"), ts("\\file.exe")) << std::endl;
+  std::tcout << vu::join_path(ts("C:\\path\\to"), ts("file.exe")) << std::endl;
 
-  std::tcout << vu::normalize_path(_T("C:/path/to/file.exe"), vu::ePathSep::POSIX) << std::endl;
-  std::tcout << vu::normalize_path(_T("C:\\path\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
-  std::tcout << vu::normalize_path(_T("C:\\path\\\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
-  std::tcout << vu::normalize_path(_T("C:\\path\\\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
-  std::tcout << vu::normalize_path(_T("C:\\\\path\\to/file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:/path/to/file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:\\path\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:\\path\\\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:\\path\\\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:\\\\path\\to/file.exe"), vu::ePathSep::POSIX) << std::endl;
 
-  std::tcout << vu::normalize_path(_T("C:/path/to/file.exe")) << std::endl;
-  std::tcout << vu::normalize_path(_T("C:\\path\\to\\file.exe")) << std::endl;
-  std::tcout << vu::normalize_path(_T("C:\\path\\\\to\\file.exe")) << std::endl;
-  std::tcout << vu::normalize_path(_T("C:\\path\\\\to\\file.exe")) << std::endl;
-  std::tcout << vu::normalize_path(_T("C:\\\\path\\to/file.exe")) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:/path/to/file.exe")) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:\\path\\to\\file.exe")) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:\\path\\\\to\\file.exe")) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:\\path\\\\to\\file.exe")) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:\\\\path\\to/file.exe")) << std::endl;
 
   vu::CPath fileDir;
-  fileDir.Join(_T("   C:/Users")).Join(_T("/Vic")).Join(_T("\\.vscode\\")).Finalize();
+  fileDir.Join(ts("   C:/Users")).Join(ts("/Vic")).Join(ts("\\.vscode\\")).Finalize();
 
-  vu::CPath fileDirTmp = std::tstring(_T("C:/Users/Vic\\.vscode\\extensions"));
+  vu::CPath fileDirTmp = std::tstring(ts("C:/Users/Vic\\.vscode\\extensions"));
   
   vu::CPath filePath(fileDir);
-  filePath += vu::CPath(_T("argv.json"));
+  filePath += vu::CPath(ts("argv.json"));
   filePath.Finalize();
 
   vu::CPath filePathTmp(fileDir);
-  filePathTmp = filePathTmp + vu::CPath(_T("argv-tmp.json"));
+  filePathTmp = filePathTmp + vu::CPath(ts("argv-tmp.json"));
   filePathTmp.Finalize();
 
   std::tcout << fileDir  << std::endl;
@@ -65,18 +65,18 @@ DEF_SAMPLE(DF)
   std::tcout << (filePath == filePathTmp) << std::endl;
   std::tcout << (filePath != filePathTmp) << std::endl;
 
-  std::tcout << _T("Exists (Dir)  : ") << fileDir.Exists() << std::endl;
-  std::tcout << _T("Exists (File) : ") << filePath.Exists() << std::endl;
+  std::tcout << ts("Exists (Dir)  : ") << fileDir.Exists() << std::endl;
+  std::tcout << ts("Exists (File) : ") << filePath.Exists() << std::endl;
 
-  std::tcout << _T("File Name : ") << filePath.FileName().AsString() << std::endl;
-  std::tcout << _T("File Directory : ") << filePath.FileDirectory().AsString() << std::endl;
+  std::tcout << ts("File Name : ") << filePath.FileName().AsString() << std::endl;
+  std::tcout << ts("File Directory : ") << filePath.FileDirectory().AsString() << std::endl;
 
   // TODO: Vic. Uncompleted.
 
   // #ifdef _WIN64
-  // #define EXE_NAME _T("x64dbg.exe")
+  // #define EXE_NAME ts("x64dbg.exe")
   // #else  // _WIN32
-  // #define EXE_NAME _T("x32dbg.exe")
+  // #define EXE_NAME ts("x32dbg.exe")
   // #endif // _WIN64
   // 
   // auto PIDs = vu::name_to_pid(EXE_NAME);

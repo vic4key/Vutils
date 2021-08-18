@@ -4,40 +4,40 @@
 
 DEF_SAMPLE(Registry)
 {
-  vu::CRegistry reg(vu::HKLM, _T("SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting")); // _T("SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\Windows Error Reporting")
+  vu::CRegistry reg(vu::HKLM, ts("SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting")); // ts("SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\Windows Error Reporting")
   if (!reg.KeyExists())
   {
-    std::tcout << _T("Reg -> Exist -> Failed") << vu::last_error(reg.GetLastErrorCode()) << std::endl;
+    std::tcout << ts("Reg -> Exist -> Failed") << vu::get_last_error(reg.GetLastErrorCode()) << std::endl;
     return 1;
   }
 
   if (!reg.OpenKey())
   {
-    std::tcout << _T("Reg -> Open-> Failed") << vu::last_error(reg.GetLastErrorCode()) << std::endl;
+    std::tcout << ts("Reg -> Open-> Failed") << vu::get_last_error(reg.GetLastErrorCode()) << std::endl;
     return 1;
   }
 
   reg.SetReflectionKey(vu::eRegReflection::RR_ENABLE);
 
-  std::tcout << _T("Is Reflection Disabled ? ")
-    << (reg.QueryReflectionKey() == vu::eRegReflection::RR_DISABLED ? _T("True") : _T("False"))
+  std::tcout << ts("Is Reflection Disabled ? ")
+    << (reg.QueryReflectionKey() == vu::eRegReflection::RR_DISABLED ? ts("True") : ts("False"))
     << std::endl;
 
   std::vector<std::tstring> l;
 
-  std::tcout << _T("\n[ErrorPort] -> ");
-  std::tstring result = reg.ReadString(_T("ErrorPort"), _T("<No>"));
+  std::tcout << ts("\n[ErrorPort] -> ");
+  std::tstring result = reg.ReadString(ts("ErrorPort"), ts("<No>"));
   std::tcout << result << std::endl;
 
-  std::tcout << _T("\n[MS]") << std::endl;
+  std::tcout << ts("\n[MS]") << std::endl;
   l.clear();
-  l = reg.ReadMultiString(_T("MS"), l);
+  l = reg.ReadMultiString(ts("MS"), l);
   for (auto e : l)
   {
     std::tcout << e << std::endl;
   }
 
-  std::tcout << _T("\n[Keys]") << std::endl;
+  std::tcout << ts("\n[Keys]") << std::endl;
   l.clear();
   l = reg.EnumKeys();
   for (auto e : l)
@@ -45,7 +45,7 @@ DEF_SAMPLE(Registry)
     std::tcout << e << std::endl;
   }
 
-  std::tcout << _T("\n[Values]") << std::endl;
+  std::tcout << ts("\n[Values]") << std::endl;
   l.clear();
   l = reg.EnumValues();
   for (auto e : l)
@@ -55,39 +55,39 @@ DEF_SAMPLE(Registry)
 
   std::tcout << std::endl;
 
-  reg.WriteBinary(_T("RegBinary"), (void*)_T("1234567890"), 10 * sizeof(vu::tchar));
-  std::tcout << _T("RegBinary\t") << (vu::tchar*)reg.ReadBinary(_T("RegBinary"), nullptr).get() << std::endl;
+  reg.WriteBinary(ts("RegBinary"), (void*)ts("1234567890"), 10 * sizeof(vu::tchar));
+  std::tcout << ts("RegBinary\t") << (vu::tchar*)reg.ReadBinary(ts("RegBinary"), nullptr).get() << std::endl;
 
-  reg.WriteBool(_T("RegBool"), true);
-  std::tcout << _T("RegBool\t") << reg.ReadBool(_T("RegBool"), false) << std::endl;
+  reg.WriteBool(ts("RegBool"), true);
+  std::tcout << ts("RegBool\t") << reg.ReadBool(ts("RegBool"), false) << std::endl;
 
-  reg.WriteExpandString(_T("RegExpandString"), _T("%TMP%"));
-  std::tcout << _T("RegExpandString\t") << reg.ReadExpandString(_T("RegExpandString"), _T("")) << std::endl;
+  reg.WriteExpandString(ts("RegExpandString"), ts("%TMP%"));
+  std::tcout << ts("RegExpandString\t") << reg.ReadExpandString(ts("RegExpandString"), ts("")) << std::endl;
 
-  reg.WriteFloat(_T("RegFloat"), 16.09F);
-  std::tcout << _T("RegFloat\t") << reg.ReadFloat(_T("RegFloat"), 7.02F) << std::endl;
+  reg.WriteFloat(ts("RegFloat"), 16.09F);
+  std::tcout << ts("RegFloat\t") << reg.ReadFloat(ts("RegFloat"), 7.02F) << std::endl;
 
-  reg.WriteInteger(_T("RegInt"), 1609);
-  std::tcout << _T("RegInt\t") << reg.ReadInteger(_T("RegInt"), 702) << std::endl;
+  reg.WriteInteger(ts("RegInt"), 1609);
+  std::tcout << ts("RegInt\t") << reg.ReadInteger(ts("RegInt"), 702) << std::endl;
 
   l.clear();
-  l.push_back(_T("String 1"));
-  l.push_back(_T("String 2"));
-  l.push_back(_T("String 3"));
-  reg.WriteMultiString(_T("RegMultiString"), l);
+  l.push_back(ts("String 1"));
+  l.push_back(ts("String 2"));
+  l.push_back(ts("String 3"));
+  reg.WriteMultiString(ts("RegMultiString"), l);
   l.clear();
-  std::tcout << _T("RegMultiString") << std::endl;
-  l = reg.ReadMultiString(_T("RegMultiString"), l);
+  std::tcout << ts("RegMultiString") << std::endl;
+  l = reg.ReadMultiString(ts("RegMultiString"), l);
   for (auto e : l) {
-    std::tcout << _T("\t") << e << std::endl;
+    std::tcout << ts("\t") << e << std::endl;
   }
 
-  reg.WriteString(_T("RegString"), _T("This is a string"));
-  std::tcout << _T("RegString\t") << reg.ReadString(_T("RegString"), _T("")) << std::endl;
+  reg.WriteString(ts("RegString"), ts("This is a string"));
+  std::tcout << ts("RegString\t") << reg.ReadString(ts("RegString"), ts("")) << std::endl;
 
   if (!reg.CloseKey())
   {
-    std::tcout << _T("Reg -> Close ->Failed") << vu::last_error(reg.GetLastErrorCode()) << std::endl;
+    std::tcout << ts("Reg -> Close ->Failed") << vu::get_last_error(reg.GetLastErrorCode()) << std::endl;
   }
 
   return vu::VU_OK;

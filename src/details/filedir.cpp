@@ -15,9 +15,9 @@
 namespace vu
 {
 
-bool vuapi is_directory_exists_A(const std::string& Directory)
+bool vuapi is_directory_exists_A(const std::string& directory)
 {
-  if (GetFileAttributesA(Directory.c_str()) == INVALID_FILE_ATTRIBUTES)
+  if (GetFileAttributesA(directory.c_str()) == INVALID_FILE_ATTRIBUTES)
   {
     return false;
   }
@@ -25,9 +25,9 @@ bool vuapi is_directory_exists_A(const std::string& Directory)
   return true;
 }
 
-bool vuapi is_directory_exists_W(const std::wstring& Directory)
+bool vuapi is_directory_exists_W(const std::wstring& directory)
 {
-  if (GetFileAttributesW(Directory.c_str()) == INVALID_FILE_ATTRIBUTES)
+  if (GetFileAttributesW(directory.c_str()) == INVALID_FILE_ATTRIBUTES)
   {
     return false;
   }
@@ -35,14 +35,14 @@ bool vuapi is_directory_exists_W(const std::wstring& Directory)
   return true;
 }
 
-std::string vuapi get_file_type_A(const std::string& FilePath)
+std::string vuapi get_file_type_A(const std::string& file_path)
 {
   SHFILEINFOA SHINFO = {0};
   std::unique_ptr<char[]> szFileType(new char [MAXBYTE]);
   std::string s;
   s.clear();
 
-  if (SHGetFileInfoA(FilePath.c_str(), 0, &SHINFO, sizeof(SHFILEINFOA), SHGFI_TYPENAME) != 0)
+  if (SHGetFileInfoA(file_path.c_str(), 0, &SHINFO, sizeof(SHFILEINFOA), SHGFI_TYPENAME) != 0)
   {
     ZeroMemory(szFileType.get(), MAXBYTE);
     s = SHINFO.szTypeName;
@@ -51,14 +51,14 @@ std::string vuapi get_file_type_A(const std::string& FilePath)
   return s;
 }
 
-std::wstring vuapi get_file_type_W(const std::wstring& FilePath)
+std::wstring vuapi get_file_type_W(const std::wstring& file_path)
 {
   SHFILEINFOW SHINFO = {0};
   std::unique_ptr<wchar[]> szFileType(new wchar [MAXBYTE]);
   std::wstring s;
   s.clear();
 
-  if (SHGetFileInfoW(FilePath.c_str(), 0, &SHINFO, sizeof(SHFILEINFOA), SHGFI_TYPENAME) != 0)
+  if (SHGetFileInfoW(file_path.c_str(), 0, &SHINFO, sizeof(SHFILEINFOA), SHGFI_TYPENAME) != 0)
   {
     ZeroMemory(szFileType.get(), 2*MAXBYTE);
     s = SHINFO.szTypeName;
@@ -67,12 +67,12 @@ std::wstring vuapi get_file_type_W(const std::wstring& FilePath)
   return s;
 }
 
-bool vuapi is_file_exists_A(const std::string& FilePath)
+bool vuapi is_file_exists_A(const std::string& file_path)
 {
   bool bResult = false;
   WIN32_FIND_DATAA wfd = {0};
 
-  HANDLE hFile = FindFirstFileA(FilePath.c_str(), &wfd);
+  HANDLE hFile = FindFirstFileA(file_path.c_str(), &wfd);
   if (hFile != INVALID_HANDLE_VALUE)
   {
     bResult = true;
@@ -82,12 +82,12 @@ bool vuapi is_file_exists_A(const std::string& FilePath)
   return bResult;
 }
 
-bool vuapi is_file_exists_W(const std::wstring& FilePath)
+bool vuapi is_file_exists_W(const std::wstring& file_path)
 {
   bool bResult = false;
   WIN32_FIND_DATAW wfd = {0};
 
-  HANDLE hFile = FindFirstFileW(FilePath.c_str(), &wfd);
+  HANDLE hFile = FindFirstFileW(file_path.c_str(), &wfd);
   if (hFile != INVALID_HANDLE_VALUE)
   {
     bResult = true;
@@ -97,86 +97,86 @@ bool vuapi is_file_exists_W(const std::wstring& FilePath)
   return bResult;
 }
 
-std::string vuapi extract_file_directory_A(const std::string& FilePath, bool Slash)
+std::string vuapi extract_file_directory_A(const std::string& file_path, bool last_slash)
 {
-  std::string filePath;
-  filePath.clear();
+  std::string result;
+  result.clear();
 
-  size_t slashPos = FilePath.rfind('\\');
-  if (slashPos != std::string::npos)
+  size_t pos_slash = file_path.rfind('\\');
+  if (pos_slash != std::string::npos)
   {
-    filePath = FilePath.substr(0, slashPos + (Slash ? 1 : 0));
+    result = file_path.substr(0, pos_slash + (last_slash ? 1 : 0));
   }
 
-  return filePath;
+  return result;
 }
 
-std::wstring vuapi extract_file_directory_W(const std::wstring& FilePath, bool Slash)
+std::wstring vuapi extract_file_directory_W(const std::wstring& file_path, bool last_slash)
 {
-  std::wstring filePath;
-  filePath.clear();
+  std::wstring result;
+  result.clear();
 
-  size_t slashPos = FilePath.rfind(L'\\');
-  if (slashPos != std::string::npos)
+  size_t pos_slash = file_path.rfind(L'\\');
+  if (pos_slash != std::string::npos)
   {
-    filePath = FilePath.substr(0, slashPos + (Slash ? 1 : 0));
+    result = file_path.substr(0, pos_slash + (last_slash ? 1 : 0));
   }
 
-  return filePath;
+  return result;
 }
 
-std::string vuapi extract_file_name_A(const std::string& FilePath, bool Extension)
+std::string vuapi extract_file_name_A(const std::string& file_path, bool extension)
 {
-  std::string fileName;
-  fileName.clear();
+  std::string result;
+  result.clear();
 
-  size_t slashPos = FilePath.rfind('\\');
-  if (slashPos != std::string::npos)
+  size_t pos_slash = file_path.rfind('\\');
+  if (pos_slash != std::string::npos)
   {
-    fileName = FilePath.substr(slashPos + 1);
+    result = file_path.substr(pos_slash + 1);
   }
   else // only file name in file path
   {
-    fileName = FilePath;
+    result = file_path;
   }
 
-  if (!Extension)
+  if (!extension)
   {
-    size_t dotPos = fileName.rfind('.');
-    if (dotPos != std::string::npos)
+    size_t pos_dot = result.rfind('.');
+    if (pos_dot != std::string::npos)
     {
-      fileName = fileName.substr(0, dotPos);
+      result = result.substr(0, pos_dot);
     }
   }
 
-  return fileName;
+  return result;
 }
 
-std::wstring vuapi extract_file_name_W(const std::wstring& FilePath, bool Extension)
+std::wstring vuapi extract_file_name_W(const std::wstring& file_path, bool extension)
 {
-  std::wstring fileName;
-  fileName.clear();
+  std::wstring result;
+  result.clear();
 
-  size_t slashPos = FilePath.rfind(L'\\');
+  size_t slashPos = file_path.rfind(L'\\');
   if (slashPos != std::string::npos)
   {
-    fileName = FilePath.substr(slashPos + 1);
+    result = file_path.substr(slashPos + 1);
   }
   else // only file name in file path
   {
-    fileName = FilePath;
+    result = file_path;
   }
 
-  if (!Extension)
+  if (!extension)
   {
-    size_t dotPos = fileName.rfind(L'.');
-    if (dotPos != std::string::npos)
+    size_t pos_dot = result.rfind(L'.');
+    if (pos_dot != std::string::npos)
     {
-      fileName = fileName.substr(0, dotPos);
+      result = result.substr(0, pos_dot);
     }
   }
 
-  return fileName;
+  return result;
 }
 
 std::string vuapi get_current_file_path_A()
@@ -209,7 +209,7 @@ std::wstring vuapi get_current_file_path_W()
   return s;
 }
 
-std::string vuapi get_current_directory_A(bool Slash)
+std::string vuapi get_current_directory_A(bool last_slash)
 {
   std::unique_ptr<char[]> p(new char[MAXPATH]);
   ZeroMemory(p.get(), MAXPATH);
@@ -217,7 +217,7 @@ std::string vuapi get_current_directory_A(bool Slash)
   ::GetCurrentDirectoryA(MAXPATH, p.get());
   std::string s(p.get());
 
-  if (Slash)
+  if (last_slash)
   {
     if (s.back() != '\\')
     {
@@ -235,7 +235,7 @@ std::string vuapi get_current_directory_A(bool Slash)
   return s;
 }
 
-std::wstring vuapi get_current_directory_W(bool Slash)
+std::wstring vuapi get_current_directory_W(bool last_slash)
 {
   std::unique_ptr<wchar[]> p(new wchar[MAXPATH]);
   ZeroMemory(p.get(), MAXPATH);
@@ -243,7 +243,7 @@ std::wstring vuapi get_current_directory_W(bool Slash)
   ::GetCurrentDirectoryW(MAXPATH, p.get());
   std::wstring s(p.get());
 
-  if (Slash)
+  if (last_slash)
   {
     if (s.back() != L'\\')
     {
@@ -261,14 +261,14 @@ std::wstring vuapi get_current_directory_W(bool Slash)
   return s;
 }
 
-std::string vuapi get_contain_directory_A(bool Slash)
+std::string vuapi get_contain_directory_A(bool last_slash)
 {
-  return extract_file_directory_A(get_current_file_path_A(), Slash);
+  return extract_file_directory_A(get_current_file_path_A(), last_slash);
 }
 
-std::wstring vuapi get_contain_directory_W(bool Slash)
+std::wstring vuapi get_contain_directory_W(bool last_slash)
 {
-  return extract_file_directory_W(get_current_file_path_W(), Slash);
+  return extract_file_directory_W(get_current_file_path_W(), last_slash);
 }
 
 // wchar_t ExtractDriveLetter(const std::wstring& path)
@@ -406,87 +406,75 @@ eDiskType get_disk_type_W(const wchar_t drive)
 #endif // VU_WMI_ENABLED
 
 template <class std_string_t, typename char_t>
-std_string_t JoinPathT(
-  const std_string_t& Left,
-  const std_string_t& Right,
-  const char_t Sep
-)
+std_string_t join_path_T(const std_string_t& left, const std_string_t& right, const char_t separator)
 {
-  if (Left.empty())
+  if (left.empty())
   {
-    return Right; // "" + "/bar"
+    return right; // "" + "/bar"
   }
 
-  if (Left[Left.size() - 1] == Sep)
+  if (left[left.size() - 1] == separator)
   {
-    if (Right.find(Sep) == 0)
+    if (right.find(separator) == 0)
     {
-      return Left + Right.substr(1); // foo/ + /bar
+      return left + right.substr(1); // foo/ + /bar
     }
     else
     {
-      return Left + Right; // foo/ + bar
+      return left + right; // foo/ + bar
     }
   }
   else
   {
-    if (Right.find(Sep) == 0)
+    if (right.find(separator) == 0)
     {
-      return Left + Right; // foo + /bar
+      return left + right; // foo + /bar
     }
     else
     {
-      return Left + Sep + Right; // foo + bar
+      return left + separator + right; // foo + bar
     }
   }
 }
 
-std::string vuapi join_path_A(
-  const std::string& Left,
-  const std::string& Right,
-  const ePathSep Separator
-)
+std::string vuapi join_path_A(const std::string& left, const std::string& right, const ePathSep separator)
 {
-  const auto Sep = Separator == ePathSep::WIN ? '\\' : '/';
-  return JoinPathT<std::string, char>(Left, Right, Sep);
+  const auto Sep = separator == ePathSep::WIN ? '\\' : '/';
+  return join_path_T<std::string, char>(left, right, Sep);
 }
 
-std::wstring vuapi join_path_W(
-  const std::wstring& Left,
-  const std::wstring& Right,
-  const ePathSep Separator
-)
+std::wstring vuapi join_path_W(const std::wstring& left, const std::wstring& right, const ePathSep separator)
 {
-  const auto Sep = Separator == ePathSep::WIN ? L'\\' : L'/';
-  return JoinPathT<std::wstring, wchar_t>(Left, Right, Sep);
+  const auto sep = separator == ePathSep::WIN ? L'\\' : L'/';
+  return join_path_T<std::wstring, wchar_t>(left, right, sep);
 }
 
-std::string normalize_path_A(const std::string& Path, const ePathSep Separator)
+std::string normalize_path_A(const std::string& path, const ePathSep separator)
 {
-  auto result = Path;
+  auto result = path;
 
-  const std::string SepWIN = "\\";
-  const std::string SepPOSIX = "/";
-  const std::string Sep = Separator == ePathSep::WIN ? SepWIN : SepPOSIX;
+  const std::string SEP_WIN = "\\";
+  const std::string SEP_POSIX = "/";
+  const std::string sep = separator == ePathSep::WIN ? SEP_WIN : SEP_POSIX;
 
-  result = replace_string_A(result, SepWIN + SepWIN, Sep);
-  result = replace_string_A(result, SepWIN, Sep);
-  result = replace_string_A(result, SepPOSIX, Sep);
+  result = replace_string_A(result, SEP_WIN + SEP_WIN, sep);
+  result = replace_string_A(result, SEP_WIN, sep);
+  result = replace_string_A(result, SEP_POSIX, sep);
 
   return result;
 }
 
-std::wstring normalize_path_W(const std::wstring& Path, const ePathSep Separator)
+std::wstring normalize_path_W(const std::wstring& path, const ePathSep separator)
 {
-  auto result = Path;
+  auto result = path;
 
-  const std::wstring SepWIN = L"\\";
-  const std::wstring SepPOSIX = L"/";
-  const std::wstring Sep = Separator == ePathSep::WIN ? SepWIN : SepPOSIX;
+  const std::wstring SEP_WIN = L"\\";
+  const std::wstring SEP_POSIX = L"/";
+  const std::wstring sep = separator == ePathSep::WIN ? SEP_WIN : SEP_POSIX;
 
-  result = replace_string_W(result, SepWIN + SepWIN, Sep);
-  result = replace_string_W(result, SepWIN, Sep);
-  result = replace_string_W(result, SepPOSIX, Sep);
+  result = replace_string_W(result, SEP_WIN + SEP_WIN, sep);
+  result = replace_string_W(result, SEP_WIN, sep);
+  result = replace_string_W(result, SEP_POSIX, sep);
 
   return result;
 }

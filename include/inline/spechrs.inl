@@ -21,9 +21,9 @@ static const wchar_t* wcrlf = L"\r\n"; // Carriage Return & Line Feed
 #define tlf   wlf
 #define tcrlf wcrlf
 
-// #ifndef _T
-// #define _T(x) L ## x
-// #endif // _T
+#ifndef ts
+#define ts(x) L ## x
+#endif // _T
 
 #else // !_UNICODE
 
@@ -32,8 +32,8 @@ static const wchar_t* wcrlf = L"\r\n"; // Carriage Return & Line Feed
 #define tlf   lf
 #define tcrlf crlf
 
-// #ifndef _T
-// #define _T(x) x
-// #endif // _T
+#ifndef ts
+#define ts(x) x
+#endif // _T
 
 #endif // _UNICODE

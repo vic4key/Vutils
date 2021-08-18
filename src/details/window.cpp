@@ -50,36 +50,36 @@ BOOL CALLBACK fnFindTopWindowCallback(HWND hWnd, LPARAM lParam)
   return TRUE;
 }
 
-HWND vuapi find_top_window(ulong ulPID)
+HWND vuapi find_top_window(ulong pid)
 {
-  PairPIDHWND params(ulPID, nullptr);
+  PairPIDHWND params(pid, nullptr);
 
   auto ret = EnumWindows(fnFindTopWindowCallback, (LPARAM)&params);
 
   return params.second;
 }
 
-HWND vuapi find_main_window(HWND hWnd)
+HWND vuapi find_main_window(HWND hwnd)
 {
-  if (!IsWindow(hWnd))
+  if (!IsWindow(hwnd))
   {
     return nullptr;
   }
 
-  auto hWndParent = GetParent(hWnd);
-  if (hWndParent == nullptr)
+  auto hwnd_parent = GetParent(hwnd);
+  if (hwnd_parent == nullptr)
   {
-    return hWnd;
+    return hwnd;
   }
 
-  return find_main_window(hWndParent);
+  return find_main_window(hwnd_parent);
 }
 
 #define WM_DEF(id, name) { id, (char*) # name}
 
-std::string vuapi decode_wm_A(const ulong id)
+std::string vuapi decode_wm_A(const ulong wm)
 {
-  static struct { ulong id; char* text; } m[] = \
+  static struct { ulong wm; char* text; } m[] = \
   {
     WM_DEF(0x0000, WM_NULL),
     WM_DEF(0x0001, WM_CREATE),
@@ -368,7 +368,7 @@ std::string vuapi decode_wm_A(const ulong id)
 
   for (auto e : m)
   {
-    if (e.id == id)
+    if (e.wm == wm)
     {
       result = e.text;
       break;
@@ -378,20 +378,20 @@ std::string vuapi decode_wm_A(const ulong id)
   return result;
 }
 
-std::wstring vuapi decode_wm_W(const ulong id)
+std::wstring vuapi decode_wm_W(const ulong wm)
 {
-  return to_string_W(decode_wm_A(id));
+  return to_string_W(decode_wm_A(wm));
 }
 
-TFontA vuapi get_font_A(HWND hw)
+TFontA vuapi get_font_A(HWND hwnd)
 {
   TFontA result;
 
-  if (IsWindow(hw))
+  if (IsWindow(hwnd))
   {
-    HDC hdc = GetDC(hw);
+    HDC hdc = GetDC(hwnd);
     {
-      HFONT hf = (HFONT)SendMessageA(hw, WM_GETFONT, 0, 0);
+      HFONT hf = (HFONT)SendMessageA(hwnd, WM_GETFONT, 0, 0);
       if (hf != nullptr)
       {
         LOGFONTA lf = { 0 };
@@ -406,21 +406,21 @@ TFontA vuapi get_font_A(HWND hw)
         result.Orientation = lf.lfOrientation;
       }
     }
-    ReleaseDC(hw, hdc);
+    ReleaseDC(hwnd, hdc);
   }
 
   return result;
 }
 
-TFontW vuapi get_font_W(HWND hw)
+TFontW vuapi get_font_W(HWND hwnd)
 {
   TFontW result;
 
-  if (IsWindow(hw))
+  if (IsWindow(hwnd))
   {
-    HDC hdc = GetDC(hw);
+    HDC hdc = GetDC(hwnd);
     {
-      HFONT hf = (HFONT)SendMessageW(hw, WM_GETFONT, 0, 0);
+      HFONT hf = (HFONT)SendMessageW(hwnd, WM_GETFONT, 0, 0);
       if (hf != nullptr)
       {
         LOGFONTW lf = { 0 };
@@ -435,7 +435,7 @@ TFontW vuapi get_font_W(HWND hw)
         result.Orientation = lf.lfOrientation;
       }
     }
-    ReleaseDC(hw, hdc);
+    ReleaseDC(hwnd, hdc);
   }
 
   return result;

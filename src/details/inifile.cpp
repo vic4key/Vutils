@@ -123,7 +123,7 @@ bool vuapi CINIFileA::ReadBool(const std::string& Section, const std::string& Ke
 
 float vuapi CINIFileA::ReadFloat(const std::string& Section, const std::string& Key, float Default)
 {
-  const std::string sDefault = NumberToStringA(Default);
+  const std::string sDefault = number_to_string_A(Default);
   char lpszResult[MAX_SIZE];
 
   ZeroMemory(lpszResult, sizeof(lpszResult));
@@ -234,7 +234,7 @@ std::unique_ptr<uchar[]> vuapi CINIFileA::ReadStruct(const std::string& Key, ulo
 bool vuapi CINIFileA::WriteInteger(const std::string& Section, const std::string& Key, int Value)
 {
   this->ValidFilePath();
-  const std::string s = NumberToStringA(Value);
+  const std::string s = number_to_string_A(Value);
   bool result = (WritePrivateProfileStringA(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
   m_LastErrorCode = GetLastError();
   return result;
@@ -252,7 +252,7 @@ bool vuapi CINIFileA::WriteBool(const std::string& Section, const std::string& K
 bool vuapi CINIFileA::WriteFloat(const std::string& Section, const std::string& Key, float Value)
 {
   this->ValidFilePath();
-  const std::string s = NumberToStringA(Value);
+  const std::string s = number_to_string_A(Value);
   bool result = (WritePrivateProfileStringA(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
   m_LastErrorCode = GetLastError();
   return result;
@@ -416,7 +416,7 @@ float vuapi CINIFileW::ReadFloat(const std::wstring& Section, const std::wstring
 {
   this->ValidFilePath();
 
-  const std::wstring sDefault = NumberToStringW(Default);
+  const std::wstring sDefault = number_to_string_W(Default);
   wchar lpwszResult[MAX_SIZE];
 
   ZeroMemory(lpwszResult, sizeof(lpwszResult));
@@ -537,7 +537,7 @@ std::unique_ptr<uchar[]> vuapi CINIFileW::ReadStruct(const std::wstring& Key, ul
 bool vuapi CINIFileW::WriteInteger(const std::wstring& Section, const std::wstring& Key, int Value)
 {
   this->ValidFilePath();
-  const std::wstring s = NumberToStringW(Value);
+  const std::wstring s = number_to_string_W(Value);
   bool result = (WritePrivateProfileStringW(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
   m_LastErrorCode = GetLastError();
   return result;
@@ -553,7 +553,7 @@ bool vuapi CINIFileW::WriteBool(const std::wstring& Section, const std::wstring&
 bool vuapi CINIFileW::WriteFloat(const std::wstring& Section, const std::wstring& Key, float Value)
 {
   this->ValidFilePath();
-  const std::wstring s = NumberToStringW(Value);
+  const std::wstring s = number_to_string_W(Value);
   bool result = (WritePrivateProfileStringW(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
   m_LastErrorCode = GetLastError();
   return result;

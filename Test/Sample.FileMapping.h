@@ -8,23 +8,23 @@ DEF_SAMPLE(FileMapping)
 
   void* p = nullptr;
 
-  // if (fm.CreateNamedSharedMemory(_T("Global\\Sample"), KB) != vu::VU_OK)
+  // if (fm.CreateNamedSharedMemory(ts("Global\\Sample"), KB) != vu::VU_OK)
   // {
-  //   std::tcout << _T("Create -> Failed") << vu::last_error(fm.GetLastErrorCode()) << std::endl;
+  //   std::tcout << ts("Create -> Failed") << vu::get_last_error(fm.GetLastErrorCode()) << std::endl;
   // }
 
-  if (fm.CreateWithinFile(_T("Test.txt")) != vu::VU_OK)
+  if (fm.CreateWithinFile(ts("Test.txt")) != vu::VU_OK)
   {
-    std::tcout << _T("Create -> Failed ") << vu::last_error(fm.GetLastErrorCode()) << std::endl;
+    std::tcout << ts("Create -> Failed ") << vu::get_last_error(fm.GetLastErrorCode()) << std::endl;
   }
 
   p = fm.View();
   if (p == nullptr)
   {
-    std::tcout << _T("View -> Failed ") << vu::last_error(fm.GetLastErrorCode()) << std::endl;
+    std::tcout << ts("View -> Failed ") << vu::get_last_error(fm.GetLastErrorCode()) << std::endl;
   }
 
-  std::tcout << std::hex << _T("File Mapping at ") << p << std::endl;
+  std::tcout << std::hex << ts("File Mapping at ") << p << std::endl;
 
   if (p != nullptr)
   {
@@ -34,11 +34,11 @@ DEF_SAMPLE(FileMapping)
     }
     else
     {
-      std::tcout << _T("Waiting for a communication then enter ...") << std::endl; _getch();
+      std::tcout << ts("Waiting for a communication then enter ...") << std::endl; _getch();
       std::cout << (char*)p << std::endl;
 
       *(vu::ulong*)p = 0x48474645; // EFGH
-      std::tcout << _T("Wrote data to file mapping object") << std::endl; _getch();
+      std::tcout << ts("Wrote data to file mapping object") << std::endl; _getch();
     }
   }
 

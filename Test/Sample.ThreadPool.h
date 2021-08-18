@@ -10,7 +10,7 @@ DEF_SAMPLE(ThreadPool)
     std::cout << VU_FUNC_NAME << std::endl;
   };
 
-  vu::CScopeStopWatch logger(_T("ThreadPool =>"), vu::CScopeStopWatch::Console);
+  vu::CScopeStopWatch logger(ts("ThreadPool =>"), vu::CScopeStopWatch::Console);
 
   // Single-threading
 
@@ -21,7 +21,7 @@ DEF_SAMPLE(ThreadPool)
     fn();
   }
 
-  logger.Log(_T("Taken : "));
+  logger.Log(ts("Taken : "));
 
   // Default Multi-threading
 
@@ -34,7 +34,7 @@ DEF_SAMPLE(ThreadPool)
   }
   pool.Launch();
 
-  logger.Log(_T("Taken : "));
+  logger.Log(ts("Taken : "));
 
   // STL Multi-threading
 
@@ -74,7 +74,7 @@ DEF_SAMPLE(ThreadPool)
   task.Launch();
   std::cout << "Result is " << task.Result() << std::endl;
 
-  logger.Log(_T("Taken : "));
+  logger.Log(ts("Taken : "));
 
   return vu::VU_OK;
 }

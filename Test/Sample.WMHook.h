@@ -11,15 +11,15 @@ DEF_SAMPLE(WMHook)
   //   return CallNextHookEx(nullptr, nCode, wParam, lParam);
   // }
 
-  #define VU_STRINGIZE(s) _T( #s )
+  #define VU_STRINGIZE(s) ts( #s )
 
   #ifdef _WIN64
-  #define EXE_NAME _T("x64dbg.exe")
-  #define DLL_PATH _T("Test.WH.x64.dll")
+  #define EXE_NAME ts("x64dbg.exe")
+  #define DLL_PATH ts("Test.WH.x64.dll")
   #define UND(s) VU_STRINGIZE(s)
   #else // _WIN32
-  #define EXE_NAME _T("x32dbg.exe")
-  #define DLL_PATH _T("Test.WH.x86.dll")
+  #define EXE_NAME ts("x32dbg.exe")
+  #define DLL_PATH ts("Test.WH.x86.dll")
   #define UND(s) VU_STRINGIZE(_) VU_STRINGIZE(s) VU_STRINGIZE(@12)
   #endif // _WIN64
 
@@ -29,13 +29,13 @@ DEF_SAMPLE(WMHook)
 
   vu::CWMHook wh(PID, DLL_PATH);
 
-  std::tcout << _T("Enter to start Window Message hooking ...") << std::endl; _getch();
+  std::tcout << ts("Enter to start Window Message hooking ...") << std::endl; _getch();
 
   assert(wh.Start(WH_CBT, UND(fnCBTProc)) == vu::VU_OK);
   assert(wh.Start(WH_MOUSE, UND(fnMouseProc)) == vu::VU_OK);
   assert(wh.Start(WH_KEYBOARD, UND(fnKeyboardProc)) == vu::VU_OK);
 
-  std::tcout << _T("Enter to stop Window Message hooking ...") << std::endl; _getch();
+  std::tcout << ts("Enter to stop Window Message hooking ...") << std::endl; _getch();
 
   assert(wh.Stop(WH_CBT) == vu::VU_OK);
   assert(wh.Stop(WH_MOUSE) == vu::VU_OK);

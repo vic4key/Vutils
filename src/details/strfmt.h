@@ -11,19 +11,19 @@
 namespace vu
 {
 
-int vuapi GetFormatLengthA(const std::string Format, ...);
-int vuapi GetFormatLengthW(const std::wstring Format, ...);
-std::string vuapi GetFormatStringForNumber(std::string TypeID);
+  int vuapi get_format_length_A(const std::string format, ...);
+int vuapi get_format_length_W(const std::wstring format, ...);
+std::string vuapi get_format_string_for_number(std::string type_id);
 
 template<typename T>
-std::string vuapi NumberToStringA(T v)
+std::string vuapi number_to_string_A(T v)
 {
   #if defined(__MINGW32__)
   std::string s = "";
   std::string tid = std::string(typeid(v).name());
-  std::string fs = GetFormatStringForNumber(tid);
+  std::string fs = get_format_string_for_number(tid);
 
-  int z = GetFormatLengthA(fs, v);
+  int z = get_format_length_A(fs, v);
   if (z <= 0)
   {
     return s;
@@ -41,13 +41,13 @@ std::string vuapi NumberToStringA(T v)
 }
 
 template<typename T>
-std::wstring vuapi NumberToStringW(T v)
+std::wstring vuapi number_to_string_W(T v)
 {
   #if defined(__MINGW32__)
   std::wstring s = L"";
   std::string tid = std::string(typeid(v).name());
 
-  std::string fs = GetFormatStringForNumber(tid);
+  std::string fs = get_format_string_for_number(tid);
 
   if (fs == "%Le")   // Does not support now
   {
@@ -56,7 +56,7 @@ std::wstring vuapi NumberToStringW(T v)
 
   std::wstring wfs = to_string_W(fs);
 
-  int z = GetFormatLengthW(wfs, v);
+  int z = get_format_length_W(wfs, v);
   if (z <= 0)
   {
     return s;

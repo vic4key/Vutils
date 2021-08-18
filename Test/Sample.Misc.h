@@ -6,28 +6,28 @@
 
 DEF_SAMPLE(Misc)
 {
-  vu::box(vu::get_console_window(), _T("I'm %s. I'm %d years old."), _T("Vic P"), 26);
-  vu::msg(_T("I'm %s. I'm %d years old."), _T("Vic P"), 26);
+  vu::msg_box(vu::get_console_window(), ts("I'm %s. I'm %d years old."), ts("Vic P"), 26);
+  vu::msg_debug(ts("I'm %s. I'm %d years old."), ts("Vic P"), 26);
 
-  std::tcout << vu::format(_T("I'm %s. I'm %d years old. (A)"), _T("Vic P"), 26) << std::endl;
+  std::tcout << vu::format(ts("I'm %s. I'm %d years old. (A)"), ts("Vic P"), 26) << std::endl;
 
-  std::tcout << vu::lower_string(_T("I Love You")) << std::endl;
-  std::tcout << vu::upper_string(_T("I Love You")) << std::endl;
+  std::tcout << vu::lower_string(ts("I Love You")) << std::endl;
+  std::tcout << vu::upper_string(ts("I Love You")) << std::endl;
 
-  std::tcout << vu::trim_string(_T("   THIS IS A TRIM STRING   ")) << std::endl;
+  std::tcout << vu::trim_string(ts("   THIS IS A TRIM STRING   ")) << std::endl;
 
-  std::tcout << vu::last_error() << std::endl;
+  std::tcout << vu::get_last_error() << std::endl;
 
   std::vector<std::tstring>  l;
 
   l.clear();
-  l = vu::split_string(_T("THIS IS A SPLIT STRING"), _T(" "));
-  for (auto e : l) std::tcout << e << _T("|");
+  l = vu::split_string(ts("THIS IS A SPLIT STRING"), ts(" "));
+  for (auto e : l) std::tcout << e << ts("|");
   std::tcout << std::endl;
 
   l.clear();
-  l = vu::multi_string_to_list(_T("THIS\0IS\0A\0MULTI\0STRING\0\0"));
-  for (auto& e : l) std::tcout << e << _T("|");
+  l = vu::multi_string_to_list(ts("THIS\0IS\0A\0MULTI\0STRING\0\0"));
+  for (auto& e : l) std::tcout << e << ts("|");
   std::tcout << std::endl;
 
   std::tcout << vu::date_time_to_string(time(NULL)) << std::endl;
@@ -35,25 +35,25 @@ DEF_SAMPLE(Misc)
   std::cout << vu::to_string_A(L"THIS IS A WIDE STRING") << std::endl;
   std::wcout << vu::to_string_W("THIS IS AN ANSI STRING") << std::endl;
 
-  std::tcout << _T("Enviroment `PATH`") << std::endl;
-  std::tstring envValue = vu::get_enviroment(_T("PATH"));
-  auto env = vu::split_string(envValue, _T(";"));
+  std::tcout << ts("Enviroment `PATH`") << std::endl;
+  std::tstring envValue = vu::get_enviroment(ts("PATH"));
+  auto env = vu::split_string(envValue, ts(";"));
   for (auto e : env) {
     std::tcout << '\t' << e << std::endl;
   }
 
-  std::tcout << vu::replace_string(_T("Written in C++ and for C++"), _T("C++"), _T("Cpp")) << std::endl;
+  std::tcout << vu::replace_string(ts("Written in C++ and for C++"), ts("C++"), ts("Cpp")) << std::endl;
 
-  std::tcout << vu::starts_with(_T("Written in C++ and for C++"), _T("C++")) << std::endl;
-  std::tcout << vu::starts_with(_T("Written in C++ and for C++"), _T("Written")) << std::endl;
+  std::tcout << vu::starts_with(ts("Written in C++ and for C++"), ts("C++")) << std::endl;
+  std::tcout << vu::starts_with(ts("Written in C++ and for C++"), ts("Written")) << std::endl;
 
-  std::tcout << vu::ends_with(_T("Written in C++ and for C++"), _T("C++")) << std::endl;
-  std::tcout << vu::ends_with(_T("Written in C++ and for C++"), _T("Written")) << std::endl;
+  std::tcout << vu::ends_with(ts("Written in C++ and for C++"), ts("C++")) << std::endl;
+  std::tcout << vu::ends_with(ts("Written in C++ and for C++"), ts("Written")) << std::endl;
 
   std::vector<vu::ulong> PIDs;
   PIDs.clear();
 
-  PIDs = vu::name_to_pid(_T("Explorer.exe"));
+  PIDs = vu::name_to_pid(ts("Explorer.exe"));
   for (auto& PID : PIDs) {
     std::tcout << PID << std::endl;
   }
@@ -63,11 +63,11 @@ DEF_SAMPLE(Misc)
   }
 
   // std::vector<vu::ulong> pids;
-  // pids = vu::name_to_pid(_T("notepad.exe")); // 64-bit
-  // pids = vu::name_to_pid(_T("JRuler.exe"));  // 32-bit
+  // pids = vu::name_to_pid(ts("notepad.exe")); // 64-bit
+  // pids = vu::name_to_pid(ts("JRuler.exe"));  // 32-bit
   // assert(!pids.empty());
-  // vu::InjectDLL(pids.back(), _T("path\\to\\32-bit-dll"), true);
-  // vu::InjectDLL(pids.back(), _T("path\\to\\64-bit-dll"), true);
+  // vu::inject_dll(pids.back(), ts("path\\to\\32-bit-dll"), true);
+  // vu::inject_dll(pids.back(), ts("path\\to\\64-bit-dll"), true);
 
   static std::wstring LES[] = { // List Encoding Short
     L"ANSI/UTF-8", L"UTF-8 BOM",
@@ -83,7 +83,7 @@ DEF_SAMPLE(Misc)
     L"UTF-32 Little Endian BOM", L"UTF-32 Big Endian BOM"
   };
 
-  vu::CFileSystem::Iterate(_T("path\\to\\example"), _T("*.txt"), [](const vu::TFSObject& FSObject) -> bool
+  vu::CFileSystem::Iterate(ts("path\\to\\example"), ts("*.txt"), [](const vu::TFSObject& FSObject) -> bool
   {
     auto filePath = FSObject.Directory + FSObject.Name;
     auto data = vu::CFileSystem::QuickReadAsBuffer(filePath);
@@ -115,8 +115,8 @@ DEF_SAMPLE(Misc)
   std::tcout << vu::format_bytes(9123456789101213145, type, digits) << std::endl; // EB/EiB*/
 
   vu::CBuffer data;
-  auto result = vu::find_pattern(data, _T("11 ?? 33 ?? 44 ?? 55"));
-  std::tcout << _T("Result is ") << result.first << _T(" at Offset ") << result.second << std::endl;
+  auto result = vu::find_pattern(data, ts("11 ?? 33 ?? 44 ?? 55"));
+  std::tcout << ts("Result is ") << result.first << ts(" at Offset ") << result.second << std::endl;
 
   std::string  s = "0123456789";
   vu::CBuffer  slicer(s.data(), s.size());
@@ -138,7 +138,7 @@ DEF_SAMPLE(Misc)
   std::cout << slicer(-9, 10).ToStringA() << std::endl;
   std::cout << slicer(-10, 10).ToStringA() << std::endl;
 
-  std::tcout << vu::decorate_cpp_symbol(_T("?func1@a@@AAEXH@Z")) << std::endl;
+  std::tcout << vu::undecorate_cpp_symbol(ts("?func1@a@@AAEXH@Z")) << std::endl;
 
   return vu::VU_OK;
 }

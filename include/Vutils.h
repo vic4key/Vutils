@@ -135,23 +135,23 @@ const size_t MAX_SIZE = MAXBYTE;
 class CBuffer;
 
 bool vuapi is_administrator();
-bool set_privilege_A(const std::string&  Privilege, const bool Enable);
-bool set_privilege_W(const std::wstring& Privilege, const bool Enable);
-std::string vuapi  get_enviroment_A(const std::string  EnvName);
-std::wstring vuapi get_enviroment_W(const std::wstring EnvName);
-std::pair<bool, size_t> find_pattern_A(const CBuffer& Buffer, const std::string&  Pattern);
-std::pair<bool, size_t> find_pattern_W(const CBuffer& Buffer, const std::wstring& Pattern);
-std::pair<bool, size_t> find_pattern_A(const void* Pointer, const size_t Size, const std::string&  Pattern);
-std::pair<bool, size_t> find_pattern_W(const void* Pointer, const size_t Size, const std::wstring& Pattern);
+bool set_privilege_A(const std::string&  privilege, const bool enable);
+bool set_privilege_W(const std::wstring& privilege, const bool enable);
+std::string vuapi  get_enviroment_A(const std::string  name);
+std::wstring vuapi get_enviroment_W(const std::wstring name);
+std::pair<bool, size_t> find_pattern_A(const CBuffer& buffer, const std::string&  pattern);
+std::pair<bool, size_t> find_pattern_W(const CBuffer& buffer, const std::wstring& pattern);
+std::pair<bool, size_t> find_pattern_A(const void* ptr, const size_t size, const std::string& pattern);
+std::pair<bool, size_t> find_pattern_W(const void* ptr, const size_t size, const std::wstring& pattern);
 
 /**
  * Math Working
  */
 
-bool vuapi is_flag_on(ulongptr ulFlags, ulongptr ulFlag);
+bool vuapi is_flag_on(ulongptr flags, ulongptr flag);
 intptr vuapi gcd(ulongptr count, ...); // UCLN
 intptr vuapi lcm(ulongptr count, ...); // BCNN
-void vuapi hex_dump(const void* Data, int Size);
+void vuapi hex_dump(const void* data, int size);
 
 #include "template/math.tpl"
 
@@ -228,25 +228,25 @@ typedef enum _STD_BYTES : int
   IEC = 1024, // 1 KiB = 1024 bytes
 } eStdByte;
 
-std::string vuapi format_A(const std::string Format, ...);
-std::wstring vuapi format_W(const std::wstring Format, ...);
-void vuapi msg_A(const std::string Format, ...);
-void vuapi msg_W(const std::wstring Format, ...);
-int vuapi box_A(const std::string Format, ...);
-int vuapi box_W(const std::wstring Format, ...);
-int vuapi box_A(HWND hWnd, const std::string Format, ...);
-int vuapi box_W(HWND hWnd, const std::wstring Format, ...);
-int vuapi box_A(HWND hWnd, uint uType, const std::string& Caption, const std::string Format, ...);
-int vuapi box_W(HWND hWnd, uint uType, const std::wstring& Caption, const std::wstring Format, ...);
-std::string vuapi last_error_A(ulong ulErrorCode = -1);
-std::wstring vuapi last_error_W(ulong ulErrorCode = -1);
-std::string vuapi format_date_time_A(const time_t t, const std::string Format);
-std::wstring vuapi format_date_time_W(const time_t t, const std::wstring Format);
+std::string vuapi format_A(const std::string format, ...);
+std::wstring vuapi format_W(const std::wstring format, ...);
+void vuapi msg_debug_A(const std::string format, ...);
+void vuapi msg_debug_W(const std::wstring format, ...);
+int vuapi msg_box_A(const std::string format, ...);
+int vuapi msg_box_W(const std::wstring format, ...);
+int vuapi msg_box_A(HWND hwnd, const std::string format, ...);
+int vuapi msg_box_W(HWND hwnd, const std::wstring format, ...);
+int vuapi msg_box_A(HWND hwnd, uint type, const std::string& caption, const std::string format, ...);
+int vuapi msg_box_W(HWND hwnd, uint type, const std::wstring& caption, const std::wstring format, ...);
+std::string vuapi get_last_error_A(ulong code = -1);
+std::wstring vuapi get_last_error_W(ulong code = -1);
+std::string vuapi format_date_time_A(const time_t t, const std::string format);
+std::wstring vuapi format_date_time_W(const time_t t, const std::wstring format);
 std::string vuapi date_time_to_string_A(const time_t t);
 std::wstring vuapi date_time_to_string_W(const time_t t);
-eEncodingType vuapi determine_encoding_type(const void* Data, const size_t size);
-std::string vuapi format_bytes_A(long long Bytes, eStdByte Std = eStdByte::IEC, int Digits = 2);
-std::wstring vuapi format_bytes_W(long long Bytes, eStdByte Std = eStdByte::IEC, int Digits = 2);
+eEncodingType vuapi determine_encoding_type(const void* data, const size_t size);
+std::string vuapi format_bytes_A(long long bytes, eStdByte std = eStdByte::IEC, int digits = 2);
+std::wstring vuapi format_bytes_W(long long bytes, eStdByte std = eStdByte::IEC, int digits = 2);
 
 /**
  * String Working
@@ -259,28 +259,28 @@ typedef enum class _TRIM_STRING
   TS_BOTH  = 2,
 } eTrimType;
 
-std::string vuapi lower_string_A(const std::string& String);
-std::wstring vuapi lower_string_W(const std::wstring& String);
-std::string vuapi upper_string_A(const std::string& String);
-std::wstring vuapi upper_string_W(const std::wstring& String);
-std::string vuapi to_string_A(const std::wstring& String);
-std::wstring vuapi to_string_W(const std::string& String);
-std::vector<std::string> vuapi split_string_A(const std::string& String, const std::string& Seperate, bool remempty = false);
-std::vector<std::wstring> vuapi split_string_W(const std::wstring& lpcwszString, const std::wstring& Seperate, bool  remempty = false);
-std::vector<std::string> vuapi multi_string_to_list_A(const char* lpcszMultiString);
-std::vector<std::wstring> vuapi multi_string_to_list_W(const wchar* lpcwszMultiString);
-std::unique_ptr<char[]> vuapi list_to_multi_string_A(const std::vector<std::string>& StringList);
-std::unique_ptr<wchar[]> vuapi list_to_multi_string_W(const std::vector<std::wstring>& StringList);
-std::string vuapi load_rs_string_A(const UINT uID, const std::string& ModuleName = "");
-std::wstring vuapi load_rs_string_W(const UINT uID, const std::wstring& ModuleName = L"");
-std::string vuapi trim_string_A(const std::string& String, const eTrimType& TrimType = eTrimType::TS_BOTH, const std::string& TrimChars = " \t\n\r\f\v");
-std::wstring vuapi trim_string_W(const std::wstring& String, const eTrimType& TrimType = eTrimType::TS_BOTH, const std::wstring& TrimChars = L" \t\n\r\f\v");
-std::string vuapi replace_string_A(const std::string& Text, const std::string& From, const std::string& To);
-std::wstring vuapi replace_string_W(const std::wstring& Text, const std::wstring& From, const std::wstring& To);
-bool vuapi starts_with_A(const std::string& Text, const std::string& With);
-bool vuapi starts_with_W(const std::wstring& Text, const std::wstring& With);
-bool vuapi ends_with_A(const std::string& Text, const std::string& With);
-bool vuapi ends_with_W(const std::wstring& Text, const std::wstring& With);
+std::string vuapi lower_string_A(const std::string& string);
+std::wstring vuapi lower_string_W(const std::wstring& string);
+std::string vuapi upper_string_A(const std::string& string);
+std::wstring vuapi upper_string_W(const std::wstring& string);
+std::string vuapi to_string_A(const std::wstring& string);
+std::wstring vuapi to_string_W(const std::string& string);
+std::vector<std::string> vuapi split_string_A(const std::string& string, const std::string& seperate, bool remempty = false);
+std::vector<std::wstring> vuapi split_string_W(const std::wstring& string, const std::wstring& seperate, bool remempty = false);
+std::vector<std::string> vuapi multi_string_to_list_A(const char* ptr_multi_string);
+std::vector<std::wstring> vuapi multi_string_to_list_W(const wchar* ptr_multi_string);
+std::unique_ptr<char[]> vuapi list_to_multi_string_A(const std::vector<std::string>& strings);
+std::unique_ptr<wchar[]> vuapi list_to_multi_string_W(const std::vector<std::wstring>& strings);
+std::string vuapi load_rs_string_A(const uint id, const std::string& module_name = "");
+std::wstring vuapi load_rs_string_W(const uint id, const std::wstring& module_name = L"");
+std::string vuapi trim_string_A(const std::string& string, const eTrimType& type = eTrimType::TS_BOTH, const std::string& chars = " \t\n\r\f\v");
+std::wstring vuapi trim_string_W(const std::wstring& string, const eTrimType& type = eTrimType::TS_BOTH, const std::wstring& chars = L" \t\n\r\f\v");
+std::string vuapi replace_string_A(const std::string& text, const std::string& from, const std::string& to);
+std::wstring vuapi replace_string_W(const std::wstring& text, const std::wstring& from, const std::wstring& to);
+bool vuapi starts_with_A(const std::string& text, const std::string& with);
+bool vuapi starts_with_W(const std::wstring& text, const std::wstring& with);
+bool vuapi ends_with_A(const std::string& text, const std::string& with);
+bool vuapi ends_with_W(const std::wstring& text, const std::wstring& with);
 
 /**
  * Process Working
@@ -327,22 +327,22 @@ typedef struct _BLOCK
 } TBlock;
 
 eProcessorArchitecture get_processor_architecture();
-eWow64 vuapi is_wow64(const ulong ulPID = INVALID_PID_VALUE); /* -1: Error, 0: False, 1: True */
-eWow64 vuapi is_wow64(const HANDLE hProcess);
-ulong vuapi get_parent_pid(ulong ulChildPID);
-ulong vuapi get_main_thread_id(ulong ulPID);
-std::vector<ulong> vuapi name_to_pid_A(const std::string& ProcessName, ulong ulMaxProcessNumber = MAX_NPROCESSES);
-std::vector<ulong> vuapi name_to_pid_W(const std::wstring& ProcessName, ulong ulMaxProcessNumber = MAX_NPROCESSES);
-std::string vuapi pid_to_name_A(ulong ulPID);
-std::wstring vuapi pid_to_name_W(ulong ulPID);
-HMODULE vuapi remote_get_module_handle_A(ulong ulPID, const std::string& ModuleName); // TODO: Uncompleted.
-HMODULE vuapi remote_get_module_handle_W(ulong ulPID, const std::wstring& ModuleName);
-VUResult vuapi inject_dll_A(ulong ulPID, const std::string&  DLLFilePath, bool WaitLoadingDLL = true);
-VUResult vuapi inject_dll_W(ulong ulPID, const std::wstring& DLLFilePath, bool WaitLoadingDLL = true);
-bool vuapi rpm(const HANDLE hProcess, const void* lpAddress, void* lpBuffer, const SIZE_T ulSize, const bool force = false);
-bool vuapi rpm_ex(const eXBit bit, const HANDLE Handle, const void* lpAddress, void* lpBuffer, const SIZE_T ulSize, const bool force = false, const SIZE_T nOffsets = 0, ...);
-bool vuapi wpm(const HANDLE hProcess, const void* lpAddress, const void* lpcBuffer, const SIZE_T ulSize, const bool force = false);
-bool vuapi wpm_ex(const eXBit bit, const HANDLE Handle, const void* lpAddress, const void* lpBuffer, const SIZE_T ulSize, const bool force = false, const SIZE_T nOffsets = 0, ...);
+eWow64 vuapi is_wow64(const ulong pid = INVALID_PID_VALUE); /* -1: Error, 0: False, 1: True */
+eWow64 vuapi is_wow64(const HANDLE hp);
+ulong vuapi get_parent_pid(ulong child_pid);
+ulong vuapi get_main_thread_id(ulong pid);
+std::vector<ulong> vuapi name_to_pid_A(const std::string& name);
+std::vector<ulong> vuapi name_to_pid_W(const std::wstring& name);
+std::string vuapi pid_to_name_A(ulong pid);
+std::wstring vuapi pid_to_name_W(ulong pid);
+HMODULE vuapi remote_get_module_handle_A(ulong pid, const std::string& module_name); // TODO: Uncompleted.
+HMODULE vuapi remote_get_module_handle_W(ulong pid, const std::wstring& module_name);
+VUResult vuapi inject_dll_A(ulong pid, const std::string& dll_file_path, bool wait_loading = true);
+VUResult vuapi inject_dll_W(ulong pid, const std::wstring& dll_file_path, bool wait_loading = true);
+bool vuapi rpm(const HANDLE hp, const void* address, void* buffer, const SIZE_T size, const bool force = false);
+bool vuapi rpm_ex(const eXBit bit, const HANDLE hp, const void* address, void* buffer, const SIZE_T size, const bool force = false, const SIZE_T n_offsets = 0, ...);
+bool vuapi wpm(const HANDLE hp, const void* address, const void* buffer, const SIZE_T size, const bool force = false);
+bool vuapi wpm_ex(const eXBit bit, const HANDLE hp, const void* address, const void* buffer, const SIZE_T size, const bool force = false, const SIZE_T n_offsets = 0, ...);
 
 /**
  * Window Working
@@ -381,12 +381,12 @@ typedef struct _FONT_W
 } TFontW;
 
 HWND vuapi get_console_window();
-HWND vuapi find_top_window(ulong ulPID);
-HWND vuapi find_main_window(HWND hWnd);
-std::string  vuapi decode_wm_A(const ulong id);
-std::wstring vuapi decode_wm_W(const ulong id);
-TFontA vuapi get_font_A(HWND hw);
-TFontW vuapi get_font_W(HWND hw);
+HWND vuapi find_top_window(ulong pid);
+HWND vuapi find_main_window(HWND hwnd);
+std::string  vuapi decode_wm_A(const ulong wm);
+std::wstring vuapi decode_wm_W(const ulong wm);
+TFontA vuapi get_font_A(HWND hwnd);
+TFontW vuapi get_font_W(HWND hwnd);
 
 /**
  * File/Directory Working
@@ -411,30 +411,30 @@ eDiskType vuapi get_disk_type_A(const char drive);
 eDiskType vuapi get_disk_type_W(const wchar_t drive);
 #endif // VU_WMI_ENABLED
 
-bool vuapi is_directory_exists_A(const std::string& Directory);
-bool vuapi is_directory_exists_W(const std::wstring& Directory);
-bool vuapi is_file_exists_A(const std::string& FilePath);
-bool vuapi is_file_exists_W(const std::wstring& FilePath);
-std::string vuapi get_file_type_A(const std::string& FilePath);
-std::wstring vuapi get_file_type_W(const std::wstring& FilePath);
-std::string vuapi extract_file_directory_A(const std::string& FilePath, bool Slash = true);
-std::wstring vuapi extract_file_directory_W(const std::wstring& FilePath, bool Slash = true);
-std::string vuapi extract_file_name_A(const std::string& FilePath, bool Extension = true);
-std::wstring vuapi extract_file_name_W(const std::wstring& FilePath, bool Extension = true);
+bool vuapi is_directory_exists_A(const std::string& directory);
+bool vuapi is_directory_exists_W(const std::wstring& directory);
+bool vuapi is_file_exists_A(const std::string& file_path);
+bool vuapi is_file_exists_W(const std::wstring& file_path);
+std::string vuapi get_file_type_A(const std::string& file_path);
+std::wstring vuapi get_file_type_W(const std::wstring& file_path);
+std::string vuapi extract_file_directory_A(const std::string& file_path, bool last_slash = true);
+std::wstring vuapi extract_file_directory_W(const std::wstring& file_path, bool last_slash = true);
+std::string vuapi extract_file_name_A(const std::string& file_path, bool extension = true);
+std::wstring vuapi extract_file_name_W(const std::wstring& file_path, bool extension = true);
 std::string vuapi get_current_file_path_A();
 std::wstring vuapi get_current_file_path_W();
-std::string vuapi get_current_directory_A(bool Slash = true);
-std::wstring vuapi get_current_directory_W(bool Slash = true);
-std::string vuapi get_contain_directory_A(bool Slash = true);
-std::wstring vuapi get_contain_directory_W(bool Slash = true);
-std::string vuapi get_file_name_from_handle_A(HANDLE hFile);
-std::wstring vuapi get_file_name_from_handle_W(HANDLE hFile);
-std::string vuapi join_path_A(const std::string& Left, const std::string& Right, const ePathSep Separator = ePathSep::WIN);
-std::wstring vuapi join_path_W(const std::wstring& Left, const std::wstring& Right, const ePathSep Separator = ePathSep::WIN);
-std::string vuapi normalize_path_A(const std::string& Path, const ePathSep Separator = ePathSep::WIN);
-std::wstring vuapi normalize_path_W(const std::wstring& Path, const ePathSep Separator = ePathSep::WIN);
-std::string vuapi decorate_cpp_symbol_A(const std::string& name, const ushort flags = 0);   // UNDNAME_COMPLETE
-std::wstring vuapi decorate_cpp_symbol_W(const std::wstring& name, const ushort flags = 0); // UNDNAME_COMPLETE
+std::string vuapi get_current_directory_A(bool last_slash = true);
+std::wstring vuapi get_current_directory_W(bool last_slash = true);
+std::string vuapi get_contain_directory_A(bool last_slash = true);
+std::wstring vuapi get_contain_directory_W(bool last_slash = true);
+std::string vuapi get_file_name_from_handle_A(HANDLE hf);
+std::wstring vuapi get_file_name_from_handle_W(HANDLE hf);
+std::string vuapi join_path_A(const std::string& left, const std::string& right, const ePathSep separator = ePathSep::WIN);
+std::wstring vuapi join_path_W(const std::wstring& left, const std::wstring& right, const ePathSep separator = ePathSep::WIN);
+std::string vuapi normalize_path_A(const std::string& path, const ePathSep separator = ePathSep::WIN);
+std::wstring vuapi normalize_path_W(const std::wstring& path, const ePathSep separator = ePathSep::WIN);
+std::string vuapi undecorate_cpp_symbol_A(const std::string& name, const ushort flags = 0);   // UNDNAME_COMPLETE
+std::wstring vuapi undecorate_cpp_symbol_W(const std::wstring& name, const ushort flags = 0); // UNDNAME_COMPLETE
 
 /*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
 
@@ -445,9 +445,9 @@ std::wstring vuapi decorate_cpp_symbol_W(const std::wstring& name, const ushort 
 #define find_pattern find_pattern_W
 /* String Formatting */
 #define format format_W
-#define msg msg_W
-#define box box_W
-#define last_error last_error_W
+#define msg_debug msg_debug_W
+#define msg_box msg_box_W
+#define get_last_error get_last_error_W
 #define date_time_to_string date_time_to_string_W
 #define format_date_time format_date_time_W
 #define format_bytes format_bytes_W
@@ -483,7 +483,7 @@ std::wstring vuapi decorate_cpp_symbol_W(const std::wstring& name, const ushort 
 #define get_disk_type get_disk_type_W
 #define join_path join_path_W
 #define normalize_path normalize_path_W
-#define decorate_cpp_symbol decorate_cpp_symbol_W
+#define undecorate_cpp_symbol undecorate_cpp_symbol_W
 #else
 /* Misc Working */
 #define set_privilege set_privilege_A
@@ -491,9 +491,9 @@ std::wstring vuapi decorate_cpp_symbol_W(const std::wstring& name, const ushort 
 #define find_pattern find_pattern_A
 /* String Formatting */
 #define format format_A
-#define msg msg_A
-#define box box_A
-#define last_error last_error_A
+#define msg_debug msg_debug_A
+#define msg_box msg_box_A
+#define get_last_error get_last_error_A
 #define date_time_to_string date_time_to_string_A
 #define format_date_time format_date_time_A
 #define format_bytes format_bytes_A
@@ -528,7 +528,7 @@ std::wstring vuapi decorate_cpp_symbol_W(const std::wstring& name, const ushort 
 #define get_disk_type get_disk_type_A
 #define join_path join_path_A
 #define normalize_path normalize_path_A
-#define decorate_cpp_symbol decorate_cpp_symbol_A
+#define undecorate_cpp_symbol undecorate_cpp_symbol_A
 #endif
 
 /* -------------------------------------- Public Class(es) -------------------------------------- */
@@ -561,12 +561,12 @@ public:
 
   virtual std::string vuapi GetLastErrorMessageA()
   {
-    return last_error_A(m_LastErrorCode);
+    return get_last_error_A(m_LastErrorCode);
   }
 
   virtual std::wstring vuapi GetLastErrorMessageW()
   {
-    return last_error_W(m_LastErrorCode);
+    return get_last_error_W(m_LastErrorCode);
   }
 
 protected:

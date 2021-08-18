@@ -2,14 +2,14 @@
 
 #include "Sample.h"
 
-#define SEPERATOR() std::tcout << _T("----------------------------------------") << std::endl;
+#define SEPERATOR() std::tcout << ts("----------------------------------------") << std::endl;
 
 DEF_SAMPLE(PEFile)
 {
 #ifdef _WIN64
-  #define PROCESS_NAME _T("x64dbg.exe")
+  #define PROCESS_NAME ts("x64dbg.exe")
 #else // _WIN32
-  #define PROCESS_NAME _T("x32dbg.exe")
+  #define PROCESS_NAME ts("x32dbg.exe")
 #endif // _WIN64
 
   auto PIDs = vu::name_to_pid(PROCESS_NAME);
@@ -26,20 +26,20 @@ DEF_SAMPLE(PEFile)
     std::tstring s;
     if (result == 7)
     {
-      s = _T(" (Used wrong type data for the current PE file format)");
+      s = ts(" (Used wrong type data for the current PE file format)");
     }
     if (result == 8)
     {
-      s = _T(" (The curent type data was not supported)");
+      s = ts(" (The curent type data was not supported)");
     }
-    std::tcout << _T("PE -> Parse -> Failure") << vu::last_error() << s << std::endl;
+    std::tcout << ts("PE -> Parse -> Failure") << vu::get_last_error() << s << std::endl;
     return 1;
   }
 
   void* pBase = pe.GetpBase();
   if (pBase == nullptr)
   {
-    std::tcout << _T("PE -> GetpBase -> Failure") << vu::last_error() << std::endl;
+    std::tcout << ts("PE -> GetpBase -> Failure") << vu::get_last_error() << std::endl;
     return 1;
   }
 
@@ -48,7 +48,7 @@ DEF_SAMPLE(PEFile)
   auto sections = pe.GetSetionHeaders();
   if (sections.size() == 0)
   {
-    std::tcout << _T("PE -> GetSetionHeaderList -> Failure") << vu::last_error() << std::endl;
+    std::tcout << ts("PE -> GetSetionHeaderList -> Failure") << vu::get_last_error() << std::endl;
     return 1;
   }
 
@@ -117,7 +117,7 @@ DEF_SAMPLE(PEFile)
 
   SEPERATOR()
 
-  auto pfn = pe.FindImportFunction("Getlast_error");
+  auto pfn = pe.FindImportFunction("Getget_last_error");
   if (pfn != nullptr)
   {
     printf("%08X, %04X, '%s'\n", pfn->IIDID, pfn->Hint, pfn->Name.c_str());
@@ -131,9 +131,9 @@ DEF_SAMPLE(PEFile)
     vu::rpm(process.Handle(), LPVOID(vu::peX(module.modBaseAddr) + Entry.RVA), &Value, sizeof(Value));
 
     #ifdef _WIN64
-    auto fmt = _T("%llX : %llX -> %llX");
+    auto fmt = ts("%llX : %llX -> %llX");
     #else // _WIN32
-    auto fmt = _T("%08X : %08X -> %08X");
+    auto fmt = ts("%08X : %08X -> %08X");
     #endif // _WIN64
 
     std::tcout << vu::format(fmt, Entry.RVA, Entry.Value, Value) << std::endl;

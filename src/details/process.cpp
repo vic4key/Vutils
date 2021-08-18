@@ -37,29 +37,29 @@ eProcessorArchitecture get_processor_architecture()
   return static_cast<eProcessorArchitecture>(si.wProcessorArchitecture);
 }
 
-eWow64 vuapi is_wow64(const ulong ulPID)
+eWow64 vuapi is_wow64(const ulong pid)
 {
-  HANDLE hProcess = NULL;
+  HANDLE hp = NULL;
 
-  if (ulPID != INVALID_PID_VALUE)
+  if (pid != INVALID_PID_VALUE)
   {
     set_privilege(SE_DEBUG_NAME, true);
-    hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ulPID);
+    hp = OpenProcess(PROCESS_ALL_ACCESS, false, pid);
     set_privilege(SE_DEBUG_NAME, false);
   }
   else
   {
-    hProcess = GetCurrentProcess();
+    hp = GetCurrentProcess();
   }
 
-  auto result = is_wow64(hProcess);
+  auto result = is_wow64(hp);
 
-  CloseHandle(hProcess);
+  CloseHandle(hp);
 
   return result;
 }
 
-eWow64 vuapi is_wow64(const HANDLE hProcess)
+eWow64 vuapi is_wow64(const HANDLE hp)
 {
   typedef BOOL (WINAPI *PfnIsWow64Process)(HANDLE, PBOOL);
   PfnIsWow64Process pfnIsWow64Process = (PfnIsWow64Process)CLibrary::QuickGetProcAddress(
@@ -71,67 +71,50 @@ eWow64 vuapi is_wow64(const HANDLE hProcess)
     return WOW64_ERROR;
   }
 
-  BOOL bWow64 = false;
-  if (!pfnIsWow64Process(hProcess, &bWow64))
+  BOOL wow64 = false;
+  if (!pfnIsWow64Process(hp, &wow64))
   {
     return WOW64_ERROR;
   }
 
-  return (bWow64 ? WOW64_YES : WOW64_NO);
+  return (wow64 ? WOW64_YES : WOW64_NO);
 }
 
-bool vuapi rpm(const HANDLE hProcess, const void* lpAddress, void* lpBuffer, const SIZE_T ulSize, const bool force)
+bool vuapi rpm(const HANDLE hp, const void* address, void* buffer, const SIZE_T size, const bool force)
 {
-  ulong  ulOldProtect = 0;
-  SIZE_T ulRead = 0;
+  ulong  old_protect = 0;
+  if (force) VirtualProtectEx(hp, LPVOID(address), size, PAGE_EXECUTE_READWRITE, &old_protect);
 
-  if (force) VirtualProtectEx(hProcess, LPVOID(lpAddress), ulSize, PAGE_EXECUTE_READWRITE, &ulOldProtect);
+  SIZE_T num_read_bytes = 0;
+  auto ret = ReadProcessMemory(hp, address, buffer, size, &num_read_bytes);
+  const auto last_error = ret != FALSE ? ERROR_SUCCESS : GetLastError();
 
-  auto ret = ReadProcessMemory(hProcess, lpAddress, lpBuffer, ulSize, &ulRead);
-  const auto theLastError = ret != FALSE ? ERROR_SUCCESS : GetLastError();
+  if (force) VirtualProtectEx(hp, LPVOID(address), size, old_protect, &old_protect);
 
-  if (force) VirtualProtectEx(hProcess, LPVOID(lpAddress), ulSize, ulOldProtect, &ulOldProtect);
-
-  SetLastError(theLastError);
-  return ulRead == ulSize;
+  SetLastError(last_error);
+  return num_read_bytes == size;
 }
 
-bool vuapi rpm_ex(
-  const eXBit bit,
-  const HANDLE Handle,
-  const void* lpAddress,
-  void* lpBuffer,
-  const SIZE_T ulSize,
-  const bool force,
-  const SIZE_T nOffsets,
-  ...)
+bool vuapi rpm_ex(const eXBit bit, const HANDLE hp, const void* address, void* buffer, const SIZE_T size, const bool force, const SIZE_T n_offsets, ...)
 {
   va_list args;
-  va_start(args, nOffsets);
+  va_start(args, n_offsets);
   std::vector<vu::ulong> offsets;
-  for (size_t i = 0; i < nOffsets; i++) offsets.push_back(va_arg(args, vu::ulong));
+  for (size_t i = 0; i < n_offsets; i++) offsets.push_back(va_arg(args, vu::ulong));
   va_end(args);
 
   bool result = true;
 
   if (offsets.empty())
   {
-    result = rpm(Handle, LPVOID(lpAddress), lpBuffer, ulSize, force);
+    result = rpm(hp, LPVOID(address), buffer, size, force);
   }
   else
   {
-    auto Address = ulonglong(lpAddress);
-
-    for (size_t i = 0; i < nOffsets; i++)
+    for (size_t i = 0; i < n_offsets; i++)
     {
-      bool isoffset = i < nOffsets - 1;
-      result &= rpm(
-        Handle,
-        LPCVOID(Address + offsets.at(i)),
-        isoffset ? LPVOID(&Address) : lpBuffer,
-        isoffset ? bit : ulSize,
-        force
-      );
+      bool is_offset = i < n_offsets - 1;
+      result &= rpm(hp, LPCVOID(ulonglong(address) + offsets.at(i)), is_offset ? LPVOID(&address) : buffer, is_offset ? bit : size, force);
       if (!result) break;
     }
   }
@@ -139,66 +122,42 @@ bool vuapi rpm_ex(
   return result;
 }
 
-bool vuapi wpm(
-  const HANDLE hProcess,
-  const void* lpAddress,
-  const void* lpcBuffer,
-  const SIZE_T ulSize,
-  const bool force)
+bool vuapi wpm(const HANDLE hp, const void* address, const void* buffer, const SIZE_T size, const bool force)
 {
-  ulong ulOldProtect = 0;
-  SIZE_T ulWritten = 0;
 
-  if (force) VirtualProtectEx(hProcess, LPVOID(lpAddress), ulSize, PAGE_EXECUTE_READWRITE, &ulOldProtect);
+  ulong old_protect = 0;
+  if (force) VirtualProtectEx(hp, LPVOID(address), size, PAGE_EXECUTE_READWRITE, &old_protect);
 
-  auto ret = WriteProcessMemory(hProcess, LPVOID(lpAddress), lpcBuffer, ulSize, &ulWritten);
-  const auto theLastError = ret != FALSE ? ERROR_SUCCESS : GetLastError();
+  SIZE_T n_written_bytes = 0;
+  auto ret = WriteProcessMemory(hp, LPVOID(address), buffer, size, &n_written_bytes);
+  const auto last_error = ret != FALSE ? ERROR_SUCCESS : GetLastError();
 
-  if (force) VirtualProtectEx(hProcess, LPVOID(lpAddress), ulSize, ulOldProtect, &ulOldProtect);
+  if (force) VirtualProtectEx(hp, LPVOID(address), size, old_protect, &old_protect);
 
-  SetLastError(theLastError);
-  return ulWritten == ulSize;
+  SetLastError(last_error);
+  return n_written_bytes == size;
 }
 
-bool vuapi wpm_ex(
-  const eXBit bit,
-  const HANDLE Handle,
-  const void* lpAddress,
-  const void* lpBuffer,
-  const SIZE_T ulSize,
-  const bool force,
-  const SIZE_T nOffsets,
-  ...)
+bool vuapi wpm_ex(const eXBit bit, const HANDLE hp, const void* address, const void* buffer, const SIZE_T size, const bool force, const SIZE_T n_offsets, ...)
 {
   va_list args;
-  va_start(args, nOffsets);
+  va_start(args, n_offsets);
   std::vector<ulong> offsets;
-  for (size_t i = 0; i < nOffsets; i++) offsets.push_back(va_arg(args, ulong));
+  for (size_t i = 0; i < n_offsets; i++) offsets.push_back(va_arg(args, ulong));
   va_end(args);
 
   bool result = true;
 
   if (offsets.empty())
   {
-    result = wpm(Handle, LPVOID(lpAddress), lpBuffer, ulSize, force);
+    result = wpm(hp, LPVOID(address), buffer, size, force);
   }
   else
   {
-    auto Address = ulonglong(lpAddress);
-
-    for (size_t i = 0; i < nOffsets; i++)
+    for (size_t i = 0; i < n_offsets; i++)
     {
-      bool isoffset = i < nOffsets - 1;
-      if (isoffset)
-      {
-        result &= rpm(
-          Handle, LPCVOID(Address + offsets.at(i)), LPVOID(&Address), bit, force);
-      }
-      else
-      {
-        result &= wpm(
-          Handle, LPCVOID(Address + offsets.at(i)), lpBuffer, ulSize, force);
-      }
+      bool is_offset = i < n_offsets - 1;
+      result &= rpm(hp, LPCVOID(ulonglong(address) + offsets.at(i)), LPVOID(&address), is_offset ? bit : size, force);
       if (!result) break;
     }
   }
@@ -206,7 +165,7 @@ bool vuapi wpm_ex(
   return result;
 }
 
-ulong vuapi get_parent_pid(ulong ulChildPID)
+ulong vuapi get_parent_pid(ulong child_pid)
 {
   if (Initialize_DLL_LAZY() != VU_OK)
   {
@@ -227,7 +186,7 @@ ulong vuapi get_parent_pid(ulong ulChildPID)
   auto nextale = pfnProcess32FirstA(hSnapshot, &pe);
   while (nextale)
   {
-    if (pe.th32ProcessID == ulChildPID)
+    if (pe.th32ProcessID == child_pid)
     {
       result = pe.th32ParentProcessID;
       break;
@@ -241,7 +200,7 @@ ulong vuapi get_parent_pid(ulong ulChildPID)
   return result;
 }
 
-ulong vuapi get_main_thread_id(ulong ulPID)
+ulong vuapi get_main_thread_id(ulong pid)
 {
   auto hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
   if (hSnap == INVALID_HANDLE_VALUE)
@@ -254,10 +213,9 @@ ulong vuapi get_main_thread_id(ulong ulPID)
   ::THREADENTRY32 te = { 0 };
   te.dwSize = sizeof(THREADENTRY32);
 
-  auto nextable = Thread32First(hSnap, &te);
-  while (nextable)
+  while (auto nextable = Thread32First(hSnap, &te))
   {
-    if (te.th32OwnerProcessID == ulPID)
+    if (te.th32OwnerProcessID == pid)
     {
       result = te.th32ThreadID;
       break;
@@ -271,7 +229,7 @@ ulong vuapi get_main_thread_id(ulong ulPID)
   return result;
 }
 
-std::vector<ulong> vuapi name_to_pid_A(const std::string& ProcessName, ulong ulMaxProcessNumber)
+std::vector<ulong> vuapi name_to_pid_A(const std::string& name)
 {
   std::vector<ulong> l;
   l.clear();
@@ -281,36 +239,35 @@ std::vector<ulong> vuapi name_to_pid_A(const std::string& ProcessName, ulong ulM
     return l;
   }
 
-  std::unique_ptr<ulong[]> pProcesses(new ulong [ulMaxProcessNumber]);
-  if (pProcesses == nullptr)
+  std::unique_ptr<ulong[]> ptr_processes(new ulong[MAX_NPROCESSES]);
+  if (ptr_processes == nullptr)
   {
     return l;
   }
 
-  ZeroMemory(pProcesses.get(), ulMaxProcessNumber*sizeof(ulong));
+  ZeroMemory(ptr_processes.get(), MAX_NPROCESSES * sizeof(ulong));
 
-  vu::ulong cbNeeded = 0;
-  pfnEnumProcesses(pProcesses.get(), ulMaxProcessNumber*sizeof(vu::ulong), &cbNeeded);
+  vu::ulong cb_needed = 0;
+  pfnEnumProcesses(ptr_processes.get(), MAX_NPROCESSES * sizeof(vu::ulong), &cb_needed);
 
-  if (cbNeeded <= 0)
+  if (cb_needed <= 0)
   {
     return l;
   }
 
-  vu::ulong nProcesses = cbNeeded / sizeof(ulong);
+  vu::ulong n_processes = cb_needed / sizeof(ulong);
 
-  std::string s1 = lower_string_A(ProcessName), s2;
+  std::string s1 = lower_string_A(name), s2;
 
-  ulong ulPID;
-  for (vu::ulong i = 0; i < nProcesses; i++)
+  for (vu::ulong i = 0; i < n_processes; i++)
   {
-    ulPID = pProcesses.get()[i];
+    ulong pid = ptr_processes.get()[i];
 
     s2.clear();
-    s2 = lower_string_A(vu::pid_to_name_A(ulPID));
+    s2 = lower_string_A(vu::pid_to_name_A(pid));
     if (s1 == s2)
     {
-      l.push_back(ulPID);
+      l.push_back(pid);
     }
   }
 
@@ -319,7 +276,7 @@ std::vector<ulong> vuapi name_to_pid_A(const std::string& ProcessName, ulong ulM
   return l;
 }
 
-std::vector<ulong> vuapi name_to_pid_W(const std::wstring& ProcessName, ulong ulMaxProcessNumber)
+std::vector<ulong> vuapi name_to_pid_W(const std::wstring& name)
 {
   std::vector<ulong> l;
   l.clear();
@@ -329,36 +286,35 @@ std::vector<ulong> vuapi name_to_pid_W(const std::wstring& ProcessName, ulong ul
     return l;
   }
 
-  std::unique_ptr<ulong[]> pProcesses(new ulong [ulMaxProcessNumber]);
-  if (pProcesses == nullptr)
+  std::unique_ptr<ulong[]> ptr_processes(new ulong[MAX_NPROCESSES]);
+  if (ptr_processes == nullptr)
   {
     return l;
   }
 
-  ZeroMemory(pProcesses.get(), ulMaxProcessNumber*sizeof(ulong));
+  ZeroMemory(ptr_processes.get(), MAX_NPROCESSES * sizeof(ulong));
 
-  vu::ulong cbNeeded = 0;
-  pfnEnumProcesses(pProcesses.get(), ulMaxProcessNumber*sizeof(vu::ulong), &cbNeeded);
+  vu::ulong cb_needed = 0;
+  pfnEnumProcesses(ptr_processes.get(), MAX_NPROCESSES *sizeof(vu::ulong), &cb_needed);
 
-  if (cbNeeded <= 0)
+  if (cb_needed <= 0)
   {
     return l;
   }
 
-  vu::ulong nProcesses = cbNeeded / sizeof(ulong);
+  vu::ulong n_processes = cb_needed / sizeof(ulong);
 
-  std::wstring s1 = lower_string_W(ProcessName), s2;
+  std::wstring s1 = lower_string_W(name), s2;
 
-  ulong ulPID;
-  for (vu::ulong i = 0; i < nProcesses; i++)
+  for (vu::ulong i = 0; i < n_processes; i++)
   {
-    ulPID = pProcesses.get()[i];
+    ulong pid = ptr_processes.get()[i];
 
     s2.clear();
-    s2 = lower_string_W(vu::pid_to_name_W(ulPID));
+    s2 = lower_string_W(vu::pid_to_name_W(pid));
     if (s1 == s2)
     {
-      l.push_back(ulPID);
+      l.push_back(pid);
     }
   }
 
@@ -367,7 +323,7 @@ std::vector<ulong> vuapi name_to_pid_W(const std::wstring& ProcessName, ulong ul
   return l;
 }
 
-std::string vuapi pid_to_name_A(ulong ulPID)
+std::string vuapi pid_to_name_A(ulong pid)
 {
   std::string s;
   s.clear();
@@ -378,35 +334,35 @@ std::string vuapi pid_to_name_A(ulong ulPID)
   }
 
   set_privilege(SE_DEBUG_NAME, true);
-  HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ulPID);
+  HANDLE hp = OpenProcess(PROCESS_ALL_ACCESS, false, pid);
   set_privilege(SE_DEBUG_NAME, false);
-  if (!hProcess)
+  if (hp == nullptr)
   {
     return s;
   }
 
-  std::unique_ptr<char[]> szProcessPath(new char [MAXPATH]);
-  ZeroMemory(szProcessPath.get(), MAXPATH);
+  std::unique_ptr<char[]> ptr_process_path(new char [MAXPATH]);
+  ZeroMemory(ptr_process_path.get(), MAXPATH);
 
-  ulong ulPathLength = MAXPATH;
+  ulong process_path_length = MAXPATH;
 
-  BOOL ret = pfnQueryFullProcessImageNameA(hProcess, 0, szProcessPath.get(), &ulPathLength);
+  BOOL ret = pfnQueryFullProcessImageNameA(hp, 0, ptr_process_path.get(), &process_path_length);
 
-  CloseHandle(hProcess);
+  CloseHandle(hp);
 
   if (ret == FALSE)
   {
     return s;
   }
 
-  s.assign(szProcessPath.get());
+  s.assign(ptr_process_path.get());
 
   s = extract_file_name_A(s);
 
   return s;
 }
 
-std::wstring vuapi pid_to_name_W(ulong ulPID)
+std::wstring vuapi pid_to_name_W(ulong pid)
 {
   std::wstring s;
   s.clear();
@@ -417,28 +373,28 @@ std::wstring vuapi pid_to_name_W(ulong ulPID)
   }
 
   set_privilege(SE_DEBUG_NAME, true);
-  HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, false, ulPID);
+  HANDLE hp = OpenProcess(PROCESS_ALL_ACCESS, false, pid);
   set_privilege(SE_DEBUG_NAME, false);
-  if (hProcess == nullptr)
+  if (hp == nullptr)
   {
     return s;
   }
 
-  std::unique_ptr<wchar[]> wszProcessPath(new wchar [MAXPATH]);
-  ZeroMemory(wszProcessPath.get(), 2*MAXBYTE);
+  std::unique_ptr<wchar[]> ptr_process_path(new wchar [MAXPATH]);
+  ZeroMemory(ptr_process_path.get(), 2*MAXBYTE);
 
-  ulong ulPathLength = 2*MAXPATH;
+  ulong process_path_length = 2*MAXPATH;
 
-  BOOL ret = pfnQueryFullProcessImageNameW(hProcess, 0, wszProcessPath.get(), &ulPathLength);
+  BOOL ret = pfnQueryFullProcessImageNameW(hp, 0, ptr_process_path.get(), &process_path_length);
 
-  CloseHandle(hProcess);
+  CloseHandle(hp);
 
   if (ret == FALSE)
   {
     return s;
   }
 
-  s.assign(wszProcessPath.get());
+  s.assign(ptr_process_path.get());
 
   s = extract_file_name_W(s);
 
@@ -512,7 +468,7 @@ HMODULE vuapi Remote64GetModuleHandleW(const ulong ulPID, const std::wstring& Mo
   return Remote64GetModuleHandleA(ulPID, moduleName);
 }
 
-HMODULE vuapi remote_get_module_handle_A(ulong ulPID, const std::string& ModuleName)
+HMODULE vuapi remote_get_module_handle_A(ulong pid, const std::string& module_name)
 {
   HMODULE result = (HMODULE)-1;
 
@@ -525,7 +481,7 @@ HMODULE vuapi remote_get_module_handle_A(ulong ulPID, const std::string& ModuleN
 
   if (get_processor_architecture() == eProcessorArchitecture::PA_X64)   // 64-bit arch
   {
-    if (is_wow64(ulPID))   // 32-bit process
+    if (is_wow64(pid))   // 32-bit process
     {
       bIs32Process = true;
     }
@@ -542,27 +498,27 @@ HMODULE vuapi remote_get_module_handle_A(ulong ulPID, const std::string& ModuleN
   #ifdef _WIN64 // 64-bit arch
   if (bIs32Process)   // 32-bit process
   {
-    result = Remote64GetModuleHandleA(ulPID, ModuleName); // assert(0 && "64 -> 32");
+    result = Remote64GetModuleHandleA(pid, module_name); // assert(0 && "64 -> 32");
   }
   else   // 64-bit process
   {
-    result = Remote64GetModuleHandleA(ulPID, ModuleName); // assert(0 && "64 -> 64");
+    result = Remote64GetModuleHandleA(pid, module_name); // assert(0 && "64 -> 64");
   }
   #else // 32-bit arch
   if (bIs32Process)   // 32-bit process
   {
-    result = Remote32GetModuleHandleA(ulPID, ModuleName); // assert(0 && "32 -> 32");
+    result = Remote32GetModuleHandleA(pid, module_name); // assert(0 && "32 -> 32");
   }
   else   // 64-bit process
   {
-    result = Remote32GetModuleHandleA(ulPID, ModuleName); // assert(0 && "32 -> 64");
+    result = Remote32GetModuleHandleA(pid, module_name); // assert(0 && "32 -> 64");
   }
   #endif // _WIN64
 
   return result;
 }
 
-HMODULE vuapi remote_get_module_handle_W(const ulong ulPID, const std::wstring& ModuleName)
+HMODULE vuapi remote_get_module_handle_W(const ulong pid, const std::wstring& module_name)
 {
   HMODULE result = (HMODULE)-1;
 
@@ -575,7 +531,7 @@ HMODULE vuapi remote_get_module_handle_W(const ulong ulPID, const std::wstring& 
 
   if (get_processor_architecture() == eProcessorArchitecture::PA_X64)   // 64-bit arch
   {
-    if (is_wow64(ulPID))   // 32-bit process
+    if (is_wow64(pid))   // 32-bit process
     {
       bIs32Process = true;
     }
@@ -592,20 +548,20 @@ HMODULE vuapi remote_get_module_handle_W(const ulong ulPID, const std::wstring& 
   #ifdef _WIN64 // 64-bit arch
   if (bIs32Process)   // 32-bit process
   {
-    result = Remote64GetModuleHandleW(ulPID, ModuleName); // assert(0 && "64 -> 32");
+    result = Remote64GetModuleHandleW(pid, module_name); // assert(0 && "64 -> 32");
   }
   else   // 64-bit process
   {
-    result = Remote64GetModuleHandleW(ulPID, ModuleName); // assert(0 && "64 -> 64");
+    result = Remote64GetModuleHandleW(pid, module_name); // assert(0 && "64 -> 64");
   }
   #else // 32-bit arch
   if (bIs32Process)   // 32-bit process
   {
-    result = Remote32GetModuleHandleW(ulPID, ModuleName); // assert(0 && "32 -> 32");
+    result = Remote32GetModuleHandleW(pid, module_name); // assert(0 && "32 -> 32");
   }
   else   // 64-bit process
   {
-    result = Remote32GetModuleHandleW(ulPID, ModuleName); // assert(0 && "32 -> 64");
+    result = Remote32GetModuleHandleW(pid, module_name); // assert(0 && "32 -> 64");
   }
   #endif // _WIN64
 
@@ -614,34 +570,34 @@ HMODULE vuapi remote_get_module_handle_W(const ulong ulPID, const std::wstring& 
 
 #define CREATE_THREAD_ACCESS (PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ)
 
-VUResult vuapi inject_dll_A(ulong ulPID, const std::string& DLLFilePath, bool WaitLoadingDLL)
+VUResult vuapi inject_dll_A(ulong pid, const std::string& dll_file_path, bool wait_loading)
 {
-  if (ulPID == INVALID_PID_VALUE)
+  if (pid == INVALID_PID_VALUE)
   {
     return 1;
   }
 
-  if (!is_file_exists_A(DLLFilePath))
+  if (!is_file_exists_A(dll_file_path))
   {
     SetLastError(ERROR_FILE_NOT_FOUND);
     return 2;
   }
 
-  auto DLLFileName = extract_file_name_A(DLLFilePath);
-  if (DLLFileName.empty())
+  auto dll_file_name = extract_file_name_A(dll_file_path);
+  if (dll_file_name.empty())
   {
     SetLastError(ERROR_FILE_NOT_FOUND);
     return 2;
   }
 
-  if (remote_get_module_handle_A(ulPID, DLLFileName) != 0)
+  if (remote_get_module_handle_A(pid, dll_file_name) != 0)
   {
     SetLastError(ERROR_ALREADY_EXISTS);
     return 3;
   }
 
   set_privilege(SE_DEBUG_NAME, true);
-  std::shared_ptr<void> hp(OpenProcess(CREATE_THREAD_ACCESS, FALSE, ulPID), CloseHandle);
+  std::shared_ptr<void> hp(OpenProcess(CREATE_THREAD_ACCESS, FALSE, pid), CloseHandle);
   set_privilege(SE_DEBUG_NAME, false);
   if (hp.get() == nullptr)
   {
@@ -662,7 +618,7 @@ VUResult vuapi inject_dll_A(ulong ulPID, const std::string& DLLFilePath, bool Wa
   auto pBlock = VirtualAllocEx(
     hp.get(),
     nullptr,
-    (DLLFilePath.length() + 1) * sizeof(char), // +1 for a null-terminated ANSI string
+    (dll_file_path.length() + 1) * sizeof(char), // +1 for a null-terminated ANSI string
     MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE
   );
   if (pBlock == nullptr)
@@ -670,7 +626,7 @@ VUResult vuapi inject_dll_A(ulong ulPID, const std::string& DLLFilePath, bool Wa
     return 6;
   }
 
-  if (!wpm(hp.get(), pBlock, DLLFilePath.c_str(), DLLFilePath.length() * sizeof(char)))
+  if (!wpm(hp.get(), pBlock, dll_file_path.c_str(), dll_file_path.length() * sizeof(char)))
   {
     return 7;
   }
@@ -687,7 +643,7 @@ VUResult vuapi inject_dll_A(ulong ulPID, const std::string& DLLFilePath, bool Wa
     return 8;
   }
 
-  if (WaitLoadingDLL)
+  if (wait_loading)
   {
     WaitForSingleObject(hThread, INFINITE);
     CloseHandle(hThread);
@@ -699,34 +655,34 @@ VUResult vuapi inject_dll_A(ulong ulPID, const std::string& DLLFilePath, bool Wa
   return 0;
 }
 
-VUResult vuapi inject_dll_W(ulong ulPID, const std::wstring& DLLFilePath, bool WaitLoadingDLL)
+VUResult vuapi inject_dll_W(ulong pid, const std::wstring& dll_file_path, bool wait_loading)
 {
-  if (ulPID == INVALID_PID_VALUE)
+  if (pid == INVALID_PID_VALUE)
   {
     return 1;
   }
 
-  if (!is_file_exists_W(DLLFilePath))
+  if (!is_file_exists_W(dll_file_path))
   {
     SetLastError(ERROR_FILE_NOT_FOUND);
     return 2;
   }
 
-  auto DLLFileName = extract_file_name_W(DLLFilePath);
-  if (DLLFileName.empty())
+  auto dll_file_name = extract_file_name_W(dll_file_path);
+  if (dll_file_name.empty())
   {
     SetLastError(ERROR_FILE_NOT_FOUND);
     return 2;
   }
 
-  if (remote_get_module_handle_W(ulPID, DLLFileName) != 0)
+  if (remote_get_module_handle_W(pid, dll_file_name) != 0)
   {
     SetLastError(ERROR_ALREADY_EXISTS);
     return 3;
   }
 
   set_privilege(SE_DEBUG_NAME, true);
-  std::shared_ptr<void> hp(OpenProcess(CREATE_THREAD_ACCESS, FALSE, ulPID), CloseHandle);
+  std::shared_ptr<void> hp(OpenProcess(CREATE_THREAD_ACCESS, FALSE, pid), CloseHandle);
   set_privilege(SE_DEBUG_NAME, false);
   if (hp.get() == nullptr)
   {
@@ -747,7 +703,7 @@ VUResult vuapi inject_dll_W(ulong ulPID, const std::wstring& DLLFilePath, bool W
   auto pBlock = VirtualAllocEx(
     hp.get(),
     nullptr,
-    (DLLFilePath.length() + 1) * sizeof(wchar_t), // +1 for a null-terminated UNICODE string
+    (dll_file_path.length() + 1) * sizeof(wchar_t), // +1 for a null-terminated UNICODE string
     MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE
   );
   if (pBlock == nullptr)
@@ -755,7 +711,7 @@ VUResult vuapi inject_dll_W(ulong ulPID, const std::wstring& DLLFilePath, bool W
     return 6;
   }
 
-  if (!wpm(hp.get(), pBlock, DLLFilePath.c_str(), DLLFilePath.length() * sizeof(wchar_t)))
+  if (!wpm(hp.get(), pBlock, dll_file_path.c_str(), dll_file_path.length() * sizeof(wchar_t)))
   {
     return 7;
   }
@@ -772,7 +728,7 @@ VUResult vuapi inject_dll_W(ulong ulPID, const std::wstring& DLLFilePath, bool W
     return 8;
   }
 
-  if (WaitLoadingDLL)
+  if (wait_loading)
   {
     WaitForSingleObject(hThread, INFINITE);
     CloseHandle(hThread);

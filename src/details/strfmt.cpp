@@ -22,7 +22,7 @@ namespace vu
 const std::string  VU_TITLE_BOXA =  "Vutils";
 const std::wstring VU_TITLE_BOXW = L"Vutils";
 
-int vuapi GetFormatLengthVLA(const std::string Format, va_list args)
+int vuapi get_format_length_vl_A(const std::string format, va_list args)
 {
   int N = -1;
 
@@ -32,15 +32,15 @@ int vuapi GetFormatLengthVLA(const std::string Format, va_list args)
   }
 
   #ifdef _MSC_VER
-  N = _vscprintf(Format.c_str(), args) + 1;
+  N = _vscprintf(format.c_str(), args) + 1;
   #else
-  N = pfn_vscprintf(Format.c_str(), args) + 1;
+  N = pfn_vscprintf(format.c_str(), args) + 1;
   #endif
 
   return N;
 }
 
-int vuapi GetFormatLengthVLW(const std::wstring Format, va_list args)
+int vuapi get_format_length_vl_W(const std::wstring format, va_list args)
 {
   int N = -1;
 
@@ -50,44 +50,44 @@ int vuapi GetFormatLengthVLW(const std::wstring Format, va_list args)
   }
 
   #ifdef _MSC_VER
-  N = _vscwprintf(Format.c_str(), args) + 1;
+  N = _vscwprintf(format.c_str(), args) + 1;
   #else
-  N = pfn_vscwprintf(Format.c_str(), args) + 1;
+  N = pfn_vscwprintf(format.c_str(), args) + 1;
   #endif
 
   return N;
 }
 
-int vuapi GetFormatLengthA(const std::string Format, ...)
+int vuapi get_format_length_A(const std::string format, ...)
 {
   va_list args;
-  va_start(args, Format);
+  va_start(args, format);
 
-  auto N = GetFormatLengthVLA(Format, args);
+  auto N = get_format_length_vl_A(format, args);
 
   va_end(args);
 
   return N;
 }
 
-int vuapi GetFormatLengthW(const std::wstring Format, ...)
+int vuapi get_format_length_W(const std::wstring format, ...)
 {
   va_list args;
-  va_start(args, Format);
+  va_start(args, format);
 
-  auto N = GetFormatLengthVLW(Format, args);
+  auto N = get_format_length_vl_W(format, args);
 
   va_end(args);
 
   return N;
 }
 
-std::string vuapi FormatVLA(const std::string Format, va_list args)
+std::string vuapi format_vl_A(const std::string format, va_list args)
 {
   std::string s;
   s.clear();
 
-  auto N = GetFormatLengthVLA(Format, args);
+  auto N = get_format_length_vl_A(format, args);
   if (N <= 0)
   {
     return s;
@@ -102,9 +102,9 @@ std::string vuapi FormatVLA(const std::string Format, va_list args)
   ZeroMemory(p.get(), N);
 
   #ifdef _MSC_VER
-  vsnprintf(p.get(), N, Format.c_str(), args);
+  vsnprintf(p.get(), N, format.c_str(), args);
   #else
-  pfn_vsnprintf(p.get(), N, Format.c_str(), args);
+  pfn_vsnprintf(p.get(), N, format.c_str(), args);
   #endif
 
   s.assign(p.get());
@@ -112,12 +112,12 @@ std::string vuapi FormatVLA(const std::string Format, va_list args)
   return s;
 }
 
-std::wstring vuapi FormatVLW(const std::wstring Format, va_list args)
+std::wstring vuapi format_vl_W(const std::wstring format, va_list args)
 {
   std::wstring s;
   s.clear();
 
-  auto N = GetFormatLengthVLW(Format, args);
+  auto N = get_format_length_vl_W(format, args);
   if (N <= 0)
   {
     return s;
@@ -132,9 +132,9 @@ std::wstring vuapi FormatVLW(const std::wstring Format, va_list args)
   ZeroMemory(p.get(), 2*N);
 
   #ifdef _MSC_VER
-  vswprintf(p.get(), Format.c_str(), args);
+  vswprintf(p.get(), format.c_str(), args);
   #else
-  pfn_vswprintf(p.get(), N, Format.c_str(), args);
+  pfn_vswprintf(p.get(), N, format.c_str(), args);
   #endif
 
   s.assign(p.get());
@@ -142,177 +142,177 @@ std::wstring vuapi FormatVLW(const std::wstring Format, va_list args)
   return s;
 }
 
-std::string vuapi format_A(const std::string Format, ...)
+std::string vuapi format_A(const std::string format, ...)
 {
   va_list args;
-  va_start(args, Format);
+  va_start(args, format);
 
-  auto s = FormatVLA(Format, args);
+  auto s = format_vl_A(format, args);
 
   va_end(args);
 
   return s;
 }
 
-std::wstring vuapi format_W(const std::wstring Format, ...)
+std::wstring vuapi format_W(const std::wstring format, ...)
 {
   va_list args;
-  va_start(args, Format);
+  va_start(args, format);
 
-  auto s = FormatVLW(Format, args);
+  auto s = format_vl_W(format, args);
 
   va_end(args);
 
   return s;
 }
 
-void vuapi msg_A(const std::string Format, ...)
+void vuapi msg_debug_A(const std::string format, ...)
 {
   va_list args;
-  va_start(args, Format);
+  va_start(args, format);
 
-  auto s = FormatVLA(Format, args);
+  auto s = format_vl_A(format, args);
 
   va_end(args);
 
   OutputDebugStringA(s.c_str());
 }
 
-void vuapi msg_W(const std::wstring Format, ...)
+void vuapi msg_debug_W(const std::wstring format, ...)
 {
   va_list args;
-  va_start(args, Format);
+  va_start(args, format);
 
-  auto s = FormatVLW(Format, args);
+  auto s = format_vl_W(format, args);
 
   va_end(args);
 
   OutputDebugStringW(s.c_str());
 }
 
-int vuapi box_A(const std::string Format, ...)
+int vuapi msg_box_A(const std::string format, ...)
 {
   va_list args;
-  va_start(args, Format);
+  va_start(args, format);
 
-  auto s = FormatVLA(Format, args);
+  auto s = format_vl_A(format, args);
 
   va_end(args);
 
   return MessageBoxA(GetActiveWindow(), s.c_str(), VU_TITLE_BOXA.c_str(), MB_ICONINFORMATION);
 }
 
-int vuapi box_W(const std::wstring Format, ...)
+int vuapi msg_box_W(const std::wstring format, ...)
 {
   va_list args;
-  va_start(args, Format);
+  va_start(args, format);
 
-  auto s = FormatVLW(Format, args);
+  auto s = format_vl_W(format, args);
 
   va_end(args);
 
   return MessageBoxW(GetActiveWindow(), s.c_str(), VU_TITLE_BOXW.c_str(), MB_ICONINFORMATION);
 }
 
-int vuapi box_A(HWND hWnd, const std::string Format, ...)
+int vuapi msg_box_A(HWND hwnd, const std::string format, ...)
 {
   va_list args;
-  va_start(args, Format);
+  va_start(args, format);
 
-  auto s = FormatVLA(Format, args);
+  auto s = format_vl_A(format, args);
 
   va_end(args);
 
-  return MessageBoxA(hWnd, s.c_str(), VU_TITLE_BOXA.c_str(), MB_ICONINFORMATION);
+  return MessageBoxA(hwnd, s.c_str(), VU_TITLE_BOXA.c_str(), MB_ICONINFORMATION);
 }
 
-int vuapi box_W(HWND hWnd, const std::wstring Format, ...)
+int vuapi msg_box_W(HWND hwnd, const std::wstring format, ...)
 {
   va_list args;
-  va_start(args, Format);
+  va_start(args, format);
 
-  auto s = FormatVLW(Format, args);
+  auto s = format_vl_W(format, args);
 
   va_end(args);
 
-  return MessageBoxW(hWnd, s.c_str(), VU_TITLE_BOXW.c_str(), MB_ICONINFORMATION);
+  return MessageBoxW(hwnd, s.c_str(), VU_TITLE_BOXW.c_str(), MB_ICONINFORMATION);
 }
 
-int vuapi box_A(HWND hWnd, uint uType, const std::string& Caption, const std::string Format, ...)
+int vuapi msg_box_A(HWND hwnd, uint type, const std::string& caption, const std::string format, ...)
 {
   va_list args;
-  va_start(args, Format);
+  va_start(args, format);
 
-  auto s = FormatVLA(Format, args);
+  auto s = format_vl_A(format, args);
 
   va_end(args);
 
-  return MessageBoxA(hWnd, s.c_str(), Caption.c_str(), uType);
+  return MessageBoxA(hwnd, s.c_str(), caption.c_str(), type);
 }
 
-int vuapi box_W(HWND hWnd, uint uType, const std::wstring& Caption, const std::wstring Format, ...)
+int vuapi msg_box_W(HWND hwnd, uint type, const std::wstring& caption, const std::wstring format, ...)
 {
   va_list args;
-  va_start(args, Format);
+  va_start(args, format);
 
-  auto s = FormatVLW(Format, args);
+  auto s = format_vl_W(format, args);
 
   va_end(args);
 
-  return MessageBoxW(hWnd, s.c_str(), Caption.c_str(), uType);
+  return MessageBoxW(hwnd, s.c_str(), caption.c_str(), type);
 }
 
-std::string vuapi last_error_A(ulong ulErrorCode)
+std::string vuapi get_last_error_A(ulong code)
 {
-  if (ulErrorCode == -1)
+  if (code == -1)
   {
-    ulErrorCode = ::GetLastError();
+    code = ::GetLastError();
   }
 
-  char* lpszErrorMessage = nullptr;
+  char* ptr_error_message = nullptr;
 
   FormatMessageA(
     FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,
     NULL,
-    ulErrorCode,
+    code,
     LANG_USER_DEFAULT,
-    (char*)&lpszErrorMessage,
+    (char*)&ptr_error_message,
     0,
     NULL
   );
 
-  std::string s(lpszErrorMessage);
+  std::string s(ptr_error_message);
   s = trim_string_A(s);
 
   return s;
 }
 
-std::wstring vuapi last_error_W(ulong ulErrorCode)
+std::wstring vuapi get_last_error_W(ulong code)
 {
-  if (ulErrorCode == -1)
+  if (code == -1)
   {
-    ulErrorCode = ::GetLastError();
+    code = ::GetLastError();
   }
 
-  wchar* lpwszErrorMessage = nullptr;
+  wchar* ptr_error_message = nullptr;
 
   FormatMessageW(
     FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,
     NULL,
-    ulErrorCode,
+    code,
     LANG_USER_DEFAULT,
-    (wchar*)&lpwszErrorMessage,
+    (wchar*)&ptr_error_message,
     0,
     NULL
   );
 
-  std::wstring s(lpwszErrorMessage);
+  std::wstring s(ptr_error_message);
   s = trim_string_W(s);
 
   return s;
 }
 
-std::string vuapi GetFormatStringForNumber(std::string TypeID)
+std::string vuapi get_format_string_for_number(std::string type_id)
 {
   /* MinGW
     i -> int
@@ -328,39 +328,39 @@ std::string vuapi GetFormatStringForNumber(std::string TypeID)
 
   std::string fs = "";
 
-  if (TypeID == "i")
+  if (type_id == "i")
   {
     fs = "%d";
   }
-  else if (TypeID == "l")
+  else if (type_id == "l")
   {
     fs = "%ld";
   }
-  else if (TypeID == "x")
+  else if (type_id == "x")
   {
     fs = "lld";
   }
-  else if (TypeID == "j")
+  else if (type_id == "j")
   {
     fs = "%u";
   }
-  else if (TypeID == "m")
+  else if (type_id == "m")
   {
     fs = "%lu";
   }
-  else if (TypeID == "y")
+  else if (type_id == "y")
   {
     fs = "%llu";
   }
-  else if (TypeID == "f")
+  else if (type_id == "f")
   {
     fs = "%f";
   }
-  else if (TypeID == "d")
+  else if (type_id == "d")
   {
     fs = "%e";
   }
-  else if (TypeID == "e")
+  else if (type_id == "e")
   {
     fs = "%Le";
   }
@@ -384,7 +384,7 @@ std::wstring vuapi date_time_to_string_W(const time_t t)
   return s;
 }
 
-std::string vuapi format_date_time_A(const time_t t, const std::string Format)
+std::string vuapi format_date_time_A(const time_t t, const std::string format)
 {
   std::string s;
   s.clear();
@@ -405,14 +405,14 @@ std::string vuapi format_date_time_A(const time_t t, const std::string Format)
   memcpy((void*)&lt, localtime(&t), sizeof(tm));
   #endif
 
-  strftime(p.get(), MAX_SIZE, Format.c_str(), &lt);
+  strftime(p.get(), MAX_SIZE, format.c_str(), &lt);
 
   s.assign(p.get());
 
   return s;
 }
 
-std::wstring vuapi format_date_time_W(const time_t t, const std::wstring Format)
+std::wstring vuapi format_date_time_W(const time_t t, const std::wstring format)
 {
   std::wstring s;
   s.clear();
@@ -430,27 +430,27 @@ std::wstring vuapi format_date_time_W(const time_t t, const std::wstring Format)
   memcpy((void*)&lt, localtime(&t), sizeof(tm));
   #endif
 
-  wcsftime(p.get(), 2*MAXBYTE, Format.c_str(), &lt);
+  wcsftime(p.get(), 2*MAXBYTE, format.c_str(), &lt);
 
   s.assign(p.get());
 
   return s;
 }
 
-void vuapi hex_dump(const void* Data, int Size)
+void vuapi hex_dump(const void* data, int size)
 {
   const int DEFAULT_DUMP_COLUMN = 16;
 
   int i = 0;
-  uchar Buffer[DEFAULT_DUMP_COLUMN + 1], *pData = (uchar*)Data;
+  uchar buffer[DEFAULT_DUMP_COLUMN + 1], *ptr_data = (uchar*)data;
 
-  for (int i = 0; i < Size; i++)
+  for (int i = 0; i < size; i++)
   {
     if (i % DEFAULT_DUMP_COLUMN == 0)
     {
       if (i != 0)
       {
-        printf("  %s\n", Buffer);
+        printf("  %s\n", buffer);
       }
 
       printf("  %04x ", i);
@@ -458,18 +458,18 @@ void vuapi hex_dump(const void* Data, int Size)
 
     if (i % DEFAULT_DUMP_COLUMN == 8) printf(" ");
 
-    printf(" %02x", pData[i]);
+    printf(" %02x", ptr_data[i]);
 
-    if (pData[i] < 0x20 || pData[i] > 0x7E)
+    if (ptr_data[i] < 0x20 || ptr_data[i] > 0x7E)
     {
-      Buffer[i % DEFAULT_DUMP_COLUMN] = '.';
+      buffer[i % DEFAULT_DUMP_COLUMN] = '.';
     }
     else
     {
-      Buffer[i % DEFAULT_DUMP_COLUMN] = pData[i];
+      buffer[i % DEFAULT_DUMP_COLUMN] = ptr_data[i];
     }
 
-    Buffer[(i % DEFAULT_DUMP_COLUMN) + 1] = '\0';
+    buffer[(i % DEFAULT_DUMP_COLUMN) + 1] = '\0';
   }
 
   while (i % DEFAULT_DUMP_COLUMN != 0)
@@ -478,26 +478,23 @@ void vuapi hex_dump(const void* Data, int Size)
     i++;
   }
 
-  printf("  %s\n", Buffer);
+  printf("  %s\n", buffer);
 }
 
-std::string vuapi format_bytes_A(long long Bytes, eStdByte Std, int Digits)
+std::string vuapi format_bytes_A(long long bytes, eStdByte std, int digits)
 {
   std::string result = "";
 
-  if (Bytes < 0 || Digits < 0)
+  if (bytes < 0 || digits < 0)
   {
     return result;
   }
-
-  const auto bytes  = (long double)Bytes;
-  const auto thestd = (long double)Std;
 
   // Max positive number of long long is 2*63 ~ 9{18}.
   // So log(9{18}, 1000-1024) ~ 6-7 array index.
   static const char* SIUnits[]  = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
   static const char* IECUnits[] = { "B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB" };
-  static const auto  Units = Std == eStdByte::IEC ? IECUnits : SIUnits;
+  static const auto  Units = std == eStdByte::IEC ? IECUnits : SIUnits;
 
   const auto log2l = [](long double v) -> long double
   {
@@ -512,23 +509,23 @@ std::string vuapi format_bytes_A(long long Bytes, eStdByte Std, int Digits)
 
   int idx = 0;
 
-  if (Bytes > 0)
+  if (bytes > 0)
   {
-    idx = (int)logn(bytes, thestd);
+    idx = (int)logn(static_cast<long double>(bytes), static_cast<long double>(std));
 
     std::string fmt = "%0.";
-    fmt += std::to_string(Digits);
+    fmt += std::to_string(digits);
     fmt += "f %s";
 
-    result = format_A(fmt, float(bytes / powl(thestd, idx)), Units[idx]);
+    result = format_A(fmt, float(bytes / powl(std, idx)), Units[idx]);
   }
 
   return result;
 }
 
-std::wstring vuapi format_bytes_W(long long Bytes, eStdByte Std, int Digits)
+std::wstring vuapi format_bytes_W(long long bytes, eStdByte std, int digits)
 {
-  return to_string_W(format_bytes_A(Bytes, Std, Digits));
+  return to_string_W(format_bytes_A(bytes, std, digits));
 }
 
 /**

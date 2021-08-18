@@ -114,11 +114,11 @@ void* vuapi CLibraryW::QuickGetProcAddress(const std::wstring& ModuleName, const
 
 // @refer to https://docs.microsoft.com/en-us/windows/win32/memory/obtaining-a-file-name-from-a-file-handle
 
-std::wstring GetFileNameFromHandleX(HANDLE hFile)
+std::wstring get_file_name_from_handle_X(HANDLE hf)
 {
   std::wstring result = L"";
 
-  if (hFile == INVALID_HANDLE_VALUE)
+  if (hf == INVALID_HANDLE_VALUE)
   {
     return result;
   }
@@ -135,14 +135,14 @@ std::wstring GetFileNameFromHandleX(HANDLE hFile)
 
   // Get the file size.
   DWORD dwFileSizeHi = 0;
-  DWORD dwFileSizeLo = GetFileSize(hFile, &dwFileSizeHi);
+  DWORD dwFileSizeLo = GetFileSize(hf, &dwFileSizeHi);
   if (dwFileSizeLo == 0 && dwFileSizeHi == 0)
   {
     return result;
   }
 
   // Create a file mapping object.
-  if (auto hFileMap = CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, 1, NULL))
+  if (auto hFileMap = CreateFileMappingW(hf, NULL, PAGE_READONLY, 0, 1, NULL))
   {
     // Create a file mapping to get the file name.
     if (void* pMem = MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 1))
@@ -202,14 +202,14 @@ std::wstring GetFileNameFromHandleX(HANDLE hFile)
   return result;
 }
 
-std::string vuapi get_file_name_from_handle_A(HANDLE hFile)
+std::string vuapi get_file_name_from_handle_A(HANDLE hf)
 {
-  return to_string_A(get_file_name_from_handle_W(hFile));
+  return to_string_A(get_file_name_from_handle_W(hf));
 }
 
-std::wstring vuapi get_file_name_from_handle_W(HANDLE hFile)
+std::wstring vuapi get_file_name_from_handle_W(HANDLE hf)
 {
-  return GetFileNameFromHandleX(hFile);
+  return get_file_name_from_handle_X(hf);
 }
 
 } // namespace vu

@@ -5,9 +5,9 @@
 DEF_SAMPLE(Process)
 {
   #ifdef _WIN64
-  #define PROCESS_NAME _T("x64dbg.exe")
+  #define PROCESS_NAME ts("x64dbg.exe")
   #else  // _WIN32
-  #define PROCESS_NAME _T("x32dbg.exe")
+  #define PROCESS_NAME ts("x32dbg.exe")
   #endif // _WIN64
 
   auto PIDs = vu::name_to_pid(PROCESS_NAME);
@@ -22,17 +22,17 @@ DEF_SAMPLE(Process)
   // auto time = process.GetTimeInformation();
   // auto io   = process.GetIOInformation();
 
-  std::tcout << _T("CPU : ") << cpu.Usage << std::endl;
-  std::tcout << _T("WS  : ") << vu::format_bytes(mem.WorkingSetSize) << std::endl;
+  std::tcout << ts("CPU : ") << cpu.Usage << std::endl;
+  std::tcout << ts("WS  : ") << vu::format_bytes(mem.WorkingSetSize) << std::endl;
 
   for (const auto& thread : process.GetThreads())
   {
     static int idx = 0;
     std::tcout << ++idx << ". TID = " << thread.th32ThreadID << std::endl;
-    std::tcout << _T("\tPID   = ") << thread.th32OwnerProcessID << std::endl;
-    std::tcout << _T("\tUsage = ") << thread.cntUsage << std::endl;
-    std::tcout << _T("\tBase Priority  = ") << thread.tpBasePri << std::endl;
-    std::tcout << _T("\tDelta Priority = ") << thread.tpDeltaPri << std::endl;
+    std::tcout << ts("\tPID   = ") << thread.th32OwnerProcessID << std::endl;
+    std::tcout << ts("\tUsage = ") << thread.cntUsage << std::endl;
+    std::tcout << ts("\tBase Priority  = ") << thread.tpBasePri << std::endl;
+    std::tcout << ts("\tDelta Priority = ") << thread.tpDeltaPri << std::endl;
     std::tcout << std::endl;
   }
 

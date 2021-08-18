@@ -13,60 +13,58 @@ DEF_SAMPLE(ServiceManager)
 {
   if (!vu::is_administrator())
   {
-    std::tcout << _T("You are not Administrator") << std::endl;
+    std::tcout << ts("You are not Administrator") << std::endl;
   }
   else
   {
-    std::tstring driver_name = _T("WKE Driver");
-    std::tstring driver_display_name = _T("Windows Kernel Explorer Driver");
+    std::tstring driver_name = ts("WKE Driver");
+    std::tstring driver_display_name = ts("Windows Kernel Explorer Driver");
     std::tstring driver_path = vu::get_current_directory();
     #ifdef _WIN64
-    driver_path += _T("WKE64.sys");
+    driver_path += ts("WKE64.sys");
     #else // _WIN32
-    driver_path += _T("WKE32.sys");
+    driver_path += ts("WKE32.sys");
     #endif // _WIN64
 
     // Create / Start / Stop / Delete
 
-    std::tcout << _T("Press any key to create service ...") << std::endl; _getch();
+    std::tcout << ts("Press any key to create service ...") << std::endl; _getch();
     CServiceManager::Instance().Create(driver_path, driver_name, driver_display_name);
 
-    std::tcout << _T("Press any key to start service ...") << std::endl; _getch();
+    std::tcout << ts("Press any key to start service ...") << std::endl; _getch();
     CServiceManager::Instance().Start(driver_name);
     
-    std::tcout << _T("Press any key to stop service ...") << std::endl; _getch();
+    std::tcout << ts("Press any key to stop service ...") << std::endl; _getch();
     vu::CServiceManager::Instance().Stop(driver_name);
 
-    std::tcout << _T("Press any key to delete service ...") << std::endl; _getch();
+    std::tcout << ts("Press any key to delete service ...") << std::endl; _getch();
     CServiceManager::Instance().Delete(driver_name);
 
     // Dependents / Dependencies
 
-    std::tstring example = _T("WSearch");
+    std::tstring example = ts("WSearch");
 
     std::tcout << example << std::endl;
 
-    std::tcout << _T("*Dependents:") << std::endl;
+    std::tcout << ts("*Dependents:") << std::endl;
 
     auto dependents = CServiceManager::Instance().GetDependents(example);
     for (auto& dependent : dependents)
     {
-      std::tcout << _T("  ")
-        << dependent.lpServiceName << _T(" - ") << dependent.lpDisplayName << std::endl;
+      std::tcout << ts("  ") << dependent.lpServiceName << ts(" - ") << dependent.lpDisplayName << std::endl;
     }
 
-    std::tcout << _T("*Dependencies:") << std::endl;
+    std::tcout << ts("*Dependencies:") << std::endl;
 
     auto dependencies = CServiceManager::Instance().GetDependencies(example);
     for (auto& dependency : dependencies)
     {
-      std::tcout << _T("  ")
-        << dependency.lpServiceName << _T(" - ") << dependency.lpDisplayName << std::endl;
+      std::tcout << ts("  ") << dependency.lpServiceName << ts(" - ") << dependency.lpDisplayName << std::endl;
     }
 
     // List Services
 
-    std::tcout << _T("*Services:") << std::endl;
+    std::tcout << ts("*Services:") << std::endl;
 
     auto pService = vu::CServiceManager::Instance().Query(example);
     assert(pService != nullptr);
@@ -74,8 +72,7 @@ DEF_SAMPLE(ServiceManager)
     auto services = vu::CServiceManager::Instance().GetServices(VU_SERVICE_ALL_TYPES, SERVICE_RUNNING);
     for (auto& e : services)
     {
-      std::tcout << _T("  ")
-        << e.lpServiceName << _T(" - ") << e.lpDisplayName << std::endl;
+      std::tcout << ts("  ") << e.lpServiceName << ts(" - ") << e.lpDisplayName << std::endl;
     }
   }
 
