@@ -14,7 +14,7 @@
 namespace vu
 {
 
-HWND vuapi GetConsoleWindow()
+HWND vuapi get_console_window()
 {
   typedef HWND (WINAPI *PfnGetConsoleWindow)();
 
@@ -50,7 +50,7 @@ BOOL CALLBACK fnFindTopWindowCallback(HWND hWnd, LPARAM lParam)
   return TRUE;
 }
 
-HWND vuapi FindTopWindow(ulong ulPID)
+HWND vuapi find_top_window(ulong ulPID)
 {
   PairPIDHWND params(ulPID, nullptr);
 
@@ -59,7 +59,7 @@ HWND vuapi FindTopWindow(ulong ulPID)
   return params.second;
 }
 
-HWND vuapi FindMainWindow(HWND hWnd)
+HWND vuapi find_main_window(HWND hWnd)
 {
   if (!IsWindow(hWnd))
   {
@@ -72,12 +72,12 @@ HWND vuapi FindMainWindow(HWND hWnd)
     return hWnd;
   }
 
-  return FindMainWindow(hWndParent);
+  return find_main_window(hWndParent);
 }
 
 #define WM_DEF(id, name) { id, (char*) # name}
 
-std::string vuapi DecodeWMA(const ulong id)
+std::string vuapi decode_wm_A(const ulong id)
 {
   static struct { ulong id; char* text; } m[] = \
   {
@@ -378,12 +378,12 @@ std::string vuapi DecodeWMA(const ulong id)
   return result;
 }
 
-std::wstring vuapi DecodeWMW(const ulong id)
+std::wstring vuapi decode_wm_W(const ulong id)
 {
-  return ToStringW(DecodeWMA(id));
+  return to_string_W(decode_wm_A(id));
 }
 
-TFontA vuapi GetFontA(HWND hw)
+TFontA vuapi get_font_A(HWND hw)
 {
   TFontA result;
 
@@ -412,7 +412,7 @@ TFontA vuapi GetFontA(HWND hw)
   return result;
 }
 
-TFontW vuapi GetFontW(HWND hw)
+TFontW vuapi get_font_W(HWND hw)
 {
   TFontW result;
 
@@ -547,7 +547,7 @@ CWDTDialog::CWDTDialog(
 
   if (IsWindow(m_hwParent))
   {
-    auto font = GetFontW(m_hwParent);
+    auto font = get_font_W(m_hwParent);
     if (!font.Name.empty())
     {
       m_Font  = font.Name;

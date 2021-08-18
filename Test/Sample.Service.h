@@ -11,7 +11,7 @@ using namespace vu;
 
 DEF_SAMPLE(ServiceManager)
 {
-  if (!vu::IsAdministrator())
+  if (!vu::is_administrator())
   {
     std::tcout << _T("You are not Administrator") << std::endl;
   }
@@ -19,7 +19,7 @@ DEF_SAMPLE(ServiceManager)
   {
     std::tstring driver_name = _T("WKE Driver");
     std::tstring driver_display_name = _T("Windows Kernel Explorer Driver");
-    std::tstring driver_path = vu::GetCurDirectory();
+    std::tstring driver_path = vu::get_current_directory();
     #ifdef _WIN64
     driver_path += _T("WKE64.sys");
     #else // _WIN32

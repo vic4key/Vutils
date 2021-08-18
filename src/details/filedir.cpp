@@ -15,7 +15,7 @@
 namespace vu
 {
 
-bool vuapi IsDirectoryExistsA(const std::string& Directory)
+bool vuapi is_directory_exists_A(const std::string& Directory)
 {
   if (GetFileAttributesA(Directory.c_str()) == INVALID_FILE_ATTRIBUTES)
   {
@@ -25,7 +25,7 @@ bool vuapi IsDirectoryExistsA(const std::string& Directory)
   return true;
 }
 
-bool vuapi IsDirectoryExistsW(const std::wstring& Directory)
+bool vuapi is_directory_exists_W(const std::wstring& Directory)
 {
   if (GetFileAttributesW(Directory.c_str()) == INVALID_FILE_ATTRIBUTES)
   {
@@ -35,7 +35,7 @@ bool vuapi IsDirectoryExistsW(const std::wstring& Directory)
   return true;
 }
 
-std::string vuapi FileTypeA(const std::string& FilePath)
+std::string vuapi get_file_type_A(const std::string& FilePath)
 {
   SHFILEINFOA SHINFO = {0};
   std::unique_ptr<char[]> szFileType(new char [MAXBYTE]);
@@ -51,7 +51,7 @@ std::string vuapi FileTypeA(const std::string& FilePath)
   return s;
 }
 
-std::wstring vuapi FileTypeW(const std::wstring& FilePath)
+std::wstring vuapi get_file_type_W(const std::wstring& FilePath)
 {
   SHFILEINFOW SHINFO = {0};
   std::unique_ptr<wchar[]> szFileType(new wchar [MAXBYTE]);
@@ -67,7 +67,7 @@ std::wstring vuapi FileTypeW(const std::wstring& FilePath)
   return s;
 }
 
-bool vuapi IsFileExistsA(const std::string& FilePath)
+bool vuapi is_file_exists_A(const std::string& FilePath)
 {
   bool bResult = false;
   WIN32_FIND_DATAA wfd = {0};
@@ -82,7 +82,7 @@ bool vuapi IsFileExistsA(const std::string& FilePath)
   return bResult;
 }
 
-bool vuapi IsFileExistsW(const std::wstring& FilePath)
+bool vuapi is_file_exists_W(const std::wstring& FilePath)
 {
   bool bResult = false;
   WIN32_FIND_DATAW wfd = {0};
@@ -97,7 +97,7 @@ bool vuapi IsFileExistsW(const std::wstring& FilePath)
   return bResult;
 }
 
-std::string vuapi ExtractFileDirectoryA(const std::string& FilePath, bool Slash)
+std::string vuapi extract_file_directory_A(const std::string& FilePath, bool Slash)
 {
   std::string filePath;
   filePath.clear();
@@ -111,7 +111,7 @@ std::string vuapi ExtractFileDirectoryA(const std::string& FilePath, bool Slash)
   return filePath;
 }
 
-std::wstring vuapi ExtractFileDirectoryW(const std::wstring& FilePath, bool Slash)
+std::wstring vuapi extract_file_directory_W(const std::wstring& FilePath, bool Slash)
 {
   std::wstring filePath;
   filePath.clear();
@@ -125,7 +125,7 @@ std::wstring vuapi ExtractFileDirectoryW(const std::wstring& FilePath, bool Slas
   return filePath;
 }
 
-std::string vuapi ExtractFileNameA(const std::string& FilePath, bool Extension)
+std::string vuapi extract_file_name_A(const std::string& FilePath, bool Extension)
 {
   std::string fileName;
   fileName.clear();
@@ -152,7 +152,7 @@ std::string vuapi ExtractFileNameA(const std::string& FilePath, bool Extension)
   return fileName;
 }
 
-std::wstring vuapi ExtractFileNameW(const std::wstring& FilePath, bool Extension)
+std::wstring vuapi extract_file_name_W(const std::wstring& FilePath, bool Extension)
 {
   std::wstring fileName;
   fileName.clear();
@@ -179,7 +179,7 @@ std::wstring vuapi ExtractFileNameW(const std::wstring& FilePath, bool Extension
   return fileName;
 }
 
-std::string vuapi GetCurrentFilePathA()
+std::string vuapi get_current_file_path_A()
 {
   std::unique_ptr<char[]> p(new char [MAXPATH]);
 
@@ -194,7 +194,7 @@ std::string vuapi GetCurrentFilePathA()
   return s;
 }
 
-std::wstring vuapi GetCurrentFilePathW()
+std::wstring vuapi get_current_file_path_W()
 {
   std::unique_ptr<wchar[]> p(new wchar [MAXPATH]);
 
@@ -209,7 +209,7 @@ std::wstring vuapi GetCurrentFilePathW()
   return s;
 }
 
-std::string vuapi GetCurrentDirectoryA(bool Slash)
+std::string vuapi get_current_directory_A(bool Slash)
 {
   std::unique_ptr<char[]> p(new char[MAXPATH]);
   ZeroMemory(p.get(), MAXPATH);
@@ -235,7 +235,7 @@ std::string vuapi GetCurrentDirectoryA(bool Slash)
   return s;
 }
 
-std::wstring vuapi GetCurrentDirectoryW(bool Slash)
+std::wstring vuapi get_current_directory_W(bool Slash)
 {
   std::unique_ptr<wchar[]> p(new wchar[MAXPATH]);
   ZeroMemory(p.get(), MAXPATH);
@@ -261,14 +261,14 @@ std::wstring vuapi GetCurrentDirectoryW(bool Slash)
   return s;
 }
 
-std::string vuapi GetContainDirectoryA(bool Slash)
+std::string vuapi get_contain_directory_A(bool Slash)
 {
-  return ExtractFileDirectoryA(GetCurrentFilePathA(), Slash);
+  return extract_file_directory_A(get_current_file_path_A(), Slash);
 }
 
-std::wstring vuapi GetContainDirectoryW(bool Slash)
+std::wstring vuapi get_contain_directory_W(bool Slash)
 {
-  return ExtractFileDirectoryW(GetCurrentFilePathW(), Slash);
+  return extract_file_directory_W(get_current_file_path_W(), Slash);
 }
 
 // wchar_t ExtractDriveLetter(const std::wstring& path)
@@ -286,12 +286,12 @@ std::wstring vuapi GetContainDirectoryW(bool Slash)
 
 #if defined(VU_WMI_ENABLED)
 
-eDiskType GetDiskTypeA(const char drive)
+eDiskType get_disk_type_A(const char drive)
 {
-  return GetDiskTypeW(wchar_t(drive));
+  return get_disk_type_W(wchar_t(drive));
 }
 
-eDiskType GetDiskTypeW(const wchar_t drive)
+eDiskType get_disk_type_W(const wchar_t drive)
 {
   if (std::iswalpha(drive) == 0)
   {
@@ -441,7 +441,7 @@ std_string_t JoinPathT(
   }
 }
 
-std::string vuapi JoinPathA(
+std::string vuapi join_path_A(
   const std::string& Left,
   const std::string& Right,
   const ePathSep Separator
@@ -451,7 +451,7 @@ std::string vuapi JoinPathA(
   return JoinPathT<std::string, char>(Left, Right, Sep);
 }
 
-std::wstring vuapi JoinPathW(
+std::wstring vuapi join_path_W(
   const std::wstring& Left,
   const std::wstring& Right,
   const ePathSep Separator
@@ -461,7 +461,7 @@ std::wstring vuapi JoinPathW(
   return JoinPathT<std::wstring, wchar_t>(Left, Right, Sep);
 }
 
-std::string NormalizePathA(const std::string& Path, const ePathSep Separator)
+std::string normalize_path_A(const std::string& Path, const ePathSep Separator)
 {
   auto result = Path;
 
@@ -469,14 +469,14 @@ std::string NormalizePathA(const std::string& Path, const ePathSep Separator)
   const std::string SepPOSIX = "/";
   const std::string Sep = Separator == ePathSep::WIN ? SepWIN : SepPOSIX;
 
-  result = ReplaceA(result, SepWIN + SepWIN, Sep);
-  result = ReplaceA(result, SepWIN, Sep);
-  result = ReplaceA(result, SepPOSIX, Sep);
+  result = replace_string_A(result, SepWIN + SepWIN, Sep);
+  result = replace_string_A(result, SepWIN, Sep);
+  result = replace_string_A(result, SepPOSIX, Sep);
 
   return result;
 }
 
-std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator)
+std::wstring normalize_path_W(const std::wstring& Path, const ePathSep Separator)
 {
   auto result = Path;
 
@@ -484,9 +484,9 @@ std::wstring NormalizePathW(const std::wstring& Path, const ePathSep Separator)
   const std::wstring SepPOSIX = L"/";
   const std::wstring Sep = Separator == ePathSep::WIN ? SepWIN : SepPOSIX;
 
-  result = ReplaceW(result, SepWIN + SepWIN, Sep);
-  result = ReplaceW(result, SepWIN, Sep);
-  result = ReplaceW(result, SepPOSIX, Sep);
+  result = replace_string_W(result, SepWIN + SepWIN, Sep);
+  result = replace_string_W(result, SepWIN, Sep);
+  result = replace_string_W(result, SepPOSIX, Sep);
 
   return result;
 }
@@ -559,7 +559,7 @@ bool CPathA::operator==(const CPathA& right)
   {
     if (m_Sep == ePathSep::WIN)
     {
-      result &= LowerStringA(m_Path) == LowerStringA(right.m_Path);
+      result &= lower_string_A(m_Path) == lower_string_A(right.m_Path);
     }
     else if (m_Sep == ePathSep::POSIX)
     {
@@ -577,19 +577,19 @@ bool CPathA::operator!=(const CPathA& right)
 
 vu::CPathA& CPathA::Trim(const eTrimType TrimType)
 {
-  m_Path = TrimStringA(m_Path, TrimType);
+  m_Path = trim_string_A(m_Path, TrimType);
   return *this;
 }
 
 vu::CPathA& CPathA::Normalize()
 {
-  m_Path = NormalizePathA(m_Path, m_Sep);
+  m_Path = normalize_path_A(m_Path, m_Sep);
   return *this;
 }
 
 vu::CPathA& CPathA::Join(const std::string& Path)
 {
-  m_Path = JoinPathA(m_Path, Path, m_Sep);
+  m_Path = join_path_A(m_Path, Path, m_Sep);
   return *this;
 }
 
@@ -604,21 +604,21 @@ vu::CPathA CPathA::FileName(bool Extension) const
 {
   CPathA tmp(*this);
   tmp.Finalize();
-  return vu::ExtractFileNameA(tmp.AsString(), Extension);
+  return vu::extract_file_name_A(tmp.AsString(), Extension);
 }
 
 vu::CPathA CPathA::FileDirectory(bool Slash) const
 {
   CPathA tmp(*this);
   tmp.Finalize();
-  return vu::ExtractFileDirectoryA(tmp.AsString(), Slash);
+  return vu::extract_file_directory_A(tmp.AsString(), Slash);
 }
 
 bool CPathA::Exists() const
 {
   CPathA tmp(*this);
   tmp.Finalize();
-  return IsDirectoryExistsA(tmp.AsString()) || IsFileExistsA(tmp.AsString());
+  return is_directory_exists_A(tmp.AsString()) || is_file_exists_A(tmp.AsString());
 }
 
 std::string CPathA::AsString() const
@@ -700,7 +700,7 @@ bool CPathW::operator==(const CPathW& right)
   {
     if (m_Sep == ePathSep::WIN)
     {
-      result &= LowerStringW(m_Path) == LowerStringW(right.m_Path);
+      result &= lower_string_W(m_Path) == lower_string_W(right.m_Path);
     }
     else if (m_Sep == ePathSep::POSIX)
     {
@@ -718,19 +718,19 @@ bool CPathW::operator!=(const CPathW& right)
 
 vu::CPathW& CPathW::Trim(const eTrimType TrimType)
 {
-  m_Path = TrimStringW(m_Path, TrimType);
+  m_Path = trim_string_W(m_Path, TrimType);
   return *this;
 }
 
 vu::CPathW& CPathW::Normalize()
 {
-  m_Path = NormalizePathW(m_Path, m_Sep);
+  m_Path = normalize_path_W(m_Path, m_Sep);
   return *this;
 }
 
 vu::CPathW& CPathW::Join(const std::wstring& Path)
 {
-  m_Path = JoinPathW(m_Path, Path, m_Sep);
+  m_Path = join_path_W(m_Path, Path, m_Sep);
   return *this;
 }
 
@@ -745,21 +745,21 @@ vu::CPathW CPathW::FileName(bool Extension) const
 {
   CPathW tmp(*this);
   tmp.Finalize();
-  return vu::ExtractFileNameW(tmp.AsString(), Extension);
+  return vu::extract_file_name_W(tmp.AsString(), Extension);
 }
 
 vu::CPathW CPathW::FileDirectory(bool Slash) const
 {
   CPathW tmp(*this);
   tmp.Finalize();
-  return vu::ExtractFileDirectoryW(tmp.AsString(), Slash);
+  return vu::extract_file_directory_W(tmp.AsString(), Slash);
 }
 
 bool CPathW::Exists() const
 {
   CPathW tmp(*this);
   tmp.Finalize();
-  return IsDirectoryExistsW(tmp.AsString()) || IsFileExistsW(tmp.AsString());
+  return is_directory_exists_W(tmp.AsString()) || is_file_exists_W(tmp.AsString());
 }
 
 std::wstring CPathW::AsString() const

@@ -30,9 +30,9 @@ void CINIFileA::ValidFilePath()
 {
   if (m_FilePath.empty())
   {
-    std::string filePath = GetCurrentFilePathA();
-    std::string fileDir  = ExtractFileDirectoryA(filePath, true);
-    std::string fileName = ExtractFileNameA(filePath, false);
+    std::string filePath = get_current_file_path_A();
+    std::string fileDir  = extract_file_directory_A(filePath, true);
+    std::string fileName = extract_file_name_A(filePath, false);
     m_FilePath = fileDir + fileName + ".INI";
   }
 }
@@ -321,9 +321,9 @@ void CINIFileW::ValidFilePath()
 {
   if (m_FilePath.empty())
   {
-    std::wstring filePath = GetCurrentFilePathW();
-    std::wstring fileDir = ExtractFileDirectoryW(filePath, true);
-    std::wstring fileName = ExtractFileNameW(filePath, false);
+    std::wstring filePath = get_current_file_path_W();
+    std::wstring fileDir = extract_file_directory_W(filePath, true);
+    std::wstring fileName = extract_file_name_W(filePath, false);
     m_FilePath = fileDir + fileName + L".INI";
   }
 }
@@ -432,7 +432,7 @@ float vuapi CINIFileW::ReadFloat(const std::wstring& Section, const std::wstring
 
   m_LastErrorCode = GetLastError();
 
-  const std::string s = ToStringA(lpwszResult);
+  const std::string s = to_string_A(lpwszResult);
 
   return (float)atof(s.c_str());
 }

@@ -51,9 +51,9 @@ struct IATElement
   bool operator==(const IATElement& right) const
   {
     return\
-      UpperStringA(target) == UpperStringA(right.target) &&
-      UpperStringA(module) == UpperStringA(right.module) &&
-      UpperStringA(function) == UpperStringA(right.function);
+      upper_string_A(target) == upper_string_A(right.target) &&
+      upper_string_A(module) == upper_string_A(right.module) &&
+      upper_string_A(function) == upper_string_A(right.function);
   }
 
   bool operator!=(const IATElement& right) const
@@ -286,7 +286,7 @@ VUResult CIATHookManagerW::Override(
   const void** original)
 {
   return CIATHookManagerA::Instance().Override(
-    ToStringA(target), ToStringA(module), ToStringA(function), replacement, original);
+    to_string_A(target), to_string_A(module), to_string_A(function), replacement, original);
 }
 
 VUResult CIATHookManagerW::Restore(
@@ -296,7 +296,7 @@ VUResult CIATHookManagerW::Restore(
   const void** replacement)
 {
   return CIATHookManagerA::Instance().Restore(
-    ToStringA(target), ToStringA(module), ToStringA(function), replacement);
+    to_string_A(target), to_string_A(module), to_string_A(function), replacement);
 }
 
 #ifdef _MSC_VER

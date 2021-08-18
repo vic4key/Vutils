@@ -10,18 +10,18 @@ DEF_SAMPLE(FileMapping)
 
   // if (fm.CreateNamedSharedMemory(_T("Global\\Sample"), KB) != vu::VU_OK)
   // {
-  //   std::tcout << _T("Create -> Failed") << vu::LastError(fm.GetLastErrorCode()) << std::endl;
+  //   std::tcout << _T("Create -> Failed") << vu::last_error(fm.GetLastErrorCode()) << std::endl;
   // }
 
   if (fm.CreateWithinFile(_T("Test.txt")) != vu::VU_OK)
   {
-    std::tcout << _T("Create -> Failed ") << vu::LastError(fm.GetLastErrorCode()) << std::endl;
+    std::tcout << _T("Create -> Failed ") << vu::last_error(fm.GetLastErrorCode()) << std::endl;
   }
 
   p = fm.View();
   if (p == nullptr)
   {
-    std::tcout << _T("View -> Failed ") << vu::LastError(fm.GetLastErrorCode()) << std::endl;
+    std::tcout << _T("View -> Failed ") << vu::last_error(fm.GetLastErrorCode()) << std::endl;
   }
 
   std::tcout << std::hex << _T("File Mapping at ") << p << std::endl;
@@ -30,7 +30,7 @@ DEF_SAMPLE(FileMapping)
   {
     if (fm.GetFileSize() != -1)
     {
-      vu::HexDump(p, fm.GetFileSize());
+      vu::hex_dump(p, fm.GetFileSize());
     }
     else
     {

@@ -4,7 +4,7 @@
 
 DEF_SAMPLE(INIFile)
 {
-  vu::CINIFile ini(vu::GetCurrentFilePath() + _T(".ini"));
+  vu::CINIFile ini(vu::get_current_file_path() + _T(".ini"));
 
   ini.SetCurrentSection(_T("Section"));
 

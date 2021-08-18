@@ -41,7 +41,7 @@ DEF_SAMPLE(WMIProvider)
 
   for (const auto drive : drives)
   {
-    auto type = vu::GetDiskType(drive);
+    auto type = vu::get_disk_type(drive);
     std::tcout << drive << _T(" -> ") << types[type] << std::endl;
   }
 

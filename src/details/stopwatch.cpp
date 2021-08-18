@@ -128,7 +128,7 @@ void CScopeStopWatchA::Log(const std::string& id)
 
 void CScopeStopWatchA::Message(const std::string& id, const CStopWatch::TDuration& duration)
 {
-  vu::MsgA(id + "%.3fs", duration.second);
+  vu::msg_A(id + "%.3fs", duration.second);
 }
 
 void CScopeStopWatchA::Console(const std::string& id, const CStopWatch::TDuration& duration)
@@ -168,7 +168,7 @@ void CScopeStopWatchW::Log(const std::wstring& id)
 
 void CScopeStopWatchW::Message(const std::wstring& id, const CStopWatch::TDuration& duration)
 {
-  vu::MsgW(id + L"%.3fs", duration.second);
+  vu::msg_W(id + L"%.3fs", duration.second);
 }
 
 void CScopeStopWatchW::Console(const std::wstring& id, const CStopWatch::TDuration& duration)

@@ -383,7 +383,7 @@ CServiceManagerA::TServices CServiceManagerA::GetDependencies(
 
     m_LastErrorCode = GetLastError();
 
-    const auto dependencies = MultiStringToListA(ptr->lpDependencies);
+    const auto dependencies = multi_string_to_list_A(ptr->lpDependencies);
     for (const auto& dependency : dependencies)
     {
       auto pService = this->Query(dependency);
@@ -524,7 +524,7 @@ VUResult CServiceManagerA::Create(
     return __LINE__;
   }
 
-  if (!IsFileExistsA(file_path))
+  if (!is_file_exists_A(file_path))
   {
     m_LastErrorCode = ERROR_FILE_NOT_FOUND;
     return __LINE__;
@@ -854,7 +854,7 @@ CServiceManagerW::TServices CServiceManagerW::GetDependencies(
 
     m_LastErrorCode = GetLastError();
 
-    const auto dependencies = MultiStringToListW(ptr->lpDependencies);
+    const auto dependencies = multi_string_to_list_W(ptr->lpDependencies);
     for (const auto& dependency : dependencies)
     {
       auto pService = this->Query(dependency);
@@ -995,7 +995,7 @@ VUResult CServiceManagerW::Create(
     return __LINE__;
   }
 
-  if (!IsFileExistsW(file_path))
+  if (!is_file_exists_W(file_path))
   {
     m_LastErrorCode = ERROR_FILE_NOT_FOUND;
     return __LINE__;

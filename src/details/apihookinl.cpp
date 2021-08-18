@@ -56,7 +56,7 @@ bool vuapi GetAssembleInstruction(
   // }
 
   // Now, only ModR/M.
-  if (!IsFlagOn(hde.flags, HDE::F_MODRM))
+  if (!is_flag_on(hde.flags, HDE::F_MODRM))
   {
     return result;
   }

@@ -56,12 +56,12 @@ DEF_SAMPLE(Socket)
   const std::string HttpHeaderSep = std::crlf;
   const std::string HttpHeaderEnd = HttpHeaderSep + HttpHeaderSep;
 
-  auto l = vu::SplitStringA(FirstResponse, HttpHeaderEnd);
+  auto l = vu::split_string_A(FirstResponse, HttpHeaderEnd);
   assert(!l.empty());
 
   const auto& ResponseHeader = l.at(0) + HttpHeaderEnd;
   std::cout << "Response Header:" << std::endl;
-  const auto& headers = vu::SplitStringA(ResponseHeader, HttpHeaderSep, true);
+  const auto& headers = vu::split_string_A(ResponseHeader, HttpHeaderSep, true);
   for (const auto& e : headers)
   {
     std::cout << std::tab << e << std::endl;
@@ -84,7 +84,7 @@ DEF_SAMPLE(Socket)
       << std::left
       << "Downloaded: "
       << std::setw(15)
-      << vu::FormatBytesA(file.GetSize())
+      << vu::format_bytes_A(file.GetSize())
       << std::cr
       << std::flush;
   }

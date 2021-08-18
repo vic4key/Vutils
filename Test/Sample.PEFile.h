@@ -12,7 +12,7 @@ DEF_SAMPLE(PEFile)
   #define PROCESS_NAME _T("x32dbg.exe")
 #endif // _WIN64
 
-  auto PIDs = vu::NameToPID(PROCESS_NAME);
+  auto PIDs = vu::name_to_pid(PROCESS_NAME);
   assert(!PIDs.empty());
 
   vu::CProcess process;
@@ -32,14 +32,14 @@ DEF_SAMPLE(PEFile)
     {
       s = _T(" (The curent type data was not supported)");
     }
-    std::tcout << _T("PE -> Parse -> Failure") << vu::LastError() << s << std::endl;
+    std::tcout << _T("PE -> Parse -> Failure") << vu::last_error() << s << std::endl;
     return 1;
   }
 
   void* pBase = pe.GetpBase();
   if (pBase == nullptr)
   {
-    std::tcout << _T("PE -> GetpBase -> Failure") << vu::LastError() << std::endl;
+    std::tcout << _T("PE -> GetpBase -> Failure") << vu::last_error() << std::endl;
     return 1;
   }
 
@@ -48,7 +48,7 @@ DEF_SAMPLE(PEFile)
   auto sections = pe.GetSetionHeaders();
   if (sections.size() == 0)
   {
-    std::tcout << _T("PE -> GetSetionHeaderList -> Failure") << vu::LastError() << std::endl;
+    std::tcout << _T("PE -> GetSetionHeaderList -> Failure") << vu::last_error() << std::endl;
     return 1;
   }
 
@@ -117,7 +117,7 @@ DEF_SAMPLE(PEFile)
 
   SEPERATOR()
 
-  auto pfn = pe.FindImportFunction("GetLastError");
+  auto pfn = pe.FindImportFunction("Getlast_error");
   if (pfn != nullptr)
   {
     printf("%08X, %04X, '%s'\n", pfn->IIDID, pfn->Hint, pfn->Name.c_str());
@@ -128,7 +128,7 @@ DEF_SAMPLE(PEFile)
   for (const auto& Entry : pe.GetRelocationEntries())
   {
     auto Value = vu::peX(0);
-    vu::RPM(process.Handle(), LPVOID(vu::peX(module.modBaseAddr) + Entry.RVA), &Value, sizeof(Value));
+    vu::rpm(process.Handle(), LPVOID(vu::peX(module.modBaseAddr) + Entry.RVA), &Value, sizeof(Value));
 
     #ifdef _WIN64
     auto fmt = _T("%llX : %llX -> %llX");
@@ -136,7 +136,7 @@ DEF_SAMPLE(PEFile)
     auto fmt = _T("%08X : %08X -> %08X");
     #endif // _WIN64
 
-    std::tcout << vu::Fmt(fmt, Entry.RVA, Entry.Value, Value) << std::endl;
+    std::tcout << vu::format(fmt, Entry.RVA, Entry.Value, Value) << std::endl;
   }
 
   return vu::VU_OK;

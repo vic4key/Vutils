@@ -41,7 +41,7 @@ VUResult CWMHookX::SetWindowsHookExX(int Type, HMODULE hModule, HOOKPROC pProc)
 
   // For desktop apps, if this parameter is zero, the hook procedure is associated
   // with all existing threads running in the same desktop as the calling thread.
-  auto tid = GetMainThreadID(m_PID);
+  auto tid = get_main_thread_id(m_PID);
   if (tid == -1)
   {
     m_LastErrorCode = GetLastError();

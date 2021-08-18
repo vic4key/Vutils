@@ -7,41 +7,41 @@ DEF_SAMPLE(DF)
   const std::tstring FILE_DIR  = _T("C:\\Intel\\Logs\\");
   const std::tstring FILE_PATH = _T("C:\\Intel\\Logs\\IntelGFX.log");
 
-  std::tcout << (vu::IsDirectoryExists(FILE_DIR) ? _T("Directory is exist") : _T("Directory isn't exist")) << std::endl;
-  std::tcout << (vu::IsFileExists(FILE_PATH) ? _T("File is exist") : _T("File isn't exist")) << std::endl;
+  std::tcout << (vu::is_directory_exists(FILE_DIR) ? _T("Directory is exist") : _T("Directory isn't exist")) << std::endl;
+  std::tcout << (vu::is_file_exists(FILE_PATH) ? _T("File is exist") : _T("File isn't exist")) << std::endl;
 
-  std::tcout << vu::FileType(FILE_PATH) << std::endl;
+  std::tcout << vu::get_file_type(FILE_PATH) << std::endl;
 
-  std::tcout << vu::ExtractFileDirectory(FILE_PATH) << std::endl;
-  std::tcout << vu::ExtractFileDirectory(FILE_PATH, false) << std::endl;
+  std::tcout << vu::extract_file_directory(FILE_PATH) << std::endl;
+  std::tcout << vu::extract_file_directory(FILE_PATH, false) << std::endl;
 
-  std::tcout << vu::ExtractFileName(FILE_PATH) << std::endl;
-  std::tcout << vu::ExtractFileName(FILE_PATH, false) << std::endl;
+  std::tcout << vu::extract_file_name(FILE_PATH) << std::endl;
+  std::tcout << vu::extract_file_name(FILE_PATH, false) << std::endl;
 
-  std::tcout << vu::GetCurDirectory() << std::endl;
-  std::tcout << vu::GetCurDirectory(false) << std::endl;
+  std::tcout << vu::get_current_directory() << std::endl;
+  std::tcout << vu::get_current_directory(false) << std::endl;
 
-  std::tcout << vu::GetContainDirectory() << std::endl;
-  std::tcout << vu::GetContainDirectory(false) << std::endl;
+  std::tcout << vu::get_contain_directory() << std::endl;
+  std::tcout << vu::get_contain_directory(false) << std::endl;
 
-  std::tcout << vu::GetCurrentFilePath() << std::endl;
+  std::tcout << vu::get_current_file_path() << std::endl;
 
-  std::tcout << vu::JoinPath(_T("C:\\path\\to\\"), _T("\\file.exe")) << std::endl;
-  std::tcout << vu::JoinPath(_T("C:\\path\\to\\"), _T("file.exe")) << std::endl;
-  std::tcout << vu::JoinPath(_T("C:\\path\\to"), _T("\\file.exe")) << std::endl;
-  std::tcout << vu::JoinPath(_T("C:\\path\\to"), _T("file.exe")) << std::endl;
+  std::tcout << vu::join_path(_T("C:\\path\\to\\"), _T("\\file.exe")) << std::endl;
+  std::tcout << vu::join_path(_T("C:\\path\\to\\"), _T("file.exe")) << std::endl;
+  std::tcout << vu::join_path(_T("C:\\path\\to"), _T("\\file.exe")) << std::endl;
+  std::tcout << vu::join_path(_T("C:\\path\\to"), _T("file.exe")) << std::endl;
 
-  std::tcout << vu::NormalizePath(_T("C:/path/to/file.exe"), vu::ePathSep::POSIX) << std::endl;
-  std::tcout << vu::NormalizePath(_T("C:\\path\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
-  std::tcout << vu::NormalizePath(_T("C:\\path\\\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
-  std::tcout << vu::NormalizePath(_T("C:\\path\\\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
-  std::tcout << vu::NormalizePath(_T("C:\\\\path\\to/file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(_T("C:/path/to/file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(_T("C:\\path\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(_T("C:\\path\\\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(_T("C:\\path\\\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(_T("C:\\\\path\\to/file.exe"), vu::ePathSep::POSIX) << std::endl;
 
-  std::tcout << vu::NormalizePath(_T("C:/path/to/file.exe")) << std::endl;
-  std::tcout << vu::NormalizePath(_T("C:\\path\\to\\file.exe")) << std::endl;
-  std::tcout << vu::NormalizePath(_T("C:\\path\\\\to\\file.exe")) << std::endl;
-  std::tcout << vu::NormalizePath(_T("C:\\path\\\\to\\file.exe")) << std::endl;
-  std::tcout << vu::NormalizePath(_T("C:\\\\path\\to/file.exe")) << std::endl;
+  std::tcout << vu::normalize_path(_T("C:/path/to/file.exe")) << std::endl;
+  std::tcout << vu::normalize_path(_T("C:\\path\\to\\file.exe")) << std::endl;
+  std::tcout << vu::normalize_path(_T("C:\\path\\\\to\\file.exe")) << std::endl;
+  std::tcout << vu::normalize_path(_T("C:\\path\\\\to\\file.exe")) << std::endl;
+  std::tcout << vu::normalize_path(_T("C:\\\\path\\to/file.exe")) << std::endl;
 
   vu::CPath fileDir;
   fileDir.Join(_T("   C:/Users")).Join(_T("/Vic")).Join(_T("\\.vscode\\")).Finalize();
@@ -79,7 +79,7 @@ DEF_SAMPLE(DF)
   // #define EXE_NAME _T("x32dbg.exe")
   // #endif // _WIN64
   // 
-  // auto PIDs = vu::NameToPID(EXE_NAME);
+  // auto PIDs = vu::name_to_pid(EXE_NAME);
   // if (PIDs.empty())
   // {
   //   return 1;
@@ -87,11 +87,11 @@ DEF_SAMPLE(DF)
   // 
   // vu::ulong PID = *PIDs.begin();
   // 
-  // std::cout << std::hex << vu::RemoteGetModuleHandleA(PID, "kernel32.dll") << std::endl;
-  // std::tcout << vu::LastError().c_str() << std::endl;
+  // std::cout << std::hex << vu::remote_get_module_handle_A(PID, "kernel32.dll") << std::endl;
+  // std::tcout << vu::last_error().c_str() << std::endl;
   // 
-  // std::wcout << std::hex << vu::RemoteGetModuleHandleW(PID, L"kernel32.dll") << std::endl;
-  // std::tcout << vu::LastError().c_str() << std::endl;
+  // std::wcout << std::hex << vu::remote_get_module_handle_W(PID, L"kernel32.dll") << std::endl;
+  // std::tcout << vu::last_error().c_str() << std::endl;
 
   return vu::VU_OK;
 }

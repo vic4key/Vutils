@@ -323,7 +323,7 @@ bool CBuffer::SaveAsFile(const std::string& filePath)
 
 bool CBuffer::SaveAsFile(const std::wstring& filePath)
 {
-  const auto s = vu::ToStringA(filePath);
+  const auto s = vu::to_string_A(filePath);
   return this->SaveAsFile(s);
 }
 

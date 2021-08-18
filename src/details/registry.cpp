@@ -385,7 +385,7 @@ bool vuapi CRegistryA::WriteMultiString(const std::string& ValueName, const char
 
 bool vuapi CRegistryA::WriteMultiString(const std::string& ValueName, const std::vector<std::string>& Value)
 {
-  auto p = ListToMultiStringA(Value);
+  auto p = list_to_multi_string_A(Value);
   return this->WriteMultiString(ValueName, p.get());
 }
 
@@ -559,7 +559,7 @@ std::vector<std::string> vuapi CRegistryA::ReadMultiString(
     return Default;
   }
 
-  std::vector<std::string> l = MultiStringToListA(p.get());
+  std::vector<std::string> l = multi_string_to_list_A(p.get());
 
   return l;
 }
@@ -943,7 +943,7 @@ bool vuapi CRegistryW::WriteMultiString(const std::wstring& ValueName, const wch
 
 bool vuapi CRegistryW::WriteMultiString(const std::wstring& ValueName, const std::vector<std::wstring> Value)
 {
-  auto p = ListToMultiStringW(Value);
+  auto p = list_to_multi_string_W(Value);
   return this->WriteMultiString(ValueName, p.get());
 }
 
@@ -1117,7 +1117,7 @@ std::vector<std::wstring> vuapi CRegistryW::ReadMultiString(
     return Default;
   }
 
-  std::vector<std::wstring> l = MultiStringToListW(p.get());
+  std::vector<std::wstring> l = multi_string_to_list_W(p.get());
 
   return l;
 }

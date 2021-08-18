@@ -231,7 +231,7 @@ const std::string vuapi CFileSystemA::ReadFileAsString(bool removeBOM)
   auto pContent = this->ReadAsBuffer();
   auto p = (char*)pContent.GetpData();
 
-  auto encoding = DetermineEncodingType(pContent.GetpData(), pContent.GetSize());
+  auto encoding = determine_encoding_type(pContent.GetpData(), pContent.GetSize());
   if (encoding == eEncodingType::ET_UNKNOWN)
   {
     assert(0);
@@ -257,7 +257,7 @@ const std::string vuapi CFileSystemA::QuickReadAsString(const std::string& FileP
 
 CBuffer CFileSystemA::QuickReadAsBuffer(const std::string& FilePath)
 {
-  if (!IsFileExistsA(FilePath))
+  if (!is_file_exists_A(FilePath))
   {
     return CBuffer();
   }
@@ -271,7 +271,7 @@ bool CFileSystemA::Iterate(
   const std::string& Pattern,
   const std::function<bool(const TFSObjectA& FSObject)> fnCallback)
 {
-  auto thePathSlash = vu::TrimStringA(Path);
+  auto thePathSlash = vu::trim_string_A(Path);
   if (thePathSlash.empty())
   {
     return false;
@@ -369,7 +369,7 @@ const std::wstring vuapi CFileSystemW::ReadAsString(bool removeBOM)
   auto pContent = this->ReadAsBuffer();
   auto p = (wchar*)pContent.GetpData();
 
-  auto encoding = DetermineEncodingType(pContent.GetpData(), pContent.GetSize());
+  auto encoding = determine_encoding_type(pContent.GetpData(), pContent.GetSize());
   if (encoding == eEncodingType::ET_UNKNOWN)
   {
     assert(0);
@@ -395,7 +395,7 @@ const std::wstring vuapi CFileSystemW::QuickReadAsString(const std::wstring& Fil
 
 CBuffer CFileSystemW::QuickReadAsBuffer(const std::wstring& FilePath)
 {
-  if (!IsFileExistsW(FilePath))
+  if (!is_file_exists_W(FilePath))
   {
     return CBuffer();
   }
@@ -409,7 +409,7 @@ bool CFileSystemW::Iterate(
   const std::wstring& Pattern,
   const std::function<bool(const TFSObjectW& FSObject)> fnCallback)
 {
-  auto thePathSlash = vu::TrimStringW(Path);
+  auto thePathSlash = vu::trim_string_W(Path);
   if (thePathSlash.empty())
   {
     return false;

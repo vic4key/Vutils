@@ -13,7 +13,7 @@
 namespace vu
 {
 
-bool vuapi IsAdministrator()
+bool vuapi is_administrator()
 {
   BOOL IsMember = FALSE;
   SID_IDENTIFIER_AUTHORITY IA = SECURITY_NT_AUTHORITY;
@@ -37,13 +37,13 @@ bool vuapi IsAdministrator()
   return (IsMember != FALSE);
 }
 
-bool SetPrivilegeA(const std::string& Privilege, const bool Enable)
+bool set_privilege_A(const std::string& Privilege, const bool Enable)
 {
-  const auto s = ToStringW(Privilege);
-  return SetPrivilegeW(s, Enable);
+  const auto s = to_string_W(Privilege);
+  return set_privilege_W(s, Enable);
 }
 
-bool SetPrivilegeW(const std::wstring& Privilege, const bool Enable)
+bool set_privilege_W(const std::wstring& Privilege, const bool Enable)
 {
   HANDLE hToken = INVALID_HANDLE_VALUE;
   if (!OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &hToken))
@@ -90,7 +90,7 @@ bool SetPrivilegeW(const std::wstring& Privilege, const bool Enable)
   return result;
 }
 
-std::string vuapi GetEnviromentA(const std::string EnvName)
+std::string vuapi get_enviroment_A(const std::string EnvName)
 {
   std::string s;
   s.clear();
@@ -131,7 +131,7 @@ std::string vuapi GetEnviromentA(const std::string EnvName)
   return s;
 }
 
-std::wstring vuapi GetEnviromentW(const std::wstring EnvName)
+std::wstring vuapi get_enviroment_W(const std::wstring EnvName)
 {
   std::wstring s;
   s.clear();
@@ -178,7 +178,7 @@ const TPattern ToPattern(const std::string& Buffer)
 {
   TPattern result;
 
-  const auto l = vu::SplitStringA(Buffer, " ");
+  const auto l = vu::split_string_A(Buffer, " ");
   for (const auto& e : l)
   {
     auto v = TPattern::value_type(false, 0x00);
@@ -195,7 +195,7 @@ const TPattern ToPattern(const std::string& Buffer)
   return result;
 }
 
-std::pair<bool, size_t> FindPatternA(const CBuffer& Buffer, const std::string& Pattern)
+std::pair<bool, size_t> find_pattern_A(const CBuffer& Buffer, const std::string& Pattern)
 {
   std::pair<bool, size_t> result(false, 0);
 
@@ -207,16 +207,16 @@ std::pair<bool, size_t> FindPatternA(const CBuffer& Buffer, const std::string& P
   const auto Pointer = static_cast<const byte*>(Buffer.GetpData());
   const size_t Size = Buffer.GetSize();
 
-  return FindPatternA(Pointer, Size, Pattern);
+  return find_pattern_A(Pointer, Size, Pattern);
 }
 
-std::pair<bool, size_t> FindPatternW(const CBuffer& Buffer, const std::wstring& Pattern)
+std::pair<bool, size_t> find_pattern_W(const CBuffer& Buffer, const std::wstring& Pattern)
 {
-  const auto s = ToStringA(Pattern);
-  return FindPatternA(Buffer, s);
+  const auto s = to_string_A(Pattern);
+  return find_pattern_A(Buffer, s);
 }
 
-std::pair<bool, size_t> FindPatternA(const void* Pointer, const size_t Size, const std::string& Pattern)
+std::pair<bool, size_t> find_pattern_A(const void* Pointer, const size_t Size, const std::string& Pattern)
 {
   std::pair<bool, size_t> result(false, 0);
 
@@ -256,13 +256,13 @@ std::pair<bool, size_t> FindPatternA(const void* Pointer, const size_t Size, con
   return result;
 }
 
-std::pair<bool, size_t> FindPatternW(const void* Pointer, const size_t Size, const std::wstring& Pattern)
+std::pair<bool, size_t> find_pattern_W(const void* Pointer, const size_t Size, const std::wstring& Pattern)
 {
-  const auto s = ToStringA(Pattern);
-  return FindPatternA(Pointer, Size, s);
+  const auto s = to_string_A(Pattern);
+  return find_pattern_A(Pointer, Size, s);
 }
 
-std::string DecorateCppSymbolA(const std::string& name, const ushort flags)
+std::string decorate_cpp_symbol_A(const std::string& name, const ushort flags)
 {
   char s[KB] = { 0 };
   memset(&s, 0, sizeof(s));
@@ -270,11 +270,11 @@ std::string DecorateCppSymbolA(const std::string& name, const ushort flags)
   return std::string(s);
 }
 
-std::wstring DecorateCppSymbolW(const std::wstring& name, const ushort flags)
+std::wstring decorate_cpp_symbol_W(const std::wstring& name, const ushort flags)
 {
-  auto s = ToStringA(name);
-  auto r = DecorateCppSymbolA(s, flags);
-  return ToStringW(r);
+  auto s = to_string_A(name);
+  auto r = decorate_cpp_symbol_A(s, flags);
+  return to_string_W(r);
 }
 
 } // namespace vu

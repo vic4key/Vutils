@@ -10,7 +10,7 @@ DEF_SAMPLE(Process)
   #define PROCESS_NAME _T("x32dbg.exe")
   #endif // _WIN64
 
-  auto PIDs = vu::NameToPID(PROCESS_NAME);
+  auto PIDs = vu::name_to_pid(PROCESS_NAME);
   assert(!PIDs.empty());
 
   vu::CProcess process;
@@ -23,7 +23,7 @@ DEF_SAMPLE(Process)
   // auto io   = process.GetIOInformation();
 
   std::tcout << _T("CPU : ") << cpu.Usage << std::endl;
-  std::tcout << _T("WS  : ") << vu::FormatBytes(mem.WorkingSetSize) << std::endl;
+  std::tcout << _T("WS  : ") << vu::format_bytes(mem.WorkingSetSize) << std::endl;
 
   for (const auto& thread : process.GetThreads())
   {
@@ -41,7 +41,7 @@ DEF_SAMPLE(Process)
     static int idx = 0;
     std::cout << ++idx << ". MID = " << LPVOID(module.hModule) << std::endl;
     std::cout << "\tBase Address = " << LPVOID(module.modBaseAddr) << std::endl;
-    std::cout << "\tBase Size = " << vu::FormatBytesA(module.modBaseSize) << std::endl;
+    std::cout << "\tBase Size = " << vu::format_bytes_A(module.modBaseSize) << std::endl;
     std::cout << "\tModule = " << module.szModule << std::endl;
     std::cout << std::endl;
   }
@@ -50,7 +50,7 @@ DEF_SAMPLE(Process)
   {
     static int i = 0;
     std::cout << std::dec << ++i << ". ";
-    std::cout << std::hex << e.BaseAddress << " - " << vu::FormatBytesA(e.RegionSize) << std::endl;
+    std::cout << std::hex << e.BaseAddress << " - " << vu::format_bytes_A(e.RegionSize) << std::endl;
     std::cout << std::hex << "\tProtect = " << e.Protect << std::endl;
     std::cout << std::hex << "\tState   = " << e.State << std::endl;
     std::cout << std::hex << "\tType    = " << e.Type << std::endl;

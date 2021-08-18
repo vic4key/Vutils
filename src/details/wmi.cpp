@@ -300,7 +300,7 @@ bool CWMIProviderA::Ready()
 
 bool CWMIProviderA::Begin(const std::string& ns)
 {
-  auto s = vu::ToStringW(ns);
+  auto s = vu::to_string_W(ns);
   return m_pImpl->Begin(s);
 }
 
@@ -311,13 +311,13 @@ bool CWMIProviderA::End()
 
 IEnumWbemClassObject* CWMIProviderA::Query(const std::string& qs)
 {
-  auto s = vu::ToStringW(qs);
+  auto s = vu::to_string_W(qs);
   return m_pImpl->Query(s);
 }
 
 bool CWMIProviderA::Query(const std::string& qs, const std::function<bool(IWbemClassObject& object)> fn)
 {
-  auto s = vu::ToStringW(qs);
+  auto s = vu::to_string_W(qs);
   return m_pImpl->Query(s, fn);
 }
 

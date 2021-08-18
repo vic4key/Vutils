@@ -142,7 +142,7 @@ std::wstring vuapi FormatVLW(const std::wstring Format, va_list args)
   return s;
 }
 
-std::string vuapi FormatA(const std::string Format, ...)
+std::string vuapi format_A(const std::string Format, ...)
 {
   va_list args;
   va_start(args, Format);
@@ -154,7 +154,7 @@ std::string vuapi FormatA(const std::string Format, ...)
   return s;
 }
 
-std::wstring vuapi FormatW(const std::wstring Format, ...)
+std::wstring vuapi format_W(const std::wstring Format, ...)
 {
   va_list args;
   va_start(args, Format);
@@ -166,7 +166,7 @@ std::wstring vuapi FormatW(const std::wstring Format, ...)
   return s;
 }
 
-void vuapi MsgA(const std::string Format, ...)
+void vuapi msg_A(const std::string Format, ...)
 {
   va_list args;
   va_start(args, Format);
@@ -178,7 +178,7 @@ void vuapi MsgA(const std::string Format, ...)
   OutputDebugStringA(s.c_str());
 }
 
-void vuapi MsgW(const std::wstring Format, ...)
+void vuapi msg_W(const std::wstring Format, ...)
 {
   va_list args;
   va_start(args, Format);
@@ -190,7 +190,7 @@ void vuapi MsgW(const std::wstring Format, ...)
   OutputDebugStringW(s.c_str());
 }
 
-int vuapi BoxA(const std::string Format, ...)
+int vuapi box_A(const std::string Format, ...)
 {
   va_list args;
   va_start(args, Format);
@@ -202,7 +202,7 @@ int vuapi BoxA(const std::string Format, ...)
   return MessageBoxA(GetActiveWindow(), s.c_str(), VU_TITLE_BOXA.c_str(), MB_ICONINFORMATION);
 }
 
-int vuapi BoxW(const std::wstring Format, ...)
+int vuapi box_W(const std::wstring Format, ...)
 {
   va_list args;
   va_start(args, Format);
@@ -214,7 +214,7 @@ int vuapi BoxW(const std::wstring Format, ...)
   return MessageBoxW(GetActiveWindow(), s.c_str(), VU_TITLE_BOXW.c_str(), MB_ICONINFORMATION);
 }
 
-int vuapi BoxA(HWND hWnd, const std::string Format, ...)
+int vuapi box_A(HWND hWnd, const std::string Format, ...)
 {
   va_list args;
   va_start(args, Format);
@@ -226,7 +226,7 @@ int vuapi BoxA(HWND hWnd, const std::string Format, ...)
   return MessageBoxA(hWnd, s.c_str(), VU_TITLE_BOXA.c_str(), MB_ICONINFORMATION);
 }
 
-int vuapi BoxW(HWND hWnd, const std::wstring Format, ...)
+int vuapi box_W(HWND hWnd, const std::wstring Format, ...)
 {
   va_list args;
   va_start(args, Format);
@@ -238,7 +238,7 @@ int vuapi BoxW(HWND hWnd, const std::wstring Format, ...)
   return MessageBoxW(hWnd, s.c_str(), VU_TITLE_BOXW.c_str(), MB_ICONINFORMATION);
 }
 
-int vuapi BoxA(HWND hWnd, uint uType, const std::string& Caption, const std::string Format, ...)
+int vuapi box_A(HWND hWnd, uint uType, const std::string& Caption, const std::string Format, ...)
 {
   va_list args;
   va_start(args, Format);
@@ -250,7 +250,7 @@ int vuapi BoxA(HWND hWnd, uint uType, const std::string& Caption, const std::str
   return MessageBoxA(hWnd, s.c_str(), Caption.c_str(), uType);
 }
 
-int vuapi BoxW(HWND hWnd, uint uType, const std::wstring& Caption, const std::wstring Format, ...)
+int vuapi box_W(HWND hWnd, uint uType, const std::wstring& Caption, const std::wstring Format, ...)
 {
   va_list args;
   va_start(args, Format);
@@ -262,7 +262,7 @@ int vuapi BoxW(HWND hWnd, uint uType, const std::wstring& Caption, const std::ws
   return MessageBoxW(hWnd, s.c_str(), Caption.c_str(), uType);
 }
 
-std::string vuapi LastErrorA(ulong ulErrorCode)
+std::string vuapi last_error_A(ulong ulErrorCode)
 {
   if (ulErrorCode == -1)
   {
@@ -282,12 +282,12 @@ std::string vuapi LastErrorA(ulong ulErrorCode)
   );
 
   std::string s(lpszErrorMessage);
-  s = TrimStringA(s);
+  s = trim_string_A(s);
 
   return s;
 }
 
-std::wstring vuapi LastErrorW(ulong ulErrorCode)
+std::wstring vuapi last_error_W(ulong ulErrorCode)
 {
   if (ulErrorCode == -1)
   {
@@ -307,7 +307,7 @@ std::wstring vuapi LastErrorW(ulong ulErrorCode)
   );
 
   std::wstring s(lpwszErrorMessage);
-  s = TrimStringW(s);
+  s = trim_string_W(s);
 
   return s;
 }
@@ -372,19 +372,19 @@ std::string vuapi GetFormatStringForNumber(std::string TypeID)
   return fs;
 }
 
-std::string vuapi DateTimeToStringA(const time_t t)
+std::string vuapi date_time_to_string_A(const time_t t)
 {
-  std::string s = FormatDateTimeA(t, "%H:%M:%S %d/%m/%Y");
+  std::string s = format_date_time_A(t, "%H:%M:%S %d/%m/%Y");
   return s;
 }
 
-std::wstring vuapi DateTimeToStringW(const time_t t)
+std::wstring vuapi date_time_to_string_W(const time_t t)
 {
-  std::wstring s = FormatDateTimeW(t, L"%H:%M:%S %d/%m/%Y");
+  std::wstring s = format_date_time_W(t, L"%H:%M:%S %d/%m/%Y");
   return s;
 }
 
-std::string vuapi FormatDateTimeA(const time_t t, const std::string Format)
+std::string vuapi format_date_time_A(const time_t t, const std::string Format)
 {
   std::string s;
   s.clear();
@@ -412,7 +412,7 @@ std::string vuapi FormatDateTimeA(const time_t t, const std::string Format)
   return s;
 }
 
-std::wstring vuapi FormatDateTimeW(const time_t t, const std::wstring Format)
+std::wstring vuapi format_date_time_W(const time_t t, const std::wstring Format)
 {
   std::wstring s;
   s.clear();
@@ -437,7 +437,7 @@ std::wstring vuapi FormatDateTimeW(const time_t t, const std::wstring Format)
   return s;
 }
 
-void vuapi HexDump(const void* Data, int Size)
+void vuapi hex_dump(const void* Data, int Size)
 {
   const int DEFAULT_DUMP_COLUMN = 16;
 
@@ -481,7 +481,7 @@ void vuapi HexDump(const void* Data, int Size)
   printf("  %s\n", Buffer);
 }
 
-std::string vuapi FormatBytesA(long long Bytes, eStdByte Std, int Digits)
+std::string vuapi format_bytes_A(long long Bytes, eStdByte Std, int Digits)
 {
   std::string result = "";
 
@@ -520,15 +520,15 @@ std::string vuapi FormatBytesA(long long Bytes, eStdByte Std, int Digits)
     fmt += std::to_string(Digits);
     fmt += "f %s";
 
-    result = FormatA(fmt, float(bytes / powl(thestd, idx)), Units[idx]);
+    result = format_A(fmt, float(bytes / powl(thestd, idx)), Units[idx]);
   }
 
   return result;
 }
 
-std::wstring vuapi FormatBytesW(long long Bytes, eStdByte Std, int Digits)
+std::wstring vuapi format_bytes_W(long long Bytes, eStdByte Std, int Digits)
 {
-  return ToStringW(FormatBytesA(Bytes, Std, Digits));
+  return to_string_W(format_bytes_A(Bytes, Std, Digits));
 }
 
 /**
@@ -605,12 +605,12 @@ bool CFundamentalW::Boolean() const
 
 int CFundamentalW::Integer() const
 {
-  return atoi(ToStringA(m_Data.str()).c_str());
+  return atoi(to_string_A(m_Data.str()).c_str());
 }
 
 long CFundamentalW::Long() const
 {
-  return atol(ToStringA(m_Data.str()).c_str());
+  return atol(to_string_A(m_Data.str()).c_str());
 }
 
 float CFundamentalW::Float() const
@@ -620,7 +620,7 @@ float CFundamentalW::Float() const
 
 double CFundamentalW::Double() const
 {
-  return atof(ToStringA(m_Data.str()).c_str());
+  return atof(to_string_A(m_Data.str()).c_str());
 }
 
 #ifdef _MSC_VER

@@ -87,7 +87,7 @@ void* vuapi CLibraryW::GetProcAddress(const std::wstring& ProcName)
     return nullptr;
   }
 
-  auto s = ToStringA(ProcName);
+  auto s = to_string_A(ProcName);
 
   return (void*)::GetProcAddress(m_ModuleHandle, s.c_str());
 }
@@ -202,12 +202,12 @@ std::wstring GetFileNameFromHandleX(HANDLE hFile)
   return result;
 }
 
-std::string vuapi GetFileNameFromHandleA(HANDLE hFile)
+std::string vuapi get_file_name_from_handle_A(HANDLE hFile)
 {
-  return ToStringA(GetFileNameFromHandleW(hFile));
+  return to_string_A(get_file_name_from_handle_W(hFile));
 }
 
-std::wstring vuapi GetFileNameFromHandleW(HANDLE hFile)
+std::wstring vuapi get_file_name_from_handle_W(HANDLE hFile)
 {
   return GetFileNameFromHandleX(hFile);
 }

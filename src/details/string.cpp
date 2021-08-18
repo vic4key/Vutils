@@ -27,7 +27,7 @@ namespace vu
 #define UCHAR_MAX     255  // maximum unsigned char value
 #endif
 
-eEncodingType vuapi DetermineEncodingType(const void* Data, const size_t size)
+eEncodingType vuapi determine_encoding_type(const void* Data, const size_t size)
 {
   if (Data == nullptr || size == 0) return eEncodingType::ET_UNKNOWN;
 
@@ -80,35 +80,35 @@ eEncodingType vuapi DetermineEncodingType(const void* Data, const size_t size)
 
 /* ------------------------------------------------ String Working ------------------------------------------------- */
 
-std::string vuapi LowerStringA(const std::string& String)
+std::string vuapi lower_string_A(const std::string& String)
 {
   std::string s(String);
   std::transform(s.begin(), s.end(), s.begin(), tolower);
   return s;
 }
 
-std::wstring vuapi LowerStringW(const std::wstring& String)
+std::wstring vuapi lower_string_W(const std::wstring& String)
 {
   std::wstring s(String);
   std::transform(s.begin(), s.end(), s.begin(), tolower);
   return s;
 }
 
-std::string vuapi UpperStringA(const std::string& String)
+std::string vuapi upper_string_A(const std::string& String)
 {
   std::string s(String);
   std::transform(s.begin(), s.end(), s.begin(), toupper);
   return s;
 }
 
-std::wstring vuapi UpperStringW(const std::wstring& String)
+std::wstring vuapi upper_string_W(const std::wstring& String)
 {
   std::wstring s(String);
   std::transform(s.begin(), s.end(), s.begin(), toupper);
   return s;
 }
 
-std::string vuapi ToStringA(const std::wstring& String)
+std::string vuapi to_string_A(const std::wstring& String)
 {
   std::string s;
   s.clear();
@@ -135,7 +135,7 @@ std::string vuapi ToStringA(const std::wstring& String)
   return s;
 }
 
-std::wstring vuapi ToStringW(const std::string& String)
+std::wstring vuapi to_string_W(const std::string& String)
 {
   std::wstring s;
   s.clear();
@@ -196,7 +196,7 @@ std::vector<std_string_t> SplitStringT(
   return l;
 }
 
-std::vector<std::string> vuapi SplitStringA(
+std::vector<std::string> vuapi split_string_A(
   const std::string& String,
   const std::string& Seperate,
   bool  remempty 
@@ -205,7 +205,7 @@ std::vector<std::string> vuapi SplitStringA(
   return SplitStringT<std::string>(String, Seperate, remempty);
 }
 
-std::vector<std::wstring> vuapi SplitStringW(
+std::vector<std::wstring> vuapi split_string_W(
   const std::wstring& String,
   const std::wstring& Seperate,
   bool  remempty
@@ -214,7 +214,7 @@ std::vector<std::wstring> vuapi SplitStringW(
   return SplitStringT<std::wstring>(String, Seperate, remempty);
 }
 
-std::vector<std::string> vuapi MultiStringToListA(const char* lpcszMultiString)
+std::vector<std::string> vuapi multi_string_to_list_A(const char* lpcszMultiString)
 {
   std::vector<std::string> l;
   l.clear();
@@ -228,7 +228,7 @@ std::vector<std::string> vuapi MultiStringToListA(const char* lpcszMultiString)
   return l;
 }
 
-std::vector<std::wstring> vuapi MultiStringToListW(const wchar* lpcwszMultiString)
+std::vector<std::wstring> vuapi multi_string_to_list_W(const wchar* lpcwszMultiString)
 {
   std::vector<std::wstring> l;
   l.clear();
@@ -242,7 +242,7 @@ std::vector<std::wstring> vuapi MultiStringToListW(const wchar* lpcwszMultiStrin
   return l;
 }
 
-std::unique_ptr<char[]> vuapi ListToMultiStringA(const std::vector<std::string>& StringList)
+std::unique_ptr<char[]> vuapi list_to_multi_string_A(const std::vector<std::string>& StringList)
 {
   size_t ulLength = 0;
   for (std::string e : StringList)
@@ -272,7 +272,7 @@ std::unique_ptr<char[]> vuapi ListToMultiStringA(const std::vector<std::string>&
   return p;
 }
 
-std::unique_ptr<wchar[]> vuapi ListToMultiStringW(const std::vector<std::wstring>& StringList)
+std::unique_ptr<wchar[]> vuapi list_to_multi_string_W(const std::vector<std::wstring>& StringList)
 {
   size_t ulLength = 0;
   for (std::wstring e : StringList)
@@ -302,7 +302,7 @@ std::unique_ptr<wchar[]> vuapi ListToMultiStringW(const std::vector<std::wstring
   return p;
 }
 
-std::string vuapi LoadRSStringA(const UINT uID, const std::string& ModuleName)
+std::string vuapi load_rs_string_A(const UINT uID, const std::string& ModuleName)
 {
   std::string result = "";
 
@@ -320,7 +320,7 @@ std::string vuapi LoadRSStringA(const UINT uID, const std::string& ModuleName)
   return result;
 }
 
-std::wstring vuapi LoadRSStringW(const UINT uID, const std::wstring& ModuleName)
+std::wstring vuapi load_rs_string_W(const UINT uID, const std::wstring& ModuleName)
 {
   std::wstring result = L"";
 
@@ -369,12 +369,12 @@ std_string_t TrimStringT(
   return s;
 }
 
-std::string vuapi TrimStringA(const std::string& String, const eTrimType& TrimType, const std::string& TrimChars)
+std::string vuapi trim_string_A(const std::string& String, const eTrimType& TrimType, const std::string& TrimChars)
 {
   return TrimStringT<std::string>(String, TrimType, TrimChars);
 }
 
-std::wstring vuapi TrimStringW(const std::wstring& String, const eTrimType& TrimType, const std::wstring& TrimChars)
+std::wstring vuapi trim_string_W(const std::wstring& String, const eTrimType& TrimType, const std::wstring& TrimChars)
 {
   return TrimStringT<std::wstring>(String, TrimType, TrimChars);
 }
@@ -395,22 +395,22 @@ std_string_t ReplaceT(const std_string_t& Text, const std_string_t& From, const 
   return result;
 }
 
-std::string vuapi ReplaceA(const std::string& Text, const std::string& From, const std::string& To)
+std::string vuapi replace_string_A(const std::string& Text, const std::string& From, const std::string& To)
 {
   return ReplaceT<std::string>(Text, From, To);
 }
 
-std::wstring vuapi ReplaceW(const std::wstring& Text, const std::wstring& From, const std::wstring& To)
+std::wstring vuapi replace_string_W(const std::wstring& Text, const std::wstring& From, const std::wstring& To)
 {
   return ReplaceT<std::wstring>(Text, From, To);
 }
 
-bool vuapi StartsWithA(const std::string& Text, const std::string& With)
+bool vuapi starts_with_A(const std::string& Text, const std::string& With)
 {
   return Text.length() >= With.length() && memcmp(Text.c_str(), With.c_str(), With.length()) == 0;
 }
 
-bool vuapi StartsWithW(const std::wstring& Text, const std::wstring& With)
+bool vuapi starts_with_W(const std::wstring& Text, const std::wstring& With)
 {
   return Text.length() >= With.length() && memcmp(Text.c_str(), With.c_str(), 2*With.length()) == 0;
 }
@@ -422,12 +422,12 @@ static bool EndsWithT(const std_string_t& Text, const std_string_t& With)
     std::equal(Text.cend() - With.length(), Text.cend(), With.cbegin());
 }
 
-bool vuapi EndsWithA(const std::string& Text, const std::string& With)
+bool vuapi ends_with_A(const std::string& Text, const std::string& With)
 {
   return EndsWithT<std::string>(Text, With);
 }
 
-bool vuapi EndsWithW(const std::wstring& Text, const std::wstring& With)
+bool vuapi ends_with_W(const std::wstring& Text, const std::wstring& With)
 {
   return EndsWithT<std::wstring>(Text, With);
 }

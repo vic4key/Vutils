@@ -7,13 +7,13 @@ DEF_SAMPLE(Registry)
   vu::CRegistry reg(vu::HKLM, _T("SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting")); // _T("SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\Windows Error Reporting")
   if (!reg.KeyExists())
   {
-    std::tcout << _T("Reg -> Exist -> Failed") << vu::LastError(reg.GetLastErrorCode()) << std::endl;
+    std::tcout << _T("Reg -> Exist -> Failed") << vu::last_error(reg.GetLastErrorCode()) << std::endl;
     return 1;
   }
 
   if (!reg.OpenKey())
   {
-    std::tcout << _T("Reg -> Open-> Failed") << vu::LastError(reg.GetLastErrorCode()) << std::endl;
+    std::tcout << _T("Reg -> Open-> Failed") << vu::last_error(reg.GetLastErrorCode()) << std::endl;
     return 1;
   }
 
@@ -87,7 +87,7 @@ DEF_SAMPLE(Registry)
 
   if (!reg.CloseKey())
   {
-    std::tcout << _T("Reg -> Close ->Failed") << vu::LastError(reg.GetLastErrorCode()) << std::endl;
+    std::tcout << _T("Reg -> Close ->Failed") << vu::last_error(reg.GetLastErrorCode()) << std::endl;
   }
 
   return vu::VU_OK;

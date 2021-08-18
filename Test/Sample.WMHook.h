@@ -23,7 +23,7 @@ DEF_SAMPLE(WMHook)
   #define UND(s) VU_STRINGIZE(_) VU_STRINGIZE(s) VU_STRINGIZE(@12)
   #endif // _WIN64
 
-  auto pids = vu::NameToPID(EXE_NAME);
+  auto pids = vu::name_to_pid(EXE_NAME);
   assert(!pids.empty());
   auto PID = pids.back();
 

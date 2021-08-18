@@ -54,7 +54,7 @@ std::wstring vuapi NumberToStringW(T v)
     return s;
   }
 
-  std::wstring wfs = ToStringW(fs);
+  std::wstring wfs = to_string_W(fs);
 
   int z = GetFormatLengthW(wfs, v);
   if (z <= 0)

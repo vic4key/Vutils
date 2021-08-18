@@ -325,11 +325,11 @@ const TImportModule* vuapi CPEFileTX<T>::FindImportModule(const std::string& Mod
 
   const TImportModule* result = nullptr;
 
-  auto s1 = UpperStringA(ModuleName);
+  auto s1 = upper_string_A(ModuleName);
 
   for (const auto& e: m_ImportModules)
   {
-    auto s2 = UpperStringA(e.Name);
+    auto s2 = upper_string_A(e.Name);
     if (s1 == s2)
     {
       result = &e;
@@ -521,7 +521,7 @@ VUResult vuapi CPEFileTA<T>::Parse(const std::string& PEFilePath)
     return 1;
   }
 
-  if (!IsFileExistsA(m_FilePath))
+  if (!is_file_exists_A(m_FilePath))
   {
     return 2;
   }
@@ -611,7 +611,7 @@ VUResult vuapi CPEFileTW<T>::Parse()
     return 1;
   }
 
-  if (!IsFileExistsW(m_FilePath))
+  if (!is_file_exists_W(m_FilePath))
   {
     return 2;
   }

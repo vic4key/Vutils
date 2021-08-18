@@ -11,12 +11,12 @@
 namespace vu
 {
 
-bool vuapi IsFlagOn(ulongptr ulFlags, ulongptr ulFlag)
+bool vuapi is_flag_on(ulongptr ulFlags, ulongptr ulFlag)
 {
   return ((ulFlags & ulFlag) == ulFlag);
 }
 
-intptr vuapi GCD(ulongptr count, ...) // Greatest Common Divisor -> BCNN
+intptr vuapi gcd(ulongptr count, ...) // Greatest Common Divisor -> BCNN
 {
   va_list args;
   std::vector<intptr> array;
@@ -66,7 +66,7 @@ intptr vuapi GCD(ulongptr count, ...) // Greatest Common Divisor -> BCNN
   return result;
 }
 
-intptr vuapi LCM(ulongptr count, ...) // Least Common Multiples -> UCLN = | a1 * a2 * ... * an | / GCD(a1, a2, ..., an)
+intptr vuapi lcm(ulongptr count, ...) // Least Common Multiples -> UCLN = | a1 * a2 * ... * an | / GCD(a1, a2, ..., an)
 {
   va_list args;
   std::vector<intptr> array;

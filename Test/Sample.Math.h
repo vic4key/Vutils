@@ -4,8 +4,8 @@
 
 DEF_SAMPLE(Math)
 {
-  std::cout << "GCD : " << vu::GCD(3, 9, 27, 81) << std::endl;
-  std::cout << "LCM : " << vu::LCM(3, 9, 27, 81) << std::endl;
+  std::cout << "GCD : " << vu::gcd(3, 9, 27, 81) << std::endl;
+  std::cout << "LCM : " << vu::lcm(3, 9, 27, 81) << std::endl;
 
   {
     vu::Point2DT<int> p1(1, 2), p2(3, 4), p3;
