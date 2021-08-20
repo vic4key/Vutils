@@ -277,8 +277,10 @@ typedef struct _BLOCK
 } TBlock;
 
 eProcessorArchitecture get_processor_architecture();
-eWow64 vuapi is_wow64(const ulong pid = INVALID_PID_VALUE); /* -1: Error, 0: False, 1: True */
-eWow64 vuapi is_wow64(const HANDLE hp);
+bool vuapi is_64bits(HANDLE hp = INVALID_HANDLE_VALUE);
+bool vuapi is_64bits(ulong pid = INVALID_PID_VALUE);
+eWow64 vuapi is_wow64(HANDLE hp = INVALID_HANDLE_VALUE);
+eWow64 vuapi is_wow64(ulong pid = INVALID_PID_VALUE); /* -1: error, 0: false, 1: true */
 ulong vuapi get_parent_pid(ulong child_pid);
 ulong vuapi get_main_thread_id(ulong pid);
 std::vector<ulong> vuapi name_to_pid_A(const std::string& name);
@@ -668,8 +670,8 @@ public:
   CLibraryA(const std::string& module_name);
   virtual ~CLibraryA();
 
-  const HMODULE& vuapi get_handle() const;
-  bool  vuapi is_available();
+  const HMODULE& vuapi handle() const;
+  bool  vuapi available();
   void* vuapi get_proc_address(const std::string& function_name);
   static void* vuapi quick_get_proc_address(const std::string& module_name, const std::string& function_name);
 
@@ -683,8 +685,8 @@ public:
   CLibraryW(const std::wstring& module_name);
   virtual ~CLibraryW();
 
-  const HMODULE& vuapi get_handle() const;
-  bool  vuapi is_available();
+  const HMODULE& vuapi handle() const;
+  bool  vuapi available();
   void* vuapi get_proc_address(const std::wstring& function_name);
   static void* vuapi quick_get_proc_address(const std::wstring& module_name, const std::wstring& function_name);
 
@@ -727,69 +729,68 @@ public:
   };
 
 public:
-  CSocket(
-    const AddressFamily af = AF_INET,
-    const Type type = SOCK_STREAM,
-    const Protocol proto = IPPROTO_IP,
-    bool wsa = true);
+  CSocket(const AddressFamily af = AF_INET, const Type type = SOCK_STREAM, const Protocol proto = IPPROTO_IP, bool wsa = true);
   virtual ~CSocket();
 
-  void vuapi Attach(const SOCKET&  socket);
-  void vuapi Attach(const TSocket& socket);
-  void vuapi Detach();
-  bool vuapi Available();
+  bool vuapi available();
 
-  VUResult vuapi Bind(const TEndPoint& endpoint);
-  VUResult vuapi Bind(const std::string& address, const ushort port);
-  VUResult vuapi Listen(const int maxcon = SOMAXCONN);
-  VUResult vuapi Accept(TSocket& socket);
+  void vuapi attach(const SOCKET&  socket);
+  void vuapi attach(const TSocket& socket);
+  void vuapi detach();
 
-  VUResult vuapi Connect(const TEndPoint& endpoint);
-  VUResult vuapi Connect(const std::string& address, const ushort port);
+  VUResult vuapi bind(const TEndPoint& endpoint);
+  VUResult vuapi bind(const std::string& address, const ushort port);
 
-  IResult vuapi Send(const char* pData, int size, const Flags flags = MSG_NONE);
-  IResult vuapi Send(const CBuffer& data, const Flags flags = MSG_NONE);
-  IResult vuapi Recv(char* pData, int size, const Flags flags = MSG_NONE);
-  IResult vuapi Recv(CBuffer& data, const Flags flags = MSG_NONE);
-  IResult vuapi Recvall(CBuffer& data, const Flags flags = MSG_NONE);
+  VUResult vuapi listen(const int maxcon = SOMAXCONN);
+  VUResult vuapi accept(TSocket& socket);
 
-  IResult vuapi SendTo(const char* pData, const int size, const TSocket& socket);
-  IResult vuapi SendTo(const CBuffer& data, const TSocket& socket);
-  IResult vuapi RecvFrom(char* pData, int size, const TSocket& socket);
-  IResult vuapi RecvFrom(CBuffer& data, const TSocket& socket);
-  IResult vuapi RecvallFrom(CBuffer& data, const TSocket& socket);
+  VUResult vuapi connect(const TEndPoint& endpoint);
+  VUResult vuapi connect(const std::string& address, const ushort port);
 
-  IResult vuapi Close();
+  IResult vuapi send(const char* pData, int size, const Flags flags = MSG_NONE);
+  IResult vuapi send(const CBuffer& data, const Flags flags = MSG_NONE);
 
-  const WSADATA& vuapi GetWSAData() const;
-  const AddressFamily vuapi GetAF() const;
-  const Type vuapi  GetType() const;
-  const Protocol vuapi  GetProtocol() const;
+  IResult vuapi recv(char* pData, int size, const Flags flags = MSG_NONE);
+  IResult vuapi recv(CBuffer& data, const Flags flags = MSG_NONE);
+  IResult vuapi recv_all(CBuffer& data, const Flags flags = MSG_NONE);
 
-  SOCKET& vuapi GetSocket();
-  std::set<SOCKET>  vuapi GetClients();
-  const sockaddr_in vuapi GetLocalSAI();
-  const sockaddr_in vuapi GetRemoteSAI();
-  std::string vuapi GetHostName();
+  IResult vuapi send_to(const char* pData, const int size, const TSocket& socket);
+  IResult vuapi send_to(const CBuffer& data, const TSocket& socket);
 
-  VUResult vuapi SetOption(const int level, const int opt, const std::string& val, const int size);
-  VUResult vuapi EnableNonBlocking(bool state = true);
-  VUResult vuapi Shutdown(const Shutdowns flags);
+  IResult vuapi recv_from(char* pData, int size, const TSocket& socket);
+  IResult vuapi recv_from(CBuffer& data, const TSocket& socket);
+  IResult vuapi recv_all_from(CBuffer& data, const TSocket& socket);
 
-private:
-  bool vuapi Valid(const SOCKET& socket);
-  bool vuapi Parse(const TSocket& socket);
-  bool vuapi IsHostName(const std::string& s);
-  std::string vuapi GetHostAddress(const std::string& Name);
+  IResult vuapi close();
+
+  const WSADATA& vuapi get_wsa_data() const;
+  const AddressFamily vuapi get_af() const;
+  const Type vuapi get_type() const;
+  const Protocol vuapi  get_protocol() const;
+
+  SOCKET& vuapi get_socket();
+  const sockaddr_in vuapi get_local_sai();
+  const sockaddr_in vuapi get_remote_sai();
+  std::string vuapi get_host_name();
+
+  VUResult vuapi set_option(const int level, const int opt, const std::string& val, const int size);
+  VUResult vuapi enable_non_blocking(bool state = true);
+  VUResult vuapi shutdown(const Shutdowns flags);
 
 private:
-  WSADATA m_WSAData;
-  AddressFamily m_AF;
-  Type m_Type;
-  Protocol m_Proto;
-  bool m_WSA;
-  sockaddr_in m_SAI;
-  SOCKET  m_Socket;
+  bool vuapi valid(const SOCKET& socket);
+  bool vuapi parse(const TSocket& socket);
+  bool vuapi is_host_name(const std::string& s);
+  std::string vuapi get_host_address(const std::string& Name);
+
+private:
+  bool m_wsa;
+  Type m_type;
+  WSADATA m_wsa_data;
+  AddressFamily m_af;
+  Protocol m_proto;
+  sockaddr_in m_sai;
+  SOCKET m_socket;
 };
 
 class CAsyncSocket
@@ -806,48 +807,45 @@ public:
     UNDEFINED,
   } eFnType;
 
-  CAsyncSocket(
-    const vu::CSocket::AddressFamily af = AF_INET,
-    const vu::CSocket::Type type = SOCK_STREAM,
-    const vu::CSocket::Protocol proto = IPPROTO_IP);
+  CAsyncSocket(const vu::CSocket::AddressFamily af = AF_INET, const vu::CSocket::Type type = SOCK_STREAM, const vu::CSocket::Protocol proto = IPPROTO_IP);
   virtual ~CAsyncSocket();
 
-  std::set<SOCKET> vuapi GetClients();
+  std::set<SOCKET> vuapi get_clients();
 
-  bool vuapi Available();
-  bool vuapi Running();
+  bool vuapi available();
+  bool vuapi running();
 
-  VUResult vuapi Bind(const CSocket::TEndPoint& endpoint);
-  VUResult vuapi Bind(const std::string& address, const ushort port);
-  VUResult vuapi Listen(const int maxcon = SOMAXCONN);
-  VUResult vuapi Run();
-  VUResult vuapi Stop();
-  IResult  vuapi Close();
+  VUResult vuapi bind(const CSocket::TEndPoint& endpoint);
+  VUResult vuapi bind(const std::string& address, const ushort port);
+  VUResult vuapi listen(const int maxcon = SOMAXCONN);
+  VUResult vuapi run();
+  VUResult vuapi stop();
+  IResult  vuapi close();
 
-  virtual void On(const eFnType type, const FnPrototype fn); // must be mapping before call Run(...)
+  virtual void on(const eFnType type, const FnPrototype fn); // must be mapping before call Run(...)
 
-  virtual void OnOpen(CSocket&  client);
-  virtual void OnClose(CSocket& client);
-  virtual void OnSend(CSocket&  client);
-  virtual void OnRecv(CSocket&  client);
-
-protected:
-  void vuapi Initialze();
-  VUResult vuapi Loop();
-
-  IResult vuapi DoOpen(WSANETWORKEVENTS&  Events, SOCKET& Socket);
-  IResult vuapi DoRecv(WSANETWORKEVENTS&  Events, SOCKET& Socket);
-  IResult vuapi DoSend(WSANETWORKEVENTS&  Events, SOCKET& Socket);
-  IResult vuapi DoClose(WSANETWORKEVENTS& Events, SOCKET& Socket);
+  virtual void on_open(CSocket&  client);
+  virtual void on_close(CSocket& client);
+  virtual void on_send(CSocket&  client);
+  virtual void on_recv(CSocket&  client);
 
 protected:
-  vu::CSocket m_Server;
-  bool   m_Running;
-  DWORD  m_nEvents;
-  SOCKET m_Sockets[WSA_MAXIMUM_WAIT_EVENTS];
-  WSAEVENT m_Events[WSA_MAXIMUM_WAIT_EVENTS];
-  FnPrototype m_FNs[eFnType::UNDEFINED];
-  std::mutex m_Mutex;
+  void vuapi initialze();
+  VUResult vuapi loop();
+
+  IResult vuapi do_open(WSANETWORKEVENTS&  Events, SOCKET& Socket);
+  IResult vuapi do_recv(WSANETWORKEVENTS&  Events, SOCKET& Socket);
+  IResult vuapi do_send(WSANETWORKEVENTS&  Events, SOCKET& Socket);
+  IResult vuapi do_close(WSANETWORKEVENTS& Events, SOCKET& Socket);
+
+protected:
+  vu::CSocket m_server;
+  bool m_running;
+  DWORD m_n_events;
+  SOCKET m_sockets[WSA_MAXIMUM_WAIT_EVENTS];
+  WSAEVENT m_events[WSA_MAXIMUM_WAIT_EVENTS];
+  FnPrototype m_functions[eFnType::UNDEFINED];
+  std::mutex m_mutex;
 };
 
 #endif // VU_SOCKET_ENABLED
@@ -2380,14 +2378,14 @@ public:
 
   virtual ~CWDTControl();
 
-  void Serialize(void** pptr);
+  void serialize(void** pptr);
 
 protected:
-  std::wstring m_Caption;
-  DLGITEMTEMPLATE m_Shape;
-  WORD m_wClass;
-  WORD m_wType;
-  WORD m_wData;
+  std::wstring m_caption;
+  DLGITEMTEMPLATE m_shape;
+  WORD m_w_class;
+  WORD m_w_type;
+  WORD m_w_data;
 };
 
 class CWDTDialog : public CLastError
@@ -2401,27 +2399,27 @@ public:
     const short y,
     const short cx,
     const short cy,
-    HWND hParent = nullptr
+    HWND hwnd_parent = nullptr
   );
 
   virtual ~CWDTDialog();
 
-  void Add(const CWDTControl& control);
-  void Serialize(void** pptr);
-  INT_PTR DoModal(DLGPROC pfnDlgProc, CWDTDialog* pParent);
+  void add(const CWDTControl& control);
+  void serialize(void** pptr);
+  INT_PTR do_modal(DLGPROC pfnDlgProc, CWDTDialog* ptr_parent);
 
-  const std::vector<CWDTControl>& Controls() const;
+  const std::vector<CWDTControl>& controls() const;
 
 protected:
-  HGLOBAL m_hGlobal;
-  std::wstring m_Caption;
-  std::wstring m_Font;
-  HWND m_hwParent;
-  std::vector<CWDTControl> m_Controls;
-  DLGTEMPLATE m_Shape;
-  WORD m_wMenu;
-  WORD m_wClass;
-  WORD m_wFont;
+  HGLOBAL m_h_global;
+  std::wstring m_caption;
+  std::wstring m_font;
+  HWND m_hwnd_parent;
+  std::vector<CWDTControl> m_controls;
+  DLGTEMPLATE m_shape;
+  WORD m_w_menu;
+  WORD m_w_class;
+  WORD m_w_font;
 };
 
 class CInputDialog : public CWDTDialog
@@ -2437,9 +2435,9 @@ public:
   const std::wstring& label() const;
   CFundamentalW& input();
 
-  INT_PTR DoModal();
+  INT_PTR do_modal();
 
-  static LRESULT CALLBACK DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp);
+  static LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
 private:
   std::wstring  m_label;
@@ -2508,11 +2506,11 @@ typedef struct _MODULEINFO_PTR {
 class CProcessX : public CLastError
 {
 public:
-  typedef std::vector<THREADENTRY32> Threads;
-  typedef std::vector<MEMORY_BASIC_INFORMATION> Memories;
+  typedef std::vector<THREADENTRY32> threads;
+  typedef std::vector<MEMORY_BASIC_INFORMATION> memories;
 
   CProcessX();
-  // CProcessX(const ulong PID);
+  // CProcessX(const ulong pid);
   virtual ~CProcessX();
 
   // CProcessX(CProcessX& right);
@@ -2520,55 +2518,48 @@ public:
   bool operator==(CProcessX& right);
   bool operator!=(CProcessX& right);
 
-  const ulong  PID() const;
-  const HANDLE Handle() const;
-  const eWow64 Wow64() const;
-  const eXBit  Bits() const;
+  const ulong  pid() const;
+  const HANDLE handle() const;
+  const eWow64 wow64() const;
+  const eXBit  bits() const;
 
-  bool Ready();
-  bool Attach(const ulong PID);
-  bool Attach(const HANDLE Handle);
+  bool ready();
 
-  static bool Is64Bits(HANDLE Handle = nullptr);
-  static bool Is64Bits(ulong PID/* = NULL*/);
-  static bool IsWow64(HANDLE Handle = nullptr);
-  static bool IsWow64(ulong PID/* = NULL*/);
+  bool attach(const ulong pid);
+  bool attach(const HANDLE hp);
 
-  bool Read(const  ulongptr Address, CBuffer& Data);
-  bool Read(const  ulongptr Address, void* pData, const size_t ulSize);
-  bool Write(const ulongptr Address, const CBuffer& Data);
-  bool Write(const  ulongptr Address, const void* pData, const size_t ulSize);
+  bool read_memory(const ulongptr address, CBuffer& buffer);
+  bool read_memory(const ulongptr address, void* ptr_data, const size_t size);
+  bool write_memory(const ulongptr address, const CBuffer& buffer);
+  bool write_memory(const ulongptr address, const void* ptr_data, const size_t size);
 
-  PROCESS_CPU_COUNTERS GetCPUInformation(const double interval = 1.); // 1 second
-  PROCESS_MEMORY_COUNTERS GetMemoryInformation();
-  PROCESS_TIME_COUNTERS GetTimeInformation();
-  PROCESS_IO_COUNTERS GetIOInformation();
-  const Threads& GetThreads();
-  const Memories& GetMemories(
-    const ulong state = MEM_ALL_STATE,
-    const ulong type  = MEM_ALL_TYPE,
-    const ulong protection = PAGE_ALL_PROTECTION
-  );
+  PROCESS_CPU_COUNTERS get_cpu_information(const double interval = 1.); // 1 second
+  PROCESS_MEMORY_COUNTERS get_memory_information();
+  PROCESS_TIME_COUNTERS get_time_information();
+  PROCESS_IO_COUNTERS get_io_information();
+
+  const threads& get_threads();
+  const memories& get_memories(const ulong state = MEM_ALL_STATE, const ulong type  = MEM_ALL_TYPE, const ulong protection = PAGE_ALL_PROTECTION);
 
 protected:
-  virtual void Parse();
+  virtual void parse();
 
 private:
-  HANDLE Open(const ulong PID);
-  bool Close(const HANDLE Handle);
-  double GetCPUPercentUsage();
+  bool close(const HANDLE hp);
+  HANDLE open(const ulong pid);
+  double get_cpu_percent_usage();
 
 protected:
-  ulong  m_PID;
-  HANDLE m_Handle;
-  eWow64 m_Wow64;
-  eXBit  m_Bit;
+  eXBit  m_bit;
+  ulong  m_pid;
+  HANDLE m_handle;
+  eWow64 m_wow64;
 
-  int64_t m_LastSystemTimeUTC;
-  int64_t m_LastSystemTimePerCoreUTC;
+  int64_t m_last_system_time_UTC;
+  int64_t m_last_system_time_per_core_UTC;
 
-  Threads m_Threads;
-  Memories m_Memories;
+  threads m_threads;
+  memories m_memories;
 };
 
 #ifndef MAX_MODULE_NAME32
@@ -2582,7 +2573,7 @@ typedef struct tagMODULEENTRY32
   DWORD   th32ProcessID;      // owning process
   DWORD   GlblcntUsage;       // Global usage count on the module
   DWORD   ProccntUsage;       // Module usage count in th32ProcessID's context
-  BYTE* modBaseAddr;        // Base address of module in th32ProcessID's context
+  BYTE*   modBaseAddr;        // Base address of module in th32ProcessID's context
   DWORD   modBaseSize;        // Size in bytes of module starting at modBaseAddr
   HMODULE hModule;            // The hModule of this module in th32ProcessID's context
   char    szModule[MAX_MODULE_NAME32 + 1];
@@ -2594,7 +2585,7 @@ typedef MODULEENTRY32* LPMODULEENTRY32;
 class CProcessA : public CProcessX
 {
 public:
-  typedef std::vector<MODULEENTRY32> Modules;
+  typedef std::vector<MODULEENTRY32> modules;
 
   CProcessA();
   // CProcessA(const ulong PID);
@@ -2606,17 +2597,17 @@ public:
   bool operator!=(CProcessA& right);
   friend std::ostream& operator<<(std::ostream& os, CProcessA& process);
 
-  const std::string& Name() const;
-  const Modules& GetModules();
+  const std::string& name() const;
+  const modules& get_modules();
 
-  const MODULEENTRY32 GetModuleInformation();
-
-protected:
-  virtual void Parse();
+  const MODULEENTRY32 get_module_information();
 
 protected:
-  std::string m_Name;
-  Modules m_Modules;
+  virtual void parse();
+
+protected:
+  std::string m_name;
+  modules m_modules;
 };
 
 typedef struct tagMODULEENTRY32W
@@ -2638,10 +2629,10 @@ typedef MODULEENTRY32W* LPMODULEENTRY32W;
 class CProcessW : public CProcessX
 {
 public:
-  typedef std::vector<MODULEENTRY32W> Modules;
+  typedef std::vector<MODULEENTRY32W> modules;
 
   CProcessW();
-  // CProcessW(const ulong PID);
+  // CProcessW(const ulong pid);
   virtual ~CProcessW();
 
   // CProcessW(CProcessW& right);
@@ -2650,17 +2641,17 @@ public:
   bool operator!=(CProcessW& right);
   friend std::ostream& operator<<(std::ostream& os, CProcessW& process);
 
-  const std::wstring& Name() const;
-  const Modules& GetModules();
+  const std::wstring& name() const;
+  const modules& get_modules();
 
-  const MODULEENTRY32W GetModuleInformation();
-
-protected:
-  virtual void Parse();
+  const MODULEENTRY32W get_module_information();
 
 protected:
-  std::wstring m_Name;
-  Modules m_Modules;
+  virtual void parse();
+
+protected:
+  std::wstring m_name;
+  modules m_modules;
 };
 
 #ifdef Vutils_EXPORTS

@@ -10,35 +10,35 @@ void fnExampleBinding(const vu::CSocket::TEndPoint& endpoint)
 {
   vu::CAsyncSocket server;
 
-  server.On(vu::CAsyncSocket::OPEN, [](vu::CSocket& client) -> void
+  server.on(vu::CAsyncSocket::OPEN, [](vu::CSocket& client) -> void
   {
     printf("\n");
-    printf("client %d opened\n", client.GetRemoteSAI().sin_port);
+    printf("client %d opened\n", client.get_remote_sai().sin_port);
   });
 
-  server.On(vu::CAsyncSocket::CLOSE, [](vu::CSocket& client) -> void
+  server.on(vu::CAsyncSocket::CLOSE, [](vu::CSocket& client) -> void
   {
-    printf("client %d closed\n", client.GetRemoteSAI().sin_port);
+    printf("client %d closed\n", client.get_remote_sai().sin_port);
   });
 
-  server.On(vu::CAsyncSocket::SEND, [](vu::CSocket& client) -> void
+  server.on(vu::CAsyncSocket::SEND, [](vu::CSocket& client) -> void
   {
     std::string s = "hello from server";
-    client.Send(s.data(), int(s.size()));
-    printf("client %d send `%s`\n", client.GetRemoteSAI().sin_port, s.c_str());
+    client.send(s.data(), int(s.size()));
+    printf("client %d send `%s`\n", client.get_remote_sai().sin_port, s.c_str());
   });
 
-  server.On(vu::CAsyncSocket::RECV, [](vu::CSocket& client) -> void
+  server.on(vu::CAsyncSocket::RECV, [](vu::CSocket& client) -> void
   {
     vu::CBuffer data(KiB);
-    client.Recv(data);
-    printf("client %d recv `%s`\n", client.GetRemoteSAI().sin_port, data.to_string_A().c_str());
+    client.recv(data);
+    printf("client %d recv `%s`\n", client.get_remote_sai().sin_port, data.to_string_A().c_str());
   });
 
-  server.Bind(endpoint);
-  server.Listen();
-  server.Run();
-  server.Close();
+  server.bind(endpoint);
+  server.listen();
+  server.run();
+  server.close();
 }
 
 void fnExampleInheritance(const vu::CSocket::TEndPoint& endpoint)
@@ -46,38 +46,38 @@ void fnExampleInheritance(const vu::CSocket::TEndPoint& endpoint)
   class CAsyncSocketServer : public vu::CAsyncSocket
   {
   public:
-    virtual void OnOpen(vu::CSocket& client)
+    virtual void on_open(vu::CSocket& client)
     {
       printf("\n");
-      printf("client %d opened\n", client.GetRemoteSAI().sin_port);
+      printf("client %d opened\n", client.get_remote_sai().sin_port);
     }
 
-    virtual void OnClose(vu::CSocket& client)
+    virtual void on_close(vu::CSocket& client)
     {
-      printf("client %d closed\n", client.GetRemoteSAI().sin_port);
+      printf("client %d closed\n", client.get_remote_sai().sin_port);
     }
 
-    virtual void OnSend(vu::CSocket& client)
+    virtual void on_send(vu::CSocket& client)
     {
       std::string s = "hello from server";
-      client.Send(s.data(), int(s.size()));
-      printf("client %d send `%s`\n", client.GetRemoteSAI().sin_port, s.c_str());
+      client.send(s.data(), int(s.size()));
+      printf("client %d send `%s`\n", client.get_remote_sai().sin_port, s.c_str());
     }
 
-    virtual void OnRecv(vu::CSocket& client)
+    virtual void on_recv(vu::CSocket& client)
     {
       vu::CBuffer data(KiB);
-      client.Recv(data);
+      client.recv(data);
       std::string s(reinterpret_cast<char*>(data.get_ptr_bytes()));
-      printf("client %d recv `%s`\n", client.GetRemoteSAI().sin_port, s.c_str());
+      printf("client %d recv `%s`\n", client.get_remote_sai().sin_port, s.c_str());
     }
   };
 
   CAsyncSocketServer server;
-  server.Bind(endpoint);
-  server.Listen();
-  server.Run();
-  server.Close();
+  server.bind(endpoint);
+  server.listen();
+  server.run();
+  server.close();
 }
 
 #endif // VU_SOCKET_ENABLED

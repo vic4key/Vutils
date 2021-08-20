@@ -97,7 +97,7 @@ CWMHookA::~CWMHookA()
 
 VUResult CWMHookA::Start(int Type, const std::string& ProcName)
 {
-  return SetWindowsHookExX(Type, m_DLL.get_handle(), (HOOKPROC)m_DLL.get_proc_address(ProcName));
+  return SetWindowsHookExX(Type, m_DLL.handle(), (HOOKPROC)m_DLL.get_proc_address(ProcName));
 }
 
 CWMHookW::CWMHookW(ulong PID, const std::wstring& DLLFilePath) : CWMHookX(), m_DLL(DLLFilePath)
@@ -111,7 +111,7 @@ CWMHookW::~CWMHookW()
 
 VUResult CWMHookW::Start(int Type, const std::wstring& ProcName)
 {
-  return SetWindowsHookExX(Type, m_DLL.get_handle(), (HOOKPROC)m_DLL.get_proc_address(ProcName));
+  return SetWindowsHookExX(Type, m_DLL.handle(), (HOOKPROC)m_DLL.get_proc_address(ProcName));
 }
 
 } // namespace vu

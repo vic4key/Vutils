@@ -5,7 +5,7 @@
 DEF_SAMPLE(InputDialog)
 {
   vu::CInputDialog dialog(L"How old are you?");
-  if (dialog.DoModal() == IDOK)
+  if (dialog.do_modal() == IDOK)
   {
     std::wcout << dialog.input().to_string() << std::endl;
   }

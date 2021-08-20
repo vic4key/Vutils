@@ -48,7 +48,7 @@ int _tmain(int argc, _TCHAR* argv[])
   std::tcout
     << _T("Windows Application")
     << _T(" ")
-    << (vu::CProcess::Is64Bits() ? _T("64-bit") : _T("32-bit"))
+    << (vu::is_64bits(nullptr) ? _T("64-bit") : _T("32-bit"))
     << std::endl;
 
   #ifdef _UNICODE

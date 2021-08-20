@@ -20,7 +20,7 @@ DEF_SAMPLE(Socket)
 
   vu::CSocket socket;
 
-  if (socket.Connect(REQ_HOST, 80) != vu::VU_OK)
+  if (socket.connect(REQ_HOST, 80) != vu::VU_OK)
   {
     std::tcout << ts("Socket -> Connect -> Failed") << std::endl;
     return 1;
@@ -28,7 +28,7 @@ DEF_SAMPLE(Socket)
 
   std::tcout << ts("Socket -> Connect -> Success") << std::endl;
 
-  if (socket.Send(REQ_CONTENT.data(), int(REQ_CONTENT.length())) == SOCKET_ERROR)
+  if (socket.send(REQ_CONTENT.data(), int(REQ_CONTENT.length())) == SOCKET_ERROR)
   {
     std::tcout << ts("Socket -> Send -> Failed") << std::endl;
     return 1;
@@ -43,7 +43,7 @@ DEF_SAMPLE(Socket)
   // request to get file
 
   vu::CBuffer response(KiB);
-  const auto N = socket.Recv(response);
+  const auto N = socket.recv(response);
   if (response.empty())
   {
     std::tcout << ts("Socket -> Recv -> Nothing") << std::endl;
@@ -78,7 +78,7 @@ DEF_SAMPLE(Socket)
     file.append(buffer);
 
     buffer.resize(KiB);
-    socket.Recv(buffer);
+    socket.recv(buffer);
 
     std::cout
       << std::left
@@ -95,7 +95,7 @@ DEF_SAMPLE(Socket)
 
   file.save_to_file(ts("5MB.bin"));
 
-  if (socket.Close() != vu::VU_OK)
+  if (socket.close() != vu::VU_OK)
   {
     std::tcout << ts("Socket -> Close -> Failed") << std::endl;
     return 1;

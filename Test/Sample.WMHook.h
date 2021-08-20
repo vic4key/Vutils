@@ -24,10 +24,15 @@ DEF_SAMPLE(WMHook)
   #endif // _WIN64
 
   auto pids = vu::name_to_pid(EXE_NAME);
-  assert(!pids.empty());
-  auto PID = pids.back();
+  if (pids.empty())
+  {
+    std::cout << "Not found the target process for Window Hooking ..." << std::endl;
+    return vu::VU_OK;
+  }
 
-  vu::CWMHook wh(PID, DLL_PATH);
+  auto pid = pids.back();
+
+  vu::CWMHook wh(pid, DLL_PATH);
 
   std::tcout << ts("Enter to start Window Message hooking ...") << std::endl; _getch();
 
