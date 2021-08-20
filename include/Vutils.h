@@ -1168,18 +1168,18 @@ typedef enum _MOVE_METHOD_FLAGS
 
 typedef struct _FS_OBJECT_A
 {
-  std::string Directory;
-  std::string Name;
-  int64 Size;
-  ulong Attributes;
+  std::string directory;
+  std::string name;
+  int64 size;
+  ulong attributes;
 } TFSObjectA;
 
 typedef struct _FS_OBJECT_W
 {
-  std::wstring Directory;
-  std::wstring Name;
-  int64 Size;
-  ulong Attributes;
+  std::wstring directory;
+  std::wstring name;
+  int64 size;
+  ulong attributes;
 } TFSObjectW;
 
 class CFileSystemX : public CLastError
@@ -1187,104 +1187,58 @@ class CFileSystemX : public CLastError
 public:
   CFileSystemX();
   virtual ~CFileSystemX();
-  virtual bool vuapi Valid(HANDLE fileHandle);
-  virtual bool vuapi IsReady();
-  virtual ulong vuapi GetFileSize();
-  virtual const CBuffer vuapi ReadAsBuffer();
-  virtual bool vuapi Read(void* Buffer, ulong ulSize);
-  virtual bool vuapi Read(
-    ulong ulOffset,
-    void* Buffer,
-    ulong ulSize,
-    eMoveMethodFlags mmFlag = MM_BEGIN
-  );
 
-  virtual bool vuapi Write(const void* cBuffer, ulong ulSize);
-  virtual bool vuapi Write(
-    ulong ulOffset,
-    const void* cBuffer,
-    ulong ulSize,
-    eMoveMethodFlags mmFlag = MM_BEGIN
-  );
-  virtual bool vuapi Seek(ulong ulOffset, eMoveMethodFlags mmFlag);
-  virtual bool vuapi IOControl(
-    ulong ulControlCode,
-    void* lpSendBuffer,
-    ulong ulSendSize,
-    void* lpReveiceBuffer,
-    ulong ulReveiceSize
-  );
-  virtual bool vuapi Close();
+  virtual bool vuapi ready();
+  virtual bool vuapi valid(HANDLE handle);
+  virtual ulong vuapi get_file_size();
+
+  virtual const CBuffer vuapi read_as_buffer();
+  virtual bool vuapi read(void* ptr_buffer, ulong size);
+  virtual bool vuapi read(ulong offset, void* ptr_buffer, ulong size, eMoveMethodFlags flags = MM_BEGIN);
+
+  virtual bool vuapi write(const void* ptr_buffer, ulong size);
+  virtual bool vuapi write(ulong offset, const void* ptr_buffer, ulong size, eMoveMethodFlags flags = MM_BEGIN);
+
+  virtual bool vuapi seek(ulong offset, eMoveMethodFlags flags);
+  virtual bool vuapi io_control(ulong code, void* ptr_send_buffer, ulong send_size, void* ptr_recv_buffer, ulong recv_size);
+
+  virtual bool vuapi close();
 
 protected:
-  HANDLE m_FileHandle;
+  HANDLE m_handle;
 
 private:
-  ulong m_ReadSize, m_WroteSize;
+  ulong m_read_size, m_wrote_size;
 };
 
 class CFileSystemA: public CFileSystemX
 {
 public:
   CFileSystemA();
-  CFileSystemA(
-    const std::string& FilePath,
-    eFSModeFlags fmFlag,
-    eFSGenericFlags fgFlag   = FG_READWRITE,
-    eFSShareFlags fsFlag     = FS_ALLACCESS,
-    eFSAttributeFlags faFlag = FA_NORMAL
-  );
+  CFileSystemA(const std::string& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags = FG_READWRITE, eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
   virtual ~CFileSystemA();
-  bool vuapi Init(
-    const std::string& FilePath,
-    eFSModeFlags fmFlag,
-    eFSGenericFlags fgFlag   = FG_READWRITE,
-    eFSShareFlags fsFlag     = FS_ALLACCESS,
-    eFSAttributeFlags faFlag = FA_NORMAL
-  );
-  const std::string vuapi ReadFileAsString(bool removeBOM = true);
-  static const std::string vuapi QuickReadAsString(
-    const std::string& FilePath,
-    bool forceBOM = true
-  );
-  static CBuffer QuickReadAsBuffer(const std::string& FilePath);
-  static bool Iterate(
-    const std::string& Path,
-    const std::string& Pattern,
-    const std::function<bool(const TFSObjectA& FSObject)> fnCallback
-  );
+
+  bool vuapi initialize(const std::string& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags = FG_READWRITE, eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
+  const std::string vuapi read_as_string(bool remove_bom = true);
+
+  static const std::string vuapi quick_read_as_string(const std::string& file_path, bool force_bom = true);
+  static CBuffer quick_read_as_buffer(const std::string& file_path);
+  static bool iterate(const std::string& path, const std::string& pattern, const std::function<bool(const TFSObjectA& fso)> fn_callback);
 };
 
 class CFileSystemW: public CFileSystemX
 {
 public:
   CFileSystemW();
-  CFileSystemW(
-    const std::wstring& FilePath,
-    eFSModeFlags fmFlag,
-    eFSGenericFlags fgFlag   = FG_READWRITE,
-    eFSShareFlags fsFlag     = FS_ALLACCESS,
-    eFSAttributeFlags faFlag = FA_NORMAL
-  );
+  CFileSystemW(const std::wstring& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags = FG_READWRITE, eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
   virtual ~CFileSystemW();
-  bool vuapi Init(
-    const std::wstring& FilePath,
-    eFSModeFlags fmFlag,
-    eFSGenericFlags fgFlag = FG_READWRITE,
-    eFSShareFlags fsFlag   = FS_ALLACCESS,
-    eFSAttributeFlags faFlag = FA_NORMAL
-  );
-  const std::wstring vuapi ReadAsString(bool removeBOM = true);
-  static const std::wstring vuapi QuickReadAsString(
-    const std::wstring& FilePath,
-    bool removeBOM = true
-  );
-  static CBuffer QuickReadAsBuffer(const std::wstring& FilePath);
-  static bool Iterate(
-    const std::wstring& Path,
-    const std::wstring& Pattern,
-    const std::function<bool(const TFSObjectW& FSObject)> fnCallback
-  );
+
+  bool vuapi initialize(const std::wstring& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags = FG_READWRITE, eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
+  const std::wstring vuapi read_as_string(bool remove_bom = true);
+
+  static const std::wstring vuapi quick_read_as_string(const std::wstring& file_path, bool remove_bom = true);
+  static CBuffer vuapi quick_read_as_buffer(const std::wstring& file_path);
+  static bool vuapi iterate(const std::wstring& path, const std::wstring& pattern, const std::function<bool(const TFSObjectW& fso)> fn_callback);
 };
 
 /**

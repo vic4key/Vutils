@@ -315,8 +315,8 @@ bool CBuffer::save_to_file(const std::string& filePath)
   bool result = true;
 
   CFileSystemA file(filePath, vu::FM_CREATEALWAY);
-  result &= file.Write(m_ptr_data, ulong(m_size));
-  result &= file.Close();
+  result &= file.write(m_ptr_data, ulong(m_size));
+  result &= file.close();
 
   return result;
 }
