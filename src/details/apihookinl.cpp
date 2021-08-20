@@ -278,7 +278,7 @@ bool vuapi CINLHookX::detach(void* ptr_function, void** pptr_old_function)
   return true;
 }
 
-bool vuapi CINLHookA::Override(
+bool vuapi CINLHookA::install(
   const std::string& module_name,
   const std::string& function_name,
   void* ptr_hook_function,
@@ -296,7 +296,7 @@ bool vuapi CINLHookA::Override(
   return m_hooked;
 }
 
-bool vuapi CINLHookA::Restore(
+bool vuapi CINLHookA::uninstall(
   const std::string& module_name,
   const std::string& function_name,
   void** pptr_old_function
@@ -316,7 +316,7 @@ bool vuapi CINLHookA::Restore(
   return this->detach(ptr_function, pptr_old_function);
 }
 
-bool vuapi CINLHookW::Override(
+bool vuapi CINLHookW::install(
   const std::wstring& module_name,
   const std::wstring& function_name,
   void* ptr_hook_function,
@@ -334,7 +334,7 @@ bool vuapi CINLHookW::Override(
   return m_hooked;
 }
 
-bool vuapi CINLHookW::Restore(
+bool vuapi CINLHookW::uninstall(
   const std::wstring& module_name,
   const std::wstring& function_name,
   void** pptr_old_function

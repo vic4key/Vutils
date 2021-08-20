@@ -863,8 +863,8 @@ protected:
  * @param[in] F The function name.
  * @return  true if the function succeeds. Otherwise false.
  */
-#define VU_API_INL_OVERRIDE(O, M, F) O.Override(_T( # M ), _T( # F ), (void*)&Hfn ## F, (void**)&pfn ## F)
-#define VU_API_INL_RESTORE(O, M, F) O.Restore(_T( # M ), _T( # F ), (void**)&pfn ## F)
+#define VU_API_INL_OVERRIDE(O, M, F) O.install(_T( # M ), _T( # F ), (void*)&Hfn ## F, (void**)&pfn ## F)
+#define VU_API_INL_RESTORE(O, M, F) O.uninstall(_T( # M ), _T( # F ), (void**)&pfn ## F)
 
 typedef enum _MEMORY_ADDRESS_TYPE
 {
@@ -931,12 +931,12 @@ public:
   CINLHookA() {};
   virtual ~CINLHookA() {};
 
-  bool vuapi Override(
+  bool vuapi install(
     const std::string& module_name,
     const std::string& function_name,
     void* ptr_hook_function, void** pptr_old_function
   );
-  bool vuapi Restore(
+  bool vuapi uninstall(
     const std::string& module_name,
     const std::string& function_name,
     void** pptr_old_function
@@ -949,13 +949,13 @@ public:
   CINLHookW() {};
   virtual ~CINLHookW() {};
 
-  bool vuapi Override(
+  bool vuapi install(
     const std::wstring& module_name,
     const std::wstring& function_name,
     void* ptr_hook_function,
     void** pptr_old_function
   );
-  bool vuapi Restore(
+  bool vuapi uninstall(
     const std::wstring& module_name,
     const std::wstring& function_name,
     void** pptr_old_function
@@ -967,13 +967,13 @@ public:
  */
 
 #define VU_API_IAT_OVERRIDE(O, M, F)\
-  vu::CIATHookManager::Instance().Override(\
+  vu::CIATHookManager::Instance().install(\
     _T( # O ), _T( # M ), _T( # F ),\
     (const void*)(reinterpret_cast<void*>(&Hfn ## F)),\
     (const void**)(reinterpret_cast<void**>(&pfn ## F)))
 
 #define VU_API_IAT_RESTORE(O, M, F)\
-  vu::CIATHookManager::Instance().Restore(\
+  vu::CIATHookManager::Instance().uninstall(\
     _T( # O ), _T( # M ), _T( # F ))
 
 struct IATElement;
@@ -984,7 +984,7 @@ public:
   CIATHookManagerA();
   virtual ~CIATHookManagerA();
 
-  VUResult Override(
+  VUResult install(
     const std::string& target,
     const std::string& module,
     const std::string& function,
@@ -992,7 +992,7 @@ public:
     const void** original = nullptr
   );
 
-  VUResult Restore(
+  VUResult uninstall(
     const std::string& target,
     const std::string& module,
     const std::string& function,
@@ -1007,7 +1007,7 @@ public:
    * @param[out,in] pFT   The First Thunk that point to IAT <Import Address Table>.
    * @return true to continue or false to exit iteration.
    */
-  VUResult Iterate(const std::string& module, std::function<bool(
+  VUResult iterate(const std::string& module, std::function<bool(
     const std::string& module,
     const std::string& function,
     PIMAGE_THUNK_DATA& pOFT,
@@ -1016,28 +1016,28 @@ public:
 private:
   enum IATAction
   {
-    IAT_OVERRIDE,
-    IAT_RESTORE,
+    IAT_INSTALL,
+    IAT_UNINSTALL,
   };
 
   typedef std::vector<IATElement> IATElements;
 
-  IATElements m_IATElements;
+  IATElements m_iat_elements;
 
 private:
-  IATElements::iterator Find(const IATElement& element);
+  IATElements::iterator find(const IATElement& element);
 
-  IATElements::iterator Find(
+  IATElements::iterator find(
     const std::string& target,
     const std::string& module,
     const std::string& function);
 
-  bool Exist(
+  bool exist(
     const std::string& target,
     const std::string& module,
     const std::string& function);
 
-  VUResult Do(const IATAction action, IATElement& element);
+  VUResult perform(const IATAction action, IATElement& element);
 };
 
 class CIATHookManagerW : public CSingletonT<CIATHookManagerW>
@@ -1046,7 +1046,7 @@ public:
   CIATHookManagerW();
   virtual ~CIATHookManagerW();
 
-  VUResult Override(
+  VUResult install(
     const std::wstring& target,
     const std::wstring& module,
     const std::wstring& function,
@@ -1054,7 +1054,7 @@ public:
     const void** original = nullptr
   );
 
-  VUResult Restore(
+  VUResult uninstall(
     const std::wstring& target,
     const std::wstring& module,
     const std::wstring& function,
@@ -1072,40 +1072,40 @@ public:
   CWMHookX();
   virtual ~CWMHookX();
 
-  VUResult vuapi Stop(int Type);
+  VUResult vuapi uninstall(int Type);
 
 public:
-  static HHOOK m_Handles[WH_MAXHOOK];
+  static HHOOK m_handles[WH_MAXHOOK];
 
 protected:
-  virtual VUResult SetWindowsHookExX(int Type, HMODULE hModule, HOOKPROC pProc);
+  virtual VUResult set_windows_hook_ex_X(int type, HMODULE hmodule, HOOKPROC pfn_hook_function);
 
 protected:
-  ulong m_PID;
+  ulong m_pid;
 };
 
 class CWMHookA : public CWMHookX
 {
 public:
-  CWMHookA(ulong PID, const std::string& DLLFilePath);
+  CWMHookA(ulong pid, const std::string& dll_file_path);
   virtual ~CWMHookA();
 
-  VUResult vuapi Start(int Type, const std::string& ProcName);
+  VUResult vuapi install(int type, const std::string& function_name);
 
 private:
-  CLibraryA m_DLL;
+  CLibraryA m_library;
 };
 
 class CWMHookW : public CWMHookX
 {
 public:
-  CWMHookW(ulong PID, const std::wstring& DLLFilePath);
+  CWMHookW(ulong pid, const std::wstring& dll_file_path);
   virtual ~CWMHookW();
 
-  VUResult vuapi Start(int Type, const std::wstring& ProcName);
+  VUResult vuapi install(int type, const std::wstring& function_name);
 
 private:
-  CLibraryW m_DLL;
+  CLibraryW m_library;
 };
 
 /**

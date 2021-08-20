@@ -36,15 +36,15 @@ DEF_SAMPLE(WMHook)
 
   std::tcout << ts("Enter to start Window Message hooking ...") << std::endl; _getch();
 
-  assert(wh.Start(WH_CBT, UND(fnCBTProc)) == vu::VU_OK);
-  assert(wh.Start(WH_MOUSE, UND(fnMouseProc)) == vu::VU_OK);
-  assert(wh.Start(WH_KEYBOARD, UND(fnKeyboardProc)) == vu::VU_OK);
+  assert(wh.install(WH_CBT, UND(fnCBTProc)) == vu::VU_OK);
+  assert(wh.install(WH_MOUSE, UND(fnMouseProc)) == vu::VU_OK);
+  assert(wh.install(WH_KEYBOARD, UND(fnKeyboardProc)) == vu::VU_OK);
 
   std::tcout << ts("Enter to stop Window Message hooking ...") << std::endl; _getch();
 
-  assert(wh.Stop(WH_CBT) == vu::VU_OK);
-  assert(wh.Stop(WH_MOUSE) == vu::VU_OK);
-  assert(wh.Stop(WH_KEYBOARD) == vu::VU_OK);
+  assert(wh.uninstall(WH_CBT) == vu::VU_OK);
+  assert(wh.uninstall(WH_MOUSE) == vu::VU_OK);
+  assert(wh.uninstall(WH_KEYBOARD) == vu::VU_OK);
 
   return vu::VU_OK;
 }

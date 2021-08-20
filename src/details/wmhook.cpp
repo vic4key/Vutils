@@ -9,109 +9,109 @@
 namespace vu
 {
 
-HHOOK CWMHookX::m_Handles[WH_MAXHOOK] = { 0 };
+HHOOK CWMHookX::m_handles[WH_MAXHOOK] = { 0 };
 
 CWMHookX::CWMHookX() : CLastError()
 {
-  m_PID = INVALID_PID_VALUE;
+  m_pid = INVALID_PID_VALUE;
 }
 
 CWMHookX::~CWMHookX()
 {
 }
 
-VUResult CWMHookX::SetWindowsHookExX(int Type, HMODULE hModule, HOOKPROC pProc)
+VUResult CWMHookX::set_windows_hook_ex_X(int type, HMODULE hmodule, HOOKPROC pfn_hook_function)
 {
   m_last_error_code = ERROR_SUCCESS;
 
-  if (m_PID == INVALID_PID_VALUE)
+  if (m_pid == INVALID_PID_VALUE)
   {
     return 1;
   }
 
-  if (Type < WH_MINHOOK || Type > WH_MAXHOOK)
+  if (type < WH_MINHOOK || type > WH_MAXHOOK)
   {
     return 2;
   }
 
-  if (m_Handles[Type] != nullptr)
+  if (m_handles[type] != nullptr)
   {
     return 3;
   }
 
   // For desktop apps, if this parameter is zero, the hook procedure is associated
   // with all existing threads running in the same desktop as the calling thread.
-  auto tid = get_main_thread_id(m_PID);
+  auto tid = get_main_thread_id(m_pid);
   if (tid == -1)
   {
     m_last_error_code = GetLastError();
     return 4;
   }
 
-  auto ret = SetWindowsHookExW(Type, pProc, hModule, tid);
+  auto ret = SetWindowsHookExW(type, pfn_hook_function, hmodule, tid);
   if (ret == nullptr)
   {
     m_last_error_code = GetLastError();
     return 5;
   }
 
-  m_Handles[Type] = ret;
+  m_handles[type] = ret;
 
   return VU_OK;
 }
 
-VUResult CWMHookX::Stop(int Type)
+VUResult CWMHookX::uninstall(int type)
 {
   m_last_error_code = ERROR_SUCCESS;
 
-  if (Type < WH_MINHOOK || Type > WH_MAXHOOK)
+  if (type < WH_MINHOOK || type > WH_MAXHOOK)
   {
     return 1;
   }
 
-  if (m_Handles[Type] == nullptr)
+  if (m_handles[type] == nullptr)
   {
     return 2;
   }
 
-  auto ret = UnhookWindowsHookEx(m_Handles[Type]);
+  auto ret = UnhookWindowsHookEx(m_handles[type]);
   if (ret == FALSE)
   {
     m_last_error_code = GetLastError();
     return 3;
   }
 
-  m_Handles[Type] = nullptr;
+  m_handles[type] = nullptr;
 
   return VU_OK;
 }
 
-CWMHookA::CWMHookA(ulong PID, const std::string& DLLFilePath) : CWMHookX(), m_DLL(DLLFilePath)
+CWMHookA::CWMHookA(ulong pid, const std::string& dll_file_path) : CWMHookX(), m_library(dll_file_path)
 {
-  m_PID = PID;
+  m_pid = pid;
 }
 
 CWMHookA::~CWMHookA()
 {
 }
 
-VUResult CWMHookA::Start(int Type, const std::string& ProcName)
+VUResult CWMHookA::install(int type, const std::string& function_name)
 {
-  return SetWindowsHookExX(Type, m_DLL.handle(), (HOOKPROC)m_DLL.get_proc_address(ProcName));
+  return set_windows_hook_ex_X(type, m_library.handle(), (HOOKPROC)m_library.get_proc_address(function_name));
 }
 
-CWMHookW::CWMHookW(ulong PID, const std::wstring& DLLFilePath) : CWMHookX(), m_DLL(DLLFilePath)
+CWMHookW::CWMHookW(ulong pid, const std::wstring& dll_file_path) : CWMHookX(), m_library(dll_file_path)
 {
-  m_PID = PID;
+  m_pid = pid;
 }
 
 CWMHookW::~CWMHookW()
 {
 }
 
-VUResult CWMHookW::Start(int Type, const std::wstring& ProcName)
+VUResult CWMHookW::install(int type, const std::wstring& function_name)
 {
-  return SetWindowsHookExX(Type, m_DLL.handle(), (HOOKPROC)m_DLL.get_proc_address(ProcName));
+  return set_windows_hook_ex_X(type, m_library.handle(), (HOOKPROC)m_library.get_proc_address(function_name));
 }
 
 } // namespace vu
