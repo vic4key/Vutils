@@ -66,7 +66,7 @@ std::vector<std::string> vuapi CINIFileA::ReadSectionNames(ulong ulMaxSize)
 
   GetPrivateProfileSectionNamesA(p.get(), ulMaxSize, m_FilePath.c_str());
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   for (char * s = p.get(); *s; s++)
   {
@@ -94,7 +94,7 @@ std::vector<std::string> vuapi CINIFileA::ReadSection(const std::string& Section
 
   GetPrivateProfileSectionA(Section.c_str(), p.get(), ulMaxSize, m_FilePath.c_str());
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   for (char * s = p.get(); *s; s++)
   {
@@ -109,7 +109,7 @@ int vuapi CINIFileA::ReadInteger(const std::string& Section, const std::string& 
 {
   this->ValidFilePath();
   uint result = GetPrivateProfileIntA(Section.c_str(), Key.c_str(), Default, m_FilePath.c_str());
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
   return result;
 }
 
@@ -117,7 +117,7 @@ bool vuapi CINIFileA::ReadBool(const std::string& Section, const std::string& Ke
 {
   this->ValidFilePath();
   bool result = (GetPrivateProfileIntA(Section.c_str(), Key.c_str(), Default, m_FilePath.c_str()) == 1 ? true : false);
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
   return result;
 }
 
@@ -132,7 +132,7 @@ float vuapi CINIFileA::ReadFloat(const std::string& Section, const std::string& 
 
   GetPrivateProfileStringA(Section.c_str(), Key.c_str(), sDefault.c_str(), lpszResult, MAX_SIZE, m_FilePath.c_str());
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   return (float)atof(lpszResult);
 }
@@ -167,7 +167,7 @@ std::string vuapi CINIFileA::ReadString(
 
   if (result == 0)
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return s;
   }
 
@@ -190,7 +190,7 @@ std::unique_ptr<uchar[]> vuapi CINIFileA::ReadStruct(const std::string& Section,
 
   if (GetPrivateProfileStructA(Section.c_str(), Key.c_str(), (void*)p.get(), ulSize, m_FilePath.c_str()) == 0)
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return nullptr;
   }
 
@@ -236,7 +236,7 @@ bool vuapi CINIFileA::WriteInteger(const std::string& Section, const std::string
   this->ValidFilePath();
   const std::string s = number_to_string_A(Value);
   bool result = (WritePrivateProfileStringA(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
   return result;
 }
 
@@ -245,7 +245,7 @@ bool vuapi CINIFileA::WriteBool(const std::string& Section, const std::string& K
   this->ValidFilePath();
   const std::string s(Value ? "1" : "0");
   bool result = (WritePrivateProfileStringA(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
   return result;
 }
 
@@ -254,7 +254,7 @@ bool vuapi CINIFileA::WriteFloat(const std::string& Section, const std::string& 
   this->ValidFilePath();
   const std::string s = number_to_string_A(Value);
   bool result = (WritePrivateProfileStringA(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
   return result;
 }
 
@@ -262,7 +262,7 @@ bool vuapi CINIFileA::WriteString(const std::string& Section, const std::string&
 {
   this->ValidFilePath();
   bool result = (WritePrivateProfileStringA(Section.c_str(), Key.c_str(), Value.c_str(), m_FilePath.c_str()) != 0);
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
   return result;
 }
 
@@ -270,7 +270,7 @@ bool vuapi CINIFileA::WriteStruct(const std::string& Section, const std::string&
 {
   this->ValidFilePath();
   bool result = (WritePrivateProfileStructA(Section.c_str(), Key.c_str(), pStruct, ulSize, m_FilePath.c_str()) != 0);
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
   return result;
 }
 
@@ -357,7 +357,7 @@ std::vector<std::wstring> vuapi CINIFileW::ReadSectionNames(ulong ulMaxSize)
 
   GetPrivateProfileSectionNamesW(p.get(), 2*ulMaxSize, m_FilePath.c_str());
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   for (wchar * s = p.get(); *s; s++)
   {
@@ -385,7 +385,7 @@ std::vector<std::wstring> vuapi CINIFileW::ReadSection(const std::wstring& Secti
 
   GetPrivateProfileSectionW(Section.c_str(), p.get(), 2*ulMaxSize, m_FilePath.c_str());
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   for (wchar * s = p.get(); *s; s++)
   {
@@ -400,7 +400,7 @@ int vuapi CINIFileW::ReadInteger(const std::wstring& Section, const std::wstring
 {
   this->ValidFilePath();
   int result = GetPrivateProfileIntW(Section.c_str(), Key.c_str(), Default, m_FilePath.c_str());
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
   return result;
 }
 
@@ -408,7 +408,7 @@ bool vuapi CINIFileW::ReadBool(const std::wstring& Section, const std::wstring& 
 {
   this->ValidFilePath();
   bool result = (GetPrivateProfileIntW(Section.c_str(), Key.c_str(), Default, m_FilePath.c_str()) == 1 ? true : false);
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
   return result;
 }
 
@@ -430,7 +430,7 @@ float vuapi CINIFileW::ReadFloat(const std::wstring& Section, const std::wstring
     m_FilePath.c_str()
   );
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   const std::string s = to_string_A(lpwszResult);
 
@@ -466,7 +466,7 @@ std::wstring vuapi CINIFileW::ReadString(
   );
   if (result == 0)
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return s;
   }
 
@@ -493,7 +493,7 @@ std::unique_ptr<uchar[]> vuapi CINIFileW::ReadStruct(
 
   if (GetPrivateProfileStructW(Section.c_str(), Key.c_str(), (void*)p.get(), ulSize, m_FilePath.c_str()) == 0)
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return nullptr;
   }
 
@@ -539,7 +539,7 @@ bool vuapi CINIFileW::WriteInteger(const std::wstring& Section, const std::wstri
   this->ValidFilePath();
   const std::wstring s = number_to_string_W(Value);
   bool result = (WritePrivateProfileStringW(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
   return result;
 }
 
@@ -555,7 +555,7 @@ bool vuapi CINIFileW::WriteFloat(const std::wstring& Section, const std::wstring
   this->ValidFilePath();
   const std::wstring s = number_to_string_W(Value);
   bool result = (WritePrivateProfileStringW(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
   return result;
 }
 
@@ -563,7 +563,7 @@ bool vuapi CINIFileW::WriteString(const std::wstring& Section, const std::wstrin
 {
   this->ValidFilePath();
   bool result = (WritePrivateProfileStringW(Section.c_str(), Key.c_str(), Value.c_str(), m_FilePath.c_str()) != 0);
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
   return result;
 }
 
@@ -576,7 +576,7 @@ bool vuapi CINIFileW::WriteStruct(
 {
   this->ValidFilePath();
   bool result = (WritePrivateProfileStructW(Section.c_str(), Key.c_str(), pStruct, ulSize, m_FilePath.c_str()) != 0);
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
   return result;
 }
 

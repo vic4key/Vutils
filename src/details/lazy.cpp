@@ -9,9 +9,9 @@
 
 #define ERROR_CODE(code) (ECBase + code)
 
-#define VU_OBJ_GET_API(O, F)  pfn ## F = (Pfn ## F)O.GetProcAddress(_T( # F ));
-#define VU_OBJ_GET_APIA(O, F) pfn ## F ## A = (Pfn ## F ## A)O.GetProcAddress(_T( # F ));
-#define VU_OBJ_GET_APIW(O, F) pfn ## F ## W = (Pfn ## F ## W)O.GetProcAddress(_T( # F ));
+#define VU_OBJ_GET_API(O, F)  pfn ## F = (Pfn ## F)O.get_proc_address(_T( # F ));
+#define VU_OBJ_GET_APIA(O, F) pfn ## F ## A = (Pfn ## F ## A)O.get_proc_address(_T( # F ));
+#define VU_OBJ_GET_APIW(O, F) pfn ## F ## W = (Pfn ## F ## W)O.get_proc_address(_T( # F ));
 
 namespace vu
 {
@@ -50,7 +50,7 @@ VUResult vuapi Initialize_DLL_TLHELP32()
   }
 
   CLibrary kernel32(_T("kernel32.dll"));
-  if (!kernel32.IsAvailable())
+  if (!kernel32.is_available())
   {
     return ERROR_CODE(__LINE__);
   }
@@ -112,7 +112,7 @@ VUResult vuapi Initialize_DLL_TLHELP32()
   VU_OBJ_GET_API(kernel32, EnumProcessModules);
   if (pfnEnumProcessModules == nullptr)
   {
-    pfnEnumProcessModules = (PfnEnumProcessModules)kernel32.GetProcAddress(_T("K32EnumProcessModules"));
+    pfnEnumProcessModules = (PfnEnumProcessModules)kernel32.get_proc_address(_T("K32EnumProcessModules"));
     if (pfnEnumProcessModules == nullptr)
     {
       return ERROR_CODE(__LINE__);
@@ -122,7 +122,7 @@ VUResult vuapi Initialize_DLL_TLHELP32()
   VU_OBJ_GET_API(kernel32, EnumProcessModulesEx);
   if (pfnEnumProcessModulesEx == nullptr)
   {
-    pfnEnumProcessModulesEx = (PfnEnumProcessModulesEx)kernel32.GetProcAddress(_T("K32EnumProcessModulesEx"));
+    pfnEnumProcessModulesEx = (PfnEnumProcessModulesEx)kernel32.get_proc_address(_T("K32EnumProcessModulesEx"));
     if (pfnEnumProcessModulesEx == nullptr)
     {
       return ERROR_CODE(__LINE__);
@@ -132,7 +132,7 @@ VUResult vuapi Initialize_DLL_TLHELP32()
   VU_OBJ_GET_API(kernel32, EnumProcesses);
   if (pfnEnumProcesses == nullptr)
   {
-    pfnEnumProcesses = (PfnEnumProcesses)kernel32.GetProcAddress(_T("K32EnumProcesses"));
+    pfnEnumProcesses = (PfnEnumProcesses)kernel32.get_proc_address(_T("K32EnumProcesses"));
     if (pfnEnumProcesses == nullptr)
     {
       return ERROR_CODE(__LINE__);
@@ -142,7 +142,7 @@ VUResult vuapi Initialize_DLL_TLHELP32()
   VU_OBJ_GET_API(kernel32, GetModuleBaseNameA);
   if (pfnGetModuleBaseNameA == nullptr)
   {
-    pfnGetModuleBaseNameA = (PfnGetModuleBaseNameA)kernel32.GetProcAddress(_T("K32GetModuleBaseNameA"));
+    pfnGetModuleBaseNameA = (PfnGetModuleBaseNameA)kernel32.get_proc_address(_T("K32GetModuleBaseNameA"));
     if (pfnGetModuleBaseNameA == nullptr)
     {
       return ERROR_CODE(__LINE__);
@@ -152,7 +152,7 @@ VUResult vuapi Initialize_DLL_TLHELP32()
   VU_OBJ_GET_API(kernel32, GetModuleBaseNameW);
   if (pfnGetModuleBaseNameW == nullptr)
   {
-    pfnGetModuleBaseNameW = (PfnGetModuleBaseNameW)kernel32.GetProcAddress(_T("K32GetModuleBaseNameW"));
+    pfnGetModuleBaseNameW = (PfnGetModuleBaseNameW)kernel32.get_proc_address(_T("K32GetModuleBaseNameW"));
     if (pfnGetModuleBaseNameW == nullptr)
     {
       return ERROR_CODE(__LINE__);
@@ -186,18 +186,18 @@ VUResult vuapi Initialize_DLL_PSAPI()
   }
 
   CLibrary kernel32(_T("kernel32.dll"));
-  if (!kernel32.IsAvailable())
+  if (!kernel32.is_available())
   {
     return ERROR_CODE(__LINE__);
   }
 
   CLibrary psapi(_T("psapi.dll"));
-  if (!psapi.IsAvailable())
+  if (!psapi.is_available())
   {
     return ERROR_CODE(__LINE__);
   }
 
-  pfnGetProcessMemoryInfo = (PfnGetProcessMemoryInfo)kernel32.GetProcAddress(_T("K32GetProcessMemoryInfo"));
+  pfnGetProcessMemoryInfo = (PfnGetProcessMemoryInfo)kernel32.get_proc_address(_T("K32GetProcessMemoryInfo"));
   if (pfnGetProcessMemoryInfo == nullptr)
   {
     VU_OBJ_GET_API(psapi, GetProcessMemoryInfo);
@@ -207,7 +207,7 @@ VUResult vuapi Initialize_DLL_PSAPI()
     }
   }
 
-  pfnGetModuleFileNameExA = (PfnGetModuleFileNameExA)kernel32.GetProcAddress(_T("K32GetModuleFileNameExA"));
+  pfnGetModuleFileNameExA = (PfnGetModuleFileNameExA)kernel32.get_proc_address(_T("K32GetModuleFileNameExA"));
   if (pfnGetModuleFileNameExA == nullptr)
   {
     VU_OBJ_GET_API(psapi, GetModuleFileNameExA);
@@ -217,7 +217,7 @@ VUResult vuapi Initialize_DLL_PSAPI()
     }
   }
 
-  pfnGetModuleFileNameExW = (PfnGetModuleFileNameExW)kernel32.GetProcAddress(_T("K32GetModuleFileNameExW")); 
+  pfnGetModuleFileNameExW = (PfnGetModuleFileNameExW)kernel32.get_proc_address(_T("K32GetModuleFileNameExW")); 
   if (pfnGetModuleFileNameExW == nullptr)
   {
     VU_OBJ_GET_API(psapi, GetModuleFileNameExW);
@@ -227,7 +227,7 @@ VUResult vuapi Initialize_DLL_PSAPI()
     }
   }
 
-  pfnGetModuleInformation = (PfnGetModuleInformation)kernel32.GetProcAddress(_T("K32GetModuleInformation"));
+  pfnGetModuleInformation = (PfnGetModuleInformation)kernel32.get_proc_address(_T("K32GetModuleInformation"));
   if (pfnGetModuleInformation == nullptr)
   {
     VU_OBJ_GET_API(psapi, GetModuleInformation)
@@ -237,7 +237,7 @@ VUResult vuapi Initialize_DLL_PSAPI()
     }
   }
 
-  pfnGetMappedFileNameA = (PfnGetMappedFileNameA)kernel32.GetProcAddress(_T("K32GetMappedFileNameA"));
+  pfnGetMappedFileNameA = (PfnGetMappedFileNameA)kernel32.get_proc_address(_T("K32GetMappedFileNameA"));
   if (pfnGetMappedFileNameA == nullptr)
   {
     VU_OBJ_GET_API(psapi, GetMappedFileNameA)
@@ -247,7 +247,7 @@ VUResult vuapi Initialize_DLL_PSAPI()
     }
   }
 
-  pfnGetMappedFileNameW = (PfnGetMappedFileNameW)kernel32.GetProcAddress(_T("K32GetMappedFileNameW"));
+  pfnGetMappedFileNameW = (PfnGetMappedFileNameW)kernel32.get_proc_address(_T("K32GetMappedFileNameW"));
   if (pfnGetMappedFileNameW == nullptr)
   {
     VU_OBJ_GET_API(psapi, GetMappedFileNameW)

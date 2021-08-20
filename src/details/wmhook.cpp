@@ -22,7 +22,7 @@ CWMHookX::~CWMHookX()
 
 VUResult CWMHookX::SetWindowsHookExX(int Type, HMODULE hModule, HOOKPROC pProc)
 {
-  m_LastErrorCode = ERROR_SUCCESS;
+  m_last_error_code = ERROR_SUCCESS;
 
   if (m_PID == INVALID_PID_VALUE)
   {
@@ -44,14 +44,14 @@ VUResult CWMHookX::SetWindowsHookExX(int Type, HMODULE hModule, HOOKPROC pProc)
   auto tid = get_main_thread_id(m_PID);
   if (tid == -1)
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return 4;
   }
 
   auto ret = SetWindowsHookExW(Type, pProc, hModule, tid);
   if (ret == nullptr)
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return 5;
   }
 
@@ -62,7 +62,7 @@ VUResult CWMHookX::SetWindowsHookExX(int Type, HMODULE hModule, HOOKPROC pProc)
 
 VUResult CWMHookX::Stop(int Type)
 {
-  m_LastErrorCode = ERROR_SUCCESS;
+  m_last_error_code = ERROR_SUCCESS;
 
   if (Type < WH_MINHOOK || Type > WH_MAXHOOK)
   {
@@ -77,7 +77,7 @@ VUResult CWMHookX::Stop(int Type)
   auto ret = UnhookWindowsHookEx(m_Handles[Type]);
   if (ret == FALSE)
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return 3;
   }
 
@@ -97,7 +97,7 @@ CWMHookA::~CWMHookA()
 
 VUResult CWMHookA::Start(int Type, const std::string& ProcName)
 {
-  return SetWindowsHookExX(Type, m_DLL.GetHandle(), (HOOKPROC)m_DLL.GetProcAddress(ProcName));
+  return SetWindowsHookExX(Type, m_DLL.get_handle(), (HOOKPROC)m_DLL.get_proc_address(ProcName));
 }
 
 CWMHookW::CWMHookW(ulong PID, const std::wstring& DLLFilePath) : CWMHookX(), m_DLL(DLLFilePath)
@@ -111,7 +111,7 @@ CWMHookW::~CWMHookW()
 
 VUResult CWMHookW::Start(int Type, const std::wstring& ProcName)
 {
-  return SetWindowsHookExX(Type, m_DLL.GetHandle(), (HOOKPROC)m_DLL.GetProcAddress(ProcName));
+  return SetWindowsHookExX(Type, m_DLL.get_handle(), (HOOKPROC)m_DLL.get_proc_address(ProcName));
 }
 
 } // namespace vu

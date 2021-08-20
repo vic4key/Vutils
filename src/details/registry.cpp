@@ -76,8 +76,8 @@ bool vuapi CRegistryX::SetReflectionKey(eRegReflection RegReflection)
 
 bool vuapi CRegistryX::CloseKey()
 {
-  m_LastErrorCode = RegCloseKey(m_HKSubKey);
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  m_last_error_code = RegCloseKey(m_HKSubKey);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 CRegistryA::CRegistryA() : CRegistryX()
@@ -118,8 +118,8 @@ ulong vuapi CRegistryA::GetDataSize(const std::string& ValueName, ulong ulType)
 {
   ulong ulDataSize = 0;
 
-  m_LastErrorCode = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, NULL, &ulDataSize);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, NULL, &ulDataSize);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return 0;
   }
@@ -134,8 +134,8 @@ bool vuapi CRegistryA::CreateKey()
 
 bool vuapi CRegistryA::CreateKey(const std::string& SubKey)
 {
-  m_LastErrorCode = RegCreateKeyA(m_HKRootKey, SubKey.c_str(), &m_HKSubKey);
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  m_last_error_code = RegCreateKeyA(m_HKRootKey, SubKey.c_str(), &m_HKSubKey);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryA::KeyExists()
@@ -145,8 +145,8 @@ bool vuapi CRegistryA::KeyExists()
 
 bool vuapi CRegistryA::KeyExists(const std::string& SubKey)
 {
-  m_LastErrorCode = RegOpenKeyA(m_HKRootKey, SubKey.c_str(), &m_HKSubKey);
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  m_last_error_code = RegOpenKeyA(m_HKRootKey, SubKey.c_str(), &m_HKSubKey);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryA::OpenKey(eRegAccess RegAccess)
@@ -156,8 +156,8 @@ bool vuapi CRegistryA::OpenKey(eRegAccess RegAccess)
 
 bool vuapi CRegistryA::OpenKey(const std::string& SubKey, eRegAccess RegAccess)
 {
-  m_LastErrorCode = RegOpenKeyExA(m_HKRootKey, SubKey.c_str(), 0, (REGSAM)RegAccess, &m_HKSubKey);
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  m_last_error_code = RegOpenKeyExA(m_HKRootKey, SubKey.c_str(), 0, (REGSAM)RegAccess, &m_HKSubKey);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryA::DeleteKey()
@@ -172,9 +172,9 @@ bool vuapi CRegistryA::DeleteKey(const std::string& SubKey)
     return false;
   }
 
-  m_LastErrorCode = RegDeleteKeyA(m_HKRootKey, SubKey.c_str());
+  m_last_error_code = RegDeleteKeyA(m_HKRootKey, SubKey.c_str());
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryA::DeleteValue(const std::string& Value)
@@ -184,9 +184,9 @@ bool vuapi CRegistryA::DeleteValue(const std::string& Value)
     return false;
   }
 
-  m_LastErrorCode = RegDeleteValueA(m_HKSubKey, Value.c_str());
+  m_last_error_code = RegDeleteValueA(m_HKSubKey, Value.c_str());
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 std::vector<std::string> vuapi CRegistryA::EnumKeys()
@@ -208,7 +208,7 @@ std::vector<std::string> vuapi CRegistryA::EnumKeys()
   ZeroMemory(&Class, sizeof(Class));
   ZeroMemory(&ftLastWriteTime, sizeof(ftLastWriteTime));
 
-  m_LastErrorCode = RegQueryInfoKeyA(
+  m_last_error_code = RegQueryInfoKeyA(
     m_HKSubKey,
     (char*)&Class,
     &cchClass,
@@ -223,7 +223,7 @@ std::vector<std::string> vuapi CRegistryA::EnumKeys()
     &ftLastWriteTime
   );
 
-  if (m_LastErrorCode != ERROR_SUCCESS || cSubKeys == 0) return l;
+  if (m_last_error_code != ERROR_SUCCESS || cSubKeys == 0) return l;
 
   cbMaxSubKeyLen += 1;
 
@@ -232,7 +232,7 @@ std::vector<std::string> vuapi CRegistryA::EnumKeys()
   for (ulong i = 0; i < cSubKeys; i++)
   {
     ZeroMemory(pSubKeyName, cbMaxSubKeyLen);
-    m_LastErrorCode = RegEnumKeyA(m_HKSubKey, i, pSubKeyName, cbMaxSubKeyLen);
+    m_last_error_code = RegEnumKeyA(m_HKSubKey, i, pSubKeyName, cbMaxSubKeyLen);
     l.push_back(pSubKeyName);
   }
 
@@ -260,7 +260,7 @@ std::vector<std::string> vuapi CRegistryA::EnumValues()
   ZeroMemory(&Class, sizeof(Class));
   ZeroMemory(&ftLastWriteTime, sizeof(ftLastWriteTime));
 
-  m_LastErrorCode = RegQueryInfoKeyA(
+  m_last_error_code = RegQueryInfoKeyA(
     m_HKSubKey,
     (char*)&Class,
     &cchClass,
@@ -275,7 +275,7 @@ std::vector<std::string> vuapi CRegistryA::EnumValues()
     &ftLastWriteTime
   );
 
-  if (m_LastErrorCode != ERROR_SUCCESS || cValues == 0) return l;
+  if (m_last_error_code != ERROR_SUCCESS || cValues == 0) return l;
 
   cbMaxValueNameLen += 1;
 
@@ -285,7 +285,7 @@ std::vector<std::string> vuapi CRegistryA::EnumValues()
   {
     ulValueNameLength = cbMaxValueNameLen;
     ZeroMemory(pValueName, cbMaxValueNameLen);
-    m_LastErrorCode = RegEnumValueA(m_HKSubKey, i, pValueName, &ulValueNameLength, NULL, NULL, NULL, NULL);
+    m_last_error_code = RegEnumValueA(m_HKSubKey, i, pValueName, &ulValueNameLength, NULL, NULL, NULL, NULL);
     l.push_back(pValueName);
   }
 
@@ -300,42 +300,42 @@ bool vuapi CRegistryA::WriteInteger(const std::string& ValueName, int Value)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return false;
   }
 
-  m_LastErrorCode = RegSetValueExA(m_HKSubKey, ValueName.c_str(), 0, REG_DWORD, (const uchar*)&Value, sizeof(Value));
+  m_last_error_code = RegSetValueExA(m_HKSubKey, ValueName.c_str(), 0, REG_DWORD, (const uchar*)&Value, sizeof(Value));
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryA::WriteBool(const std::string& ValueName, bool Value)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return false;
   }
 
-  m_LastErrorCode = RegSetValueExA(m_HKSubKey, ValueName.c_str(), 0, REG_BINARY, (const uchar*)&Value, sizeof(Value));
+  m_last_error_code = RegSetValueExA(m_HKSubKey, ValueName.c_str(), 0, REG_BINARY, (const uchar*)&Value, sizeof(Value));
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryA::WriteFloat(const std::string& ValueName, float Value)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return false;
   }
 
-  m_LastErrorCode = RegSetValueExA(m_HKSubKey, ValueName.c_str(), 0, REG_BINARY, (const uchar*)&Value, sizeof(Value));
+  m_last_error_code = RegSetValueExA(m_HKSubKey, ValueName.c_str(), 0, REG_BINARY, (const uchar*)&Value, sizeof(Value));
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 // For REG_SZ, REG_MULTI_SZ and REG_EXPAND_SZ:
@@ -345,12 +345,12 @@ bool vuapi CRegistryA::WriteString(const std::string& ValueName, const std::stri
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return false;
   }
 
-  m_LastErrorCode = RegSetValueExA(
+  m_last_error_code = RegSetValueExA(
     m_HKSubKey,
     ValueName.c_str(),
     0,
@@ -359,19 +359,19 @@ bool vuapi CRegistryA::WriteString(const std::string& ValueName, const std::stri
     (ulong)Value.length() + sizeof(char)
   );
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryA::WriteMultiString(const std::string& ValueName, const char* lpValue)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return false;
   }
 
-  m_LastErrorCode = RegSetValueExA(
+  m_last_error_code = RegSetValueExA(
     m_HKSubKey,
     ValueName.c_str(),
     0,
@@ -380,7 +380,7 @@ bool vuapi CRegistryA::WriteMultiString(const std::string& ValueName, const char
     this->GetSizeOfMultiString(lpValue) + sizeof(char)
   );
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryA::WriteMultiString(const std::string& ValueName, const std::vector<std::string>& Value)
@@ -393,12 +393,12 @@ bool vuapi CRegistryA::WriteExpandString(const std::string& ValueName, const std
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return false;
   }
 
-  m_LastErrorCode = RegSetValueExA(
+  m_last_error_code = RegSetValueExA(
     m_HKSubKey,
     ValueName.c_str(),
     0,
@@ -407,21 +407,21 @@ bool vuapi CRegistryA::WriteExpandString(const std::string& ValueName, const std
     (ulong)Value.length() + sizeof(char)
   );
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryA::WriteBinary(const std::string& ValueName, void* lpData, ulong ulSize)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return false;
   }
 
-  m_LastErrorCode = RegSetValueExA(m_HKSubKey, ValueName.c_str(), 0, REG_BINARY, (const uchar*)lpData, ulSize);
+  m_last_error_code = RegSetValueExA(m_HKSubKey, ValueName.c_str(), 0, REG_BINARY, (const uchar*)lpData, ulSize);
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 // Read
@@ -430,16 +430,16 @@ int vuapi CRegistryA::ReadInteger(const std::string& ValueName, int Default)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return Default;
   }
 
   int ret = 0;
   ulong ulType = REG_DWORD, ulReturn = sizeof(ret);
 
-  m_LastErrorCode = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)&ret, &ulReturn);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)&ret, &ulReturn);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return Default;
   }
@@ -451,16 +451,16 @@ bool vuapi CRegistryA::ReadBool(const std::string& ValueName, bool Default)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return Default;
   }
 
   bool ret = false;
   ulong ulType = REG_BINARY, ulReturn = sizeof(ret);
 
-  m_LastErrorCode = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)&ret, &ulReturn);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)&ret, &ulReturn);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return Default;
   }
@@ -472,16 +472,16 @@ float vuapi CRegistryA::ReadFloat(const std::string& ValueName, float Default)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return Default;
   }
 
   float ret = 0;
   ulong ulType = REG_BINARY, ulReturn = sizeof(ret);
 
-  m_LastErrorCode = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)&ret, &ulReturn);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)&ret, &ulReturn);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return Default;
   }
@@ -493,8 +493,8 @@ std::string vuapi CRegistryA::ReadString(const std::string& ValueName, const std
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return Default;
   }
 
@@ -514,8 +514,8 @@ std::string vuapi CRegistryA::ReadString(const std::string& ValueName, const std
 
   ZeroMemory(p.get(), ulReturn);
 
-  m_LastErrorCode = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)p.get(), &ulReturn);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)p.get(), &ulReturn);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return Default;
   }
@@ -532,8 +532,8 @@ std::vector<std::string> vuapi CRegistryA::ReadMultiString(
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return Default;
   }
 
@@ -553,8 +553,8 @@ std::vector<std::string> vuapi CRegistryA::ReadMultiString(
 
   ZeroMemory(p.get(), ulReturn);
 
-  m_LastErrorCode = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)p.get(), &ulReturn);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)p.get(), &ulReturn);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return Default;
   }
@@ -568,8 +568,8 @@ std::string vuapi CRegistryA::ReadExpandString(const std::string& ValueName, con
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return Default;
   }
 
@@ -589,8 +589,8 @@ std::string vuapi CRegistryA::ReadExpandString(const std::string& ValueName, con
 
   ZeroMemory(p.get(), ulReturn);
 
-  m_LastErrorCode = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)p.get(), &ulReturn);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)p.get(), &ulReturn);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return Default;
   }
@@ -606,16 +606,16 @@ std::unique_ptr<uchar[]> vuapi CRegistryA::ReadBinary(const std::string& ValueNa
 
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return pDef;
   }
 
   ulong ulType = REG_BINARY, ulReturn = this->GetDataSize(ValueName, ulType);
   if (ulReturn == 0)
   {
-    m_LastErrorCode = ERROR_INCORRECT_SIZE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INCORRECT_SIZE;
+    SetLastError(m_last_error_code);
     return pDef;
   }
 
@@ -629,8 +629,8 @@ std::unique_ptr<uchar[]> vuapi CRegistryA::ReadBinary(const std::string& ValueNa
 
   ZeroMemory((void*)p.get(), ulReturn);
 
-  m_LastErrorCode = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, p.get(), &ulReturn);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExA(m_HKSubKey, ValueName.c_str(), NULL, &ulType, p.get(), &ulReturn);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return pDef;
   }
@@ -676,8 +676,8 @@ ulong vuapi CRegistryW::GetDataSize(const std::wstring& ValueName, ulong ulType)
 {
   ulong ulDataSize = 0;
 
-  m_LastErrorCode = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, NULL, &ulDataSize);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, NULL, &ulDataSize);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return 0;
   }
@@ -692,8 +692,8 @@ bool vuapi CRegistryW::CreateKey()
 
 bool vuapi CRegistryW::CreateKey(const std::wstring& SubKey)
 {
-  m_LastErrorCode = RegCreateKeyW(m_HKRootKey, SubKey.c_str(), &m_HKRootKey);
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  m_last_error_code = RegCreateKeyW(m_HKRootKey, SubKey.c_str(), &m_HKRootKey);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryW::KeyExists()
@@ -703,8 +703,8 @@ bool vuapi CRegistryW::KeyExists()
 
 bool vuapi CRegistryW::KeyExists(const std::wstring& SubKey)
 {
-  m_LastErrorCode = RegOpenKeyW(m_HKRootKey, SubKey.c_str(), &m_HKSubKey);
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  m_last_error_code = RegOpenKeyW(m_HKRootKey, SubKey.c_str(), &m_HKSubKey);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryW::OpenKey(eRegAccess RegAccess)
@@ -714,8 +714,8 @@ bool vuapi CRegistryW::OpenKey(eRegAccess RegAccess)
 
 bool vuapi CRegistryW::OpenKey(const std::wstring& SubKey, eRegAccess RegAccess)
 {
-  m_LastErrorCode = RegOpenKeyExW(m_HKRootKey, SubKey.c_str(), 0, (REGSAM)RegAccess, &m_HKSubKey);
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  m_last_error_code = RegOpenKeyExW(m_HKRootKey, SubKey.c_str(), 0, (REGSAM)RegAccess, &m_HKSubKey);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryW::DeleteKey()
@@ -730,9 +730,9 @@ bool vuapi CRegistryW::DeleteKey(const std::wstring& SubKey)
     return false;
   }
 
-  m_LastErrorCode = RegDeleteKeyW(m_HKRootKey, SubKey.c_str());
+  m_last_error_code = RegDeleteKeyW(m_HKRootKey, SubKey.c_str());
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryW::DeleteValue(const std::wstring& Value)
@@ -742,9 +742,9 @@ bool vuapi CRegistryW::DeleteValue(const std::wstring& Value)
     return false;
   }
 
-  m_LastErrorCode = RegDeleteValueW(m_HKSubKey, Value.c_str());
+  m_last_error_code = RegDeleteValueW(m_HKSubKey, Value.c_str());
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 std::vector<std::wstring> vuapi CRegistryW::EnumKeys()
@@ -766,7 +766,7 @@ std::vector<std::wstring> vuapi CRegistryW::EnumKeys()
   ZeroMemory(&Class, sizeof(Class));
   ZeroMemory(&ftLastWriteTime, sizeof(ftLastWriteTime));
 
-  m_LastErrorCode = RegQueryInfoKeyW(
+  m_last_error_code = RegQueryInfoKeyW(
     m_HKSubKey,
     (wchar*)&Class,
     &cchClass,
@@ -781,7 +781,7 @@ std::vector<std::wstring> vuapi CRegistryW::EnumKeys()
     &ftLastWriteTime
   );
 
-  if (m_LastErrorCode != ERROR_SUCCESS || cSubKeys == 0) return l;
+  if (m_last_error_code != ERROR_SUCCESS || cSubKeys == 0) return l;
 
   cbMaxSubKeyLen += 1;
 
@@ -790,7 +790,7 @@ std::vector<std::wstring> vuapi CRegistryW::EnumKeys()
   for (ulong i = 0; i < cSubKeys; i++)
   {
     ZeroMemory(pSubKeyName, sizeof(wchar)*cbMaxSubKeyLen);
-    m_LastErrorCode = RegEnumKeyW(m_HKSubKey, i, pSubKeyName, sizeof(wchar)*cbMaxSubKeyLen);
+    m_last_error_code = RegEnumKeyW(m_HKSubKey, i, pSubKeyName, sizeof(wchar)*cbMaxSubKeyLen);
     l.push_back(pSubKeyName);
   }
 
@@ -818,7 +818,7 @@ std::vector<std::wstring> vuapi CRegistryW::EnumValues()
   ZeroMemory(&Class, sizeof(Class));
   ZeroMemory(&ftLastWriteTime, sizeof(ftLastWriteTime));
 
-  m_LastErrorCode = RegQueryInfoKeyA(
+  m_last_error_code = RegQueryInfoKeyA(
     m_HKSubKey,
     (char*)&Class,
     &cchClass,
@@ -833,7 +833,7 @@ std::vector<std::wstring> vuapi CRegistryW::EnumValues()
     &ftLastWriteTime
   );
 
-  if (m_LastErrorCode != ERROR_SUCCESS || cValues == 0) return l;
+  if (m_last_error_code != ERROR_SUCCESS || cValues == 0) return l;
 
   cbMaxValueNameLen += 1;
 
@@ -843,7 +843,7 @@ std::vector<std::wstring> vuapi CRegistryW::EnumValues()
   {
     ulValueNameLength = sizeof(wchar)*cbMaxValueNameLen;
     ZeroMemory(pValueName, cbMaxValueNameLen);
-    m_LastErrorCode = RegEnumValueW(m_HKSubKey, i, pValueName, &ulValueNameLength, NULL, NULL, NULL, NULL);
+    m_last_error_code = RegEnumValueW(m_HKSubKey, i, pValueName, &ulValueNameLength, NULL, NULL, NULL, NULL);
     l.push_back(pValueName);
   }
 
@@ -858,42 +858,42 @@ bool vuapi CRegistryW::WriteInteger(const std::wstring& ValueName, int Value)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return false;
   }
 
-  m_LastErrorCode = RegSetValueExW(m_HKSubKey, ValueName.c_str(), 0, REG_DWORD, (const uchar *)&Value, sizeof(Value));
+  m_last_error_code = RegSetValueExW(m_HKSubKey, ValueName.c_str(), 0, REG_DWORD, (const uchar *)&Value, sizeof(Value));
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryW::WriteBool(const std::wstring& ValueName, bool Value)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return false;
   }
 
-  m_LastErrorCode = RegSetValueExW(m_HKSubKey, ValueName.c_str(), 0, REG_BINARY, (const uchar *)&Value, sizeof(Value));
+  m_last_error_code = RegSetValueExW(m_HKSubKey, ValueName.c_str(), 0, REG_BINARY, (const uchar *)&Value, sizeof(Value));
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryW::WriteFloat(const std::wstring& ValueName, float Value)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return false;
   }
 
-  m_LastErrorCode = RegSetValueExW(m_HKSubKey, ValueName.c_str(), 0, REG_BINARY, (const uchar *)&Value, sizeof(Value));
+  m_last_error_code = RegSetValueExW(m_HKSubKey, ValueName.c_str(), 0, REG_BINARY, (const uchar *)&Value, sizeof(Value));
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 // For REG_SZ, REG_MULTI_SZ and REG_EXPAND_SZ:
@@ -903,12 +903,12 @@ bool vuapi CRegistryW::WriteString(const std::wstring& ValueName, const std::wst
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return false;
   }
 
-  m_LastErrorCode = RegSetValueExW(
+  m_last_error_code = RegSetValueExW(
     m_HKSubKey,
     ValueName.c_str(),
     0,
@@ -917,19 +917,19 @@ bool vuapi CRegistryW::WriteString(const std::wstring& ValueName, const std::wst
     sizeof(wchar)*((ulong)Value.length() + 1)
   );
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryW::WriteMultiString(const std::wstring& ValueName, const wchar * lpValue)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return false;
   }
 
-  m_LastErrorCode = RegSetValueExW(
+  m_last_error_code = RegSetValueExW(
     m_HKSubKey,
     ValueName.c_str(),
     0,
@@ -938,7 +938,7 @@ bool vuapi CRegistryW::WriteMultiString(const std::wstring& ValueName, const wch
     this->GetSizeOfMultiString(lpValue) + sizeof(wchar)
   );
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryW::WriteMultiString(const std::wstring& ValueName, const std::vector<std::wstring> Value)
@@ -951,12 +951,12 @@ bool vuapi CRegistryW::WriteExpandString(const std::wstring& ValueName, const st
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return false;
   }
 
-  m_LastErrorCode = RegSetValueExW(
+  m_last_error_code = RegSetValueExW(
     m_HKSubKey,
     ValueName.c_str(),
     0,
@@ -965,21 +965,21 @@ bool vuapi CRegistryW::WriteExpandString(const std::wstring& ValueName, const st
     sizeof(wchar)*((ulong)Value.length() + 1)
   );
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 bool vuapi CRegistryW::WriteBinary(const std::wstring& ValueName, void* lpData, ulong ulSize)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return false;
   }
 
-  m_LastErrorCode = RegSetValueExW(m_HKSubKey, ValueName.c_str(), 0, REG_BINARY, (const uchar *)lpData, ulSize);
+  m_last_error_code = RegSetValueExW(m_HKSubKey, ValueName.c_str(), 0, REG_BINARY, (const uchar *)lpData, ulSize);
 
-  return (m_LastErrorCode == ERROR_SUCCESS);
+  return (m_last_error_code == ERROR_SUCCESS);
 }
 
 // Read
@@ -988,16 +988,16 @@ int vuapi CRegistryW::ReadInteger(const std::wstring& ValueName, int Default)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return Default;
   }
 
   int ret = 0;
   ulong ulType = REG_DWORD, ulReturn = sizeof(ret);
 
-  m_LastErrorCode = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)&ret, &ulReturn);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)&ret, &ulReturn);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return Default;
   }
@@ -1009,16 +1009,16 @@ bool vuapi CRegistryW::ReadBool(const std::wstring& ValueName, bool Default)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return Default;
   }
 
   bool ret = false;
   ulong ulType = REG_BINARY, ulReturn = sizeof(ret);
 
-  m_LastErrorCode = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)&ret, &ulReturn);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)&ret, &ulReturn);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return Default;
   }
@@ -1030,16 +1030,16 @@ float vuapi CRegistryW::ReadFloat(const std::wstring& ValueName, float Default)
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return Default;
   }
 
   float ret = 0;
   ulong ulType = REG_BINARY, ulReturn = sizeof(ret);
 
-  m_LastErrorCode = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)&ret, &ulReturn);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)&ret, &ulReturn);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return Default;
   }
@@ -1051,8 +1051,8 @@ std::wstring vuapi CRegistryW::ReadString(const std::wstring& ValueName, const s
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return Default;
   }
 
@@ -1072,8 +1072,8 @@ std::wstring vuapi CRegistryW::ReadString(const std::wstring& ValueName, const s
 
   ZeroMemory(p.get(), ulReturn);
 
-  m_LastErrorCode = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)p.get(), &ulReturn);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)p.get(), &ulReturn);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return Default;
   }
@@ -1090,8 +1090,8 @@ std::vector<std::wstring> vuapi CRegistryW::ReadMultiString(
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return Default;
   }
 
@@ -1111,8 +1111,8 @@ std::vector<std::wstring> vuapi CRegistryW::ReadMultiString(
 
   ZeroMemory(p.get(), ulReturn);
 
-  m_LastErrorCode = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)p.get(), &ulReturn);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)p.get(), &ulReturn);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return Default;
   }
@@ -1126,8 +1126,8 @@ std::wstring vuapi CRegistryW::ReadExpandString(const std::wstring& ValueName, c
 {
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return Default;
   }
 
@@ -1147,8 +1147,8 @@ std::wstring vuapi CRegistryW::ReadExpandString(const std::wstring& ValueName, c
 
   ZeroMemory(p.get(), ulReturn);
 
-  m_LastErrorCode = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)p.get(), &ulReturn);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)p.get(), &ulReturn);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return Default;
   }
@@ -1164,16 +1164,16 @@ std::unique_ptr<uchar[]> vuapi CRegistryW::ReadBinary(const std::wstring& ValueN
 
   if (m_HKSubKey == 0)
   {
-    m_LastErrorCode = ERROR_INVALID_HANDLE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INVALID_HANDLE;
+    SetLastError(m_last_error_code);
     return pDef;
   }
 
   ulong ulType = REG_BINARY, ulReturn = this->GetDataSize(ValueName, ulType);
   if (ulReturn == 0)
   {
-    m_LastErrorCode = ERROR_INCORRECT_SIZE;
-    SetLastError(m_LastErrorCode);
+    m_last_error_code = ERROR_INCORRECT_SIZE;
+    SetLastError(m_last_error_code);
     return pDef;
   }
 
@@ -1187,8 +1187,8 @@ std::unique_ptr<uchar[]> vuapi CRegistryW::ReadBinary(const std::wstring& ValueN
 
   ZeroMemory(p.get(), ulReturn);
 
-  m_LastErrorCode = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)p.get(), &ulReturn);
-  if (m_LastErrorCode != ERROR_SUCCESS)
+  m_last_error_code = RegQueryValueExW(m_HKSubKey, ValueName.c_str(), NULL, &ulType, (uchar*)p.get(), &ulReturn);
+  if (m_last_error_code != ERROR_SUCCESS)
   {
     return pDef;
   }

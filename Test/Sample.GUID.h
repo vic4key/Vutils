@@ -9,8 +9,8 @@ DEF_SAMPLE(GlobalUID)
   for (auto& e : std::vector<int>(5))
   {
     vu::CGUID guid(true);
-    std::tcout << guid.AsString() << std::endl;
-    std::tcout << vu::CGUID::ToString(vu::CGUID::ToGUID(guid.AsString())) << std::endl;
+    std::tcout << guid.as_string() << std::endl;
+    std::tcout << vu::CGUID::to_string(vu::CGUID::to_guid(guid.as_string())) << std::endl;
   }
 
   #endif // VU_GUID_ENABLED

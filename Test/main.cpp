@@ -61,27 +61,27 @@ int _tmain(int argc, _TCHAR* argv[])
 
   VU_SM_INIT();
 
-  // VU_SM_ADD_SAMPLE(Misc);
-  // VU_SM_ADD_SAMPLE(Math);
-  // VU_SM_ADD_SAMPLE(DF);
-  // VU_SM_ADD_SAMPLE(Socket);
-  // VU_SM_ADD_SAMPLE(AsyncSocket);
-  // VU_SM_ADD_SAMPLE(INLHook);
-  // VU_SM_ADD_SAMPLE(IATHook);
-  // VU_SM_ADD_SAMPLE(WMHook);
-  // VU_SM_ADD_SAMPLE(INIFile);
-  // VU_SM_ADD_SAMPLE(Registry);
-  // VU_SM_ADD_SAMPLE(Process);
-  // VU_SM_ADD_SAMPLE(ServiceManager);
-  // VU_SM_ADD_SAMPLE(StopWatch);
-  // VU_SM_ADD_SAMPLE(FileSystem);
-  // VU_SM_ADD_SAMPLE(FileMapping);
-  // VU_SM_ADD_SAMPLE(PEFile);
-  // VU_SM_ADD_SAMPLE(GlobalUID);
-  // VU_SM_ADD_SAMPLE(Singleton);
-  // VU_SM_ADD_SAMPLE(InputDialog);
-  // VU_SM_ADD_SAMPLE(ThreadPool);
-  // VU_SM_ADD_SAMPLE(WMIProvider);
+  VU_SM_ADD_SAMPLE(Misc);
+  VU_SM_ADD_SAMPLE(Math);
+  VU_SM_ADD_SAMPLE(DF);
+  VU_SM_ADD_SAMPLE(Socket);
+  VU_SM_ADD_SAMPLE(AsyncSocket);
+  VU_SM_ADD_SAMPLE(INLHook);
+  VU_SM_ADD_SAMPLE(IATHook);
+  VU_SM_ADD_SAMPLE(WMHook);
+  VU_SM_ADD_SAMPLE(INIFile);
+  VU_SM_ADD_SAMPLE(Registry);
+  VU_SM_ADD_SAMPLE(Process);
+  VU_SM_ADD_SAMPLE(ServiceManager);
+  VU_SM_ADD_SAMPLE(StopWatch);
+  VU_SM_ADD_SAMPLE(FileSystem);
+  VU_SM_ADD_SAMPLE(FileMapping);
+  VU_SM_ADD_SAMPLE(PEFile);
+  VU_SM_ADD_SAMPLE(GlobalUID);
+  VU_SM_ADD_SAMPLE(Singleton);
+  VU_SM_ADD_SAMPLE(InputDialog);
+  VU_SM_ADD_SAMPLE(ThreadPool);
+  VU_SM_ADD_SAMPLE(WMIProvider);
 
   VU_SM_RUN();
 

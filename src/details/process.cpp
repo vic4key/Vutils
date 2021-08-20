@@ -22,7 +22,7 @@ eProcessorArchitecture get_processor_architecture()
 {
   typedef void (WINAPI *PfnGetNativeSystemInfo)(LPSYSTEM_INFO lpSystemInfo);
 
-  PfnGetNativeSystemInfo pfnGetNativeSystemInfo = (PfnGetNativeSystemInfo)CLibrary::QuickGetProcAddress(
+  PfnGetNativeSystemInfo pfnGetNativeSystemInfo = (PfnGetNativeSystemInfo)CLibrary::quick_get_proc_address(
     _T("kernel32.dll"),
     _T("GetNativeSystemInfo")
   );
@@ -62,7 +62,7 @@ eWow64 vuapi is_wow64(const ulong pid)
 eWow64 vuapi is_wow64(const HANDLE hp)
 {
   typedef BOOL (WINAPI *PfnIsWow64Process)(HANDLE, PBOOL);
-  PfnIsWow64Process pfnIsWow64Process = (PfnIsWow64Process)CLibrary::QuickGetProcAddress(
+  PfnIsWow64Process pfnIsWow64Process = (PfnIsWow64Process)CLibrary::quick_get_proc_address(
     _T("kernel32.dll"),
     _T("IsWow64Process")
   );
@@ -935,7 +935,7 @@ HANDLE CProcessX::Open(const ulong PID)
     result = nullptr;
   }
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   set_privilege(SE_DEBUG_NAME, false);
   SetLastError(ERROR_SUCCESS);
@@ -969,12 +969,12 @@ void CProcessX::Parse()
 
 bool CProcessX::Read(const ulongptr Address, CBuffer& Data)
 {
-  if (Address == 0 || Data.GetSize() == 0)
+  if (Address == 0 || Data.get_size() == 0)
   {
     return false;
   }
 
-  return Read(Address, Data.GetpData(), Data.GetSize());
+  return Read(Address, Data.get_ptr_data(), Data.get_size());
 }
 
 bool CProcessX::Read(const ulongptr Address, void* pData, const size_t Size)
@@ -986,14 +986,14 @@ bool CProcessX::Read(const ulongptr Address, void* pData, const size_t Size)
 
   auto result = rpm(m_Handle, LPCVOID(Address), pData, Size, true);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   return result;
 }
 
 bool CProcessX::Write(const ulongptr Address, const CBuffer& Data)
 {
-  return Write(Address, Data.GetpData(), Data.GetSize());
+  return Write(Address, Data.get_ptr_data(), Data.get_size());
 }
 
 bool CProcessX::Write(const ulongptr Address, const void* pData, const size_t Size)
@@ -1005,7 +1005,7 @@ bool CProcessX::Write(const ulongptr Address, const void* pData, const size_t Si
 
   auto result = wpm(m_Handle, LPCVOID(Address), pData, Size, true);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   return result;
 }

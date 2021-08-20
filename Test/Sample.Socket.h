@@ -44,7 +44,7 @@ DEF_SAMPLE(Socket)
 
   vu::CBuffer response(KiB);
   const auto N = socket.Recv(response);
-  if (response.Empty())
+  if (response.empty())
   {
     std::tcout << ts("Socket -> Recv -> Nothing") << std::endl;
     return 1;
@@ -52,7 +52,7 @@ DEF_SAMPLE(Socket)
 
   // extract response header & body
 
-  const std::string FirstResponse = response.ToStringA();
+  const std::string FirstResponse = response.to_string_A();
   const std::string HttpHeaderSep = std::crlf;
   const std::string HttpHeaderEnd = HttpHeaderSep + HttpHeaderSep;
 
@@ -67,24 +67,24 @@ DEF_SAMPLE(Socket)
     std::cout << std::tab << e << std::endl;
   }
 
-  vu::CBuffer buffer(response.GetpBytes() + ResponseHeader.length(), N - ResponseHeader.length());
+  vu::CBuffer buffer(response.get_ptr_bytes() + ResponseHeader.length(), N - ResponseHeader.length());
 
   // receive file chunks and append to the file buffer
 
   vu::CBuffer file;
 
-  while (!buffer.Empty())
+  while (!buffer.empty())
   {
-    file.Append(buffer);
+    file.append(buffer);
 
-    buffer.Resize(KiB);
+    buffer.resize(KiB);
     socket.Recv(buffer);
 
     std::cout
       << std::left
       << "Downloaded: "
       << std::setw(15)
-      << vu::format_bytes_A(file.GetSize())
+      << vu::format_bytes_A(file.get_size())
       << std::cr
       << std::flush;
   }
@@ -93,7 +93,7 @@ DEF_SAMPLE(Socket)
 
   // save file buffer to disk
 
-  file.SaveAsFile(ts("5MB.bin"));
+  file.save_to_file(ts("5MB.bin"));
 
   if (socket.Close() != vu::VU_OK)
   {

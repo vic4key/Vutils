@@ -50,7 +50,7 @@ void* vuapi CFileMappingX::View(
     ulNumberOfBytesToMap
   );
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   return m_pData;
 }
@@ -85,7 +85,7 @@ ulong vuapi CFileMappingX::GetFileSize()
 
   ulong result = ::GetFileSize(m_FileHandle, nullptr);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   return result;
 }
@@ -120,7 +120,7 @@ VUResult vuapi CFileMappingA::CreateWithinFile(
 
   m_FileHandle = CreateFileA(FileName.c_str(), fgFlag, fsFlag, NULL, fmFlag, faFlag, 0);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (!this->Valid(m_FileHandle))
   {
@@ -157,7 +157,7 @@ VUResult vuapi CFileMappingA::CreateNamedSharedMemory(
     MappingName.empty() ? nullptr : MappingName.c_str()
   );
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (!this->Valid(m_MapHandle))
   {
@@ -180,7 +180,7 @@ VUResult vuapi CFileMappingA::Open(
 
   m_MapHandle = OpenFileMappingA(fmDesiredAccess, bInheritHandle, MappingName.c_str());
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (!this->Valid(m_MapHandle))
   {
@@ -220,7 +220,7 @@ VUResult vuapi CFileMappingW::CreateWithinFile(
 
   m_FileHandle = CreateFileW(FileName.c_str(), fgFlag, fsFlag, NULL, fmFlag, faFlag, 0);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (!this->Valid(m_FileHandle))
   {
@@ -257,7 +257,7 @@ VUResult vuapi CFileMappingW::CreateNamedSharedMemory(
     MappingName.empty() ? nullptr : MappingName.c_str()
   );
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (!this->Valid(m_MapHandle))
   {
@@ -280,7 +280,7 @@ VUResult vuapi CFileMappingW::Open(
 
   m_MapHandle = OpenFileMappingW(fmDesiredAccess, bInheritHandle, MappingName.c_str());
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (!this->Valid(m_MapHandle))
   {

@@ -9,40 +9,40 @@
 namespace vu
 {
 
-CBuffer::CBuffer() : m_pData(nullptr), m_Size(0)
+CBuffer::CBuffer() : m_ptr_data(nullptr), m_size(0)
 {
-  this->Create(nullptr, 0);
+  this->create(nullptr, 0);
 }
 
-CBuffer::CBuffer(const size_t size) : m_pData(nullptr), m_Size(0)
+CBuffer::CBuffer(const size_t size) : m_ptr_data(nullptr), m_size(0)
 {
-  this->Create(nullptr, size);
+  this->create(nullptr, size);
 }
 
-CBuffer::CBuffer(const void* pData, const size_t size) : m_pData(nullptr), m_Size(0)
+CBuffer::CBuffer(const void* ptr, const size_t size) : m_ptr_data(nullptr), m_size(0)
 {
-  this->Replace(pData, size);
+  this->replace(ptr, size);
 }
 
-CBuffer::CBuffer(const CBuffer& right) : m_pData(nullptr), m_Size(0)
+CBuffer::CBuffer(const CBuffer& right) : m_ptr_data(nullptr), m_size(0)
 {
   *this = right;
 }
 
 CBuffer::~CBuffer()
 {
-  this->Delete();
+  this->destroy();
 }
 
 const CBuffer& CBuffer::operator=(const CBuffer& right)
 {
   if (*this != right)
   {
-    if (this->Create(nullptr, right.m_Size))
+    if (this->create(nullptr, right.m_size))
     {
-      if (right.m_pData != nullptr)
+      if (right.m_ptr_data != nullptr)
       {
-        memcpy_s(m_pData, m_Size, right.m_pData, right.m_Size);
+        memcpy_s(m_ptr_data, m_size, right.m_ptr_data, right.m_size);
       }
     }
   }
@@ -52,12 +52,12 @@ const CBuffer& CBuffer::operator=(const CBuffer& right)
 
 bool CBuffer::operator==(const CBuffer& right) const
 {
-  if (m_Size != right.m_Size)
+  if (m_size != right.m_size)
   {
     return false;
   }
 
-  return memcmp(m_pData, right.m_pData, m_Size) == 0;
+  return memcmp(m_ptr_data, right.m_ptr_data, m_size) == 0;
 }
 
 bool CBuffer::operator!=(const CBuffer& right) const
@@ -67,38 +67,38 @@ bool CBuffer::operator!=(const CBuffer& right) const
 
 byte& CBuffer::operator[](const size_t offset)
 {
-  if (m_pData == nullptr)
+  if (m_ptr_data == nullptr)
   {
     throw std::runtime_error(static_cast<const char*>("invalid pointer"));
   }
 
-  if (m_Size == 0 || offset >= m_Size)
+  if (m_size == 0 || offset >= m_size)
   {
     throw std::out_of_range(static_cast<const char*>("invalid size or offset"));
   }
 
-  return static_cast<byte*>(m_pData)[offset];
+  return static_cast<byte*>(m_ptr_data)[offset];
 }
 
 CBuffer CBuffer::operator()(int begin, int end) const
 {
-  return this->Slice(begin, end);
+  return this->slice(begin, end);
 }
 
-size_t CBuffer::Find(const void* pdata, const size_t size) const
+size_t CBuffer::find(const void* ptr, const size_t size) const
 {
   size_t result = -1;
 
-  if (m_pData == nullptr || m_Size == 0 || pdata == nullptr || size == 0 || m_Size < size)
+  if (m_ptr_data == nullptr || m_size == 0 || ptr == nullptr || size == 0 || m_size < size)
   {
     return result;
   }
 
-  const auto pbytes = this->GetpBytes();
+  const auto pbytes = this->get_ptr_bytes();
 
-  for (size_t i = 0; i <= m_Size - size; i++)
+  for (size_t i = 0; i <= m_size - size; i++)
   {
-    if (memcmp(reinterpret_cast<const void*>(pbytes + i), pdata, size) == 0)
+    if (memcmp(reinterpret_cast<const void*>(pbytes + i), ptr, size) == 0)
     {
       result = i;
       break;
@@ -108,80 +108,80 @@ size_t CBuffer::Find(const void* pdata, const size_t size) const
   return result;
 }
 
-bool CBuffer::Match(const void* pdata, const size_t size) const
+bool CBuffer::match(const void* ptr, const size_t size) const
 {
-  return this->Find(pdata, size) != -1;
+  return this->find(ptr, size) != -1;
 }
 
-CBuffer CBuffer::Till(const void* pdata, const size_t size) const
+CBuffer CBuffer::till(const void* ptr, const size_t size) const
 {
   CBuffer result;
 
-  size_t offset = this->Find(pdata, size);
+  size_t offset = this->find(ptr, size);
   if (offset > 0)
   {
-    result.Create(m_pData, offset);
+    result.create(m_ptr_data, offset);
   }
 
   return result;
 }
 
-CBuffer CBuffer::Slice(int begin, int end) const
+CBuffer CBuffer::slice(int begin, int end) const
 {
   CBuffer result;
 
-  if (m_pData == nullptr || m_Size == 0)
+  if (m_ptr_data == nullptr || m_size == 0)
   {
     return result;
   }
 
   if (begin < 0)
   {
-    begin = int(m_Size) + begin;
+    begin = int(m_size) + begin;
   }
 
   if (end < 0)
   {
-    end = int(m_Size) + end;
+    end = int(m_size) + end;
   }
 
-  if (begin < 0 || end < 0 || begin > int(m_Size) || end > int(m_Size) || begin > end)
+  if (begin < 0 || end < 0 || begin > int(m_size) || end > int(m_size) || begin > end)
   {
     return result;
   }
 
   int size = end - begin;
 
-  if (size <= 0 || size > int(m_Size))
+  if (size <= 0 || size > int(m_size))
   {
     return result;
   }
 
-  result.Create(this->GetpBytes() + begin, size);
+  result.create(this->get_ptr_bytes() + begin, size);
 
   return result;
 }
 
-byte* CBuffer::GetpBytes() const
+byte* CBuffer::get_ptr_bytes() const
 {
-  return static_cast<byte*>(m_pData);
+  return static_cast<byte*>(m_ptr_data);
 }
 
-void* CBuffer::GetpData() const
+void* CBuffer::get_ptr_data() const
 {
-  return m_pData;
+  return m_ptr_data;
 }
 
-size_t CBuffer::GetSize() const
+size_t CBuffer::get_size() const
 {
-  return m_Size;
+  return m_size;
 }
 
-bool CBuffer::Create(void* ptr, const size_t size, const bool clean)
+bool CBuffer::create(void* ptr, const size_t size, const bool clean)
 {
   if (clean || size == 0)
   {
-    this->Delete();
+    this->destroy();
   }
 
   if (size == 0)
@@ -191,121 +191,121 @@ bool CBuffer::Create(void* ptr, const size_t size, const bool clean)
 
   if (clean)
   {
-    m_pData = std::calloc(m_Size = size, 1);
+    m_ptr_data = std::calloc(m_size = size, 1);
   }
   else
   {
-    m_pData = std::realloc(ptr, m_Size = size);
+    m_ptr_data = std::realloc(ptr, m_size = size);
   }
 
-  if (m_pData == nullptr)
+  if (m_ptr_data == nullptr)
   {
     throw std::bad_alloc();
   }
 
   if (ptr == nullptr)
   {
-    memset(m_pData, 0, m_Size);
+    memset(m_ptr_data, 0, m_size);
   }
   else if (clean)
   {
-    memcpy_s(m_pData, m_Size, ptr, size);
+    memcpy_s(m_ptr_data, m_size, ptr, size);
   }
 
   return true;
 }
 
-bool CBuffer::Delete()
+bool CBuffer::destroy()
 {
-  if (m_pData != nullptr)
+  if (m_ptr_data != nullptr)
   {
-    std::free(m_pData);
+    std::free(m_ptr_data);
   }
 
-  m_pData = nullptr;
-  m_Size  = 0;
+  m_ptr_data = nullptr;
+  m_size  = 0;
 
   return true;
 }
 
-void CBuffer::Reset()
+void CBuffer::reset()
 {
-  this->Delete();
+  this->destroy();
 }
 
-void CBuffer::Fill(const byte v)
+void CBuffer::fill(const byte v)
 {
-  if (m_pData != nullptr && m_Size != 0)
+  if (m_ptr_data != nullptr && m_size != 0)
   {
-    memset(m_pData, v, m_Size);
+    memset(m_ptr_data, v, m_size);
   }
 }
 
-bool CBuffer::Resize(const size_t size)
+bool CBuffer::resize(const size_t size)
 {
-  if (size == m_Size)
+  if (size == m_size)
   {
     return true;
   }
 
-  return this->Create(m_pData, size, false);
+  return this->create(m_ptr_data, size, false);
 }
 
-bool CBuffer::Replace(const void* pData, const size_t size)
+bool CBuffer::replace(const void* pData, const size_t size)
 {
-  if (this->Create(nullptr, size))
+  if (this->create(nullptr, size))
   {
     if (pData != nullptr)
     {
-      memcpy_s(m_pData, m_Size, pData, size);
+      memcpy_s(m_ptr_data, m_size, pData, size);
     }
   }
 
   return true;
 }
 
-bool CBuffer::Replace(const CBuffer& right)
+bool CBuffer::replace(const CBuffer& right)
 {
-  return this->Replace(right.GetpData(), right.GetSize());
+  return this->replace(right.get_ptr_data(), right.get_size());
 }
 
-bool CBuffer::Empty() const
+bool CBuffer::empty() const
 {
-  return m_pData == nullptr || m_Size == 0;
+  return m_ptr_data == nullptr || m_size == 0;
 }
 
-bool CBuffer::Append(const void* pData, const size_t size)
+bool CBuffer::append(const void* pData, const size_t size)
 {
   if (pData == nullptr || size == 0)
   {
     return false;
   }
 
-  const size_t PrevSize = m_Size;
+  const size_t PrevSize = m_size;
 
-  this->Resize(m_Size + size);
+  this->resize(m_size + size);
 
-  memcpy_s(this->GetpBytes() + PrevSize, size, pData, size);
+  memcpy_s(this->get_ptr_bytes() + PrevSize, size, pData, size);
 
   return true;
 }
 
-bool CBuffer::Append(const CBuffer& right)
+bool CBuffer::append(const CBuffer& right)
 {
-  return this->Append(right.GetpData(), right.GetSize());
+  return this->append(right.get_ptr_data(), right.get_size());
 }
 
-std::string CBuffer::ToStringA() const
+std::string CBuffer::to_string_A() const
 {
-  return std::string(reinterpret_cast<const char*>(m_pData), m_Size / sizeof(char));
+  return std::string(reinterpret_cast<const char*>(m_ptr_data), m_size / sizeof(char));
 }
 
-std::wstring CBuffer::ToStringW() const
+std::wstring CBuffer::to_string_W() const
 {
-  return std::wstring(reinterpret_cast<const wchar*>(m_pData), m_Size / sizeof(wchar));
+  return std::wstring(reinterpret_cast<const wchar*>(m_ptr_data), m_size / sizeof(wchar));
 }
 
-bool CBuffer::SaveAsFile(const std::string& filePath)
+bool CBuffer::save_to_file(const std::string& filePath)
 {
   if (filePath.empty())
   {
@@ -315,16 +315,16 @@ bool CBuffer::SaveAsFile(const std::string& filePath)
   bool result = true;
 
   CFileSystemA file(filePath, vu::FM_CREATEALWAY);
-  result &= file.Write(m_pData, ulong(m_Size));
+  result &= file.Write(m_ptr_data, ulong(m_size));
   result &= file.Close();
 
   return result;
 }
 
-bool CBuffer::SaveAsFile(const std::wstring& filePath)
+bool CBuffer::save_to_file(const std::wstring& filePath)
 {
   const auto s = vu::to_string_A(filePath);
-  return this->SaveAsFile(s);
+  return this->save_to_file(s);
 }
 
 } // namespace vu

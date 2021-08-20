@@ -32,7 +32,7 @@ void fnExampleBinding(const vu::CSocket::TEndPoint& endpoint)
   {
     vu::CBuffer data(KiB);
     client.Recv(data);
-    printf("client %d recv `%s`\n", client.GetRemoteSAI().sin_port, data.ToStringA().c_str());
+    printf("client %d recv `%s`\n", client.GetRemoteSAI().sin_port, data.to_string_A().c_str());
   });
 
   server.Bind(endpoint);
@@ -68,7 +68,7 @@ void fnExampleInheritance(const vu::CSocket::TEndPoint& endpoint)
     {
       vu::CBuffer data(KiB);
       client.Recv(data);
-      std::string s(reinterpret_cast<char*>(data.GetpBytes()));
+      std::string s(reinterpret_cast<char*>(data.get_ptr_bytes()));
       printf("client %d recv `%s`\n", client.GetRemoteSAI().sin_port, s.c_str());
     }
   };

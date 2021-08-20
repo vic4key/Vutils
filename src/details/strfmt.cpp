@@ -534,90 +534,90 @@ std::wstring vuapi format_bytes_W(long long bytes, eStdByte std, int digits)
 
 CFundamentalA::CFundamentalA()
 {
-  m_Data.clear();
+  m_data.clear();
 }
 
 CFundamentalA::~CFundamentalA()
 {
 }
 
-std::stringstream& CFundamentalA::Data()
+std::stringstream& CFundamentalA::data()
 {
-  return m_Data;
+  return m_data;
 }
 
-std::string CFundamentalA::String() const
+std::string CFundamentalA::to_string() const
 {
-  return m_Data.str();
+  return m_data.str();
 }
 
-bool CFundamentalA::Boolean() const
+bool CFundamentalA::to_boolean() const
 {
-  return Integer() != 0;
+  return to_integer() != 0;
 }
 
-int CFundamentalA::Integer() const
+int CFundamentalA::to_integer() const
 {
-  return atoi(m_Data.str().c_str());
+  return atoi(m_data.str().c_str());
 }
 
-long CFundamentalA::Long() const
+long CFundamentalA::to_long() const
 {
-  return atol(m_Data.str().c_str());
+  return atol(m_data.str().c_str());
 }
 
-float CFundamentalA::Float() const
+float CFundamentalA::to_float() const
 {
-  return float(Double());
+  return float(to_double());
 }
 
-double CFundamentalA::Double() const
+double CFundamentalA::to_double() const
 {
-  return atof(m_Data.str().c_str());
+  return atof(m_data.str().c_str());
 }
 
 CFundamentalW::CFundamentalW()
 {
-  m_Data.clear();
+  m_data.clear();
 }
 
 CFundamentalW::~CFundamentalW()
 {
 }
 
-std::wstringstream& CFundamentalW::Data()
+std::wstringstream& CFundamentalW::data()
 {
-  return m_Data;
+  return m_data;
 }
 
-std::wstring CFundamentalW::String() const
+std::wstring CFundamentalW::to_string() const
 {
-  return m_Data.str();
+  return m_data.str();
 }
 
-bool CFundamentalW::Boolean() const
+bool CFundamentalW::to_boolean() const
 {
-  return Integer() != 0;
+  return to_integer() != 0;
 }
 
-int CFundamentalW::Integer() const
+int CFundamentalW::to_integer() const
 {
-  return atoi(to_string_A(m_Data.str()).c_str());
+  return atoi(to_string_A(m_data.str()).c_str());
 }
 
-long CFundamentalW::Long() const
+long CFundamentalW::to_long() const
 {
-  return atol(to_string_A(m_Data.str()).c_str());
+  return atol(to_string_A(m_data.str()).c_str());
 }
 
-float CFundamentalW::Float() const
+float CFundamentalW::to_float() const
 {
-  return float(Double());
+  return float(to_double());
 }
 
-double CFundamentalW::Double() const
+double CFundamentalW::to_double() const
 {
-  return atof(to_string_A(m_Data.str()).c_str());
+  return atof(to_string_A(m_data.str()).c_str());
 }
 
 #ifdef _MSC_VER

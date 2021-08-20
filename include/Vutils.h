@@ -159,56 +159,6 @@ void vuapi hex_dump(const void* data, int size);
  * String Formatting
  */
 
-class CFundamentalA
-{
-public:
-  CFundamentalA();
-  virtual ~CFundamentalA();
-
-  template<typename T>
-  friend CFundamentalA& operator<<(CFundamentalA& stream, T v)
-  {
-    stream.m_Data << v;
-    return stream;
-  }
-
-  std::stringstream& vuapi Data();
-  std::string vuapi String() const;
-  int vuapi Integer() const;
-  long vuapi Long() const;
-  bool vuapi Boolean() const;
-  float vuapi Float() const;
-  double vuapi Double() const;
-
-private:
-  std::stringstream m_Data;
-};
-
-class CFundamentalW
-{
-public:
-  CFundamentalW();
-  virtual ~CFundamentalW();
-
-  template<typename T>
-  friend CFundamentalW& operator<<(CFundamentalW& stream, T v)
-  {
-    stream.m_Data << v;
-    return stream;
-  }
-
-  std::wstringstream& vuapi Data();
-  std::wstring vuapi String() const;
-  int vuapi Integer() const;
-  long vuapi Long() const;
-  bool vuapi Boolean() const;
-  float vuapi Float() const;
-  double vuapi Double() const;
-
-private:
-  std::wstringstream m_Data;
-};
-
 typedef enum _ENCODING_TYPE
 {
   ET_UNKNOWN      = -1,
@@ -540,37 +490,37 @@ std::wstring vuapi undecorate_cpp_symbol_W(const std::wstring& name, const ushor
 class CLastError
 {
 public:
-  CLastError() : m_LastErrorCode(ERROR_SUCCESS) {};
+  CLastError() : m_last_error_code(ERROR_SUCCESS) {};
   virtual ~CLastError() {};
 
   CLastError& operator=(const CLastError& right)
   {
-    m_LastErrorCode = right.m_LastErrorCode;
+    m_last_error_code = right.m_last_error_code;
     return *this;
   }
 
-  virtual void vuapi SetLastErrorCode(ulong ulLastError)
+  virtual void vuapi set_last_error_code(ulong last_error_code)
   {
-    m_LastErrorCode = ulLastError;
+    m_last_error_code = last_error_code;
   }
 
-  virtual ulong vuapi GetLastErrorCode()
+  virtual ulong vuapi get_last_error_code()
   {
-    return m_LastErrorCode;
+    return m_last_error_code;
   }
 
-  virtual std::string vuapi GetLastErrorMessageA()
+  virtual std::string vuapi get_last_error_message_A()
   {
-    return get_last_error_A(m_LastErrorCode);
+    return get_last_error_A(m_last_error_code);
   }
 
-  virtual std::wstring vuapi GetLastErrorMessageW()
+  virtual std::wstring vuapi get_last_error_message_W()
   {
-    return get_last_error_W(m_LastErrorCode);
+    return get_last_error_W(m_last_error_code);
   }
 
 protected:
-  ulong m_LastErrorCode;
+  ulong m_last_error_code;
 };
 
 /**
@@ -587,10 +537,10 @@ protected:
 
 struct sGUID
 {
-  unsigned long  Data1;
-  unsigned short Data2;
-  unsigned short Data3;
-  unsigned char  Data4[8];
+  unsigned long  data1;
+  unsigned short data2;
+  unsigned short data3;
+  unsigned char  data4[8];
 
   const sGUID& operator = (const sGUID &right) const;
   bool operator == (const sGUID &right) const;
@@ -607,14 +557,14 @@ public:
   bool operator == (const CGUIDX& right) const;
   bool operator != (const CGUIDX& right) const;
 
-  bool Create();
+  bool create();
 
   const sGUID& GUID() const;
   void  GUID(const sGUID& guid);
 
 protected:
-  sGUID m_GUID;
-  VUResult m_Status;
+  sGUID m_guid;
+  VUResult m_status;
 };
 
 class CGUIDA : public CGUIDX
@@ -623,11 +573,11 @@ public:
   CGUIDA(bool create = false) : CGUIDX(create) {}
   virtual ~CGUIDA() {}
 
-  void Parse(const std::string& guid);
-  std::string AsString() const;
+  void parse(const std::string& guid);
+  std::string as_string() const;
 
-  static const std::string ToString(const sGUID& guid);
-  static const sGUID ToGUID(const std::string& guid);
+  static const std::string to_string(const sGUID& guid);
+  static const sGUID to_guid(const std::string& guid);
 };
 
 class CGUIDW : public CGUIDX
@@ -636,11 +586,11 @@ public:
   CGUIDW(bool create = false) : CGUIDX(create) {}
   virtual ~CGUIDW() {}
 
-  void Parse(const std::wstring& guid);
-  std::wstring AsString() const;
+  void parse(const std::wstring& guid);
+  std::wstring as_string() const;
 
-  static const std::wstring ToString(const sGUID& guid);
-  static const sGUID ToGUID(const std::wstring& guid);
+  static const std::wstring to_string(const sGUID& guid);
+  static const sGUID to_guid(const std::wstring& guid);
 };
 
 #endif // VU_GUID_ENABLED
@@ -653,7 +603,7 @@ class CBuffer
 {
 public:
   CBuffer();
-  CBuffer(const void* pData, const size_t size);
+  CBuffer(const void* ptr, const size_t size);
   CBuffer(const size_t size);
   CBuffer(const CBuffer& right);
   virtual ~CBuffer();
@@ -664,38 +614,38 @@ public:
   byte& operator[](const size_t offset);
   CBuffer operator()(int begin, int end) const;
 
-  byte*  GetpBytes() const;
-  void*  GetpData() const;
-  size_t GetSize() const;
+  byte*  get_ptr_bytes() const;
+  void*  get_ptr_data() const;
+  size_t get_size() const;
 
-  bool Empty() const;
+  bool empty() const;
 
-  void Reset();
-  void Fill(const byte v = 0);
-  bool Resize(const size_t size);
-  bool Replace(const void* pData, const size_t size);
-  bool Replace(const CBuffer& right);
-  bool Match(const void* pdata, const size_t size) const;
-  size_t Find(const void* pdata, const size_t size) const;
-  CBuffer Till(const void* pdata, const size_t size) const;
-  CBuffer Slice(int begin, int end) const;
+  void reset();
+  void fill(const byte v = 0);
+  bool resize(const size_t size);
+  bool replace(const void* ptr, const size_t size);
+  bool replace(const CBuffer& right);
+  bool match(const void* ptr, const size_t size) const;
+  size_t find(const void* ptr, const size_t size) const;
+  CBuffer till(const void* ptr, const size_t size) const;
+  CBuffer slice(int begin, int end) const;
 
-  bool Append(const void* pData, const size_t size);
-  bool Append(const CBuffer& right);
+  bool append(const void* pData, const size_t size);
+  bool append(const CBuffer& right);
 
-  std::string  ToStringA() const;
-  std::wstring ToStringW() const;
+  std::string  to_string_A() const;
+  std::wstring to_string_W() const;
 
-  bool SaveAsFile(const std::string&  filePath);
-  bool SaveAsFile(const std::wstring& filePath);
-
-private:
-  bool Create(void* ptr, const size_t size, const bool clean = true);
-  bool Delete();
+  bool save_to_file(const std::string&  file_path);
+  bool save_to_file(const std::wstring& file_path);
 
 private:
-  void*  m_pData;
-  size_t m_Size;
+  bool create(void* ptr, const size_t size, const bool clean = true);
+  bool destroy();
+
+private:
+  void*  m_ptr_data;
+  size_t m_size;
 };
 
 /**
@@ -710,36 +660,36 @@ private:
  * @param[in] F The function name.
  * @return  The function.
  */
-#define VU_GET_API(M, F) pfn ## F = (Pfn ## F)vu::CLibrary::QuickGetProcAddress(_T( # M ), _T( # F ))
+#define VU_GET_API(M, F) pfn ## F = (Pfn ## F)vu::CLibrary::quick_get_proc_address(_T( # M ), _T( # F ))
 
 class CLibraryA : public CLastError
 {
 public:
-  CLibraryA(const std::string& ModuleName);
+  CLibraryA(const std::string& module_name);
   virtual ~CLibraryA();
 
-  const HMODULE& vuapi GetHandle() const;
-  bool  vuapi IsAvailable();
-  void* vuapi GetProcAddress(const std::string& ProcName);
-  static void* vuapi QuickGetProcAddress(const std::string& ModuleName, const std::string& ProcName);
+  const HMODULE& vuapi get_handle() const;
+  bool  vuapi is_available();
+  void* vuapi get_proc_address(const std::string& function_name);
+  static void* vuapi quick_get_proc_address(const std::string& module_name, const std::string& function_name);
 
 private:
-  HMODULE m_ModuleHandle;
+  HMODULE m_module_handle;
 };
 
 class CLibraryW : public CLastError
 {
 public:
-  CLibraryW(const std::wstring& ModuleName);
+  CLibraryW(const std::wstring& module_name);
   virtual ~CLibraryW();
 
-  const HMODULE& vuapi GetHandle() const;
-  bool  vuapi IsAvailable();
-  void* vuapi GetProcAddress(const std::wstring& RoutineName);
-  static void* vuapi QuickGetProcAddress(const std::wstring& ModuleName, const std::wstring& ProcName);
+  const HMODULE& vuapi get_handle() const;
+  bool  vuapi is_available();
+  void* vuapi get_proc_address(const std::wstring& function_name);
+  static void* vuapi quick_get_proc_address(const std::wstring& module_name, const std::wstring& function_name);
 
 private:
-  HMODULE m_ModuleHandle;
+  HMODULE m_module_handle;
 };
 
 /**
@@ -2345,6 +2295,60 @@ private:
 };
 
 /**
+ * CFundamental
+ */
+
+class CFundamentalA
+{
+public:
+  CFundamentalA();
+  virtual ~CFundamentalA();
+
+  template<typename T>
+  friend CFundamentalA& operator<<(CFundamentalA& stream, T v)
+  {
+    stream.m_data << v;
+    return stream;
+  }
+
+  std::stringstream& vuapi data();
+  std::string vuapi to_string() const;
+  int vuapi to_integer() const;
+  long vuapi to_long() const;
+  bool vuapi to_boolean() const;
+  float vuapi to_float() const;
+  double vuapi to_double() const;
+
+private:
+  std::stringstream m_data;
+};
+
+class CFundamentalW
+{
+public:
+  CFundamentalW();
+  virtual ~CFundamentalW();
+
+  template<typename T>
+  friend CFundamentalW& operator<<(CFundamentalW& stream, T v)
+  {
+    stream.m_data << v;
+    return stream;
+  }
+
+  std::wstringstream& vuapi data();
+  std::wstring vuapi to_string() const;
+  int vuapi to_integer() const;
+  long vuapi to_long() const;
+  bool vuapi to_boolean() const;
+  float vuapi to_float() const;
+  double vuapi to_double() const;
+
+private:
+  std::wstringstream m_data;
+};
+
+/**
  * CWDTControl
  */
 
@@ -2426,21 +2430,21 @@ public:
   const WORD IDC_LABEL;
   const WORD IDC_INPUT;
 
-  CInputDialog(const std::wstring& label, const HWND hwParent = nullptr, bool numberonly = false);
+  CInputDialog(const std::wstring& label, const HWND hwnd_parent = nullptr, bool number_only = false);
   virtual ~CInputDialog();
 
-  void Label(const std::wstring& label);
-  const std::wstring& Label() const;
-  CFundamentalW& Input();
+  void label(const std::wstring& label);
+  const std::wstring& label() const;
+  CFundamentalW& input();
 
   INT_PTR DoModal();
 
   static LRESULT CALLBACK DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp);
 
 private:
-  std::wstring  m_Label;
-  CFundamentalW m_Input;
-  bool m_NumberOnly;
+  std::wstring  m_label;
+  CFundamentalW m_input;
+  bool m_number_only;
 };
 
 /**

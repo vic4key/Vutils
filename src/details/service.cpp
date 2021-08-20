@@ -114,7 +114,7 @@ VUResult CServiceManagerA::Initialize()
   if (m_Manager == nullptr)
   {
     m_Manager = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
   }
 
   if (m_Manager == nullptr)
@@ -137,7 +137,7 @@ VUResult CServiceManagerA::Initialize()
     nullptr
   );
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (cbBytesNeeded == 0)
   {
@@ -159,7 +159,7 @@ VUResult CServiceManagerA::Initialize()
     nullptr
   );
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   m_Services.resize(nServicesReturned);
 
@@ -180,7 +180,7 @@ std::unique_ptr<SERVICE_STATUS> CServiceManagerA::Control(
 
   auto hService = OpenServiceA(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (hService == nullptr)
   {
@@ -190,7 +190,7 @@ std::unique_ptr<SERVICE_STATUS> CServiceManagerA::Control(
   SERVICE_STATUS ss = { 0 };
   auto ret = ControlService(hService, ctrlcode, &ss);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   CloseServiceHandle(hService);
 
@@ -295,7 +295,7 @@ CServiceManagerA::TServices CServiceManagerA::GetDependents(
 
   auto hService = OpenServiceA(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (hService == nullptr)
   {
@@ -313,7 +313,7 @@ CServiceManagerA::TServices CServiceManagerA::GetDependents(
     &nServicesReturned
   );
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (cbBytesNeeded > 0)
   {
@@ -329,7 +329,7 @@ CServiceManagerA::TServices CServiceManagerA::GetDependents(
       &nServicesReturned
     );
 
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
 
     dependents.resize(nServicesReturned);
 
@@ -361,7 +361,7 @@ CServiceManagerA::TServices CServiceManagerA::GetDependencies(
 
   auto hService = OpenServiceA(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (hService == nullptr)
   {
@@ -372,7 +372,7 @@ CServiceManagerA::TServices CServiceManagerA::GetDependencies(
 
   QueryServiceConfigA(hService, nullptr, 0, &cbBytesNeeded);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (cbBytesNeeded > 0)
   {
@@ -381,7 +381,7 @@ CServiceManagerA::TServices CServiceManagerA::GetDependencies(
 
     QueryServiceConfigA(hService, ptr, cbBytesNeeded, &cbBytesNeeded);
 
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
 
     const auto dependencies = multi_string_to_list_A(ptr->lpDependencies);
     for (const auto& dependency : dependencies)
@@ -414,7 +414,7 @@ VUResult CServiceManagerA::Delete(const std::string& name)
 
   auto hService = OpenServiceA(m_Manager, name.c_str(), SERVICE_ALL_ACCESS);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (hService == nullptr)
   {
@@ -423,7 +423,7 @@ VUResult CServiceManagerA::Delete(const std::string& name)
 
   BOOL result = DeleteService(hService);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   CloseServiceHandle(hService);
 
@@ -453,7 +453,7 @@ VUResult CServiceManagerA::Start(const std::string& name)
   {
     auto hService = OpenServiceA(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
 
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
 
     if (hService == nullptr)
     {
@@ -462,7 +462,7 @@ VUResult CServiceManagerA::Start(const std::string& name)
 
     BOOL ret = StartServiceA(hService, 0, nullptr);
 
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
 
     CloseServiceHandle(hService);
 
@@ -520,19 +520,19 @@ VUResult CServiceManagerA::Create(
 {
   if (file_path.empty() || service_name.empty() || display_name.empty())
   {
-    m_LastErrorCode = ERROR_BAD_ARGUMENTS;
+    m_last_error_code = ERROR_BAD_ARGUMENTS;
     return __LINE__;
   }
 
   if (!is_file_exists_A(file_path))
   {
-    m_LastErrorCode = ERROR_FILE_NOT_FOUND;
+    m_last_error_code = ERROR_FILE_NOT_FOUND;
     return __LINE__;
   }
 
   if (this->Query(service_name) != nullptr)
   {
-    m_LastErrorCode = ERROR_ALREADY_EXISTS;
+    m_last_error_code = ERROR_ALREADY_EXISTS;
     return __LINE__;
   }
 
@@ -548,7 +548,7 @@ VUResult CServiceManagerA::Create(
     NULL, NULL, NULL, NULL, NULL
   );
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (hService == nullptr)
   {
@@ -586,7 +586,7 @@ VUResult CServiceManagerW::Initialize()
 
   m_Manager = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (m_Manager == nullptr)
   {
@@ -608,7 +608,7 @@ VUResult CServiceManagerW::Initialize()
     nullptr
   );
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (cbBytesNeeded == 0)
   {
@@ -630,7 +630,7 @@ VUResult CServiceManagerW::Initialize()
     nullptr
   );
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   m_Services.resize(nServicesReturned);
 
@@ -651,7 +651,7 @@ std::unique_ptr<SERVICE_STATUS> CServiceManagerW::Control(
 
   auto hService = OpenServiceW(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (hService == nullptr)
   {
@@ -661,7 +661,7 @@ std::unique_ptr<SERVICE_STATUS> CServiceManagerW::Control(
   SERVICE_STATUS ss = { 0 };
   auto ret = ControlService(hService, ctrlcode, &ss);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   CloseServiceHandle(hService);
 
@@ -766,7 +766,7 @@ CServiceManagerW::TServices CServiceManagerW::GetDependents(
 
   auto hService = OpenServiceW(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (hService == nullptr)
   {
@@ -784,7 +784,7 @@ CServiceManagerW::TServices CServiceManagerW::GetDependents(
     &nServicesReturned
   );
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (cbBytesNeeded > 0)
   {
@@ -800,7 +800,7 @@ CServiceManagerW::TServices CServiceManagerW::GetDependents(
       &nServicesReturned
     );
 
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
 
     dependents.resize(nServicesReturned);
 
@@ -832,7 +832,7 @@ CServiceManagerW::TServices CServiceManagerW::GetDependencies(
 
   auto hService = OpenServiceW(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (hService == nullptr)
   {
@@ -843,7 +843,7 @@ CServiceManagerW::TServices CServiceManagerW::GetDependencies(
 
   QueryServiceConfigW(hService, nullptr, 0, &cbBytesNeeded);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (cbBytesNeeded > 0)
   {
@@ -852,7 +852,7 @@ CServiceManagerW::TServices CServiceManagerW::GetDependencies(
 
     QueryServiceConfigW(hService, ptr, cbBytesNeeded, &cbBytesNeeded);
 
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
 
     const auto dependencies = multi_string_to_list_W(ptr->lpDependencies);
     for (const auto& dependency : dependencies)
@@ -885,7 +885,7 @@ VUResult CServiceManagerW::Delete(const std::wstring& name)
 
   auto hService = OpenServiceW(m_Manager, name.c_str(), SERVICE_ALL_ACCESS);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (hService == nullptr)
   {
@@ -894,7 +894,7 @@ VUResult CServiceManagerW::Delete(const std::wstring& name)
 
   BOOL result = DeleteService(hService);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   CloseServiceHandle(hService);
 
@@ -924,7 +924,7 @@ VUResult CServiceManagerW::Start(const std::wstring& name)
   {
     auto hService = OpenServiceW(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
 
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
 
     if (hService == nullptr)
     {
@@ -933,7 +933,7 @@ VUResult CServiceManagerW::Start(const std::wstring& name)
 
     BOOL ret = StartServiceW(hService, 0, nullptr);
 
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
 
     CloseServiceHandle(hService);
 
@@ -991,19 +991,19 @@ VUResult CServiceManagerW::Create(
 {
   if (file_path.empty() || service_name.empty() || display_name.empty())
   {
-    m_LastErrorCode = ERROR_BAD_ARGUMENTS;
+    m_last_error_code = ERROR_BAD_ARGUMENTS;
     return __LINE__;
   }
 
   if (!is_file_exists_W(file_path))
   {
-    m_LastErrorCode = ERROR_FILE_NOT_FOUND;
+    m_last_error_code = ERROR_FILE_NOT_FOUND;
     return __LINE__;
   }
 
   if (this->Query(service_name) != nullptr)
   {
-    m_LastErrorCode = ERROR_ALREADY_EXISTS;
+    m_last_error_code = ERROR_ALREADY_EXISTS;
     return __LINE__;
   }
 
@@ -1019,7 +1019,7 @@ VUResult CServiceManagerW::Create(
     NULL, NULL, NULL, NULL, NULL
   );
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   if (hService == nullptr)
   {

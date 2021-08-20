@@ -51,57 +51,57 @@ bool sGUID::operator != (const sGUID &right) const
 
 CGUIDX::CGUIDX(bool create)
 {
-  ZeroMemory(&m_GUID, sizeof(m_GUID));
+  ZeroMemory(&m_guid, sizeof(m_guid));
   if (create)
   {
-    Create();
+    this->create();
   }
 }
 
 CGUIDX::~CGUIDX() {}
 
-bool CGUIDX::Create()
+bool CGUIDX::create()
 {
-  return ((m_Status = UuidCreate(CAST_GUID(&m_GUID, NONE))) == RPC_S_OK);
+  return ((m_status = UuidCreate(CAST_GUID(&m_guid, NONE))) == RPC_S_OK);
 }
 
 const sGUID& CGUIDX::GUID() const
 {
-  return m_GUID;
+  return m_guid;
 }
 
 void CGUIDX::GUID(const sGUID& guid)
 {
-  m_GUID = guid;
+  m_guid = guid;
 }
 
 const CGUIDX& CGUIDX::operator = (const CGUIDX &right)
 {
-  m_GUID = right.m_GUID;
+  m_guid = right.m_guid;
   return *this;
 }
 
 bool CGUIDX::operator == (const CGUIDX &right) const
 {
-  return m_GUID == right.m_GUID;
+  return m_guid == right.m_guid;
 }
 
 bool CGUIDX::operator != (const CGUIDX &right) const
 {
-  return m_GUID != right.m_GUID;
+  return m_guid != right.m_guid;
 }
 
-void CGUIDA::Parse(const std::string& guid)
+void CGUIDA::parse(const std::string& guid)
 {
-  m_GUID = CGUIDA::ToGUID(guid);
+  m_guid = CGUIDA::to_guid(guid);
 }
 
-std::string CGUIDA::AsString() const
+std::string CGUIDA::as_string() const
 {
-  return CGUIDA::ToString(m_GUID);
+  return CGUIDA::to_string(m_guid);
 }
 
-const std::string CGUIDA::ToString(const sGUID& guid)
+const std::string CGUIDA::to_string(const sGUID& guid)
 {
   std::string result("");
 
@@ -123,7 +123,7 @@ const std::string CGUIDA::ToString(const sGUID& guid)
   return result;
 }
 
-const sGUID CGUIDA::ToGUID(const std::string& guid)
+const sGUID CGUIDA::to_guid(const std::string& guid)
 {
   sGUID result = {0};
 
@@ -133,17 +133,17 @@ const sGUID CGUIDA::ToGUID(const std::string& guid)
   return result;
 }
 
-void CGUIDW::Parse(const std::wstring& guid)
+void CGUIDW::parse(const std::wstring& guid)
 {
-  m_GUID = CGUIDW::ToGUID(guid);
+  m_guid = CGUIDW::to_guid(guid);
 }
 
-std::wstring CGUIDW::AsString() const
+std::wstring CGUIDW::as_string() const
 {
-  return CGUIDW::ToString(m_GUID);
+  return CGUIDW::to_string(m_guid);
 }
 
-const std::wstring CGUIDW::ToString(const sGUID& guid)
+const std::wstring CGUIDW::to_string(const sGUID& guid)
 {
   std::wstring result(L"");
 
@@ -165,7 +165,7 @@ const std::wstring CGUIDW::ToString(const sGUID& guid)
   return result;
 }
 
-const sGUID CGUIDW::ToGUID(const std::wstring& guid)
+const sGUID CGUIDW::to_guid(const std::wstring& guid)
 {
   sGUID result = {0};
 

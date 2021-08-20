@@ -50,7 +50,7 @@ bool vuapi CFileSystemX::Read(
   BOOL result = ReadFile(m_FileHandle, Buffer, ulSize, (LPDWORD)&m_ReadSize, NULL);
   if (!result && ulSize != m_ReadSize)
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return false;
   }
 
@@ -62,7 +62,7 @@ bool vuapi CFileSystemX::Read(void* Buffer, ulong ulSize)
   BOOL result = ReadFile(m_FileHandle, Buffer, ulSize, (LPDWORD)&m_ReadSize, NULL);
   if (!result && ulSize != m_ReadSize)
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return false;
   }
 
@@ -81,7 +81,7 @@ bool vuapi CFileSystemX::Write(
   BOOL result = WriteFile(m_FileHandle, cBuffer, ulSize, (LPDWORD)&m_WroteSize, NULL);
   if (!result && ulSize != m_WroteSize)
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return false;
   }
 
@@ -93,7 +93,7 @@ bool vuapi CFileSystemX::Write(const void* cBuffer, ulong ulSize)
   BOOL result = WriteFile(m_FileHandle, cBuffer, ulSize, (LPDWORD)&m_WroteSize, NULL);
   if (!result && ulSize != m_WroteSize)
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return false;
   }
 
@@ -109,7 +109,7 @@ bool vuapi CFileSystemX::Seek(ulong ulOffset, eMoveMethodFlags mmFlag)
 
   ulong result = SetFilePointer(m_FileHandle, ulOffset, NULL, mmFlag);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   return (result != INVALID_SET_FILE_POINTER);
 }
@@ -123,7 +123,7 @@ ulong vuapi CFileSystemX::GetFileSize()
 
   ulong result = ::GetFileSize(m_FileHandle, NULL);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   return result;
 }
@@ -149,7 +149,7 @@ bool vuapi CFileSystemX::IOControl(
     NULL
   ) != 0);
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   return result;
 }
@@ -178,9 +178,9 @@ const CBuffer vuapi CFileSystemX::ReadAsBuffer()
   auto size = this->GetFileSize();
   if (size == 0) return pContent;
 
-  pContent.Resize(size);
+  pContent.resize(size);
 
-  this->Read(0, pContent.GetpData(), size, eMoveMethodFlags::MM_BEGIN);
+  this->Read(0, pContent.get_ptr_data(), size, eMoveMethodFlags::MM_BEGIN);
 
   return pContent;
 }
@@ -217,7 +217,7 @@ bool vuapi CFileSystemA::Init(
   m_FileHandle = CreateFileA(FilePath.c_str(), fgFlag, fsFlag, NULL, fmFlag, faFlag, NULL);
   if (!this->Valid(m_FileHandle))
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return false;
   }
 
@@ -229,9 +229,9 @@ const std::string vuapi CFileSystemA::ReadFileAsString(bool removeBOM)
   std::string result("");
 
   auto pContent = this->ReadAsBuffer();
-  auto p = (char*)pContent.GetpData();
+  auto p = (char*)pContent.get_ptr_data();
 
-  auto encoding = determine_encoding_type(pContent.GetpData(), pContent.GetSize());
+  auto encoding = determine_encoding_type(pContent.get_ptr_data(), pContent.get_size());
   if (encoding == eEncodingType::ET_UNKNOWN)
   {
     assert(0);
@@ -355,7 +355,7 @@ bool vuapi CFileSystemW::Init(
   m_FileHandle = CreateFileW(FilePath.c_str(), fgFlag, fsFlag, NULL, fmFlag, faFlag, NULL);
   if (!this->Valid(m_FileHandle))
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return false;
   }
 
@@ -367,9 +367,9 @@ const std::wstring vuapi CFileSystemW::ReadAsString(bool removeBOM)
   std::wstring result(L"");
 
   auto pContent = this->ReadAsBuffer();
-  auto p = (wchar*)pContent.GetpData();
+  auto p = (wchar*)pContent.get_ptr_data();
 
-  auto encoding = determine_encoding_type(pContent.GetpData(), pContent.GetSize());
+  auto encoding = determine_encoding_type(pContent.get_ptr_data(), pContent.get_size());
   if (encoding == eEncodingType::ET_UNKNOWN)
   {
     assert(0);
@@ -378,7 +378,7 @@ const std::wstring vuapi CFileSystemW::ReadAsString(bool removeBOM)
 
   if (removeBOM && (encoding == eEncodingType::ET_UTF16_LE_BOM || encoding == eEncodingType::ET_UTF16_BE_BOM))
   {
-    p = (wchar*)((char*)pContent.GetpData() + 2); /* remove BOM */
+    p = (wchar*)((char*)pContent.get_ptr_data() + 2); /* remove BOM */
   }
 
   result.assign(p);

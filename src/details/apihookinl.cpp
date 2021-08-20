@@ -290,7 +290,7 @@ bool vuapi CAPIHookA::Override(
   void** lpOldProc
 )
 {
-  void* lpProc = CLibraryA::QuickGetProcAddress(ModuleName, ProcName);
+  void* lpProc = CLibraryA::quick_get_proc_address(ModuleName, ProcName);
   if (lpProc == nullptr)
   {
     return false;
@@ -312,7 +312,7 @@ bool vuapi CAPIHookA::Restore(
     return false;
   }
 
-  void* lpProc = CLibraryA::QuickGetProcAddress(ModuleName, ProcName);
+  void* lpProc = CLibraryA::quick_get_proc_address(ModuleName, ProcName);
   if (lpProc == nullptr)
   {
     return false;
@@ -328,7 +328,7 @@ bool vuapi CAPIHookW::Override(
   void** lpOldProc
 )
 {
-  void* lpProc = CLibraryW::QuickGetProcAddress(ModuleName, ProcName);
+  void* lpProc = CLibraryW::quick_get_proc_address(ModuleName, ProcName);
   if (lpProc == nullptr)
   {
     return false;
@@ -350,7 +350,7 @@ bool vuapi CAPIHookW::Restore(
     return false;
   }
 
-  void* lpProc = CLibraryW::QuickGetProcAddress(ModuleName, ProcName);
+  void* lpProc = CLibraryW::quick_get_proc_address(ModuleName, ProcName);
   if (lpProc == nullptr)
   {
     return false;

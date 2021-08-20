@@ -199,13 +199,13 @@ std::pair<bool, size_t> find_pattern_A(const CBuffer& buffer, const std::string&
 {
   std::pair<bool, size_t> result(false, 0);
 
-  if (buffer.GetpData() == nullptr || pattern.empty())
+  if (buffer.get_ptr_data() == nullptr || pattern.empty())
   {
     return result;
   }
 
-  const auto pointer = static_cast<const byte*>(buffer.GetpData());
-  const size_t size = buffer.GetSize();
+  const auto pointer = static_cast<const byte*>(buffer.get_ptr_data());
+  const size_t size = buffer.get_size();
 
   return find_pattern_A(pointer, size, pattern);
 }

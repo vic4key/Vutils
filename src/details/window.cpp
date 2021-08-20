@@ -20,7 +20,7 @@ HWND vuapi get_console_window()
 
   HWND hwConsole = NULL;
 
-  PfnGetConsoleWindow pfnGetConsoleWindow = (PfnGetConsoleWindow)CLibrary::QuickGetProcAddress(
+  PfnGetConsoleWindow pfnGetConsoleWindow = (PfnGetConsoleWindow)CLibrary::quick_get_proc_address(
     _T("kernel32.dll"),
     _T("GetConsoleWindow")
   );
@@ -610,18 +610,18 @@ void CWDTDialog::Serialize(void** pptr)
 
 INT_PTR CWDTDialog::DoModal(DLGPROC pfnDlgProc, CWDTDialog* pSelf)
 {
-  m_LastErrorCode = ERROR_SUCCESS;
+  m_last_error_code = ERROR_SUCCESS;
 
   if (m_hGlobal == nullptr)
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return -1;
   }
 
   auto ptr = GlobalLock(m_hGlobal);
   if (ptr == nullptr)
   {
-    m_LastErrorCode = GetLastError();
+    m_last_error_code = GetLastError();
     return -1;
   }
 
@@ -632,7 +632,7 @@ INT_PTR CWDTDialog::DoModal(DLGPROC pfnDlgProc, CWDTDialog* pSelf)
   auto ret = DialogBoxIndirectParamA(
     GetModuleHandle(0), LPDLGTEMPLATE(m_hGlobal), 0, pfnDlgProc, LPARAM(pSelf));
 
-  m_LastErrorCode = GetLastError();
+  m_last_error_code = GetLastError();
 
   return ret;
 }
@@ -641,19 +641,19 @@ INT_PTR CWDTDialog::DoModal(DLGPROC pfnDlgProc, CWDTDialog* pSelf)
  * CInputDialog
  */
 
-CInputDialog::CInputDialog(const std::wstring& label, HWND hwParent, bool numberonly)
+CInputDialog::CInputDialog(const std::wstring& label, HWND hwnd_parent, bool number_only)
   : IDC_LABEL(0x1001)
   , IDC_INPUT(0x1002)
-  , m_Label(label)
-  , m_NumberOnly(numberonly)
+  , m_label(label)
+  , m_number_only(number_only)
   , vu::CWDTDialog(L"Input Dialog"
   , DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
   , WS_EX_DLGMODALFRAME
   , 0, 0, 179, 60
-  , hwParent
+  , hwnd_parent
 )
 {
-  Add(CWDTControl(
+  this->Add(CWDTControl(
     L"Label",
     CWDTControl::CT_STATIC,
     IDC_LABEL,
@@ -661,15 +661,15 @@ CInputDialog::CInputDialog(const std::wstring& label, HWND hwParent, bool number
     WS_CHILD | WS_VISIBLE | SS_LEFT | BF_FLAT)
   );
 
-  Add(CWDTControl(
+  this->Add(CWDTControl(
     L"",
     CWDTControl::CT_EDIT,
     IDC_INPUT,
     7, 18, 165, 14,
-    WS_CHILD | WS_VISIBLE | ES_LEFT | WS_BORDER | (m_NumberOnly ? ES_NUMBER : 0))
+    WS_CHILD | WS_VISIBLE | ES_LEFT | WS_BORDER | (m_number_only ? ES_NUMBER : 0))
   );
 
-  Add(CWDTControl(
+  this->Add(CWDTControl(
     L"OK",
     CWDTControl::CT_BUTTON,
     IDOK,
@@ -677,7 +677,7 @@ CInputDialog::CInputDialog(const std::wstring& label, HWND hwParent, bool number
     WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_FLAT)
   );
 
-  Add(CWDTControl(
+  this->Add(CWDTControl(
     L"Cancel",
     CWDTControl::CT_BUTTON,
     IDCANCEL,
@@ -690,19 +690,19 @@ CInputDialog::~CInputDialog()
 {
 }
 
-void CInputDialog::Label(const std::wstring& label)
+void CInputDialog::label(const std::wstring& label)
 {
-  m_Label = label;
+  m_label = label;
 }
 
-const std::wstring& CInputDialog::Label() const
+const std::wstring& CInputDialog::label() const
 {
-  return m_Label;
+  return m_label;
 }
 
-vu::CFundamentalW& CInputDialog::Input()
+vu::CFundamentalW& CInputDialog::input()
 {
-  return m_Input;
+  return m_input;
 }
 
 INT_PTR CInputDialog::DoModal()
@@ -710,30 +710,30 @@ INT_PTR CInputDialog::DoModal()
   return CWDTDialog::DoModal(DLGPROC(DlgProc), this);
 }
 
-LRESULT CALLBACK CInputDialog::DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT CALLBACK CInputDialog::DlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-  static CInputDialog* pSelf = nullptr;
+  static CInputDialog* ptr_self = nullptr;
   switch (msg)
   {
   case WM_INITDIALOG:
   {
-    if (pSelf == nullptr)
+    if (ptr_self == nullptr)
     {
-      pSelf = reinterpret_cast<CInputDialog*>(lp);
+      ptr_self = reinterpret_cast<CInputDialog*>(lp);
     }
 
-    if (pSelf != nullptr)
+    if (ptr_self != nullptr)
     {
-      SetWindowTextW(GetDlgItem(hw, pSelf->IDC_LABEL), pSelf->Label().c_str());
+      SetWindowTextW(GetDlgItem(hwnd, ptr_self->IDC_LABEL), ptr_self->label().c_str());
     }
 
     RECT rc = { 0 };
-    GetWindowRect(hw, &rc);
+    GetWindowRect(hwnd, &rc);
     int X = (GetSystemMetrics(SM_CXSCREEN) - rc.right)  / 2;
     int Y = (GetSystemMetrics(SM_CYSCREEN) - rc.bottom) / 2;
-    SetWindowPos(hw, nullptr, X, Y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+    SetWindowPos(hwnd, nullptr, X, Y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 
-    SetFocus(GetDlgItem(hw, pSelf->IDC_INPUT));
+    SetFocus(GetDlgItem(hwnd, ptr_self->IDC_INPUT));
   }
   break;
 
@@ -743,19 +743,19 @@ LRESULT CALLBACK CInputDialog::DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
     {
     case IDOK:
     {
-      assert(pSelf != nullptr);
+      assert(ptr_self != nullptr);
 
       wchar_t s[KiB] = { 0 };
-      GetWindowTextW(GetDlgItem(hw, pSelf->IDC_INPUT), s, sizeof(s) / sizeof(s[0]));
-      pSelf->Input() << s;
+      GetWindowTextW(GetDlgItem(hwnd, ptr_self->IDC_INPUT), s, sizeof(s) / sizeof(s[0]));
+      ptr_self->input() << s;
 
-      EndDialog(hw, IDOK);
+      EndDialog(hwnd, IDOK);
     }
     break;
 
     case IDCANCEL:
     {
-      EndDialog(hw, IDCANCEL);
+      EndDialog(hwnd, IDCANCEL);
     }
     break;
 
@@ -767,7 +767,7 @@ LRESULT CALLBACK CInputDialog::DlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
 
   case WM_CLOSE:
   {
-    EndDialog(hw, IDCANCEL);
+    EndDialog(hwnd, IDCANCEL);
   }
   break;
 
