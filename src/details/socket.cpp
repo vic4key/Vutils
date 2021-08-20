@@ -29,29 +29,29 @@ CSocket::CSocket(
   const Type type,
   const Protocol proto,
   bool  wsa
-) : CLastError(), m_AF(af), m_Type(type), m_Proto(proto), m_WSA(wsa)
+) : CLastError(), m_af(af), m_type(type), m_proto(proto), m_wsa(wsa)
 {
-  ZeroMemory(&m_WSAData, sizeof(m_WSAData));
-  ZeroMemory(&m_SAI, sizeof(m_SAI));
+  ZeroMemory(&m_wsa_data, sizeof(m_wsa_data));
+  ZeroMemory(&m_sai, sizeof(m_sai));
 
-  if (m_WSA)
+  if (m_wsa)
   {
-    if (WSAStartup(MAKEWORD(2, 2), &m_WSAData) != 0)
+    if (WSAStartup(MAKEWORD(2, 2), &m_wsa_data) != 0)
     {
       m_last_error_code = GetLastError();
     }
   }
 
-  m_Socket = socket(m_AF, m_Type, m_Proto);
+  m_socket = socket(m_af, m_type, m_proto);
 
-  m_SAI.sin_family = m_AF;
+  m_sai.sin_family = m_af;
 }
 
 CSocket::~CSocket()
 {
-  this->Close();
+  this->close();
 
-  if (m_WSA)
+  if (m_wsa)
   {
     WSACleanup();
   }
@@ -59,93 +59,93 @@ CSocket::~CSocket()
   m_last_error_code = GetLastError();
 }
 
-bool vuapi CSocket::Valid(const SOCKET& socket)
+bool vuapi CSocket::valid(const SOCKET& socket)
 {
   return !(socket == 0 || socket == INVALID_SOCKET);
 }
 
-bool vuapi CSocket::Available()
+bool vuapi CSocket::available()
 {
-  return this->Valid(m_Socket);
+  return this->valid(m_socket);
 }
 
-void vuapi CSocket::Attach(const SOCKET& socket)
+void vuapi CSocket::attach(const SOCKET& socket)
 {
   TSocket obj = { 0 };
   obj.s = socket;
-  this->Attach(obj);
+  this->attach(obj);
 }
 
-void vuapi CSocket::Attach(const TSocket& socket)
+void vuapi CSocket::attach(const TSocket& socket)
 {
-  m_Socket = socket.s;
-  m_SAI = socket.sai;
+  m_socket = socket.s;
+  m_sai = socket.sai;
 }
 
-void vuapi CSocket::Detach()
+void vuapi CSocket::detach()
 {
-  m_Socket = INVALID_SOCKET;
-  ZeroMemory(&m_SAI, sizeof(m_SAI));
+  m_socket = INVALID_SOCKET;
+  ZeroMemory(&m_sai, sizeof(m_sai));
 }
 
-const WSADATA& vuapi CSocket::GetWSAData() const
+const WSADATA& vuapi CSocket::get_wsa_data() const
 {
-  return m_WSAData;
+  return m_wsa_data;
 }
 
-const CSocket::AddressFamily vuapi CSocket::GetAF() const
+const CSocket::AddressFamily vuapi CSocket::get_af() const
 {
-  return m_AF;
+  return m_af;
 }
 
-const CSocket::Type vuapi CSocket::GetType() const
+const CSocket::Type vuapi CSocket::get_type() const
 {
-  return m_Type;
+  return m_type;
 }
 
-const CSocket::Protocol vuapi CSocket::GetProtocol() const
+const CSocket::Protocol vuapi CSocket::get_protocol() const
 {
-  return m_Proto;
+  return m_proto;
 }
 
-SOCKET& vuapi CSocket::GetSocket()
+SOCKET& vuapi CSocket::get_socket()
 {
-  return m_Socket;
+  return m_socket;
 }
 
-const sockaddr_in vuapi CSocket::GetLocalSAI()
+const sockaddr_in vuapi CSocket::get_local_sai()
 {
   sockaddr_in result = { 0 };
 
-  if (this->Available())
+  if (this->available())
   {
     auto size = int(sizeof(result));
-    getsockname(m_Socket, (struct sockaddr*)&result, &size);
+    getsockname(m_socket, (struct sockaddr*)&result, &size);
   }
 
   return result;
 }
 
-const sockaddr_in vuapi CSocket::GetRemoteSAI()
+const sockaddr_in vuapi CSocket::get_remote_sai()
 {
   sockaddr_in result = { 0 };
 
-  if (this->Available())
+  if (this->available())
   {
     auto size = int(sizeof(result));
-    getpeername(m_Socket, (struct sockaddr*)&result, &size);
+    getpeername(m_socket, (struct sockaddr*)&result, &size);
   }
 
   return result;
 }
 
-VUResult vuapi CSocket::SetOption(
+VUResult vuapi CSocket::set_option(
   const int level,
   const int opt,
   const std::string& val,
   const int size)
 {
-  if (!this->Available())
+  if (!this->available())
   {
     return 1;
   }
@@ -155,7 +155,7 @@ VUResult vuapi CSocket::SetOption(
     return 2;
   }
 
-  if (setsockopt(m_Socket, level, opt, val.c_str(), size) != 0)
+  if (setsockopt(m_socket, level, opt, val.c_str(), size) != 0)
   {
     m_last_error_code = GetLastError();
     return 3;
@@ -164,15 +164,15 @@ VUResult vuapi CSocket::SetOption(
   return VU_OK;
 }
 
-VUResult vuapi CSocket::EnableNonBlocking(bool state)
+VUResult vuapi CSocket::enable_non_blocking(bool state)
 {
-  if (!this->Available())
+  if (!this->available())
   {
     return 1;
   }
 
-  ulong NonBlock = state ? 1 : 0;
-  if (ioctlsocket(m_Socket, FIONBIO, &NonBlock) == SOCKET_ERROR)
+  ulong non_block = state ? 1 : 0;
+  if (ioctlsocket(m_socket, FIONBIO, &non_block) == SOCKET_ERROR)
   {
     return 2;
   }
@@ -180,28 +180,28 @@ VUResult vuapi CSocket::EnableNonBlocking(bool state)
   return VU_OK;
 }
 
-VUResult vuapi CSocket::Bind(const TEndPoint& endpoint)
+VUResult vuapi CSocket::bind(const TEndPoint& endpoint)
 {
-  return this->Bind(endpoint.Host, endpoint.Port);
+  return this->bind(endpoint.Host, endpoint.Port);
 }
 
-VUResult vuapi CSocket::Bind(const std::string& address, const ushort port)
+VUResult vuapi CSocket::bind(const std::string& address, const ushort port)
 {
-  if (!this->Available())
+  if (!this->available())
   {
     return 1;
   }
 
-  std::string IP = this->IsHostName(address) ? this->GetHostAddress(address) : address;
-  if (IP.empty())
+  std::string ip = this->is_host_name(address) ? this->get_host_address(address) : address;
+  if (ip.empty())
   {
     return 2;
   }
 
-  m_SAI.sin_addr.S_un.S_addr = inet_addr(IP.c_str());
-  m_SAI.sin_port = htons(port);
+  m_sai.sin_addr.S_un.S_addr = inet_addr(ip.c_str());
+  m_sai.sin_port = htons(port);
 
-  if (bind(m_Socket, (const struct sockaddr*)&m_SAI, sizeof(m_SAI)) == SOCKET_ERROR)
+  if (::bind(m_socket, (const struct sockaddr*)&m_sai, sizeof(m_sai)) == SOCKET_ERROR)
   {
     m_last_error_code = GetLastError();
     return 3;
@@ -210,23 +210,23 @@ VUResult vuapi CSocket::Bind(const std::string& address, const ushort port)
   return VU_OK;
 }
 
-VUResult vuapi CSocket::Listen(const int maxcon)
+VUResult vuapi CSocket::listen(const int maxcon)
 {
-  if (!this->Available())
+  if (!this->available())
   {
     return 1;
   }
 
-  int result = listen(m_Socket, maxcon);
+  int result = ::listen(m_socket, maxcon);
 
   m_last_error_code = GetLastError();
 
   return (result == SOCKET_ERROR ? 2 : VU_OK);
 }
 
-VUResult vuapi CSocket::Accept(TSocket& socket)
+VUResult vuapi CSocket::accept(TSocket& socket)
 {
-  if (!this->Available())
+  if (!this->available())
   {
     return 1;
   }
@@ -235,64 +235,64 @@ VUResult vuapi CSocket::Accept(TSocket& socket)
 
   int size = sizeof(socket.sai);
 
-  socket.s = accept(m_Socket, (struct sockaddr*)&socket.sai, &size);
+  socket.s = ::accept(m_socket, (struct sockaddr*)&socket.sai, &size);
 
   m_last_error_code = GetLastError();
 
-  if (!this->Valid(socket.s))
+  if (!this->valid(socket.s))
   {
     return 2;
   }
 
-  this->Parse(socket);
+  this->parse(socket);
 
   return VU_OK;
 }
 
-VUResult vuapi CSocket::Connect(const TEndPoint& endpoint)
+VUResult vuapi CSocket::connect(const TEndPoint& endpoint)
 {
-  return this->Connect(endpoint.Host, endpoint.Port);
+  return this->connect(endpoint.Host, endpoint.Port);
 }
 
-VUResult vuapi CSocket::Connect(const std::string& Address, ushort usPort)
+VUResult vuapi CSocket::connect(const std::string& address, ushort port)
 {
-  std::string IP;
+  std::string ip;
 
-  if (this->IsHostName(Address) == true)
+  if (this->is_host_name(address) == true)
   {
-    IP = this->GetHostAddress(Address);
+    ip = this->get_host_address(address);
   }
   else
   {
-    IP = Address;
+    ip = address;
   }
 
-  if (IP.empty())
+  if (ip.empty())
   {
     return 1;
   }
 
-  m_SAI.sin_addr.S_un.S_addr = inet_addr(IP.c_str());
-  m_SAI.sin_port = htons(usPort);
+  m_sai.sin_addr.S_un.S_addr = inet_addr(ip.c_str());
+  m_sai.sin_port = htons(port);
 
-  if (connect(m_Socket, (const struct sockaddr*)&m_SAI, sizeof(m_SAI)) == SOCKET_ERROR)
+  if (::connect(m_socket, (const struct sockaddr*)&m_sai, sizeof(m_sai)) == SOCKET_ERROR)
   {
     m_last_error_code = GetLastError();
-    this->Close();
+    this->close();
     return 2;
   }
 
   return VU_OK;
 }
 
-IResult vuapi CSocket::Send(const char* lpData, int size, const Flags flags)
+IResult vuapi CSocket::send(const char* ptr_data, int size, const Flags flags)
 {
-  if (!this->Available())
+  if (!this->available())
   {
     return SOCKET_ERROR;
   }
 
-  IResult z = send(m_Socket, lpData, size, flags);
+  IResult z = ::send(m_socket, ptr_data, size, flags);
   if (z == SOCKET_ERROR)
   {
     m_last_error_code = GetLastError();
@@ -301,19 +301,19 @@ IResult vuapi CSocket::Send(const char* lpData, int size, const Flags flags)
   return z;
 }
 
-IResult vuapi CSocket::Send(const CBuffer& data, const Flags flags)
+IResult vuapi CSocket::send(const CBuffer& buffer, const Flags flags)
 {
-  return this->Send((const char*)data.get_ptr_data(), int(data.get_size()), flags);
+  return this->send((const char*)buffer.get_ptr_data(), int(buffer.get_size()), flags);
 }
 
-IResult vuapi CSocket::Recv(char* lpData, int size, const Flags flags)
+IResult vuapi CSocket::recv(char* ptr_data, int size, const Flags flags)
 {
-  if (!this->Available())
+  if (!this->available())
   {
     return SOCKET_ERROR;
   }
 
-  IResult z = recv(m_Socket, lpData, size, flags);
+  IResult z = ::recv(m_socket, ptr_data, size, flags);
   if (z == SOCKET_ERROR)
   {
     m_last_error_code = GetLastError();
@@ -322,65 +322,65 @@ IResult vuapi CSocket::Recv(char* lpData, int size, const Flags flags)
   return z;
 }
 
-IResult vuapi CSocket::Recv(CBuffer& Data, const Flags flags)
+IResult vuapi CSocket::recv(CBuffer& buffer, const Flags flags)
 {
-  if (!this->Available())
+  if (!this->available())
   {
     return SOCKET_ERROR;
   }
 
-  auto z = this->Recv((char*)Data.get_ptr_data(), int(Data.get_size()), flags);
+  auto z = this->recv((char*)buffer.get_ptr_data(), int(buffer.get_size()), flags);
   if (z != SOCKET_ERROR)
   {
-    Data.resize(z);
+    buffer.resize(z);
   }
 
   return z;
 }
 
-IResult vuapi CSocket::Recvall(CBuffer& Data, const Flags flags)
+IResult vuapi CSocket::recv_all(CBuffer& buffer, const Flags flags)
 {
-  CBuffer buffer;
+  CBuffer block;
 
   do
   {
-    buffer.resize(VU_DEF_BLOCK_SIZE);
-    IResult z = this->Recv(buffer, flags);
+    block.resize(VU_DEF_BLOCK_SIZE);
+    IResult z = this->recv(block, flags);
     if (z <= 0)
     {
-      buffer.reset();
+      block.reset();
     }
     else
     {
-      if (z < static_cast<int>(buffer.get_size()))
+      if (z < static_cast<int>(block.get_size()))
       {
-        buffer.resize(z);
+        block.resize(z);
       }
-      Data.append(buffer);
+      buffer.append(block);
       if (z < VU_DEF_BLOCK_SIZE)
       {
-        buffer.reset();
+        block.reset();
       }
     }
-  } while (!buffer.empty());
+  } while (!block.empty());
 
-  return IResult(Data.get_size());
+  return IResult(buffer.get_size());
 }
 
-IResult vuapi CSocket::SendTo(const CBuffer& Data, const TSocket& socket)
+IResult vuapi CSocket::send_to(const CBuffer& buffer, const TSocket& socket)
 {
-  return this->SendTo((const char*)Data.get_ptr_data(), int(Data.get_size()), socket);
+  return this->send_to((const char*)buffer.get_ptr_data(), int(buffer.get_size()), socket);
 }
 
-IResult vuapi CSocket::SendTo(const char* lpData, const int size, const TSocket& socket)
+IResult vuapi CSocket::send_to(const char* lpData, const int size, const TSocket& socket)
 {
-  if (!this->Available())
+  if (!this->available())
   {
     return SOCKET_ERROR;
   }
 
   IResult z = sendto(
-    m_Socket,
+    m_socket,
     lpData,
     size,
     0,
@@ -396,88 +396,88 @@ IResult vuapi CSocket::SendTo(const char* lpData, const int size, const TSocket&
   return z;
 }
 
-IResult vuapi CSocket::RecvFrom(CBuffer& Data, const TSocket& socket)
+IResult vuapi CSocket::recv_from(CBuffer& buffer, const TSocket& socket)
 {
-  auto z =  this->RecvFrom((char*)Data.get_ptr_data(), int(Data.get_size()), socket);
+  auto z = this->recv_from((char*)buffer.get_ptr_data(), int(buffer.get_size()), socket);
   if (z != SOCKET_ERROR)
   {
-    Data.resize(z);
+    buffer.resize(z);
   }
 
   return z;
 }
 
-IResult vuapi CSocket::RecvFrom(char* lpData, int size, const TSocket& socket)
+IResult vuapi CSocket::recv_from(char* ptr_data, int size, const TSocket& socket)
 {
-  if (!this->Available())
+  if (!this->available())
   {
     return SOCKET_ERROR;
   }
 
   int n = sizeof(socket.sai);
-  IResult z = recvfrom(m_Socket, lpData, size, 0, (struct sockaddr *)&socket.sai, &n);
+  IResult z = recvfrom(m_socket, ptr_data, size, 0, (struct sockaddr *)&socket.sai, &n);
   if (z == SOCKET_ERROR)
   {
     m_last_error_code = GetLastError();
   }
   else
   {
-    this->Parse(socket);
+    this->parse(socket);
   }
 
   return z;
 }
 
-IResult vuapi CSocket::RecvallFrom(CBuffer& Data, const TSocket& socket)
+IResult vuapi CSocket::recv_all_from(CBuffer& buffer, const TSocket& socket)
 {
-  CBuffer buffer;
+  CBuffer block;
 
   do
   {
-    buffer.resize(VU_DEF_BLOCK_SIZE);
-    IResult z = this->RecvFrom(buffer, socket);
+    block.resize(VU_DEF_BLOCK_SIZE);
+    IResult z = this->recv_from(block, socket);
     if (z <= 0)
     {
-      buffer.reset();
+      block.reset();
     }
     else
     {
-      if (z < static_cast<int>(buffer.get_size()))
+      if (z < static_cast<int>(block.get_size()))
       {
-        buffer.resize(z);
+        block.resize(z);
       }
-      Data.append(buffer);
+      buffer.append(block);
       if (z < VU_DEF_BLOCK_SIZE)
       {
-        buffer.reset();
+        block.reset();
       }
     }
-  } while (!buffer.empty());
+  } while (!block.empty());
 
-  return IResult(Data.get_size());
+  return IResult(buffer.get_size());
 }
 
-VUResult vuapi CSocket::Close()
+VUResult vuapi CSocket::close()
 {
-  if (!this->Available())
+  if (!this->available())
   {
     return 1;
   }
 
-  closesocket(m_Socket);
-  m_Socket = INVALID_SOCKET;
+  closesocket(m_socket);
+  m_socket = INVALID_SOCKET;
 
   return VU_OK;
 }
 
-VUResult vuapi CSocket::Shutdown(const Shutdowns flags)
+VUResult vuapi CSocket::shutdown(const Shutdowns flags)
 {
-  if (!this->Available())
+  if (!this->available())
   {
     return 1;
   }
 
-  if (shutdown(m_Socket, flags) == SOCKET_ERROR)
+  if (::shutdown(m_socket, flags) == SOCKET_ERROR)
   {
     m_last_error_code = GetLastError();
     return 2;
@@ -486,11 +486,11 @@ VUResult vuapi CSocket::Shutdown(const Shutdowns flags)
   return VU_OK;
 }
 
-std::string vuapi CSocket::GetHostName()
+std::string vuapi CSocket::get_host_name()
 {
   std::string result = "";
 
-  if (!this->Available())
+  if (!this->available())
   {
     return result;
   }
@@ -513,29 +513,29 @@ std::string vuapi CSocket::GetHostName()
   return result;
 }
 
-std::string vuapi CSocket::GetHostAddress(const std::string& Name)
+std::string vuapi CSocket::get_host_address(const std::string& name)
 {
   std::string result = "";
 
-  if (!this->Available())
+  if (!this->available())
   {
     WSASetLastError(6);  // WSA_INVALID_HANDLE
     return result;
   }
 
-  if (Name.empty())
+  if (name.empty())
   {
     WSASetLastError(87); // WSA_INVALID_PARAMETER
     return result;
   }
 
-  if (Name.length() >= MAXBYTE)
+  if (name.length() >= MAXBYTE)
   {
     WSASetLastError(87); // WSA_INVALID_PARAMETER
     return result;
   }
 
-  hostent * h = gethostbyname(Name.c_str());
+  hostent * h = gethostbyname(name.c_str());
   if (h == nullptr)
   {
     return result;
@@ -553,7 +553,7 @@ std::string vuapi CSocket::GetHostAddress(const std::string& Name)
   return result;
 }
 
-bool vuapi CSocket::IsHostName(const std::string& s)
+bool vuapi CSocket::is_host_name(const std::string& s)
 {
   bool result = false;
   const std::string MASK = "01234567890.";
@@ -580,7 +580,7 @@ bool vuapi CSocket::IsHostName(const std::string& s)
   return result;
 }
 
-bool vuapi CSocket::Parse(const TSocket& socket)
+bool vuapi CSocket::parse(const TSocket& socket)
 {
   if (sprintf(
     (char*)socket.ip,

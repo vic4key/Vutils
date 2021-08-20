@@ -10,22 +10,28 @@ DEF_SAMPLE(Process)
   #define PROCESS_NAME ts("x32dbg.exe")
   #endif // _WIN64
 
-  auto PIDs = vu::name_to_pid(PROCESS_NAME);
-  assert(!PIDs.empty());
+  auto pids = vu::name_to_pid(PROCESS_NAME);
+  if (pids.empty())
+  {
+    std::cout << "Not found the target process for Process Testing ..." << std::endl;
+    return vu::VU_OK;
+  }
+
+  auto pid = pids.back();
 
   vu::CProcess process;
-  process.Attach(PIDs.back());
-  assert(process.Ready());
+  process.attach(pid);
+  assert(process.ready());
 
-  auto cpu  = process.GetCPUInformation();
-  auto mem  = process.GetMemoryInformation();
-  // auto time = process.GetTimeInformation();
-  // auto io   = process.GetIOInformation();
+  auto cpu  = process.get_cpu_information();
+  auto mem  = process.get_memory_information();
+  // auto time = process.get_time_information();
+  // auto io   = process.get_io_information();
 
   std::tcout << ts("CPU : ") << cpu.Usage << std::endl;
   std::tcout << ts("WS  : ") << vu::format_bytes(mem.WorkingSetSize) << std::endl;
 
-  for (const auto& thread : process.GetThreads())
+  for (const auto& thread : process.get_threads())
   {
     static int idx = 0;
     std::tcout << ++idx << ". TID = " << thread.th32ThreadID << std::endl;
@@ -36,7 +42,7 @@ DEF_SAMPLE(Process)
     std::tcout << std::endl;
   }
 
-  for (const auto& module : process.GetModules())
+  for (const auto& module : process.get_modules())
   {
     static int idx = 0;
     std::cout << ++idx << ". MID = " << LPVOID(module.hModule) << std::endl;
@@ -46,7 +52,7 @@ DEF_SAMPLE(Process)
     std::cout << std::endl;
   }
 
-  for (const auto& e : process.GetMemories())
+  for (const auto& e : process.get_memories())
   {
     static int i = 0;
     std::cout << std::dec << ++i << ". ";

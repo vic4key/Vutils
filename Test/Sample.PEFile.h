@@ -6,18 +6,24 @@
 
 DEF_SAMPLE(PEFile)
 {
-#ifdef _WIN64
+  #ifdef _WIN64
   #define PROCESS_NAME ts("x64dbg.exe")
-#else // _WIN32
+  #else // _WIN32
   #define PROCESS_NAME ts("x32dbg.exe")
-#endif // _WIN64
+  #endif // _WIN64
 
-  auto PIDs = vu::name_to_pid(PROCESS_NAME);
-  assert(!PIDs.empty());
+  auto pids = vu::name_to_pid(PROCESS_NAME);
+  if (pids.empty())
+  {
+    std::cout << "Not found the target process for PE Parsing ..." << std::endl;
+    return vu::VU_OK;
+  }
+
+  auto pid = pids.back();
 
   vu::CProcess process;
-  process.Attach(PIDs.back());
-  auto module = process.GetModuleInformation();
+  process.attach(pid);
+  auto module = process.get_module_information();
 
   vu::CPEFileT<vu::peX> pe(module.szExePath);
   vu::VUResult result = pe.Parse();
@@ -128,7 +134,7 @@ DEF_SAMPLE(PEFile)
   for (const auto& Entry : pe.GetRelocationEntries())
   {
     auto Value = vu::peX(0);
-    vu::rpm(process.Handle(), LPVOID(vu::peX(module.modBaseAddr) + Entry.RVA), &Value, sizeof(Value));
+    vu::rpm(process.handle(), LPVOID(vu::peX(module.modBaseAddr) + Entry.RVA), &Value, sizeof(Value));
 
     #ifdef _WIN64
     auto fmt = ts("%llX : %llX -> %llX");

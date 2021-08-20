@@ -74,42 +74,42 @@ CIATHookManagerA::~CIATHookManagerA()
 {
 }
 
-CIATHookManagerA::IATElements::iterator CIATHookManagerA::Find(
+CIATHookManagerA::IATElements::iterator CIATHookManagerA::find(
   const std::string& target,
   const std::string& module,
   const std::string& function)
 {
-  return std::find(m_IATElements.begin(), m_IATElements.end(), IATElement(target, module, function));
+  return std::find(m_iat_elements.begin(), m_iat_elements.end(), IATElement(target, module, function));
 }
 
-CIATHookManagerA::IATElements::iterator CIATHookManagerA::Find(const IATElement& element)
+CIATHookManagerA::IATElements::iterator CIATHookManagerA::find(const IATElement& element)
 {
-  return this->Find(element.target, element.module, element.function);
+  return this->find(element.target, element.module, element.function);
 }
 
-bool CIATHookManagerA::Exist(
+bool CIATHookManagerA::exist(
   const std::string& target,
   const std::string& module,
   const std::string& function)
 {
-  return this->Find(target, module, function) != m_IATElements.end();
+  return this->find(target, module, function) != m_iat_elements.end();
 }
 
-VUResult CIATHookManagerA::Override(
+VUResult CIATHookManagerA::install(
   const std::string& target,
   const std::string& module,
   const std::string& function,
   const void* replacement,
   const void** original)
 {
-  if (this->Exist(target, module, function))
+  if (this->exist(target, module, function))
   {
     return 1;
   }
 
   auto element = IATElement(target, module, function, nullptr, replacement);
 
-  if (this->Do(IATAction::IAT_OVERRIDE, element) != VU_OK)
+  if (this->perform(IATAction::IAT_INSTALL, element) != VU_OK)
   {
     return 2;
   }
@@ -119,26 +119,26 @@ VUResult CIATHookManagerA::Override(
     *original = element.original;
   }
 
-  m_IATElements.emplace_back(element);
+  m_iat_elements.emplace_back(element);
 
   return VU_OK;
 }
 
-VUResult CIATHookManagerA::Restore(
+VUResult CIATHookManagerA::uninstall(
   const std::string& target,
   const std::string& module,
   const std::string& function,
   const void** replacement)
 {
-  auto it = this->Find(target, module, function);
-  if (it == m_IATElements.end())
+  auto it = this->find(target, module, function);
+  if (it == m_iat_elements.end())
   {
     return 1;
   }
 
   auto element = *it;
 
-  if (this->Do(IATAction::IAT_RESTORE, element) != VU_OK)
+  if (this->perform(IATAction::IAT_UNINSTALL, element) != VU_OK)
   {
     return 2;
   }
@@ -148,19 +148,19 @@ VUResult CIATHookManagerA::Restore(
     *replacement = element.replacement;
   }
 
-  m_IATElements.erase(it);
+  m_iat_elements.erase(it);
 
   return VU_OK;
 }
 
-VUResult CIATHookManagerA::Do(const IATAction action, IATElement& element)
+VUResult CIATHookManagerA::perform(const IATAction action, IATElement& element)
 {
   if (element.target.empty() || element.module.empty() || element.function.empty())
   {
     return 1;
   }
 
-  this->Iterate(element.target, [&](
+  this->iterate(element.target, [&](
     const std::string& m, const std::string& f, PIMAGE_THUNK_DATA& pOFT, PIMAGE_THUNK_DATA& pFT)
   {
     // MsgA("[%p] [%p] %s!%s\n", pOFT->u1.Function, pFT->u1.Function, m.c_str(), f.c_str());
@@ -169,12 +169,12 @@ VUResult CIATHookManagerA::Do(const IATAction action, IATElement& element)
     {
       const void* address = 0;
 
-      if (action == IATAction::IAT_OVERRIDE)
+      if (action == IATAction::IAT_INSTALL)
       {
         element.original = reinterpret_cast<const void*>(pFT->u1.Function);
         address = element.replacement;
       }
-      else if (action == IATAction::IAT_RESTORE)
+      else if (action == IATAction::IAT_UNINSTALL)
       {
         element.replacement = reinterpret_cast<const void*>(pFT->u1.Function);
         address = element.original;
@@ -197,7 +197,7 @@ VUResult CIATHookManagerA::Do(const IATAction action, IATElement& element)
   return VU_OK;
 }
 
-VUResult CIATHookManagerA::Iterate(
+VUResult CIATHookManagerA::iterate(
   const std::string& module,
   std::function<bool(
     const std::string& module,
@@ -239,18 +239,18 @@ VUResult CIATHookManagerA::Iterate(
   {
     std::string module = reinterpret_cast<ulongptr>(pBase) + reinterpret_cast<LPCSTR>(pIID->Name);
 
-    auto pFT = reinterpret_cast<PIMAGE_THUNK_DATA>(
-      reinterpret_cast<ulongptr>(pBase) + pIID->FirstThunk);
+    auto ptr_iat = reinterpret_cast<PIMAGE_THUNK_DATA>(
+      reinterpret_cast<ulongptr>(pBase) + pIID->FirstThunk); // IAT - Import Address Table
 
-    auto pOFT = reinterpret_cast<PIMAGE_THUNK_DATA>(
-      reinterpret_cast<ulongptr>(pBase) + pIID->OriginalFirstThunk);
+    auto ptr_int = reinterpret_cast<PIMAGE_THUNK_DATA>(
+      reinterpret_cast<ulongptr>(pBase) + pIID->OriginalFirstThunk); // INT - Import Name Table
 
-    for (int j = 0; pOFT->u1.AddressOfData != 0; j++, pFT++, pOFT++)
+    for (; ptr_int->u1.AddressOfData != 0; ptr_iat++, ptr_int++)
     {
       std::string function = reinterpret_cast<char*>(reinterpret_cast<PIMAGE_IMPORT_BY_NAME>(
-        reinterpret_cast<ulongptr>(pBase) + pOFT->u1.AddressOfData)->Name);
+        reinterpret_cast<ulongptr>(pBase) + ptr_int->u1.AddressOfData)->Name);
 
-      breaked = !fn(module, function, pOFT, pFT);
+      breaked = !fn(module, function, ptr_int, ptr_iat);
       if (breaked)
       {
         break;
@@ -278,24 +278,24 @@ CIATHookManagerW::~CIATHookManagerW()
 {
 }
 
-VUResult CIATHookManagerW::Override(
+VUResult CIATHookManagerW::install(
   const std::wstring& target,
   const std::wstring& module,
   const std::wstring& function,
   const void* replacement,
   const void** original)
 {
-  return CIATHookManagerA::Instance().Override(
+  return CIATHookManagerA::Instance().install(
     to_string_A(target), to_string_A(module), to_string_A(function), replacement, original);
 }
 
-VUResult CIATHookManagerW::Restore(
+VUResult CIATHookManagerW::uninstall(
   const std::wstring& target,
   const std::wstring& module,
   const std::wstring& function,
   const void** replacement)
 {
-  return CIATHookManagerA::Instance().Restore(
+  return CIATHookManagerA::Instance().uninstall(
     to_string_A(target), to_string_A(module), to_string_A(function), replacement);
 }
 

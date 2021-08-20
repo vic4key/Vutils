@@ -83,10 +83,10 @@ DEF_SAMPLE(Misc)
     L"UTF-32 Little Endian BOM", L"UTF-32 Big Endian BOM"
   };
 
-  vu::CFileSystem::Iterate(ts("path\\to\\example"), ts("*.txt"), [](const vu::TFSObject& FSObject) -> bool
+  vu::CFileSystem::iterate(ts("path\\to\\example"), ts("*.txt"), [](const vu::TFSObject& fso) -> bool
   {
-    auto filePath = FSObject.Directory + FSObject.Name;
-    auto data = vu::CFileSystem::QuickReadAsBuffer(filePath);
+    auto file_path = fso.directory + fso.name;
+    auto data = vu::CFileSystem::quick_read_as_buffer(file_path);
 
     auto result = vu::determine_encoding_type(data.get_ptr_data(), data.get_size());
     auto es = result == -1 ? L"Unknown" : LES[result];
@@ -98,7 +98,7 @@ DEF_SAMPLE(Misc)
       << " | "
       << std::setw(25) << el
       << " | "
-      << FSObject.Name.c_str()
+      << fso.name.c_str()
       << std::endl;
 
     return true;

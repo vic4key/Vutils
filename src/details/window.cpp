@@ -489,32 +489,32 @@ CWDTControl::CWDTControl(
   const short cy,
   const DWORD style,
   const DWORD exstyle
-) : m_Caption(caption), m_wType(type), m_wClass(-1), m_wData(0)
+) : m_caption(caption), m_w_type(type), m_w_class(-1), m_w_data(0)
 {
-  m_Shape.x = x;
-  m_Shape.y = y;
-  m_Shape.cx = cx;
-  m_Shape.cy = cy;
-  m_Shape.id = id;
-  m_Shape.style = style;
-  m_Shape.dwExtendedStyle = exstyle;
+  m_shape.x = x;
+  m_shape.y = y;
+  m_shape.cx = cx;
+  m_shape.cy = cy;
+  m_shape.id = id;
+  m_shape.style = style;
+  m_shape.dwExtendedStyle = exstyle;
 }
 
 CWDTControl::~CWDTControl()
 {
 }
 
-void CWDTControl::Serialize(void** pptr)
+void CWDTControl::serialize(void** pptr)
 {
   auto ptr = *pptr;
 
   PTR_ALIGN(ptr, DWORD_PTR);
-  PTR_COPY_NEXT(ptr, m_Shape);
-  PTR_COPY_NEXT(ptr, m_wClass);
-  PTR_COPY_NEXT(ptr, m_wType);
-  PTR_COPY_NEXT_EX(ptr, m_Caption.c_str(), sizeof(wchar) * m_Caption.length());
+  PTR_COPY_NEXT(ptr, m_shape);
+  PTR_COPY_NEXT(ptr, m_w_class);
+  PTR_COPY_NEXT(ptr, m_w_type);
+  PTR_COPY_NEXT_EX(ptr, m_caption.c_str(), sizeof(wchar) * m_caption.length());
   PTR_COPY_NEXT(ptr, NullChar);
-  PTR_COPY_NEXT(ptr, m_wData);
+  PTR_COPY_NEXT(ptr, m_w_data);
 
   *pptr = ptr;
 }
@@ -532,105 +532,105 @@ CWDTDialog::CWDTDialog(
   const short cx,
   const short cy,
   HWND hwParent
-) : m_Caption(caption), m_wClass(0), m_wMenu(0), m_hwParent(hwParent)
+) : m_caption(caption), m_w_class(0), m_w_menu(0), m_hwnd_parent(hwParent)
 {
-  m_hGlobal = GlobalAlloc(GMEM_ZEROINIT, KiB); // 1 KiB
-  assert(m_hGlobal != nullptr);
+  m_h_global = GlobalAlloc(GMEM_ZEROINIT, KiB); // 1 KiB
+  assert(m_h_global != nullptr);
 
-  m_Font  = L"Segoe UI";
-  m_wFont = 9;
+  m_font  = L"Segoe UI";
+  m_w_font = 9;
 
-  if (m_hwParent == nullptr)
+  if (m_hwnd_parent == nullptr)
   {
-    m_hwParent = GetActiveWindow();
+    m_hwnd_parent = GetActiveWindow();
   }
 
-  if (IsWindow(m_hwParent))
+  if (IsWindow(m_hwnd_parent))
   {
-    auto font = get_font_W(m_hwParent);
+    auto font = get_font_W(m_hwnd_parent);
     if (!font.Name.empty())
     {
-      m_Font  = font.Name;
-      m_wFont = font.Size;
+      m_font  = font.Name;
+      m_w_font = font.Size;
     }
   }
 
-  m_Shape.x = x;
-  m_Shape.y = y;
-  m_Shape.cx = cx;
-  m_Shape.cy = cy;
-  m_Shape.style = style;
-  m_Shape.dwExtendedStyle = exstyle;
+  m_shape.x = x;
+  m_shape.y = y;
+  m_shape.cx = cx;
+  m_shape.cy = cy;
+  m_shape.style = style;
+  m_shape.dwExtendedStyle = exstyle;
 
-  if (!m_Font.empty() && m_wFont != -1)
+  if (!m_font.empty() && m_w_font != -1)
   {
-    m_Shape.style |= DS_SETFONT;
+    m_shape.style |= DS_SETFONT;
   }
 }
 
 CWDTDialog::~CWDTDialog()
 {
-  if (m_hGlobal != nullptr)
+  if (m_h_global != nullptr)
   {
-    GlobalFree(m_hGlobal);
+    GlobalFree(m_h_global);
   }
 }
 
-const std::vector<vu::CWDTControl>& CWDTDialog::Controls() const
+const std::vector<vu::CWDTControl>& CWDTDialog::controls() const
 {
-  return m_Controls;
+  return m_controls;
 }
 
-void CWDTDialog::Add(const CWDTControl& control)
+void CWDTDialog::add(const CWDTControl& control)
 {
-  m_Controls.push_back(control);
-  m_Shape.cdit = static_cast<WORD>(m_Controls.size());
+  m_controls.push_back(control);
+  m_shape.cdit = static_cast<WORD>(m_controls.size());
 }
 
-void CWDTDialog::Serialize(void** pptr)
+void CWDTDialog::serialize(void** pptr)
 {
   auto ptr = *pptr;
 
-  PTR_COPY_NEXT(ptr, m_Shape);
-  PTR_COPY_NEXT(ptr, m_wMenu);
-  PTR_COPY_NEXT(ptr, m_wClass);
-  PTR_COPY_NEXT_EX(ptr, m_Caption.c_str(), sizeof(wchar) * m_Caption.length());
+  PTR_COPY_NEXT(ptr, m_shape);
+  PTR_COPY_NEXT(ptr, m_w_menu);
+  PTR_COPY_NEXT(ptr, m_w_class);
+  PTR_COPY_NEXT_EX(ptr, m_caption.c_str(), sizeof(wchar) * m_caption.length());
   PTR_COPY_NEXT(ptr, NullChar);
-  PTR_COPY_NEXT(ptr, m_wFont);
-  PTR_COPY_NEXT_EX(ptr, m_Font.c_str(), sizeof(wchar) * m_Font.length());
+  PTR_COPY_NEXT(ptr, m_w_font);
+  PTR_COPY_NEXT_EX(ptr, m_font.c_str(), sizeof(wchar) * m_font.length());
   PTR_COPY_NEXT(ptr, NullChar);
 
-  for (auto& control : m_Controls)
+  for (auto& control : m_controls)
   {
-    control.Serialize(&ptr);
+    control.serialize(&ptr);
   }
 
   *pptr = ptr;
 }
 
-INT_PTR CWDTDialog::DoModal(DLGPROC pfnDlgProc, CWDTDialog* pSelf)
+INT_PTR CWDTDialog::do_modal(DLGPROC pfnDlgProc, CWDTDialog* pSelf)
 {
   m_last_error_code = ERROR_SUCCESS;
 
-  if (m_hGlobal == nullptr)
+  if (m_h_global == nullptr)
   {
     m_last_error_code = GetLastError();
     return -1;
   }
 
-  auto ptr = GlobalLock(m_hGlobal);
+  auto ptr = GlobalLock(m_h_global);
   if (ptr == nullptr)
   {
     m_last_error_code = GetLastError();
     return -1;
   }
 
-  Serialize(&ptr);
+  serialize(&ptr);
 
-  GlobalUnlock(m_hGlobal);
+  GlobalUnlock(m_h_global);
 
   auto ret = DialogBoxIndirectParamA(
-    GetModuleHandle(0), LPDLGTEMPLATE(m_hGlobal), 0, pfnDlgProc, LPARAM(pSelf));
+    GetModuleHandle(0), LPDLGTEMPLATE(m_h_global), 0, pfnDlgProc, LPARAM(pSelf));
 
   m_last_error_code = GetLastError();
 
@@ -650,10 +650,9 @@ CInputDialog::CInputDialog(const std::wstring& label, HWND hwnd_parent, bool num
   , DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
   , WS_EX_DLGMODALFRAME
   , 0, 0, 179, 60
-  , hwnd_parent
-)
+  , hwnd_parent)
 {
-  this->Add(CWDTControl(
+  this->add(CWDTControl(
     L"Label",
     CWDTControl::CT_STATIC,
     IDC_LABEL,
@@ -661,7 +660,7 @@ CInputDialog::CInputDialog(const std::wstring& label, HWND hwnd_parent, bool num
     WS_CHILD | WS_VISIBLE | SS_LEFT | BF_FLAT)
   );
 
-  this->Add(CWDTControl(
+  this->add(CWDTControl(
     L"",
     CWDTControl::CT_EDIT,
     IDC_INPUT,
@@ -669,7 +668,7 @@ CInputDialog::CInputDialog(const std::wstring& label, HWND hwnd_parent, bool num
     WS_CHILD | WS_VISIBLE | ES_LEFT | WS_BORDER | (m_number_only ? ES_NUMBER : 0))
   );
 
-  this->Add(CWDTControl(
+  this->add(CWDTControl(
     L"OK",
     CWDTControl::CT_BUTTON,
     IDOK,
@@ -677,7 +676,7 @@ CInputDialog::CInputDialog(const std::wstring& label, HWND hwnd_parent, bool num
     WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_FLAT)
   );
 
-  this->Add(CWDTControl(
+  this->add(CWDTControl(
     L"Cancel",
     CWDTControl::CT_BUTTON,
     IDCANCEL,
@@ -705,9 +704,9 @@ vu::CFundamentalW& CInputDialog::input()
   return m_input;
 }
 
-INT_PTR CInputDialog::DoModal()
+INT_PTR CInputDialog::do_modal()
 {
-  return CWDTDialog::DoModal(DLGPROC(DlgProc), this);
+  return CWDTDialog::do_modal(DLGPROC(DlgProc), this);
 }
 
 LRESULT CALLBACK CInputDialog::DlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)

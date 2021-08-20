@@ -23,12 +23,12 @@ CLibraryA::~CLibraryA()
   FreeLibrary(m_module_handle);
 }
 
-const HMODULE& vuapi CLibraryA::get_handle() const
+const HMODULE& vuapi CLibraryA::handle() const
 {
   return m_module_handle;
 }
 
-bool vuapi CLibraryA::is_available()
+bool vuapi CLibraryA::available()
 {
   return m_module_handle != nullptr;
 }
@@ -51,7 +51,7 @@ void* vuapi CLibraryA::quick_get_proc_address(const std::string& module_name, co
   }
 
   CLibraryA lib(module_name);
-  if (!lib.is_available())
+  if (!lib.available())
   {
     return nullptr;
   }
@@ -70,12 +70,12 @@ CLibraryW::~CLibraryW()
   FreeLibrary(m_module_handle);
 }
 
-const HMODULE& vuapi CLibraryW::get_handle() const
+const HMODULE& vuapi CLibraryW::handle() const
 {
   return m_module_handle;
 }
 
-bool vuapi CLibraryW::is_available()
+bool vuapi CLibraryW::available()
 {
   return m_module_handle != nullptr;
 }
@@ -100,7 +100,7 @@ void* vuapi CLibraryW::quick_get_proc_address(const std::wstring& module_name, c
   }
 
   CLibraryW lib(module_name);
-  if (!lib.is_available())
+  if (!lib.available())
   {
     return nullptr;
   }
