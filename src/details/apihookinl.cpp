@@ -42,7 +42,7 @@ bool vuapi GetAssembleInstruction(
   std::vector<TMemoryInstruction>& instructions
 )
 {
-  ulong ulPosDisp = 0;
+  ulong pos_disp = 0;
   TMemoryInstruction mi = {0};
   bool result = false, bFoundRelative = false;;
 
@@ -107,41 +107,41 @@ bool vuapi GetAssembleInstruction(
       ulImmFlags = (HDE::C_IMM8 | HDE::F_IMM16 | HDE::F_IMM32);
       #endif
 
-      ulPosDisp = hde.len - ((hde.flags & ulImmFlags) >> 2) - 4;
+      pos_disp = hde.len - ((hde.flags & ulImmFlags) >> 2) - 4;
 
-      mi.Position = ulPosDisp;
-      mi.MAO.A32 = hde.disp.disp32;
-      mi.MemoryAddressType = eMemoryAddressType::MAT_32; // [RIP/EIP1,2 + disp32]
+      mi.position = pos_disp;
+      mi.mao.A32 = hde.disp.disp32;
+      mi.memory_address_type = eMemoryAddressType::MAT_32; // [RIP/EIP1,2 + disp32]
       bFoundRelative = true;
       #endif
     }
-    if (hde.modrm_rm == 4 || hde.modrm_rm == 12)    // [SIB] {SP, R12}
+    if (hde.modrm_rm == 4 || hde.modrm_rm == 12)      // [SIB] {SP, R12}
     {
       // ...
     }
     break;
   case 1: // MOD = b01
-    if ((hde.modrm_rm >= 0 && hde.modrm_rm <= 3)||    // {AX, BX, CX, DX}
-        (hde.modrm_rm >= 5 && hde.modrm_rm <= 11) ||  // {BP, SI, DI, R8, R9, R10, R11}
+    if ((hde.modrm_rm >= 0  && hde.modrm_rm <= 3)||   // {AX, BX, CX, DX}
+        (hde.modrm_rm >= 5  && hde.modrm_rm <= 11) || // {BP, SI, DI, R8, R9, R10, R11}
         (hde.modrm_rm >= 13 && hde.modrm_rm <= 15)    // {R13, R14, R15}
     ) // [R/M + D32]
     {
       // ...
     }
-    if (hde.modrm_rm == 4 || hde.modrm_rm == 12)    // [SIB + D32] // {SP, R12}
+    if (hde.modrm_rm == 4 || hde.modrm_rm == 12)      // [SIB + D32] // {SP, R12}
     {
       // ...
     }
     break;
   case 2: // MOD = b10
-    if ((hde.modrm_rm >= 0 && hde.modrm_rm <= 3)||    // {AX, BX, CX, DX}
-        (hde.modrm_rm >= 5 && hde.modrm_rm <= 11) ||  // {BP, SI, DI, R8, R9, R10, R11}
-        (hde.modrm_rm >= 13 && hde.modrm_rm <= 15)    // {R13, R14, R15}
+    if ((hde.modrm_rm >= 0  && hde.modrm_rm <= 3)||    // {AX, BX, CX, DX}
+        (hde.modrm_rm >= 5  && hde.modrm_rm <= 11) ||  // {BP, SI, DI, R8, R9, R10, R11}
+        (hde.modrm_rm >= 13 && hde.modrm_rm <= 15)     // {R13, R14, R15}
     ) // [R/M + D8]
     {
       // ...
     }
-    if (hde.modrm_rm == 4 || hde.modrm_rm == 12)    // [SIB + D8] // {SP, R12}
+    if (hde.modrm_rm == 4 || hde.modrm_rm == 12)       // [SIB + D8] // {SP, R12}
     {
       // ...
     }
@@ -153,7 +153,7 @@ bool vuapi GetAssembleInstruction(
 
   if (bFoundRelative)
   {
-    mi.Offset = offset;
+    mi.offset = offset;
     instructions.push_back(mi);
   }
 
@@ -162,7 +162,7 @@ bool vuapi GetAssembleInstruction(
   return result;
 }
 
-bool vuapi CAPIHookX::Attach(void* pProc, void* pHookProc, void** pOldProc)
+bool vuapi CINLHookX::attach(void* ptr_function, void* ptr_hook_function, void** pptr_old_function)
 {
   /*
     // x86
@@ -174,29 +174,30 @@ bool vuapi CAPIHookX::Attach(void* pProc, void* pHookProc, void** pOldProc)
   */
 
   TRedirect O2N = {0}, T2O = {0};
-  ulong iTrampolineSize = 0;
-  bool bFoundTrampolineSize = true;
+
+  ulong trampoline_size = 0;
+  bool found_trampoline_size = true;
 
   do
   {
     HDE::tagHDE hde = { 0 };
 
-    HDE::Disasemble((const void *)((ulongptr)pProc + iTrampolineSize), &hde);
+    HDE::Disasemble((const void*)(ulongptr(ptr_function) + trampoline_size), &hde);
     if ((hde.flags & HDE::F_ERROR) == HDE::F_ERROR)
     {
-      bFoundTrampolineSize = false;
+      found_trampoline_size = false;
       break;
     }
     else
     {
-      GetAssembleInstruction(hde, iTrampolineSize, m_ListMemoryInstruction);
+      GetAssembleInstruction(hde, trampoline_size, m_memory_instructions);
     }
 
-    iTrampolineSize += hde.len;
+    trampoline_size += hde.len;
   }
-  while (iTrampolineSize < MIN_HOOK_SIZE);
+  while (trampoline_size < MIN_HOOK_SIZE);
 
-  if (!bFoundTrampolineSize)
+  if (!found_trampoline_size)
   {
     return false;
   }
@@ -204,159 +205,153 @@ bool vuapi CAPIHookX::Attach(void* pProc, void* pHookProc, void** pOldProc)
   // The allocated address must be not too far with the target (Better is in image process address)
   // pOldProc is a trampoline function
   // VirtualAlloc(nullptr, iTrampolineSize + sizeof(TRedirect), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-  *pOldProc = (void*)IBH::AllocateBuffer(pProc);
-  if (*pOldProc == nullptr)
+  *pptr_old_function = (void*)IBH::AllocateBuffer(ptr_function);
+  if (*pptr_old_function == nullptr)
   {
     return false;
   }
 
-  memcpy(*pOldProc, pProc, iTrampolineSize);
+  memcpy(*pptr_old_function, ptr_function, trampoline_size);
 
   // fix memory instruction
-  if (m_ListMemoryInstruction.size() > 0)
+  for (const auto& e: m_memory_instructions)
   {
-    for (auto e: m_ListMemoryInstruction)
-    {
-      // if (e.MemoryAddressType == eMemoryAddressType::MAT_32) {
-      auto v = (ulongptr)pProc - (ulongptr)*pOldProc + (ulongptr)e.MAO.A32;
-      auto p = ((ulongptr)*pOldProc + e.Offset + e.Position);
-      *(ulongptr*)p = (ulongptr)v; // check again
-      // }
-    }
+    // if (e.MemoryAddressType == eMemoryAddressType::MAT_32) {
+    auto v = ulongptr(ptr_function) - ulongptr(*pptr_old_function) + ulongptr(e.mao.A32);
+    auto p = ulongptr(*pptr_old_function) + e.offset + e.position;
+    *(ulongptr*)p = ulongptr(v); // check again
+    // }
   }
 
-  T2O.JMP = 0x25FF;
+  T2O.jmp = 0x25FF;
   #ifdef _WIN64
-  T2O.Unknown = 0; // JMP_OPCODE_SIZE
+  T2O.unknown = 0; // JMP_OPCODE_SIZE
   #else  // _WIN32
-  T2O.Unknown = ((ulongptr)*pOldProc + iTrampolineSize) + sizeof(T2O.JMP) + sizeof(T2O.Unknown);
+  T2O.unknown = ((ulongptr)*pptr_old_function + trampoline_size) + sizeof(T2O.jmp) + sizeof(T2O.unknown);
   #endif // _WIN64
-  T2O.Address = ((ulongptr)pProc + iTrampolineSize);
+  T2O.address = ulongptr(ptr_function) + trampoline_size;
 
   // Write the jump code (trampoline -> original) on the bottom of the trampoline function
-  memcpy((void*)((ulongptr)*pOldProc + iTrampolineSize), (void*)&T2O, sizeof(T2O));
+  memcpy((void*)(ulongptr(*pptr_old_function) + trampoline_size), (void*)&T2O, sizeof(T2O));
 
   ulong ulOldProtect = 0;
-  VirtualProtect(pProc, iTrampolineSize, PAGE_EXECUTE_READWRITE, &ulOldProtect);
+  VirtualProtect(ptr_function, trampoline_size, PAGE_EXECUTE_READWRITE, &ulOldProtect);
 
-  O2N.JMP = 0x25FF;
+  O2N.jmp = 0x25FF;
   #ifdef _WIN64
-  O2N.Unknown = 0; // JMP_OPCODE_SIZE;
+  O2N.unknown = 0; // JMP_OPCODE_SIZE;
   #else  // _WIN32
-  O2N.Unknown = ((ulongptr)pProc + sizeof(O2N.JMP) + sizeof(O2N.Unknown));
+  O2N.unknown = ((ulongptr)ptr_function + sizeof(O2N.jmp) + sizeof(O2N.unknown));
   #endif // _WIN64
-  O2N.Address = (ulongptr)pHookProc;
+  O2N.address = ulongptr(ptr_hook_function);
 
   // Write the jump code (original -> new) on the top of the target function
-  memcpy(pProc, (void*)&O2N, sizeof(O2N));
+  memcpy(ptr_function, (void*)&O2N, sizeof(O2N));
 
   return true;
 }
 
-bool vuapi CAPIHookX::Detach(void* pProc, void** pOldProc)
+bool vuapi CINLHookX::detach(void* ptr_function, void** pptr_old_function)
 {
-  if (!m_Hooked)
+  if (!m_hooked)
   {
     return false;
   }
 
   // fix memory instruction
-  if (m_ListMemoryInstruction.size() > 0)
+  for (const auto& e: m_memory_instructions)
   {
-    for (auto e: m_ListMemoryInstruction)
-    {
-      // if (e.MemoryAddressType == eMemoryAddressType::MAT_32) {
-      auto p = ((ulongptr)*pOldProc + e.Offset + e.Position);
-      auto v = (ulongptr)e.MAO.A32;
-      *(ulongptr*)p = v; // check again
-      // }
-    }
+    // if (e.MemoryAddressType == eMemoryAddressType::MAT_32) {
+    auto p = ulongptr(*pptr_old_function) + e.offset + e.position;
+    auto v = ulongptr(e.mao.A32);
+    *(ulongptr*)p = v; // check again
+    // }
   }
 
-  memcpy(pProc, *pOldProc, MIN_HOOK_SIZE);
+  memcpy(ptr_function, *pptr_old_function, MIN_HOOK_SIZE);
 
   // VirtualFree(*pOldProc, MIN_HOOK_SIZE + sizeof(TRedirect), MEM_RELEASE);
-  IBH::FreeBuffer(*pOldProc);
+  IBH::FreeBuffer(*pptr_old_function);
 
-  *pOldProc = nullptr;
+  *pptr_old_function = nullptr;
 
   return true;
 }
 
-bool vuapi CAPIHookA::Override(
-  const std::string& ModuleName,
-  const std::string& ProcName,
-  void* lpHookProc,
-  void** lpOldProc
+bool vuapi CINLHookA::Override(
+  const std::string& module_name,
+  const std::string& function_name,
+  void* ptr_hook_function,
+  void** pptr_old_function
 )
 {
-  void* lpProc = CLibraryA::quick_get_proc_address(ModuleName, ProcName);
-  if (lpProc == nullptr)
+  void* ptr_function = CLibraryA::quick_get_proc_address(module_name, function_name);
+  if (ptr_function == nullptr)
   {
     return false;
   }
 
-  m_Hooked = this->Attach(lpProc, lpHookProc, lpOldProc);
+  m_hooked = this->attach(ptr_function, ptr_hook_function, pptr_old_function);
 
-  return m_Hooked;
+  return m_hooked;
 }
 
-bool vuapi CAPIHookA::Restore(
-  const std::string& ModuleName,
-  const std::string& ProcName,
-  void** lpOldProc
+bool vuapi CINLHookA::Restore(
+  const std::string& module_name,
+  const std::string& function_name,
+  void** pptr_old_function
 )
 {
-  if (!m_Hooked)
+  if (!m_hooked)
   {
     return false;
   }
 
-  void* lpProc = CLibraryA::quick_get_proc_address(ModuleName, ProcName);
-  if (lpProc == nullptr)
+  void* ptr_function = CLibraryA::quick_get_proc_address(module_name, function_name);
+  if (ptr_function == nullptr)
   {
     return false;
   }
 
-  return this->Detach(lpProc, lpOldProc);
+  return this->detach(ptr_function, pptr_old_function);
 }
 
-bool vuapi CAPIHookW::Override(
-  const std::wstring& ModuleName,
-  const std::wstring& ProcName,
-  void* lpHookProc,
-  void** lpOldProc
+bool vuapi CINLHookW::Override(
+  const std::wstring& module_name,
+  const std::wstring& function_name,
+  void* ptr_hook_function,
+  void** pptr_old_function
 )
 {
-  void* lpProc = CLibraryW::quick_get_proc_address(ModuleName, ProcName);
-  if (lpProc == nullptr)
+  void* ptr_function = CLibraryW::quick_get_proc_address(module_name, function_name);
+  if (ptr_function == nullptr)
   {
     return false;
   }
 
-  m_Hooked = this->Attach(lpProc, lpHookProc, lpOldProc);
+  m_hooked = this->attach(ptr_function, ptr_hook_function, pptr_old_function);
 
-  return m_Hooked;
+  return m_hooked;
 }
 
-bool vuapi CAPIHookW::Restore(
-  const std::wstring& ModuleName,
-  const std::wstring& ProcName,
-  void** lpOldProc
+bool vuapi CINLHookW::Restore(
+  const std::wstring& module_name,
+  const std::wstring& function_name,
+  void** pptr_old_function
 )
 {
-  if (!m_Hooked)
+  if (!m_hooked)
   {
     return false;
   }
 
-  void* lpProc = CLibraryW::quick_get_proc_address(ModuleName, ProcName);
-  if (lpProc == nullptr)
+  void* ptr_function = CLibraryW::quick_get_proc_address(module_name, function_name);
+  if (ptr_function == nullptr)
   {
     return false;
   }
 
-  return this->Detach(lpProc, lpOldProc);
+  return this->detach(ptr_function, pptr_old_function);
 }
 
 } // namespace vu

@@ -858,7 +858,7 @@ protected:
  * @brief Hook/Unhook a function in a module by name.
  * @define The prefix of redirection function must be  : Hfn
  * @define The prefix of real function pointer must be : pfn
- * @param[in] O The CAPIHook instance.
+ * @param[in] O The CINLHook instance.
  * @param[in] M The module name.
  * @param[in] F The function name.
  * @return  true if the function succeeds. Otherwise false.
@@ -877,37 +877,37 @@ typedef enum _MEMORY_ADDRESS_TYPE
 
 typedef struct _MEMORY_INSTRUCTION
 {
-  ulong Offset;   // Offset of the current instruction.
-  ulong Position; // Position of the memory address in the current instruction.
-  eMemoryAddressType MemoryAddressType;
+  ulong offset;   // Offset of the current instruction.
+  ulong position; // Position of the memory address in the current instruction.
+  eMemoryAddressType memory_address_type;
   union           // Memory Instruction value.
   {
     uchar   A8;
     ushort  A16;
     ulong   A32;
     ulong64 A64;
-  } MAO;
+  } mao;
   union           // Memory Instruction value.
   {
     uchar   A8;
     ushort  A16;
     ulong   A32;
     ulong64 A64;
-  } MAN;
+  } man;
 } TMemoryInstruction;
 
-class CAPIHookX
+class CINLHookX
 {
 protected:
   typedef struct _REDIRECT
   {
-    ushort   JMP;
-    ulong    Unknown;
-    ulongptr Address;
+    ushort   jmp;
+    ulong    unknown;
+    ulongptr address;
   } TRedirect;
 
-  bool m_Hooked;
-  std::vector<TMemoryInstruction> m_ListMemoryInstruction;
+  bool m_hooked;
+  std::vector<TMemoryInstruction> m_memory_instructions;
 
   static const ulong JMP_OPCODE_SIZE = 6;
 
@@ -918,47 +918,47 @@ protected:
   #endif // _M_IX86
 
 public:
-  CAPIHookX() : m_Hooked(false) {};
-  virtual ~CAPIHookX() {};
+  CINLHookX() : m_hooked(false) {};
+  virtual ~CINLHookX() {};
 
-  bool vuapi Attach(void* pProc, void* pHookProc, void** pOldProc);
-  bool vuapi Detach(void* pProc, void** pOldProc);
+  bool vuapi attach(void* ptr_function, void* ptr_hook_function, void** pptr_old_function);
+  bool vuapi detach(void* ptr_function, void** pptr_old_function);
 };
 
-class CAPIHookA: public CAPIHookX
+class CINLHookA: public CINLHookX
 {
 public:
-  CAPIHookA() {};
-  virtual ~CAPIHookA() {};
+  CINLHookA() {};
+  virtual ~CINLHookA() {};
 
   bool vuapi Override(
-    const std::string& ModuleName,
-    const std::string& ProcName,
-    void* lpHookProc, void** lpOldProc
+    const std::string& module_name,
+    const std::string& function_name,
+    void* ptr_hook_function, void** pptr_old_function
   );
   bool vuapi Restore(
-    const std::string& ModuleName,
-    const std::string& ProcName,
-    void** lpOldProc
+    const std::string& module_name,
+    const std::string& function_name,
+    void** pptr_old_function
   );
 };
 
-class CAPIHookW: public CAPIHookX
+class CINLHookW: public CINLHookX
 {
 public:
-  CAPIHookW() {};
-  virtual ~CAPIHookW() {};
+  CINLHookW() {};
+  virtual ~CINLHookW() {};
 
   bool vuapi Override(
-    const std::wstring& ModuleName,
-    const std::wstring& ProcName,
-    void* lpHookProc,
-    void** lpOldProc
+    const std::wstring& module_name,
+    const std::wstring& function_name,
+    void* ptr_hook_function,
+    void** pptr_old_function
   );
   bool vuapi Restore(
-    const std::wstring& ModuleName,
-    const std::wstring& ProcName,
-    void** lpOldProc
+    const std::wstring& module_name,
+    const std::wstring& function_name,
+    void** pptr_old_function
   );
 };
 
@@ -2821,7 +2821,7 @@ private:
 
 #ifdef _UNICODE
 #define CGUID CGUIDW
-#define CAPIHook CAPIHookW
+#define CINLHook CINLHookW
 #define CIATHookManager CIATHookManagerW
 #define CWMHook CWMHookW
 #define CProcess CProcessW
@@ -2838,7 +2838,7 @@ private:
 #define CFundamental CFundamentalW
 #else
 #define CGUID CGUIDA
-#define CAPIHook CAPIHookA
+#define CINLHook CINLHookA
 #define CIATHookManager CIATHookManagerA
 #define CWMHook CWMHookA
 #define CProcess CProcessA

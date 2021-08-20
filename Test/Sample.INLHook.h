@@ -15,7 +15,7 @@
 
 DEF_SAMPLE(INLHook)
 {
-  vu::CAPIHook API[2];
+  vu::CINLHook API[2];
 
   VU_API_INL_OVERRIDE(API[0], user32.dll, MessageBoxA);
   VU_API_INL_OVERRIDE(API[1], user32.dll, MessageBoxW);
