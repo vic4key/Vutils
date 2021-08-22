@@ -26,7 +26,7 @@ DEF_SAMPLE(PEFile)
   auto module = process.get_module_information();
 
   vu::CPEFileT<vu::peX> pe(module.szExePath);
-  vu::VUResult result = pe.Parse();
+  vu::VUResult result = pe.parse();
   if (result != vu::VU_OK)
   {
     std::tstring s;
@@ -42,19 +42,19 @@ DEF_SAMPLE(PEFile)
     return 1;
   }
 
-  void* pBase = pe.GetpBase();
+  void* pBase = pe.get_ptr_base();
   if (pBase == nullptr)
   {
-    std::tcout << ts("PE -> GetpBase -> Failure") << vu::get_last_error() << std::endl;
+    std::tcout << ts("PE -> get_ptr_base -> Failure") << vu::get_last_error() << std::endl;
     return 1;
   }
 
   SEPERATOR()
 
-  auto sections = pe.GetSetionHeaders();
+  auto sections = pe.get_setion_headers();
   if (sections.size() == 0)
   {
-    std::tcout << ts("PE -> GetSetionHeaderList -> Failure") << vu::get_last_error() << std::endl;
+    std::tcout << ts("PE -> get_setion_headers -> Failure") << vu::get_last_error() << std::endl;
     return 1;
   }
 
@@ -72,29 +72,29 @@ DEF_SAMPLE(PEFile)
 
   SEPERATOR()
 
-  auto pPEHeader = pe.GetpPEHeader();
-  assert(pPEHeader != nullptr);
+  auto ptr_pe_header = pe.get_ptr_pe_header();
+  assert(ptr_pe_header != nullptr);
 
-  std::cout << std::hex << pe.Offset2RVA(0x00113a92) << std::endl;
-  std::cout << std::hex << pe.RVA2Offset(0x00115292) << std::endl;
+  std::cout << std::hex << pe.offset_to_rva(0x00113a92) << std::endl;
+  std::cout << std::hex << pe.rva_to_offset(0x00115292) << std::endl;
 
-  auto IIDs = pe.GetImportDescriptors();
-  assert(!IIDs.empty());
+  auto iids = pe.get_import_descriptors();
+  assert(!iids.empty());
 
-  for (auto IID: IIDs)
+  for (auto iid : iids)
   {
     printf("%+20s %08X %08X %08X %08X\n",
-      ((char*)pBase + pe.RVA2Offset(IID->Name)),
-      IID->Name,
-      IID->FirstThunk,
-      IID->OriginalFirstThunk,
-      IID->Characteristics
+      ((char*)pBase + pe.rva_to_offset(iid->Name)),
+      iid->Name,
+      iid->FirstThunk,
+      iid->OriginalFirstThunk,
+      iid->Characteristics
     );
   }
 
   SEPERATOR()
 
-  auto modules = pe.GetImportModules();
+  auto modules = pe.get_import_modules();
   assert(!modules.empty());
 
   for (auto e: modules)
@@ -104,26 +104,26 @@ DEF_SAMPLE(PEFile)
 
   SEPERATOR()
 
-  auto functions = pe.GetImportFunctions();
+  auto functions = pe.get_import_functions();
   assert(!functions.empty());
 
   // for (auto e : functions)
   // {
-  //   auto s = vu::FormatA("IIDID = %08X, Hint = %04X, '%s'", e.IIDID, e.Hint, e.Name.c_str());
+  //   auto s = vu::FormatA("iidID = %08X, Hint = %04X, '%s'", e.iidID, e.Hint, e.Name.c_str());
   //   std::cout << s << std::endl;
   // }
 
   // SEPERATOR()
 
-  auto pModule = pe.FindImportModule("KERNEL32.DLL");
-  if (pModule != nullptr)
+  auto ptr_module = pe.find_ptr_import_module("KERNEL32.DLL");
+  if (ptr_module != nullptr)
   {
-    printf("%08X, '%s'\n", pModule->IIDID, pModule->Name.c_str());
+    printf("%08X, '%s'\n", ptr_module->IIDID, ptr_module->Name.c_str());
   }
 
   SEPERATOR()
 
-  auto pfn = pe.FindImportFunction("Getget_last_error");
+  auto pfn = pe.find_ptr_import_function("GetLastError");
   if (pfn != nullptr)
   {
     printf("%08X, %04X, '%s'\n", pfn->IIDID, pfn->Hint, pfn->Name.c_str());
@@ -131,7 +131,7 @@ DEF_SAMPLE(PEFile)
 
   SEPERATOR()
 
-  for (const auto& Entry : pe.GetRelocationEntries())
+  for (const auto& Entry : pe.get_relocation_entries())
   {
     auto Value = vu::peX(0);
     vu::rpm(process.handle(), LPVOID(vu::peX(module.modBaseAddr) + Entry.RVA), &Value, sizeof(Value));

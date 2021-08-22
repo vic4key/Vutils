@@ -29,16 +29,16 @@ DEF_SAMPLE(ServiceManager)
     // Create / Start / Stop / Delete
 
     std::tcout << ts("Press any key to create service ...") << std::endl; _getch();
-    CServiceManager::Instance().install(driver_path, driver_name, driver_display_name);
+    CServiceManager::instance().install(driver_path, driver_name, driver_display_name);
 
     std::tcout << ts("Press any key to start service ...") << std::endl; _getch();
-    CServiceManager::Instance().start(driver_name);
+    CServiceManager::instance().start(driver_name);
     
     std::tcout << ts("Press any key to stop service ...") << std::endl; _getch();
-    vu::CServiceManager::Instance().stop(driver_name);
+    vu::CServiceManager::instance().stop(driver_name);
 
     std::tcout << ts("Press any key to delete service ...") << std::endl; _getch();
-    CServiceManager::Instance().uninstall(driver_name);
+    CServiceManager::instance().uninstall(driver_name);
 
     // Dependents / Dependencies
 
@@ -48,7 +48,7 @@ DEF_SAMPLE(ServiceManager)
 
     std::tcout << ts("*Dependents:") << std::endl;
 
-    auto dependents = CServiceManager::Instance().get_dependents(example);
+    auto dependents = CServiceManager::instance().get_dependents(example);
     for (auto& dependent : dependents)
     {
       std::tcout << ts("  ") << dependent.lpServiceName << ts(" - ") << dependent.lpDisplayName << std::endl;
@@ -56,7 +56,7 @@ DEF_SAMPLE(ServiceManager)
 
     std::tcout << ts("*Dependencies:") << std::endl;
 
-    auto dependencies = CServiceManager::Instance().get_dependencies(example);
+    auto dependencies = CServiceManager::instance().get_dependencies(example);
     for (auto& dependency : dependencies)
     {
       std::tcout << ts("  ") << dependency.lpServiceName << ts(" - ") << dependency.lpDisplayName << std::endl;
@@ -66,10 +66,10 @@ DEF_SAMPLE(ServiceManager)
 
     std::tcout << ts("*Services:") << std::endl;
 
-    auto pService = vu::CServiceManager::Instance().query(example);
+    auto pService = vu::CServiceManager::instance().query(example);
     assert(pService != nullptr);
 
-    auto services = vu::CServiceManager::Instance().get_services(VU_SERVICE_ALL_TYPES, SERVICE_RUNNING);
+    auto services = vu::CServiceManager::instance().get_services(VU_SERVICE_ALL_TYPES, SERVICE_RUNNING);
     for (auto& e : services)
     {
       std::tcout << ts("  ") << e.lpServiceName << ts(" - ") << e.lpDisplayName << std::endl;

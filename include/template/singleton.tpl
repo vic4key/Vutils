@@ -14,35 +14,35 @@ class CSingletonT
 public:
   CSingletonT()
   {
-    m_pInstance = static_cast<T*>(this);
+    m_ptr_instance = static_cast<T*>(this);
   }
 
   virtual ~CSingletonT()
   {
   }
 
-  static T& Instance()
+  static T& instance()
   {
-    if (m_pInstance == nullptr)
+    if (m_ptr_instance == nullptr)
     {
-      CSingletonT<T>::m_pInstance = new T();
+      CSingletonT<T>::m_ptr_instance = new T();
     }
 
-    return *m_pInstance;
+    return *m_ptr_instance;
   }
 
-  static void Destroy()
+  static void destroy()
   {
-    if (CSingletonT<T>::m_pInstance != nullptr)
+    if (CSingletonT<T>::m_ptr_instance != nullptr)
     {
-      delete CSingletonT<T>::m_pInstance;
-      CSingletonT<T>::m_pInstance = nullptr;
+      delete CSingletonT<T>::m_ptr_instance;
+      CSingletonT<T>::m_ptr_instance = nullptr;
     }
   }
 
 protected:
-  static T* m_pInstance;
+  static T* m_ptr_instance;
 };
 
 template<typename T>
-T* CSingletonT<T>::m_pInstance = nullptr;
+T* CSingletonT<T>::m_ptr_instance = nullptr;

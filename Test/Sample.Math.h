@@ -8,7 +8,7 @@ DEF_SAMPLE(Math)
   std::cout << "LCM : " << vu::lcm(3, 9, 27, 81) << std::endl;
 
   {
-    vu::Point2DT<int> p1(1, 2), p2(3, 4), p3;
+    vu::p2i p1(1, 2), p2(3, 4), p3;
 
     p3 =  p1;
     p3 == p1;
@@ -18,19 +18,19 @@ DEF_SAMPLE(Math)
     p3 +  p2;
     p3 -  p1;
 
-    p3.Translate(5, 6);
+    p3.translate(5, 6);
 
     std::tcout << p1 << std::endl;
     std::tcout << p2 << std::endl;
     std::tcout << p3 << std::endl;
 
-    std::tcout << p1.Distance(p2) << std::endl;
-    std::tcout << p1.Midpoint(p2) << std::endl;
-    std::tcout << p1.Scale(2) << std::endl;
+    std::tcout << p1.distance(p2) << std::endl;
+    std::tcout << p1.mid(p2) << std::endl;
+    std::tcout << p1.scale(2) << std::endl;
   }
 
   {
-    vu::Point3DT<int> p1(1, 2, 3), p2(4, 5, 6), p3;
+    vu::p3i p1(1, 2, 3), p2(4, 5, 6), p3;
 
     p3 =  p1;
     p3 == p1;
@@ -40,19 +40,19 @@ DEF_SAMPLE(Math)
     p3 +  p2;
     p3 -  p1;
 
-    p3.Translate(7, 8, 9);
+    p3.translate(7, 8, 9);
 
     std::tcout << p1 << std::endl;
     std::tcout << p2 << std::endl;
     std::tcout << p3 << std::endl;
 
-    std::tcout << p1.Distance(p2) << std::endl;
-    std::tcout << p1.Midpoint(p2) << std::endl;
-    std::tcout << p1.Scale(2) << std::endl;
+    std::tcout << p1.distance(p2) << std::endl;
+    std::tcout << p1.mid(p2) << std::endl;
+    std::tcout << p1.scale(2) << std::endl;
   }
 
   {
-    vu::Point4DT<int> p1(1, 2, 3, 4), p2(5, 6, 7, 8), p3;
+    vu::p4i p1(1, 2, 3, 4), p2(5, 6, 7, 8), p3;
 
     p3 =  p1;
     p3 == p1;
@@ -62,58 +62,58 @@ DEF_SAMPLE(Math)
     p3 +  p2;
     p3 -  p1;
 
-    p3.Translate(3, 4, 5, 6);
+    p3.translate(3, 4, 5, 6);
 
     std::tcout << p1 << std::endl;
     std::tcout << p2 << std::endl;
     std::tcout << p3 << std::endl;
 
-    std::tcout << p1.Distance(p2) << std::endl;
-    std::tcout << p1.Midpoint(p2) << std::endl;
-    std::tcout << p1.Scale(2) << std::endl;
+    std::tcout << p1.distance(p2) << std::endl;
+    std::tcout << p1.mid(p2) << std::endl;
+    std::tcout << p1.scale(2) << std::endl;
   }
 
   {
-    vu::Vector2DT<double> v21(1, 2), v22(3, 4);
+    vu::v2d v21(1, 2), v22(3, 4);
     std::tcout << v21 << v22 << std::endl;
     std::tcout << v21 + v22 << std::endl;
     std::tcout << v21 - v22 << std::endl;
     std::tcout << v21 * v22 << std::endl;
     std::tcout << v21 / v22 << std::endl;
-    std::tcout << v21.Mag() << std::endl;
-    std::tcout << v21.Dot(v22) << std::endl;
-    std::tcout << v21.Cross(v22) << std::endl;
-    std::tcout << v21.Angle(v22) << std::endl;
-    std::tcout << v21.Normalize() << std::endl;
+    std::tcout << v21.mag() << std::endl;
+    std::tcout << v21.dot(v22) << std::endl;
+    std::tcout << v21.cross(v22) << std::endl;
+    std::tcout << v21.angle(v22) << std::endl;
+    std::tcout << v21.normalize() << std::endl;
 
-    vu::Vector3DT<double> v31(1, 2, 3), v32(4, 5, 6);
+    vu::v3d v31(1, 2, 3), v32(4, 5, 6);
     std::tcout << v31 << v32 << std::endl;
     std::tcout << v31 + v32 << std::endl;
     std::tcout << v31 - v32 << std::endl;
     std::tcout << v31 * v32 << std::endl;
     std::tcout << v31 / v32 << std::endl;
-    std::tcout << v31.Mag() << std::endl;
-    std::tcout << v31.Dot(v32) << std::endl;
-    std::tcout << v31.Cross(v32) << std::endl;
-    std::tcout << v31.Angle(v32) << std::endl;
-    std::tcout << v31.Normalize() << std::endl;
+    std::tcout << v31.mag() << std::endl;
+    std::tcout << v31.dot(v32) << std::endl;
+    std::tcout << v31.cross(v32) << std::endl;
+    std::tcout << v31.angle(v32) << std::endl;
+    std::tcout << v31.normalize() << std::endl;
 
-    vu::Vector4DT<double> v41(1, 2, 3, 4), v42(5, 6, 7, 8);
+    vu::v4d v41(1, 2, 3, 4), v42(5, 6, 7, 8);
     std::tcout << v41 << v42 << std::endl;
     std::tcout << v41 + v42 << std::endl;
     std::tcout << v41 - v42 << std::endl;
     std::tcout << v41 * v42 << std::endl;
     std::tcout << v41 / v42 << std::endl;
-    std::tcout << v41.Mag() << std::endl;
-    std::tcout << v41.Dot(v42) << std::endl;
-    // std::tcout << v41.Cross(v42) << std::endl;
-    std::tcout << v41.Angle(v42) << std::endl;
-    std::tcout << v41.Normalize() << std::endl;
+    std::tcout << v41.mag() << std::endl;
+    std::tcout << v41.dot(v42) << std::endl;
+    // std::tcout << v41.cross(v42) << std::endl;
+    std::tcout << v41.angle(v42) << std::endl;
+    std::tcout << v41.normalize() << std::endl;
   }
 
   {
-    vu::RectT<int> rect(100, 200);
-    rect.Center();
+    vu::r4i rect(100, 200);
+    rect.center();
     std::tcout << rect << std::endl;
   }
 

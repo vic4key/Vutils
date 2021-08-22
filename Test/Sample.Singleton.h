@@ -11,8 +11,8 @@ DEF_SAMPLE(Singleton)
     void Stop() {}
   };
 
-  CService::Instance().Start();
-  CService::Instance().Stop();
+  CService::instance().Start();
+  CService::instance().Stop();
 
   return vu::VU_OK;
 }

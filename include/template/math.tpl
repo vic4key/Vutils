@@ -14,40 +14,43 @@
 #define RAD2DEG(angle) ((angle) * 180.0 / M_PI)
 
 template <typename T>
-T absT(const T v)
+T abs_t(const T v)
 {
   return v < T(0) ? -T(v) : T(v);
 }
 
 template <typename T>
-T AlignUp(T v, T a = T(sizeof(size_t)))
+T align_up_t(T v, T a = T(sizeof(size_t)))
 {
   return ((v + (a - 1)) & ~(a - 1));
 }
 
 // Range Operation
 
-template <typename TypeFrom, typename TypeTo>
-TypeTo ConvRange(TypeFrom v, TypeFrom lo1, TypeFrom hi1, TypeTo lo2, TypeTo hi2)
+template <typename type_trom, typename type_to>
+type_to conv_range(type_trom v, type_trom lo1, type_trom hi1, type_to lo2, type_to hi2)
 {
-  return TypeTo(lo2 + double(v - lo1) * double(hi2 - lo2) / double(hi1 - lo1));
+  return type_to(lo2 + double(v - lo1) * double(hi2 - lo2) / double(hi1 - lo1));
 }
 
-template <typename TypeFrom, typename TypeTo>
-TypeTo ConvRange(TypeFrom v, const std::pair<TypeFrom, TypeFrom>& from, const std::pair<TypeTo, TypeTo>& to)
+template <typename type_trom, typename type_to>
+type_to conv_range(
+  const type_trom v,
+  const std::pair<type_trom, type_trom>& from,
+  const std::pair<type_to, type_to>& to)
 {
-  return TypeTo(to.second + double(v - from.first) * double(to.second - to.first) / double(from.second - from.first));
+  return type_to(to.second + double(v - from.first) * double(to.second - to.first) / double(from.second - from.first));
 }
 
-// PointT - The point template
+// point_t - The point template
 
 template <int N, typename T>
-class PointT
+class point_t
 {
 public:
   enum { D = N };
 
-  PointT()
+  point_t()
   {
     for (register int i = 0; i < D; i++)
     {
@@ -55,7 +58,7 @@ public:
     }
   }
 
-  bool operator==(const PointT& right)
+  bool operator==(const point_t& right)
   {
     bool result = true;
 
@@ -67,12 +70,12 @@ public:
     return result;
   }
 
-  bool operator!=(const PointT& right)
+  bool operator!=(const point_t& right)
   {
     return !(*this == right);
   }
 
-  PointT& operator=(const PointT& right)
+  point_t& operator=(const point_t& right)
   {
     for (register int i = 0; i < D; i++)
     {
@@ -82,7 +85,7 @@ public:
     return *this;
   }
 
-  PointT& operator+=(const PointT& right)
+  point_t& operator+=(const point_t& right)
   {
     for (register int i = 0; i < D; i++)
     {
@@ -92,7 +95,7 @@ public:
     return *this;
   }
 
-  PointT& operator-=(const PointT& right)
+  point_t& operator-=(const point_t& right)
   {
     for (register int i = 0; i < D; i++)
     {
@@ -102,7 +105,7 @@ public:
     return *this;
   }
 
-  PointT& operator*=(const PointT& v)
+  point_t& operator*=(const point_t& v)
   {
     for (register int i = 0; i < D; i++)
     {
@@ -112,7 +115,7 @@ public:
     return *this;
   }
 
-  PointT& operator/=(const PointT& v)
+  point_t& operator/=(const point_t& v)
   {
     for (register int i = 0; i < D; i++)
     {
@@ -122,51 +125,71 @@ public:
     return *this;
   }
 
-  PointT operator+(const PointT& right)
+  point_t operator+(const point_t& right)
   {
-    PointT result(*this);
+    point_t result(*this);
     result += right;
     return result;
   }
 
-  PointT operator-(const PointT& right)
+  point_t operator-(const point_t& right)
   {
-    PointT result(*this);
+    point_t result(*this);
     result -= right;
     return result;
   }
 
-  void Set(const T X = 0, const T Y = 0, const T Z = 0, const T W = 0)
+  void set(const T X = 0, const T Y = 0, const T Z = 0, const T W = 0)
   {
-    SetEx(D, X, Y, Z, W);
+    set_ex(D, X, Y, Z, W);
   }
 
-  const T& X() const
+  void x(const T& v)
+  {
+    m_v[0] = v;
+  }
+
+  const T& x() const
   {
     return m_v[0];
   }
 
-  const T& Y() const
+  void y(const T& v)
+  {
+    m_v[1] = v;
+  }
+
+  const T& y() const
   {
     return m_v[1];
   }
 
-  const T& Z() const
+  void z(const T& v)
+  {
+    m_v[2] = v;
+  }
+
+  const T& z() const
   {
     return m_v[2];
   }
 
-  const T& W() const
+  void w(const T& v)
+  {
+    m_v[3] = v;
+  }
+
+  const T& w() const
   {
     return m_v[3];
   }
 
-  const T* Data() const
+  const T* data() const
   {
     return reinterpret_cast<T*>(&m_v);
   }
 
-  friend std::ostream& operator<<(std::ostream& os, const PointT& point)
+  friend std::ostream& operator<<(std::ostream& os, const point_t& point)
   {
     os << "(";
 
@@ -180,7 +203,7 @@ public:
     return os;
   }
 
-  friend std::wostream& operator<<(std::wostream& os, const PointT& point)
+  friend std::wostream& operator<<(std::wostream& os, const point_t& point)
   {
     os << L"(";
 
@@ -194,13 +217,13 @@ public:
     return os;
   }
 
-  double Distance(const PointT& point) const
+  double distance(const point_t& point) const
   {
     double result = 0.;
 
     for (register int i = 0; i < D; i++)
     {
-      double v = absT(point.m_v[i] - m_v[i]);
+      double v = abs_t(point.m_v[i] - m_v[i]);
       result += v * v;
     }
 
@@ -209,15 +232,15 @@ public:
     return result;
   }
 
-  PointT Midpoint(const PointT& point) const
+  point_t mid(const point_t& point) const
   {
-    PointT result = *this;
+    point_t result = *this;
     result += point;
-    result.Scale(0.5);
+    result.scale(0.5);
     return result;
   }
 
-  PointT& Scale(const double ratio)
+  point_t& scale(const double ratio)
   {
     for (register int i = 0; i < D; i++)
     {
@@ -228,7 +251,7 @@ public:
   }
 
 protected:
-  void SetEx(const int count, const T X = 0, const T Y = 0, const T Z = 0, const T W = 0)
+  void set_ex(const int count, const T X = 0, const T Y = 0, const T Z = 0, const T W = 0)
   {
     assert(count == D);
 
@@ -242,122 +265,122 @@ protected:
   T m_v[D];
 };
 
-// Point2DT - The 2D point template
+// point_2d_t - The 2D point template
 
 template <typename T>
-class Point2DT : public PointT<2, T>
+class point_2d_t : public point_t<2, T>
 {
 public:
   enum { D = 2 };
 
-  Point2DT() : PointT<D, T>()
+  point_2d_t() : point_t<D, T>()
   {
   }
 
-  Point2DT(const T X, const T Y)
+  point_2d_t(const T X, const T Y)
   {
-    this->SetEx(D, X, Y);
+    this->set_ex(D, X, Y);
   }
 
-  void Translate(const T X, const T Y)
+  void translate(const T X, const T Y)
   {
-    Point2DT v(X, Y);
+    point_2d_t v(X, Y);
     *this += v;
   }
 };
 
-typedef Point2DT<int> P2I;
-typedef Point2DT<float> P2F;
-typedef Point2DT<double> P2D;
+typedef point_2d_t<int> p2i;
+typedef point_2d_t<float> p2f;
+typedef point_2d_t<double> p2d;
 
-// Point3DT - The 3D point template
+// point_3d_t - The 3D point template
 
 template <typename T>
-class Point3DT : public PointT<3, T>
+class point_3d_t : public point_t<3, T>
 {
 public:
   enum { D = 3 };
 
-  Point3DT() : PointT<D, T>()
+  point_3d_t() : point_t<D, T>()
   {
   }
 
-  Point3DT(const T X, const T Y, const T Z)
+  point_3d_t(const T X, const T Y, const T Z)
   {
-    this->SetEx(D, X, Y, Z);
+    this->set_ex(D, X, Y, Z);
   }
 
-  void Translate(const T X, const T Y, const T Z)
+  void translate(const T X, const T Y, const T Z)
   {
-    Point3DT v(X, Y, Z);
+    point_3d_t v(X, Y, Z);
     *this += v;
   }
 };
 
-typedef Point3DT<int> P3I;
-typedef Point3DT<float> P3F;
-typedef Point3DT<double> P3D;
+typedef point_3d_t<int> p3i;
+typedef point_3d_t<float> p3f;
+typedef point_3d_t<double> p3d;
 
-// Point4DT - The 4D point template
+// point_4d_t - The 4D point template
 
 template <typename T>
-class Point4DT : public PointT<4, T>
+class point_4d_t : public point_t<4, T>
 {
 public:
   enum { D = 4 };
 
-  Point4DT() : PointT<D, T>()
+  point_4d_t() : point_t<D, T>()
   {
   }
 
-  Point4DT(const T X, const T Y, const T Z, const T W)
+  point_4d_t(const T X, const T Y, const T Z, const T W)
   {
-    this->SetEx(D, X, Y, Z, W);
+    this->set_ex(D, X, Y, Z, W);
   }
 
-  void Translate(const T X, const T Y, const T Z, const T W)
+  void translate(const T X, const T Y, const T Z, const T W)
   {
-    Point4DT v(X, Y, Z, W);
+    point_4d_t v(X, Y, Z, W);
     *this += v;
   }
 };
 
-typedef Point4DT<int> P4I;
-typedef Point4DT<float> P4F;
-typedef Point4DT<double> P4D;
+typedef point_4d_t<int> p4i;
+typedef point_4d_t<float> p4f;
+typedef point_4d_t<double> p4d;
 
-// VectorT - The vector template
+// vector_t - The vector template
 
 template <int N, typename T>
-class VectorT : public PointT<N, T>
+class vector_t : public point_t<N, T>
 {
 public:
   enum { D = N };
 
-  VectorT() : PointT<N, T>()
+  vector_t() : point_t<N, T>()
   {
   }
 
-  VectorT(const PointT<N, T>& right)
+  vector_t(const point_t<N, T>& right)
   {
-    static_cast<PointT<N, T>&>(*this) = right;
+    static_cast<point_t<N, T>&>(*this) = right;
   }
 
-  VectorT operator*(const VectorT& v)
+  vector_t operator*(const vector_t& v)
   {
-    VectorT result(*this);
+    vector_t result(*this);
     result *= v;
     return result;
   }
 
-  VectorT operator/(const VectorT& v)
+  vector_t operator/(const vector_t& v)
   {
-    VectorT result(*this);
+    vector_t result(*this);
     result /= v;
     return result;
   }
 
-  double Angle(const VectorT& v) const
+  double angle(const vector_t& v) const
   {
     /**
      * a = acos(v1 * v2) / (|v1| * |v2|)
@@ -366,12 +389,12 @@ public:
      *   a  - the angle between both 2 given vectors
      */
 
-    double result = Dot(v) / (this->Mag() * v.Mag());
+    double result = dot(v) / (this->mag() * v.mag());
     result = std::acos(result);
     return RAD2DEG(result);
   }
 
-  double Mag() const // magnitude/length
+  double mag() const // magnitude/length
   {
     double result = 0.;
 
@@ -385,7 +408,7 @@ public:
     return result;
   }
 
-  double Dot(const VectorT& v) const // dot/scalar product
+  double dot(const vector_t& v) const // dot/scalar product
   {
     double result = 0.;
 
@@ -397,7 +420,7 @@ public:
     return result;
   }
 
-  VectorT Cross(const VectorT& v) // cross/vector product
+  vector_t cross(const vector_t& v) // cross/vector product
   {
     /**
      * v = v1 x v2 = |v1| * |v2| * sin(a) * n
@@ -408,261 +431,303 @@ public:
      *   v  - the cross/vector product of 2 given vectors
      */
 
-    // VectorT result = *this;
+     // VectorT result = *this;
 
-    // VectorT n = ? ; // TODO: Vic. Uncompleted.
-    // n.Normalize();
+     // VectorT n = ? ; // TODO: Vic. Uncompleted.
+     // n.normalize();
 
-    // double a = this->Angle(v);
-    // a = DEG2RAD(a);
+     // double a = this->angle(v);
+     // a = DEG2RAD(a);
 
-    // result *= v;
-    // result *= n;
-    // result.Scale(std::sin(a));
+     // result *= v;
+     // result *= n;
+     // result.scale(std::sin(a));
 
-    VectorT result;
+    vector_t result;
     assert(0 && "no base implementation for cross product");
     return result;
   }
 
-  VectorT& Normalize() // normalize/unit
+  vector_t& normalize() // normalize/unit
   {
-    this->Scale(1. / Mag());
+    this->scale(1. / mag());
     return *this;
   }
 };
 
-// Vector2DT - The 2D vector template
+// vector_2d_t - The 2D vector template
 
 template <typename T>
-class Vector2DT : public VectorT<2, T>
+class vector_2d_t : public vector_t<2, T>
 {
 public:
   enum { D = 2 };
 
-  Vector2DT() : VectorT<D, T>()
+  vector_2d_t() : vector_t<D, T>()
   {
   }
 
-  Vector2DT(const T X, const T Y)
+  vector_2d_t(const T X, const T Y)
   {
-    this->SetEx(D, X, Y);
+    this->set_ex(D, X, Y);
   }
 
-  Vector2DT(const PointT<2, T>& right)
+  vector_2d_t(const point_t<2, T>& right)
   {
-    static_cast<PointT<2, T>&>(*this) = right;
+    static_cast<point_t<2, T>&>(*this) = right;
   }
 
-  T Cross(const Vector2DT& v)
+  T cross(const vector_2d_t& v)
   {
-    return this->X() * v.Y() - this->Y() * v.X();
+    return this->x() * v.y() - this->y() * v.x();
   }
 };
 
-typedef Vector2DT<int> V2I;
-typedef Vector2DT<float> V2F;
-typedef Vector2DT<double> V2D;
+typedef vector_2d_t<int> v2i;
+typedef vector_2d_t<float> v2f;
+typedef vector_2d_t<double> v2d;
 
-// Vector3DT - The 3D vector template
+// vector_3d_t - The 3D vector template
 
 template <typename T>
-class Vector3DT : public VectorT<3, T>
+class vector_3d_t : public vector_t<3, T>
 {
 public:
   enum { D = 3 };
 
-  Vector3DT() : VectorT<D, T>()
+  vector_3d_t() : vector_t<D, T>()
   {
   }
 
-  Vector3DT(const T X, const T Y, const T Z)
+  vector_3d_t(const T X, const T Y, const T Z)
   {
-    this->SetEx(D, X, Y, Z);
+    this->set_ex(D, X, Y, Z);
   }
 
-  Vector3DT(const PointT<2, T>& right)
+  vector_3d_t(const point_t<2, T>& right)
   {
-    static_cast<PointT<3, T>&>(*this) = right;
+    static_cast<point_t<3, T>&>(*this) = right;
   }
 
-  Vector3DT Cross(const Vector3DT& v)
+  vector_3d_t cross(const vector_3d_t& v)
   {
-    Vector3DT result(
-      this->Y() * v.Z() - this->Z() * v.Y(),
-      this->Z() * v.X() - this->X() * v.Z(),
-      this->X() * v.Y() - this->Y() * v.X()
+    vector_3d_t result(
+      this->y() * v.z() - this->z() * v.y(),
+      this->z() * v.x() - this->x() * v.z(),
+      this->x() * v.y() - this->y() * v.x()
     );
     return result;
   }
 };
 
-typedef Vector3DT<int> V3I;
-typedef Vector3DT<float> V3F;
-typedef Vector3DT<double> V3D;
+typedef vector_3d_t<int> v3i;
+typedef vector_3d_t<float> v3f;
+typedef vector_3d_t<double> v3d;
 
-// Vector4DT - The 4D vector template
+// vector_4d_t - The 4D vector template
 
 template <typename T>
-class Vector4DT : public VectorT<4, T>
+class vector_4d_t : public vector_t<4, T>
 {
 public:
   enum { D = 4 };
 
-  Vector4DT() : VectorT<D, T>()
+  vector_4d_t() : vector_t<D, T>()
   {
   }
 
-  Vector4DT(const T X, const T Y, const T Z, const T W)
+  vector_4d_t(const T X, const T Y, const T Z, const T W)
   {
-    this->SetEx(D, X, Y, Z, W);
+    this->set_ex(D, X, Y, Z, W);
   }
 
-  Vector4DT(const PointT<4, T>& right)
+  vector_4d_t(const point_t<4, T>& right)
   {
-    static_cast<PointT<4, T>&>(*this) = right;
+    static_cast<point_t<4, T>&>(*this) = right;
   }
 
-  Vector4DT Cross(const Vector4DT& v)
+  vector_4d_t cross(const vector_4d_t& v)
   {
-    Vector4DT result;
+    vector_4d_t result;
     assert(0 && "incompatible dimensions for cross product");
     return result;
   }
 };
 
-typedef Vector4DT<int> V4I;
-typedef Vector4DT<float> V4F;
-typedef Vector4DT<double> V4D;
+typedef vector_4d_t<int> v4i;
+typedef vector_4d_t<float> v4f;
+typedef vector_4d_t<double> v4d;
 
-// RectT - The rectangle template (Window Coordinate System)
-
-// .-----> X
-// |
-// |
-// v
-// Y
+// rect_t - The rectangle template (window coordinate system)
+//
+//  .-----> Y
+//  |
+//  |
+//  v
+//  X
 
 template <typename T>
-class RectT
+class rect_t
 {
 public:
-  RectT()
+  enum flip_t
   {
-    Set(T(0), T(0), T(0), T(0));
+    vertical,
+    horizontal,
+  };
+
+  rect_t()
+  {
+    set(T(0), T(0), T(0), T(0));
   }
 
-  RectT(const T l, const T t, const T r, const T b)
+  rect_t(const T l, const T t, const T r, const T b)
   {
-    Set(l, t, r, b);
+    set(l, t, r, b);
   }
 
-  RectT(const T nWidth, const T nHeight)
+  rect_t(const T width, const T height)
   {
-    Set(nWidth, nHeight);
+    set(width, height);
   }
 
-  RectT(const RECT& rect)
+  const T& left() const
   {
-    Set(T(rect.left), T(rect.top), T(rect.right), T(rect.bottom));
+    return m_left;
   }
 
-  void Set(const T l, const T t, const T r, const T b)
+  void left(const T v)
   {
-    m_left   = T(l);
-    m_right  = T(r);
-    m_top    = T(t);
+    m_left = v;
+  }
+
+  const T& right() const
+  {
+    return m_right;
+  }
+
+  void right(const T v)
+  {
+    m_right = v;
+  }
+
+  const T& top() const
+  {
+    return m_top;
+  }
+
+  void top(const T v)
+  {
+    m_top = v;
+  }
+
+  const T& bottom() const
+  {
+    return m_bottom;
+  }
+
+  void bottom(const T v)
+  {
+    m_bottom = v;
+  }
+
+  void set(const T l, const T t, const T r, const T b)
+  {
+    m_left = T(l);
+    m_right = T(r);
+    m_top = T(t);
     m_bottom = T(b);
+    m_fliped[flip_t::vertical] = false;
+    m_fliped[flip_t::horizontal] = false;
   }
 
-  void Set(const T nWidth, const T nHeight)
+  void set(const rect_t& rect)
   {
-    Set(0, 0, nWidth, nHeight);
+    set(rect.left(), rect.top(), rect.right(), rect.bottom());
   }
 
-  bool Empty()
+  void set(const T width, const T height)
+  {
+    set(0, 0, width, height);
+  }
+
+  bool zero() const
   {
     return (m_left == T(0) && m_right == T(0) && m_top == T(0) && m_bottom == T(0));
   }
 
-  Point2DT<T> Origin()
+  point_2d_t<T> origin() const
   {
-    return Point2DT<T>(m_left, m_top);
+    return point_2d_t<T>(
+      m_fliped[flip_t::horizontal] ? m_right : m_left,
+      m_fliped[flip_t::vertical] ? m_bottom : m_top);
   }
 
-  Point2DT<T> Center()
+  point_2d_t<T> center() const
   {
-    return Point2DT<T>(m_left + T(Width() / 2), m_top + T(Height() / 2));
+    const auto p = this->origin();
+    return point_2d_t<T>(p.x() + T(width() / 2), p.y() + T(height() / 2));
   }
 
-  T Width()
+  T width() const
   {
     return T(abs(m_right - m_left));
   }
 
-  T Height()
+  T height() const
   {
     return T(abs(m_bottom - m_top));
   }
 
-  void Translate(const T cx, const T cy)
+  T low() const
   {
-    m_left   += cx;
-    m_right  += cx;
-    m_top    += cy;
-    m_bottom += cy;
+    auto w = this->width();
+    auto h = this->height();
+    return w < h ? w : h;
   }
 
-  void Translate(const Vector2DT<T>& vector)
+  T high() const
   {
-    m_left   += vector.X();
-    m_right  += vector.X();
-    m_top    += vector.Y();
-    m_bottom += vector.Y();
+    auto w = this->width();
+    auto h = this->height();
+    return w > h ? w : h;
   }
 
-  RectT Resize(const T dx, const T dy)
+  float aspect() const
   {
-    return RectT(m_left + dx, m_top - dy, m_right - dx, m_bottom + dy);
+    return float(this->width()) / float(this->height());
   }
 
-  void Flip()
+  void flip(flip_t v)
   {
-    m_top   += m_bottom;
-    m_bottom = m_top - m_bottom;
-    m_top   -= m_bottom;
+    if (v == flip_t::horizontal)
+    {
+      m_left += m_right;
+      m_right = m_left - m_right;
+      m_left -= m_right;
+      m_fliped[v] = !m_fliped[v];
+    }
+    else if (v == flip_t::vertical)
+    {
+      m_top += m_bottom;
+      m_bottom = m_top - m_bottom;
+      m_top -= m_bottom;
+      m_fliped[v] = !m_fliped[v];
+    }
   }
 
-  // operator RECT() const // cast to RECT
-  // {
-  //   RECT rect;
-
-  //   rect.left   = m_left;
-  //   rect.top    = m_top;
-  //   rect.right  = m_right;
-  //   rect.bottom = m_bottom;
-
-  //   return rect;
-  // }
-
-  friend std::ostream& operator<<(std::ostream& os, const RectT& v)
+  friend std::ostream& operator<<(std::ostream& os, const rect_t& v)
   {
-    os << "("
-       << v.m_left << ", "
-       << v.m_top << ", "
-       << v.m_right << ", "
-       << v.m_bottom << ")";
-
+    const auto p = v.origin();
+    os << "(" << p.x() << ", " << p.y() << ", " << v.width() << ", " << v.height() << ")";
     return os;
   }
 
-  friend std::wostream& operator<<(std::wostream& os, const RectT& v)
+  friend std::wostream& operator<<(std::wostream& os, const rect_t& v)
   {
-    os << L"("
-       << v.m_left << L", "
-       << v.m_top << L", "
-       << v.m_right << L", "
-       << v.m_bottom << L")";
+    const auto p = v.origin();
+    os << L"(" << p.x() << L", " << p.y() << L", " << v.width() << L", " << v.height() << L")";
+    return os;
 
     return os;
   }
@@ -672,8 +737,9 @@ private:
   T m_top;
   T m_right;
   T m_bottom;
+  bool m_fliped[2]; // refer to flip_t
 };
 
-typedef RectT<int> R4I;
-typedef RectT<float> R4F;
-typedef RectT<double> R4D;
+typedef rect_t<int> r4i;
+typedef rect_t<float> r4f;
+typedef rect_t<double> r4d;

@@ -967,13 +967,13 @@ public:
  */
 
 #define VU_API_IAT_OVERRIDE(O, M, F)\
-  vu::CIATHookManager::Instance().install(\
+  vu::CIATHookManager::instance().install(\
     _T( # O ), _T( # M ), _T( # F ),\
     (const void*)(reinterpret_cast<void*>(&Hfn ## F)),\
     (const void**)(reinterpret_cast<void**>(&pfn ## F)))
 
 #define VU_API_IAT_RESTORE(O, M, F)\
-  vu::CIATHookManager::Instance().uninstall(\
+  vu::CIATHookManager::instance().uninstall(\
     _T( # O ), _T( # M ), _T( # F ))
 
 struct IATElement;
@@ -1783,15 +1783,13 @@ public:
   CCriticalSection();
   virtual ~CCriticalSection();
 
-  void vuapi Init();
-  void vuapi Enter();
-  void vuapi Leave();
-  void vuapi Destroy();
-
-  TCriticalSection& vuapi GetCurrentSection();
+  void vuapi initialize();
+  void vuapi enter();
+  void vuapi leave();
+  void vuapi destroy();
 
 private:
-  TCriticalSection m_CriticalSection;
+  TCriticalSection m_cs;
 };
 
 /**
@@ -1806,15 +1804,15 @@ public:
 public:
   CStopWatch();
   ~CStopWatch();
-  void Start(bool reset = false);
-  const TDuration Stop();
-  const TDuration Duration();
-  const TDuration Total();
+  void start(bool reset = false);
+  const TDuration stop();
+  const TDuration duration();
+  const TDuration total();
 
 private:
-  bool m_Reset;
-  std::clock_t m_Count, m_Delta;
-  std::vector<std::clock_t> m_DeltaHistory;
+  bool m_reset;
+  std::clock_t m_count, m_delta;
+  std::vector<std::clock_t> m_delta_history;
 };
 
 /**
@@ -1827,16 +1825,16 @@ public:
   CScopeStopWatchX();
   virtual ~CScopeStopWatchX();
 
-  void Active(bool state = true);
-  void Reset();
+  void active(bool state = true);
+  void reset();
 
 protected:
-  virtual void Start(bool reset = false);
-  virtual void Stop();
+  virtual void start(bool reset = false);
+  virtual void stop();
 
 protected:
-  bool m_Activated;
-  CStopWatch m_Watcher;
+  bool m_activated;
+  CStopWatch m_watcher;
 };
 
 class CScopeStopWatchA : public CScopeStopWatchX
@@ -1844,17 +1842,17 @@ class CScopeStopWatchA : public CScopeStopWatchX
 public:
   typedef std::function<void(const std::string& id, const CStopWatch::TDuration& duration)> FnLogging;
 
-  CScopeStopWatchA(const std::string& prefix, const FnLogging fnLogging = Message);
+  CScopeStopWatchA(const std::string& prefix, const FnLogging fn_logging = message);
   virtual ~CScopeStopWatchA();
 
   void Log(const std::string& id = "");
 
-  static void Message(const std::string& id, const CStopWatch::TDuration& duration);
-  static void Console(const std::string& id, const CStopWatch::TDuration& duration);
+  static void message(const std::string& id, const CStopWatch::TDuration& duration);
+  static void console(const std::string& id, const CStopWatch::TDuration& duration);
 
 private:
-  std::string m_Prefix;
-  FnLogging m_fnLogging;
+  std::string m_prefix;
+  FnLogging m_fn_logging;
 };
 
 class CScopeStopWatchW : public CScopeStopWatchX
@@ -1862,17 +1860,17 @@ class CScopeStopWatchW : public CScopeStopWatchX
 public:
   typedef std::function<void(const std::wstring& id, const CStopWatch::TDuration& duration)> FnLogging;
 
-  CScopeStopWatchW(const std::wstring& prefix, const FnLogging fnLogging = Message);
+  CScopeStopWatchW(const std::wstring& prefix, const FnLogging fn_logging = message);
   virtual ~CScopeStopWatchW();
 
-  void Log(const std::wstring& id = L"");
+  void log(const std::wstring& id = L"");
 
-  static void Message(const std::wstring& id, const CStopWatch::TDuration& duration);
-  static void Console(const std::wstring& id, const CStopWatch::TDuration& duration);
+  static void message(const std::wstring& id, const CStopWatch::TDuration& duration);
+  static void console(const std::wstring& id, const CStopWatch::TDuration& duration);
 
 private:
-  std::wstring m_Prefix;
-  FnLogging m_fnLogging;
+  std::wstring m_prefix;
+  FnLogging m_fn_logging;
 };
 
 /**
@@ -2120,56 +2118,47 @@ public:
   CPEFileTX();
   virtual ~CPEFileTX();
 
-  void* vuapi GetpBase();
-  TPEHeaderT<T>* vuapi GetpPEHeader();
+  void* vuapi get_ptr_base();
+  TPEHeaderT<T>* vuapi get_ptr_pe_header();
 
-  T vuapi RVA2Offset(T RVA, bool InCache = true);
-  T vuapi Offset2RVA(T Offset, bool InCache = true);
+  T vuapi rva_to_offset(T RVA, bool in_cache = true);
+  T vuapi offset_to_rva(T Offset, bool in_cache = true);
 
-  const std::vector<PSectionHeader>& vuapi GetSetionHeaders(bool InCache = true);
+  const std::vector<PSectionHeader>& vuapi get_setion_headers(bool in_cache = true);
 
-  const std::vector<PImportDescriptor>& vuapi GetImportDescriptors(bool InCache = true);
-  const std::vector<TImportModule> vuapi GetImportModules(bool InCache = true);
-  const std::vector<TImportFunctionT<T>> vuapi GetImportFunctions(bool InCache = true); // Didn't include import by index
+  const std::vector<PImportDescriptor>& vuapi get_import_descriptors(bool in_cache = true);
+  const std::vector<TImportModule> vuapi get_import_modules(bool in_cache = true);
+  const std::vector<TImportFunctionT<T>> vuapi get_import_functions(bool in_cache = true); // Didn't include import by index
 
-  const TImportModule* vuapi FindImportModule(const std::string& ModuleName, bool InCache = true);
+  const TImportModule* vuapi find_ptr_import_module(const std::string& module_name, bool in_cache = true);
 
-  const TImportFunctionT<T>* vuapi FindImportFunction(
-    const std::string& FunctionName,
-    bool InCache = true
-  );
-  const TImportFunctionT<T>* vuapi FindImportFunction(
-    const ushort FunctionHint,
-    bool InCache = true
-  );
-  const TImportFunctionT<T>* vuapi FindImportFunction(
-    const TImportFunctionT<T>& ImportFunction,
-    eImportedFunctionFindMethod Method,
-    bool InCache = true);
+  const TImportFunctionT<T>* vuapi find_ptr_import_function(const std::string& function_name, bool in_cache = true);
+  const TImportFunctionT<T>* vuapi find_ptr_import_function(const ushort FunctionHint, bool in_cache = true);
+  const TImportFunctionT<T>* vuapi find_ptr_import_function(const TImportFunctionT<T>& ImportFunction, eImportedFunctionFindMethod Method, bool in_cache = true);
 
-  const std::vector<TRelocationEntryT<T>> vuapi GetRelocationEntries(bool InCache = true);
+  const std::vector<TRelocationEntryT<T>> vuapi get_relocation_entries(bool in_cache = true);
 
 protected:
-  bool m_Initialized;
+  bool m_initialized;
 
-  void* m_pBase;
+  void* m_ptr_base;
 
-  TDOSHeader* m_pDosHeader;
-  TPEHeaderT<T>* m_pPEHeader;
+  TDOSHeader* m_ptr_dos_header;
+  TPEHeaderT<T>* m_ptr_pe_header;
 
 private:
-  T m_OrdinalFlag;
+  T m_ordinal_flag;
 
-  std::vector<TExIID> m_ExIDDs;
+  std::vector<TExIID> m_ex_iids;
 
-  std::vector<PSectionHeader> m_SectionHeaders;
-  std::vector<PImportDescriptor> m_ImportDescriptors;
-  std::vector<TImportModule> m_ImportModules;
-  std::vector<TImportFunctionT<T>> m_ImportFunctions;
-  std::vector<TRelocationEntryT<T>> m_RelocationEntries;
+  std::vector<PSectionHeader> m_section_headers;
+  std::vector<PImportDescriptor> m_import_descriptors;
+  std::vector<TImportModule> m_import_modules;
+  std::vector<TImportFunctionT<T>> m_import_functions;
+  std::vector<TRelocationEntryT<T>> m_relocation_entries;
 
 protected:
-  const std::vector<TExIID>& vuapi GetExIIDs(bool InCache = true);
+  const std::vector<TExIID>& vuapi get_ex_iids(bool in_cache = true);
 };
 
 template <typename T>
@@ -2177,14 +2166,14 @@ class CPEFileTA : public CPEFileTX<T>
 {
 public:
   CPEFileTA() {};
-  CPEFileTA(const std::string& PEFilePath);
-  ~CPEFileTA();
+  CPEFileTA(const std::string& pe_file_path);
+  virtual ~CPEFileTA();
 
-  VUResult vuapi Parse(const std::string& PEFilePath = "");
+  VUResult vuapi parse();
 
 private:
-  std::string m_FilePath;
-  CFileMappingA m_FileMap;
+  std::string m_file_path;
+  CFileMappingA m_file_map;
 };
 
 template <typename T>
@@ -2192,14 +2181,14 @@ class CPEFileTW : public CPEFileTX<T>
 {
 public:
   CPEFileTW() {};
-  CPEFileTW(const std::wstring& PEFilePath);
-  ~CPEFileTW();
+  CPEFileTW(const std::wstring& pe_file_path);
+  virtual ~CPEFileTW();
 
-  VUResult vuapi Parse();
+  VUResult vuapi parse();
 
 private:
-  std::wstring m_FilePath;
-  CFileMappingW m_FileMap;
+  std::wstring m_file_path;
+  CFileMappingW m_file_map;
 };
 
 /**
@@ -2573,20 +2562,20 @@ protected:
 class CThreadPool
 {
 public:
-  CThreadPool(size_t nthreads = MAX_NTHREADS);
+  CThreadPool(size_t n_threads = MAX_NTHREADS);
   virtual ~CThreadPool();
 
-  void AddTask(FnTask&& fn);
-  void Launch();
+  void add_task(FnTask&& fn);
+  void launch();
 
-  size_t WorkerCount() const;
-  size_t WorkQueueCount() const;
+  size_t worker_count() const;
+  size_t work_queue_count() const;
 
-  size_t ActiveWorkerCount() const;
-  size_t InactiveWorkerCount() const;
+  size_t active_worker_count() const;
+  size_t inactive_worker_count() const;
 
 private:
-  Pool* m_pTP;
+  Pool* m_ptr_impl;
 };
 
 #include "template/stlthread.tpl"

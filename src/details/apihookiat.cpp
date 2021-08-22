@@ -285,7 +285,7 @@ VUResult CIATHookManagerW::install(
   const void* replacement,
   const void** original)
 {
-  return CIATHookManagerA::Instance().install(
+  return CIATHookManagerA::instance().install(
     to_string_A(target), to_string_A(module), to_string_A(function), replacement, original);
 }
 
@@ -295,7 +295,7 @@ VUResult CIATHookManagerW::uninstall(
   const std::wstring& function,
   const void** replacement)
 {
-  return CIATHookManagerA::Instance().uninstall(
+  return CIATHookManagerA::instance().uninstall(
     to_string_A(target), to_string_A(module), to_string_A(function), replacement);
 }
 

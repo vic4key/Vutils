@@ -14,49 +14,49 @@ using namespace threadpool11;
 namespace vu
 {
 
-CThreadPool::CThreadPool(size_t nthreads)
+CThreadPool::CThreadPool(size_t n_threads)
 {
-  if (nthreads == MAX_NTHREADS)
+  if (n_threads == MAX_NTHREADS)
   {
-    nthreads = std::thread::hardware_concurrency();
+    n_threads = std::thread::hardware_concurrency();
   }
 
-  m_pTP = new Pool(nthreads);
+  m_ptr_impl = new Pool(n_threads);
 }
 
 CThreadPool::~CThreadPool()
 {
-  delete m_pTP;
+  delete m_ptr_impl;
 }
 
-void CThreadPool::AddTask(FnTask&& fn)
+void CThreadPool::add_task(FnTask&& fn)
 {
-  m_pTP->postWork(static_cast<Worker::WorkType>(fn));
+  m_ptr_impl->postWork(static_cast<Worker::WorkType>(fn));
 }
 
-void CThreadPool::Launch()
+void CThreadPool::launch()
 {
-  m_pTP->waitAll();
+  m_ptr_impl->waitAll();
 }
 
-size_t CThreadPool::WorkerCount() const
+size_t CThreadPool::worker_count() const
 {
-  return m_pTP->getWorkerCount();
+  return m_ptr_impl->getWorkerCount();
 }
 
-size_t CThreadPool::WorkQueueCount() const
+size_t CThreadPool::work_queue_count() const
 {
-  return m_pTP->getWorkQueueCount();
+  return m_ptr_impl->getWorkQueueCount();
 }
 
-size_t CThreadPool::ActiveWorkerCount() const
+size_t CThreadPool::active_worker_count() const
 {
-  return m_pTP->getActiveWorkerCount();
+  return m_ptr_impl->getActiveWorkerCount();
 }
 
-size_t CThreadPool::InactiveWorkerCount() const
+size_t CThreadPool::inactive_worker_count() const
 {
-  return m_pTP->getInactiveWorkerCount();
+  return m_ptr_impl->getInactiveWorkerCount();
 }
 
 } // namespace vu

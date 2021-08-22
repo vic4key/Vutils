@@ -11,36 +11,31 @@ namespace vu
 
 CCriticalSection::CCriticalSection()
 {
-  memset(&m_CriticalSection, 0, sizeof(m_CriticalSection));
+  memset(&m_cs, 0, sizeof(m_cs));
 }
 
 CCriticalSection::~CCriticalSection()
 {
 }
 
-void vuapi CCriticalSection::Init()
+void vuapi CCriticalSection::initialize()
 {
-  InitializeCriticalSection(&m_CriticalSection);
+  InitializeCriticalSection(&m_cs);
 }
 
-void vuapi CCriticalSection::Enter()
+void vuapi CCriticalSection::enter()
 {
-  EnterCriticalSection(&m_CriticalSection);
+  EnterCriticalSection(&m_cs);
 }
 
-void vuapi CCriticalSection::Leave()
+void vuapi CCriticalSection::leave()
 {
-  LeaveCriticalSection(&m_CriticalSection);
+  LeaveCriticalSection(&m_cs);
 }
 
-void vuapi CCriticalSection::Destroy()
+void vuapi CCriticalSection::destroy()
 {
-  DeleteCriticalSection(&m_CriticalSection);
-}
-
-TCriticalSection& vuapi CCriticalSection::GetCurrentSection()
-{
-  return m_CriticalSection;
+  DeleteCriticalSection(&m_cs);
 }
 
 } // namespace vu
