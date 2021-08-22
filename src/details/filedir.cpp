@@ -314,9 +314,9 @@ eDiskType get_disk_type_W(const wchar_t drive)
 
     // Generate a map of Partition Names and Disk IDs
 
-    WMI.Begin(L"ROOT\\CIMV2");
+    WMI.begin(L"ROOT\\CIMV2");
     {
-      WMI.Query(L"SELECT * FROM Win32_DiskDrive", [&](IWbemClassObject& object) -> bool
+      WMI.query(L"SELECT * FROM Win32_DiskDrive", [&](IWbemClassObject& object) -> bool
       {
         VARIANT s;
         object.Get(L"DeviceID", 0, &s, 0, 0);
@@ -328,7 +328,7 @@ eDiskType get_disk_type_W(const wchar_t drive)
         std::wstring query = L"Associators of {Win32_DiskDrive.DeviceID='\\\\.\\";
         query += tmp;
         query += L"'} where AssocClass=Win32_DiskDriveToDiskPartition";
-        WMI.Query(query, [&](IWbemClassObject& object) -> bool
+        WMI.query(query, [&](IWbemClassObject& object) -> bool
         {
           VARIANT s;
           object.Get(L"DeviceID", 0, &s, 0, 0);
@@ -336,7 +336,7 @@ eDiskType get_disk_type_W(const wchar_t drive)
           std::wstring query = L"Associators of {Win32_DiskPartition.DeviceID='";
           query += s.bstrVal;
           query += L"'} where AssocClass=Win32_LogicalDiskToPartition";
-          WMI.Query(query, [&](IWbemClassObject& object) -> bool
+          WMI.query(query, [&](IWbemClassObject& object) -> bool
           {
             if (fnIsNumber(id))
             {
@@ -356,13 +356,13 @@ eDiskType get_disk_type_W(const wchar_t drive)
         return true;
       });
     }
-    WMI.End();
+    WMI.end();
 
     // Generate a map of Drive IDs and Disk Types
 
-    WMI.Begin(L"ROOT\\Microsoft\\Windows\\Storage");
+    WMI.begin(L"ROOT\\Microsoft\\Windows\\Storage");
     {
-      WMI.Query(L"SELECT * FROM MSFT_PhysicalDisk", [&](IWbemClassObject& object) -> bool
+      WMI.query(L"SELECT * FROM MSFT_PhysicalDisk", [&](IWbemClassObject& object) -> bool
       {
         VARIANT deviceId;
         object.Get(L"DeviceId", 0, &deviceId, 0, 0);
@@ -379,7 +379,7 @@ eDiskType get_disk_type_W(const wchar_t drive)
         return true;
       });
     }
-    WMI.End();
+    WMI.end();
   }
 
   // Find the Disk Type of a Partition
@@ -483,11 +483,11 @@ std::wstring normalize_path_W(const std::wstring& path, const ePathSep separator
  * CPathA
  */
 
-CPathA::CPathA(const ePathSep Separator) : m_Path(""), m_Sep(Separator)
+CPathA::CPathA(const ePathSep Separator) : m_path(""), m_separator(Separator)
 {
 }
 
-CPathA::CPathA(const std::string& Path, const ePathSep Separator) : m_Path(Path), m_Sep(Separator)
+CPathA::CPathA(const std::string& Path, const ePathSep Separator) : m_path(Path), m_separator(Separator)
 {
 }
 
@@ -502,33 +502,33 @@ CPathA::~CPathA()
 
 const vu::CPathA& CPathA::operator=(const CPathA& right)
 {
-  m_Path = right.m_Path;
-  m_Sep  = right.m_Sep;
+  m_path = right.m_path;
+  m_separator  = right.m_separator;
   return *this;
 }
 
 const vu::CPathA& CPathA::operator=(const std::string& right)
 {
-  m_Path = right;
+  m_path = right;
   return *this;
 }
 
 const vu::CPathA& CPathA::operator+=(const CPathA& right)
 {
-  *this += right.m_Path;
+  *this += right.m_path;
   return *this;
 }
 
 const vu::CPathA& CPathA::operator+=(const std::string& right)
 {
-  this->Join(right);
+  this->join(right);
   return *this;
 }
 
 vu::CPathA CPathA::operator+(const CPathA& right)
 {
   CPathA result(*this);
-  result += right.m_Path;
+  result += right.m_path;
   return result;
 }
 
@@ -541,17 +541,17 @@ vu::CPathA CPathA::operator+(const std::string& right)
 
 bool CPathA::operator==(const CPathA& right)
 {
-  bool result = m_Sep == right.m_Sep;
+  bool result = m_separator == right.m_separator;
 
   if (result)
   {
-    if (m_Sep == ePathSep::WIN)
+    if (m_separator == ePathSep::WIN)
     {
-      result &= lower_string_A(m_Path) == lower_string_A(right.m_Path);
+      result &= lower_string_A(m_path) == lower_string_A(right.m_path);
     }
-    else if (m_Sep == ePathSep::POSIX)
+    else if (m_separator == ePathSep::POSIX)
     {
-      result &= m_Path == right.m_Path;
+      result &= m_path == right.m_path;
     }
   }
 
@@ -563,60 +563,60 @@ bool CPathA::operator!=(const CPathA& right)
   return !(*this == right);
 }
 
-vu::CPathA& CPathA::Trim(const eTrimType TrimType)
+vu::CPathA& CPathA::trim(const eTrimType TrimType)
 {
-  m_Path = trim_string_A(m_Path, TrimType);
+  m_path = trim_string_A(m_path, TrimType);
   return *this;
 }
 
-vu::CPathA& CPathA::Normalize()
+vu::CPathA& CPathA::normalize()
 {
-  m_Path = normalize_path_A(m_Path, m_Sep);
+  m_path = normalize_path_A(m_path, m_separator);
   return *this;
 }
 
-vu::CPathA& CPathA::Join(const std::string& Path)
+vu::CPathA& CPathA::join(const std::string& Path)
 {
-  m_Path = join_path_A(m_Path, Path, m_Sep);
+  m_path = join_path_A(m_path, Path, m_separator);
   return *this;
 }
 
-vu::CPathA& CPathA::Finalize()
+vu::CPathA& CPathA::finalize()
 {
-  Trim();
-  Normalize();
+  this->trim();
+  this->normalize();
   return *this;
 }
 
-vu::CPathA CPathA::FileName(bool Extension) const
+vu::CPathA CPathA::extract_file_name(bool Extension) const
 {
   CPathA tmp(*this);
-  tmp.Finalize();
-  return vu::extract_file_name_A(tmp.AsString(), Extension);
+  tmp.finalize();
+  return vu::extract_file_name_A(tmp.as_string(), Extension);
 }
 
-vu::CPathA CPathA::FileDirectory(bool Slash) const
+vu::CPathA CPathA::extract_file_directory(bool Slash) const
 {
   CPathA tmp(*this);
-  tmp.Finalize();
-  return vu::extract_file_directory_A(tmp.AsString(), Slash);
+  tmp.finalize();
+  return vu::extract_file_directory_A(tmp.as_string(), Slash);
 }
 
-bool CPathA::Exists() const
+bool CPathA::exists() const
 {
   CPathA tmp(*this);
-  tmp.Finalize();
-  return is_directory_exists_A(tmp.AsString()) || is_file_exists_A(tmp.AsString());
+  tmp.finalize();
+  return is_directory_exists_A(tmp.as_string()) || is_file_exists_A(tmp.as_string());
 }
 
-std::string CPathA::AsString() const
+std::string CPathA::as_string() const
 {
-  return m_Path;
+  return m_path;
 }
 
 std::ostream& operator<<(std::ostream& os, CPathA& Path)
 {
-  os << Path.m_Path;
+  os << Path.m_path;
   return os;
 }
 
@@ -624,11 +624,11 @@ std::ostream& operator<<(std::ostream& os, CPathA& Path)
  * CPathW
  */
 
-CPathW::CPathW(const ePathSep Separator) : m_Path(L""), m_Sep(Separator)
+CPathW::CPathW(const ePathSep Separator) : m_path(L""), m_separator(Separator)
 {
 }
 
-CPathW::CPathW(const std::wstring& Path, const ePathSep Separator) : m_Path(Path), m_Sep(Separator)
+CPathW::CPathW(const std::wstring& Path, const ePathSep Separator) : m_path(Path), m_separator(Separator)
 {
 }
 
@@ -643,33 +643,33 @@ CPathW::~CPathW()
 
 const vu::CPathW& CPathW::operator=(const CPathW& right)
 {
-  m_Path = right.m_Path;
-  m_Sep  = right.m_Sep;
+  m_path = right.m_path;
+  m_separator  = right.m_separator;
   return *this;
 }
 
 const vu::CPathW& CPathW::operator=(const std::wstring& right)
 {
-  m_Path = right;
+  m_path = right;
   return *this;
 }
 
 const vu::CPathW& CPathW::operator+=(const CPathW& right)
 {
-  *this += right.m_Path;
+  *this += right.m_path;
   return *this;
 }
 
 const vu::CPathW& CPathW::operator+=(const std::wstring& right)
 {
-  this->Join(right);
+  this->join(right);
   return *this;
 }
 
 vu::CPathW CPathW::operator+(const CPathW& right)
 {
   CPathW result(*this);
-  result += right.m_Path;
+  result += right.m_path;
   return result;
 }
 
@@ -682,17 +682,17 @@ vu::CPathW CPathW::operator+(const std::wstring& right)
 
 bool CPathW::operator==(const CPathW& right)
 {
-  bool result = m_Sep == right.m_Sep;
+  bool result = m_separator == right.m_separator;
 
   if (result)
   {
-    if (m_Sep == ePathSep::WIN)
+    if (m_separator == ePathSep::WIN)
     {
-      result &= lower_string_W(m_Path) == lower_string_W(right.m_Path);
+      result &= lower_string_W(m_path) == lower_string_W(right.m_path);
     }
-    else if (m_Sep == ePathSep::POSIX)
+    else if (m_separator == ePathSep::POSIX)
     {
-      result &= m_Path == right.m_Path;
+      result &= m_path == right.m_path;
     }
   }
 
@@ -704,60 +704,60 @@ bool CPathW::operator!=(const CPathW& right)
   return !(*this == right);
 }
 
-vu::CPathW& CPathW::Trim(const eTrimType TrimType)
+vu::CPathW& CPathW::trim(const eTrimType TrimType)
 {
-  m_Path = trim_string_W(m_Path, TrimType);
+  m_path = trim_string_W(m_path, TrimType);
   return *this;
 }
 
-vu::CPathW& CPathW::Normalize()
+vu::CPathW& CPathW::normalize()
 {
-  m_Path = normalize_path_W(m_Path, m_Sep);
+  m_path = normalize_path_W(m_path, m_separator);
   return *this;
 }
 
-vu::CPathW& CPathW::Join(const std::wstring& Path)
+vu::CPathW& CPathW::join(const std::wstring& Path)
 {
-  m_Path = join_path_W(m_Path, Path, m_Sep);
+  m_path = join_path_W(m_path, Path, m_separator);
   return *this;
 }
 
-vu::CPathW& CPathW::Finalize()
+vu::CPathW& CPathW::finalize()
 {
-  Trim();
-  Normalize();
+  this->trim();
+  this->normalize();
   return *this;
 }
 
-vu::CPathW CPathW::FileName(bool Extension) const
+vu::CPathW CPathW::extract_file_name(bool Extension) const
 {
   CPathW tmp(*this);
-  tmp.Finalize();
-  return vu::extract_file_name_W(tmp.AsString(), Extension);
+  tmp.finalize();
+  return vu::extract_file_name_W(tmp.as_string(), Extension);
 }
 
-vu::CPathW CPathW::FileDirectory(bool Slash) const
+vu::CPathW CPathW::extract_file_directory(bool Slash) const
 {
   CPathW tmp(*this);
-  tmp.Finalize();
-  return vu::extract_file_directory_W(tmp.AsString(), Slash);
+  tmp.finalize();
+  return vu::extract_file_directory_W(tmp.as_string(), Slash);
 }
 
-bool CPathW::Exists() const
+bool CPathW::exists() const
 {
   CPathW tmp(*this);
-  tmp.Finalize();
-  return is_directory_exists_W(tmp.AsString()) || is_file_exists_W(tmp.AsString());
+  tmp.finalize();
+  return is_directory_exists_W(tmp.as_string()) || is_file_exists_W(tmp.as_string());
 }
 
-std::wstring CPathW::AsString() const
+std::wstring CPathW::as_string() const
 {
-  return m_Path;
+  return m_path;
 }
 
 std::wostream& operator<<(std::wostream& os, CPathW& Path)
 {
-  os << Path.m_Path;
+  os << Path.m_path;
   return os;
 }
 

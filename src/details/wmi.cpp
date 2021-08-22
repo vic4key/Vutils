@@ -33,7 +33,7 @@ public:
   CCOMSentry();
   virtual ~CCOMSentry();
 
-  virtual bool Ready();
+  virtual bool ready();
 
   // private:
   static bool m_Ready;
@@ -86,7 +86,7 @@ CCOMSentry::~CCOMSentry()
   m_Ready = false;
 }
 
-bool CCOMSentry::Ready()
+bool CCOMSentry::ready()
 {
   return m_Ready;
 }
@@ -105,22 +105,22 @@ public:
   CWMIProviderX();
   virtual ~CWMIProviderX();
 
-  virtual bool Ready();
-  bool Begin(const std::wstring& theObjectPath);
-  bool End();
+  virtual bool ready();
+  bool begin(const std::wstring& object_path);
+  bool end();
 
-  IEnumWbemClassObject* Query(const std::wstring& theQueryString);
-  bool Query(const std::wstring& theQueryString, const std::function<bool(IWbemClassObject& object)> fnCallback);
-
-private:
-  bool SetupWBEM(const std::wstring& theObjectPath);
+  IEnumWbemClassObject* query(const std::wstring& qs);
+  bool query(const std::wstring& qs, const std::function<bool(IWbemClassObject& object)> fn_callback);
 
 private:
-  IWbemLocator* m_pWbemLocator;
-  IWbemServices* m_pWbemServices;
+  bool setup_WBEM(const std::wstring& object_path);
+
+private:
+  IWbemLocator*  m_ptr_WbemLocator;
+  IWbemServices* m_ptr_WbemServices;
 };
 
-CWMIProviderX::CWMIProviderX() : CCOMSentry(), m_pWbemLocator(nullptr), m_pWbemServices(nullptr)
+CWMIProviderX::CWMIProviderX() : CCOMSentry(), m_ptr_WbemLocator(nullptr), m_ptr_WbemServices(nullptr)
 {
 }
 
@@ -128,39 +128,39 @@ CWMIProviderX::~CWMIProviderX()
 {
 }
 
-bool CWMIProviderX::Ready()
+bool CWMIProviderX::ready()
 {
-  return CCOMSentry::Ready() && m_pWbemServices != nullptr && m_pWbemLocator != nullptr;
+  return CCOMSentry::ready() && m_ptr_WbemServices != nullptr && m_ptr_WbemLocator != nullptr;
 }
 
-bool CWMIProviderX::Begin(const std::wstring& theObjectPath)
+bool CWMIProviderX::begin(const std::wstring& object_path)
 {
-  if (!CCOMSentry::Ready())
+  if (!CCOMSentry::ready())
   {
     return false;
   }
 
-  return SetupWBEM(theObjectPath);
+  return setup_WBEM(object_path);
 }
 
-bool CWMIProviderX::End()
+bool CWMIProviderX::end()
 {
-  if (m_pWbemServices != nullptr)
+  if (m_ptr_WbemServices != nullptr)
   {
-    m_pWbemServices->Release();
-    m_pWbemServices = nullptr;
+    m_ptr_WbemServices->Release();
+    m_ptr_WbemServices = nullptr;
   }
 
-  if (m_pWbemLocator != nullptr)
+  if (m_ptr_WbemLocator != nullptr)
   {
-    m_pWbemLocator->Release();
-    m_pWbemLocator = nullptr;
+    m_ptr_WbemLocator->Release();
+    m_ptr_WbemLocator = nullptr;
   }
 
   return true;
 }
 
-bool CWMIProviderX::SetupWBEM(const std::wstring& theObjectPath)
+bool CWMIProviderX::setup_WBEM(const std::wstring& object_path)
 {
   // Obtain the initial locater to WMI
 
@@ -169,7 +169,7 @@ bool CWMIProviderX::SetupWBEM(const std::wstring& theObjectPath)
     0,
     CLSCTX_INPROC_SERVER,
     IID_IWbemLocator,
-    (LPVOID*)&m_pWbemLocator
+    (LPVOID*)&m_ptr_WbemLocator
   );
   if (FAILED(ret))
   {
@@ -178,31 +178,31 @@ bool CWMIProviderX::SetupWBEM(const std::wstring& theObjectPath)
 
   // Connect to WMI
 
-  BSTR bstrObjectPath = SysAllocString(theObjectPath.c_str());
+  BSTR bstr_object_path = SysAllocString(object_path.c_str());
 
-  ret = m_pWbemLocator->ConnectServer(
-    bstrObjectPath, // Object path of WMI namespace
+  ret = m_ptr_WbemLocator->ConnectServer(
+    bstr_object_path, // Object path of WMI namespace
     NULL, // User name
     NULL, // User password
     0,    // Locale
     0,    // Security
     0,    // Authority
     0,    // Context
-    &m_pWbemServices // pointer to IWbemServices proxy
+    &m_ptr_WbemServices // pointer to IWbemServices proxy
   );
 
-  SysFreeString(bstrObjectPath);
+  SysFreeString(bstr_object_path);
 
   if (FAILED(ret))
   {
-    m_pWbemLocator->Release();
+    m_ptr_WbemLocator->Release();
     return false;
   }
 
   // Set security levels on the proxy
 
   ret = CoSetProxyBlanket(
-    m_pWbemServices,             // Indicates the proxy to set
+    m_ptr_WbemServices,             // Indicates the proxy to set
     RPC_C_AUTHN_WINNT,           // RPC_C_AUTHN_xxx
     RPC_C_AUTHZ_NONE,            // RPC_C_AUTHZ_xxx
     NULL,                        // Server principal name 
@@ -214,66 +214,66 @@ bool CWMIProviderX::SetupWBEM(const std::wstring& theObjectPath)
 
   if (FAILED(ret))
   {
-    m_pWbemServices->Release();
-    m_pWbemLocator->Release();
+    m_ptr_WbemServices->Release();
+    m_ptr_WbemLocator->Release();
     return false;
   }
 
   return true;
 }
 
-IEnumWbemClassObject* CWMIProviderX::Query(const std::wstring& theQueryString)
+IEnumWbemClassObject* CWMIProviderX::query(const std::wstring& qs)
 {
-  if (!Ready() || theQueryString.empty())
+  if (!ready() || qs.empty())
   {
     return nullptr;
   }
 
-  IEnumWbemClassObject* pEnumerator = nullptr;
+  IEnumWbemClassObject* ptr_enumerator = nullptr;
 
-  BSTR bstrWQL = SysAllocString(L"WQL");
-  BSTR bstrSQL = SysAllocString(theQueryString.c_str());
+  BSTR bstr_wgl = SysAllocString(L"WQL");
+  BSTR bstr_sql = SysAllocString(qs.c_str());
 
-  HRESULT ret = m_pWbemServices->ExecQuery(
-    bstrWQL,
-    bstrSQL,
+  HRESULT ret = m_ptr_WbemServices->ExecQuery(
+    bstr_wgl,
+    bstr_sql,
     WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
     NULL,
-    &pEnumerator
+    &ptr_enumerator
   );
 
-  SysFreeString(bstrSQL);
-  SysFreeString(bstrWQL);
+  SysFreeString(bstr_sql);
+  SysFreeString(bstr_wgl);
 
   if (FAILED(ret))
   {
     return nullptr;
   }
 
-  return pEnumerator;
+  return ptr_enumerator;
 }
 
-bool CWMIProviderX::Query(const std::wstring& theQueryString,
-                         const std::function<bool(IWbemClassObject& object)> fnCallback)
+bool CWMIProviderX::query(const std::wstring& qs,
+                          const std::function<bool(IWbemClassObject& object)> fnCallback)
 {
-  auto pEnumerator = Query(theQueryString);
-  while (pEnumerator)
+  auto ptr_enumerator = this->query(qs);
+  while (ptr_enumerator)
   {
     ULONG returned = 0;
-    IWbemClassObject* pObject = nullptr;
+    IWbemClassObject* ptr_object = nullptr;
 
-    HRESULT ret = pEnumerator->Next(WBEM_INFINITE, 1, &pObject, &returned);
-    if (FAILED(ret) || pObject == nullptr || returned == 0)
+    HRESULT ret = ptr_enumerator->Next(WBEM_INFINITE, 1, &ptr_object, &returned);
+    if (FAILED(ret) || ptr_object == nullptr || returned == 0)
     {
       break;
     }
 
-    if (!fnCallback(*pObject))
+    if (!fnCallback(*ptr_object))
     {
       break;
     }
 
-    pObject->Release();
+    ptr_object->Release();
   }
 
   return true;
@@ -285,40 +285,40 @@ bool CWMIProviderX::Query(const std::wstring& theQueryString,
 
 CWMIProviderA::CWMIProviderA()
 {
-  m_pImpl = new CWMIProviderX();
+  m_ptr_impl = new CWMIProviderX();
 }
 
 CWMIProviderA::~CWMIProviderA()
 {
-  delete m_pImpl;
+  delete m_ptr_impl;
 }
 
-bool CWMIProviderA::Ready()
+bool CWMIProviderA::ready()
 {
-  return m_pImpl->Ready();
+  return m_ptr_impl->ready();
 }
 
-bool CWMIProviderA::Begin(const std::string& ns)
+bool CWMIProviderA::begin(const std::string& ns)
 {
   auto s = vu::to_string_W(ns);
-  return m_pImpl->Begin(s);
+  return m_ptr_impl->begin(s);
 }
 
-bool CWMIProviderA::End()
+bool CWMIProviderA::end()
 {
-  return m_pImpl->End();
+  return m_ptr_impl->end();
 }
 
-IEnumWbemClassObject* CWMIProviderA::Query(const std::string& qs)
-{
-  auto s = vu::to_string_W(qs);
-  return m_pImpl->Query(s);
-}
-
-bool CWMIProviderA::Query(const std::string& qs, const std::function<bool(IWbemClassObject& object)> fn)
+IEnumWbemClassObject* CWMIProviderA::query(const std::string& qs)
 {
   auto s = vu::to_string_W(qs);
-  return m_pImpl->Query(s, fn);
+  return m_ptr_impl->query(s);
+}
+
+bool CWMIProviderA::query(const std::string& qs, const std::function<bool(IWbemClassObject& object)> fn)
+{
+  auto s = vu::to_string_W(qs);
+  return m_ptr_impl->query(s, fn);
 }
 
 /**
@@ -327,37 +327,37 @@ bool CWMIProviderA::Query(const std::string& qs, const std::function<bool(IWbemC
 
 CWMIProviderW::CWMIProviderW()
 {
-  m_pImpl = new CWMIProviderX();
+  m_ptr_impl = new CWMIProviderX();
 }
 
 CWMIProviderW::~CWMIProviderW()
 {
-  delete m_pImpl;
+  delete m_ptr_impl;
 }
 
-bool CWMIProviderW::Ready()
+bool CWMIProviderW::ready()
 {
-  return m_pImpl->Ready();
+  return m_ptr_impl->ready();
 }
 
-bool CWMIProviderW::Begin(const std::wstring& ns)
+bool CWMIProviderW::begin(const std::wstring& ns)
 {
-  return m_pImpl->Begin(ns);
+  return m_ptr_impl->begin(ns);
 }
 
-bool CWMIProviderW::End()
+bool CWMIProviderW::end()
 {
-  return m_pImpl->End();
+  return m_ptr_impl->end();
 }
 
-IEnumWbemClassObject* CWMIProviderW::Query(const std::wstring& qs)
+IEnumWbemClassObject* CWMIProviderW::query(const std::wstring& qs)
 {
-  return m_pImpl->Query(qs);
+  return m_ptr_impl->query(qs);
 }
 
-bool CWMIProviderW::Query(const std::wstring& qs, const std::function<bool(IWbemClassObject& object)> fn)
+bool CWMIProviderW::query(const std::wstring& qs, const std::function<bool(IWbemClassObject& object)> fn)
 {
-  return m_pImpl->Query(qs, fn);
+  return m_ptr_impl->query(qs, fn);
 }
 
 #endif // VU_WMI_ENABLED

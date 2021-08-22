@@ -2587,8 +2587,8 @@ private:
 class CPathA
 {
 public:
-  CPathA(const ePathSep Separator = ePathSep::WIN);
-  CPathA(const std::string& Path, const ePathSep Separator = ePathSep::WIN);
+  CPathA(const ePathSep separator = ePathSep::WIN);
+  CPathA(const std::string& path, const ePathSep separator = ePathSep::WIN);
   CPathA(const CPathA& right);
   virtual ~CPathA();
 
@@ -2600,31 +2600,28 @@ public:
   CPathA operator+(const std::string& right);
   bool operator==(const CPathA& right);
   bool operator!=(const CPathA& right);
-
-  CPathA& Trim(const eTrimType TrimType = eTrimType::TS_BOTH);
-  CPathA& Normalize();
-  CPathA& Join(const std::string& Path);
-  CPathA& Finalize();
-
-  CPathA FileName(bool Extension = true) const;
-  CPathA FileDirectory(bool Slash = true) const;
-
-  bool Exists() const;
-
-  std::string AsString() const;
-
   friend std::ostream& operator<<(std::ostream& os, CPathA& path);
 
+  CPathA& trim(const eTrimType type = eTrimType::TS_BOTH);
+  CPathA& normalize();
+  CPathA& join(const std::string& path);
+  CPathA& finalize();
+  bool exists() const;
+  std::string as_string() const;
+
+  CPathA extract_file_name(bool extension = true) const;
+  CPathA extract_file_directory(bool slash = true) const;
+
 private:
-  ePathSep m_Sep;
-  std::string m_Path;
+  ePathSep m_separator;
+  std::string m_path;
 };
 
 class CPathW
 {
 public:
-  CPathW(const ePathSep Separator = ePathSep::WIN);
-  CPathW(const std::wstring& Path, const ePathSep Separator = ePathSep::WIN);
+  CPathW(const ePathSep separator = ePathSep::WIN);
+  CPathW(const std::wstring& path, const ePathSep separator = ePathSep::WIN);
   CPathW(const CPathW& right);
   virtual ~CPathW();
 
@@ -2636,24 +2633,21 @@ public:
   CPathW operator+(const std::wstring& right);
   bool operator==(const CPathW& right);
   bool operator!=(const CPathW& right);
-
-  CPathW& Trim(const eTrimType TrimType = eTrimType::TS_BOTH);
-  CPathW& Normalize();
-  CPathW& Join(const std::wstring& Path);
-  CPathW& Finalize();
-
-  CPathW FileName(bool Extension = true) const;
-  CPathW FileDirectory(bool Slash = true) const;
-
-  bool Exists() const;
-
-  std::wstring AsString() const;
-
   friend std::wostream& operator<<(std::wostream& os, CPathW& path);
 
+  CPathW& trim(const eTrimType type = eTrimType::TS_BOTH);
+  CPathW& normalize();
+  CPathW& join(const std::wstring& path);
+  CPathW& finalize();
+  bool exists() const;
+  std::wstring as_string() const;
+
+  CPathW extract_file_name(bool extension = true) const;
+  CPathW extract_file_directory(bool slash = true) const;
+
 private:
-  ePathSep m_Sep;
-  std::wstring m_Path;
+  ePathSep m_separator;
+  std::wstring m_path;
 };
 
 /**
@@ -2674,15 +2668,15 @@ public:
   CWMIProviderA();
   virtual ~CWMIProviderA();
 
-  virtual bool Ready();
-  bool Begin(const std::string& ns);
-  bool End();
+  virtual bool ready();
+  bool begin(const std::string& ns);
+  bool end();
 
-  IEnumWbemClassObject* Query(const std::string& qs);
-  bool Query(const std::string& qs, const std::function<bool(IWbemClassObject& object)> fn);
+  IEnumWbemClassObject* query(const std::string& qs);
+  bool query(const std::string& qs, const std::function<bool(IWbemClassObject& object)> fn);
 
 private:
-  CWMIProviderX* m_pImpl;
+  CWMIProviderX* m_ptr_impl;
 };
 
 /**
@@ -2695,15 +2689,15 @@ public:
   CWMIProviderW();
   virtual ~CWMIProviderW();
 
-  virtual bool Ready();
-  bool Begin(const std::wstring& ns);
-  bool End();
+  virtual bool ready();
+  bool begin(const std::wstring& ns);
+  bool end();
 
-  IEnumWbemClassObject* Query(const std::wstring& qs);
-  bool Query(const std::wstring& qs, const std::function<bool(IWbemClassObject& object)> fn);
+  IEnumWbemClassObject* query(const std::wstring& qs);
+  bool query(const std::wstring& qs, const std::function<bool(IWbemClassObject& object)> fn);
 
 private:
-  CWMIProviderX* m_pImpl;
+  CWMIProviderX* m_ptr_impl;
 };
 
 #endif // VU_WMI_ENABLED

@@ -43,33 +43,33 @@ DEF_SAMPLE(DF)
   std::tcout << vu::normalize_path(ts("C:\\path\\\\to\\file.exe")) << std::endl;
   std::tcout << vu::normalize_path(ts("C:\\\\path\\to/file.exe")) << std::endl;
 
-  vu::CPath fileDir;
-  fileDir.Join(ts("   C:/Users")).Join(ts("/Vic")).Join(ts("\\.vscode\\")).Finalize();
+  vu::CPath file_dir;
+  file_dir.join(ts("   C:/Users")).join(ts("/Vic")).join(ts("\\.vscode\\")).finalize();
 
-  vu::CPath fileDirTmp = std::tstring(ts("C:/Users/Vic\\.vscode\\extensions"));
+  vu::CPath file_dir_tmp = std::tstring(ts("C:/Users/Vic\\.vscode\\extensions"));
   
-  vu::CPath filePath(fileDir);
-  filePath += vu::CPath(ts("argv.json"));
-  filePath.Finalize();
+  vu::CPath file_path(file_dir);
+  file_path += vu::CPath(ts("argv.json"));
+  file_path.finalize();
 
-  vu::CPath filePathTmp(fileDir);
-  filePathTmp = filePathTmp + vu::CPath(ts("argv-tmp.json"));
-  filePathTmp.Finalize();
+  vu::CPath file_path_tmp(file_dir);
+  file_path_tmp = file_path_tmp + vu::CPath(ts("argv-tmp.json"));
+  file_path_tmp.finalize();
 
-  std::tcout << fileDir  << std::endl;
-  std::tcout << fileDirTmp << std::endl;
+  std::tcout << file_dir  << std::endl;
+  std::tcout << file_dir_tmp << std::endl;
 
-  std::tcout << filePath << std::endl;
-  std::tcout << filePathTmp << std::endl;
+  std::tcout << file_path << std::endl;
+  std::tcout << file_path_tmp << std::endl;
 
-  std::tcout << (filePath == filePathTmp) << std::endl;
-  std::tcout << (filePath != filePathTmp) << std::endl;
+  std::tcout << (file_path == file_path_tmp) << std::endl;
+  std::tcout << (file_path != file_path_tmp) << std::endl;
 
-  std::tcout << ts("Exists (Dir)  : ") << fileDir.Exists() << std::endl;
-  std::tcout << ts("Exists (File) : ") << filePath.Exists() << std::endl;
+  std::tcout << ts("Exists (Dir)  : ") << file_dir.exists() << std::endl;
+  std::tcout << ts("Exists (File) : ") << file_path.exists() << std::endl;
 
-  std::tcout << ts("File Name : ") << filePath.FileName().AsString() << std::endl;
-  std::tcout << ts("File Directory : ") << filePath.FileDirectory().AsString() << std::endl;
+  std::tcout << ts("File Name : ") << file_path.extract_file_name().as_string() << std::endl;
+  std::tcout << ts("File Directory : ") << file_path.extract_file_directory().as_string() << std::endl;
 
   // TODO: Vic. Uncompleted.
 

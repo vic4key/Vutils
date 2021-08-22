@@ -15,10 +15,10 @@ DEF_SAMPLE(WMIProvider)
   // Example 1
   // Get-WmiObject -Class MSFT_PhysicalDisk -Namespace ROOT\Microsoft\Windows\Storage | Select FriendlyName
 
-  vu::CWMIProvider WMI;
-  WMI.Begin(ts("ROOT\\Microsoft\\Windows\\Storage"));
+  vu::CWMIProvider wmi;
+  wmi.begin(ts("ROOT\\Microsoft\\Windows\\Storage"));
   {
-    WMI.Query(ts("SELECT * FROM MSFT_PhysicalDisk"), [](IWbemClassObject& object) -> bool
+    wmi.query(ts("SELECT * FROM MSFT_PhysicalDisk"), [](IWbemClassObject& object) -> bool
     {
       VARIANT s;
       object.Get(L"FriendlyName", 0, &s, 0, 0);
@@ -26,7 +26,7 @@ DEF_SAMPLE(WMIProvider)
       return true;
     });
   }
-  WMI.End();
+  wmi.end();
 
   // Example 2
   // Get Type of Disks
