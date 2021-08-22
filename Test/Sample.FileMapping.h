@@ -8,7 +8,7 @@ DEF_SAMPLE(FileMapping)
 
   void* p = nullptr;
 
-  // if (fm.CreateNamedSharedMemory(ts("Global\\Sample"), KB) != vu::VU_OK)
+  // if (fm.create_named_shared_memory(ts("Global\\Sample"), KB) != vu::VU_OK)
   // {
   //   std::tcout << ts("Create -> Failed") << vu::get_last_error(fm.get_last_error_code()) << std::endl;
   // }

@@ -6,21 +6,19 @@ DEF_SAMPLE(Socket)
 {
   #if defined(VU_SOCKET_ENABLED)
 
-  const std::string REQ_HOST = "ipv4.download.thinkbroadband.com";
-  std::string REQ_CONTENT;
-  REQ_CONTENT.clear();
-  REQ_CONTENT.append("GET /5MB.zip HTTP/1.1\r\n");
-  REQ_CONTENT.append("Host: ipv4.download.thinkbroadband.com\r\n");
-  REQ_CONTENT.append("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0\r\n");
-  REQ_CONTENT.append("Accept-Language: en-US,en;q=0.5\r\n");
-  REQ_CONTENT.append("Accept-Encoding: gzip, deflate\r\n");
-  REQ_CONTENT.append("Connection: keep-alive\r\n");
-  REQ_CONTENT.append("DNT: 1\r\n");
-  REQ_CONTENT.append("\r\n");
+  std::string req;
+  req.append("GET /5MB.zip HTTP/1.1\r\n");
+  req.append("Host: ipv4.download.thinkbroadband.com\r\n");
+  req.append("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0\r\n");
+  req.append("Accept-Language: en-US,en;q=0.5\r\n");
+  req.append("Accept-Encoding: gzip, deflate\r\n");
+  req.append("Connection: keep-alive\r\n");
+  req.append("DNT: 1\r\n");
+  req.append("\r\n");
 
   vu::Socket socket;
 
-  if (socket.connect(REQ_HOST, 80) != vu::VU_OK)
+  if (socket.connect("ipv4.download.thinkbroadband.com", 80) != vu::VU_OK)
   {
     std::tcout << ts("Socket -> Connect -> Failed") << std::endl;
     return 1;
@@ -28,16 +26,16 @@ DEF_SAMPLE(Socket)
 
   std::tcout << ts("Socket -> Connect -> Success") << std::endl;
 
-  if (socket.send(REQ_CONTENT.data(), int(REQ_CONTENT.length())) == SOCKET_ERROR)
+  if (socket.send(req.data(), int(req.length())) == SOCKET_ERROR)
   {
     std::tcout << ts("Socket -> Send -> Failed") << std::endl;
     return 1;
   }
 
-  // vu::CBuffer data;
-  // if (socket.Recvall(data) != SOCKET_ERROR)
+  // vu::Buffer data;
+  // if (socket.recv_all(data) != SOCKET_ERROR)
   // {
-  //   data.SaveAsFile(ts("5MB.bin"));
+  //   data.save_to_file(ts("5MB.bin"));
   // }
 
   // request to get file
@@ -52,22 +50,22 @@ DEF_SAMPLE(Socket)
 
   // extract response header & body
 
-  const std::string FirstResponse = response.to_string_A();
-  const std::string HttpHeaderSep = std::crlf;
-  const std::string HttpHeaderEnd = HttpHeaderSep + HttpHeaderSep;
+  const std::string first_response = response.to_string_A();
+  const std::string http_header_sep = std::crlf;
+  const std::string http_header_end = http_header_sep + http_header_sep;
 
-  auto l = vu::split_string_A(FirstResponse, HttpHeaderEnd);
+  auto l = vu::split_string_A(first_response, http_header_end);
   assert(!l.empty());
 
-  const auto& ResponseHeader = l.at(0) + HttpHeaderEnd;
+  const auto& response_header = l.at(0) + http_header_end;
   std::cout << "Response Header:" << std::endl;
-  const auto& headers = vu::split_string_A(ResponseHeader, HttpHeaderSep, true);
+  const auto& headers = vu::split_string_A(response_header, http_header_sep, true);
   for (const auto& e : headers)
   {
     std::cout << std::tab << e << std::endl;
   }
 
-  vu::Buffer buffer(response.get_ptr_bytes() + ResponseHeader.length(), N - ResponseHeader.length());
+  vu::Buffer buffer(response.get_ptr_bytes() + response_header.length(), N - response_header.length());
 
   // receive file chunks and append to the file buffer
 

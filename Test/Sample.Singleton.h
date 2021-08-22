@@ -4,15 +4,15 @@
 
 DEF_SAMPLE(Singleton)
 {
-  class CService : public vu::SingletonT<CService>
+  class Service : public vu::SingletonT<Service>
   {
   public:
-    void Start() {}
-    void Stop() {}
+    void start() {}
+    void stop() {}
   };
 
-  CService::instance().Start();
-  CService::instance().Stop();
+  Service::instance().start();
+  Service::instance().stop();
 
   return vu::VU_OK;
 }

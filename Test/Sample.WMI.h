@@ -12,7 +12,6 @@ DEF_SAMPLE(WMIProvider)
 {
   #if defined(VU_WMI_ENABLED)
 
-  // Example 1
   // Get-WmiObject -Class MSFT_PhysicalDisk -Namespace ROOT\Microsoft\Windows\Storage | Select FriendlyName
 
   vu::WMIProvider wmi;
@@ -28,7 +27,6 @@ DEF_SAMPLE(WMIProvider)
   }
   wmi.end();
 
-  // Example 2
   // Get Type of Disks
 
   std::map<vu::eDiskType, std::tstring> types;

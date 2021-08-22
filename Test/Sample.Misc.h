@@ -50,16 +50,18 @@ DEF_SAMPLE(Misc)
   std::tcout << vu::ends_with(ts("Written in C++ and for C++"), ts("C++")) << std::endl;
   std::tcout << vu::ends_with(ts("Written in C++ and for C++"), ts("Written")) << std::endl;
 
-  std::vector<vu::ulong> PIDs;
-  PIDs.clear();
+  std::vector<vu::ulong> pids;
+  pids.clear();
 
-  PIDs = vu::name_to_pid(ts("Explorer.exe"));
-  for (auto& PID : PIDs) {
-    std::tcout << PID << std::endl;
+  pids = vu::name_to_pid(ts("explorer.exe"));
+  for (auto& pid : pids)
+  {
+    std::tcout << pid << std::endl;
   }
 
-  if (!PIDs.empty()) {
-    std::tcout << vu::pid_to_name(*PIDs.begin()) << std::endl;
+  if (!pids.empty())
+  {
+    std::tcout << vu::pid_to_name(*pids.begin()) << std::endl;
   }
 
   // std::vector<vu::ulong> pids;

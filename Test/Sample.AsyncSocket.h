@@ -6,7 +6,7 @@
 
 #if defined(VU_SOCKET_ENABLED)
 
-void fnExampleBinding(const vu::Socket::sEndPoint& endpoint)
+void example_binding(const vu::Socket::sEndPoint& endpoint)
 {
   vu::AsyncSocket server;
 
@@ -41,7 +41,7 @@ void fnExampleBinding(const vu::Socket::sEndPoint& endpoint)
   server.close();
 }
 
-void fnExampleInheritance(const vu::Socket::sEndPoint& endpoint)
+void example_inheritance(const vu::Socket::sEndPoint& endpoint)
 {
   class CAsyncSocketServer : public vu::AsyncSocket
   {
@@ -85,9 +85,9 @@ void fnExampleInheritance(const vu::Socket::sEndPoint& endpoint)
 DEF_SAMPLE(AsyncSocket)
 {
   #if defined(VU_SOCKET_ENABLED)
-  // const vu::CSocket::TEndPoint EndPoint("127.0.0.1", 1609);
-  // fnExampleBinding(EndPoint);
-  // fnExampleInheritance(EndPoint);
+  // const vu::Socket::sEndPoint endpoint("127.0.0.1", 1609);
+  // example_binding(endpoint);
+  // example_inheritance(endpoint);
   #endif // VU_SOCKET_ENABLED
 
   return vu::VU_OK;

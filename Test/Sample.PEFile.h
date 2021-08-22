@@ -42,8 +42,8 @@ DEF_SAMPLE(PEFile)
     return 1;
   }
 
-  void* pBase = pe.get_ptr_base();
-  if (pBase == nullptr)
+  void* ptr_base = pe.get_ptr_base();
+  if (ptr_base == nullptr)
   {
     std::tcout << ts("PE -> get_ptr_base -> Failure") << vu::get_last_error() << std::endl;
     return 1;
@@ -84,7 +84,7 @@ DEF_SAMPLE(PEFile)
   for (auto iid : iids)
   {
     printf("%+20s %08X %08X %08X %08X\n",
-      ((char*)pBase + pe.rva_to_offset(iid->Name)),
+      ((char*)ptr_base + pe.rva_to_offset(iid->Name)),
       iid->Name,
       iid->FirstThunk,
       iid->OriginalFirstThunk,
@@ -107,11 +107,11 @@ DEF_SAMPLE(PEFile)
   auto functions = pe.get_import_functions();
   assert(!functions.empty());
 
-  // for (auto e : functions)
-  // {
-  //   auto s = vu::FormatA("iid_id = %08X, Hint = %04X, '%s'", e.iid_id, e.hint, e.name.c_str());
-  //   std::cout << s << std::endl;
-  // }
+  for (auto& e : functions)
+  {
+    auto s = vu::format_A("iid_id = %08X, hint = %04X, '%s'", e.iid_id, e.hint, e.name.c_str());
+    std::cout << s << std::endl;
+  }
 
   // SEPERATOR()
 
