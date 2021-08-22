@@ -9,22 +9,22 @@
 namespace vu
 {
 
-Buffer::Buffer() : m_ptr_data(nullptr), m_size(0)
+Buffer::Buffer() : m_ptr(nullptr), m_size(0)
 {
   this->create(nullptr, 0);
 }
 
-Buffer::Buffer(const size_t size) : m_ptr_data(nullptr), m_size(0)
+Buffer::Buffer(const size_t size) : m_ptr(nullptr), m_size(0)
 {
   this->create(nullptr, size);
 }
 
-Buffer::Buffer(const void* ptr, const size_t size) : m_ptr_data(nullptr), m_size(0)
+Buffer::Buffer(const void* ptr, const size_t size) : m_ptr(nullptr), m_size(0)
 {
   this->replace(ptr, size);
 }
 
-Buffer::Buffer(const Buffer& right) : m_ptr_data(nullptr), m_size(0)
+Buffer::Buffer(const Buffer& right) : m_ptr(nullptr), m_size(0)
 {
   *this = right;
 }
@@ -40,9 +40,9 @@ const Buffer& Buffer::operator=(const Buffer& right)
   {
     if (this->create(nullptr, right.m_size))
     {
-      if (right.m_ptr_data != nullptr)
+      if (right.m_ptr != nullptr)
       {
-        memcpy_s(m_ptr_data, m_size, right.m_ptr_data, right.m_size);
+        memcpy_s(m_ptr, m_size, right.m_ptr, right.m_size);
       }
     }
   }
@@ -57,7 +57,7 @@ bool Buffer::operator==(const Buffer& right) const
     return false;
   }
 
-  return memcmp(m_ptr_data, right.m_ptr_data, m_size) == 0;
+  return memcmp(m_ptr, right.m_ptr, m_size) == 0;
 }
 
 bool Buffer::operator!=(const Buffer& right) const
@@ -67,7 +67,7 @@ bool Buffer::operator!=(const Buffer& right) const
 
 byte& Buffer::operator[](const size_t offset)
 {
-  if (m_ptr_data == nullptr)
+  if (m_ptr == nullptr)
   {
     throw std::runtime_error(static_cast<const char*>("invalid pointer"));
   }
@@ -77,7 +77,7 @@ byte& Buffer::operator[](const size_t offset)
     throw std::out_of_range(static_cast<const char*>("invalid size or offset"));
   }
 
-  return static_cast<byte*>(m_ptr_data)[offset];
+  return static_cast<byte*>(m_ptr)[offset];
 }
 
 Buffer Buffer::operator()(int begin, int end) const
@@ -89,16 +89,16 @@ size_t Buffer::find(const void* ptr, const size_t size) const
 {
   size_t result = -1;
 
-  if (m_ptr_data == nullptr || m_size == 0 || ptr == nullptr || size == 0 || m_size < size)
+  if (m_ptr == nullptr || m_size == 0 || ptr == nullptr || size == 0 || m_size < size)
   {
     return result;
   }
 
-  const auto pbytes = this->get_ptr_bytes();
+  const auto ptr_bytes = this->get_ptr_bytes();
 
   for (size_t i = 0; i <= m_size - size; i++)
   {
-    if (memcmp(reinterpret_cast<const void*>(pbytes + i), ptr, size) == 0)
+    if (memcmp(reinterpret_cast<const void*>(ptr_bytes + i), ptr, size) == 0)
     {
       result = i;
       break;
@@ -120,7 +120,7 @@ Buffer Buffer::till(const void* ptr, const size_t size) const
   size_t offset = this->find(ptr, size);
   if (offset > 0)
   {
-    result.create(m_ptr_data, offset);
+    result.create(m_ptr, offset);
   }
 
   return result;
@@ -130,7 +130,7 @@ Buffer Buffer::slice(int begin, int end) const
 {
   Buffer result;
 
-  if (m_ptr_data == nullptr || m_size == 0)
+  if (m_ptr == nullptr || m_size == 0)
   {
     return result;
   }
@@ -164,12 +164,12 @@ Buffer Buffer::slice(int begin, int end) const
 
 byte* Buffer::get_ptr_bytes() const
 {
-  return static_cast<byte*>(m_ptr_data);
+  return static_cast<byte*>(m_ptr);
 }
 
-void* Buffer::get_ptr_data() const
+void* Buffer::get_ptr() const
 {
-  return m_ptr_data;
+  return m_ptr;
 }
 
 size_t Buffer::get_size() const
@@ -191,25 +191,25 @@ bool Buffer::create(void* ptr, const size_t size, const bool clean)
 
   if (clean)
   {
-    m_ptr_data = std::calloc(m_size = size, 1);
+    m_ptr = std::calloc(m_size = size, 1);
   }
   else
   {
-    m_ptr_data = std::realloc(ptr, m_size = size);
+    m_ptr = std::realloc(ptr, m_size = size);
   }
 
-  if (m_ptr_data == nullptr)
+  if (m_ptr == nullptr)
   {
     throw std::bad_alloc();
   }
 
   if (ptr == nullptr)
   {
-    memset(m_ptr_data, 0, m_size);
+    memset(m_ptr, 0, m_size);
   }
   else if (clean)
   {
-    memcpy_s(m_ptr_data, m_size, ptr, size);
+    memcpy_s(m_ptr, m_size, ptr, size);
   }
 
   return true;
@@ -217,13 +217,13 @@ bool Buffer::create(void* ptr, const size_t size, const bool clean)
 
 bool Buffer::destroy()
 {
-  if (m_ptr_data != nullptr)
+  if (m_ptr != nullptr)
   {
-    std::free(m_ptr_data);
+    std::free(m_ptr);
   }
 
-  m_ptr_data = nullptr;
-  m_size  = 0;
+  m_ptr = nullptr;
+  m_size = 0;
 
   return true;
 }
@@ -235,9 +235,9 @@ void Buffer::reset()
 
 void Buffer::fill(const byte v)
 {
-  if (m_ptr_data != nullptr && m_size != 0)
+  if (m_ptr != nullptr && m_size != 0)
   {
-    memset(m_ptr_data, v, m_size);
+    memset(m_ptr, v, m_size);
   }
 }
 
@@ -248,16 +248,16 @@ bool Buffer::resize(const size_t size)
     return true;
   }
 
-  return this->create(m_ptr_data, size, false);
+  return this->create(m_ptr, size, false);
 }
 
-bool Buffer::replace(const void* pData, const size_t size)
+bool Buffer::replace(const void* ptr, const size_t size)
 {
   if (this->create(nullptr, size))
   {
-    if (pData != nullptr)
+    if (ptr != nullptr)
     {
-      memcpy_s(m_ptr_data, m_size, pData, size);
+      memcpy_s(m_ptr, m_size, ptr, size);
     }
   }
 
@@ -266,64 +266,64 @@ bool Buffer::replace(const void* pData, const size_t size)
 
 bool Buffer::replace(const Buffer& right)
 {
-  return this->replace(right.get_ptr_data(), right.get_size());
+  return this->replace(right.get_ptr(), right.get_size());
 }
 
 bool Buffer::empty() const
 {
-  return m_ptr_data == nullptr || m_size == 0;
+  return m_ptr == nullptr || m_size == 0;
 }
 
-bool Buffer::append(const void* pData, const size_t size)
+bool Buffer::append(const void* ptr, const size_t size)
 {
-  if (pData == nullptr || size == 0)
+  if (ptr == nullptr || size == 0)
   {
     return false;
   }
 
-  const size_t PrevSize = m_size;
+  const size_t prev_size = m_size;
 
   this->resize(m_size + size);
 
-  memcpy_s(this->get_ptr_bytes() + PrevSize, size, pData, size);
+  memcpy_s(this->get_ptr_bytes() + prev_size, size, ptr, size);
 
   return true;
 }
 
 bool Buffer::append(const Buffer& right)
 {
-  return this->append(right.get_ptr_data(), right.get_size());
+  return this->append(right.get_ptr(), right.get_size());
 }
 
 std::string Buffer::to_string_A() const
 {
-  return std::string(reinterpret_cast<const char*>(m_ptr_data), m_size / sizeof(char));
+  return std::string(reinterpret_cast<const char*>(m_ptr), m_size / sizeof(char));
 }
 
 std::wstring Buffer::to_string_W() const
 {
-  return std::wstring(reinterpret_cast<const wchar*>(m_ptr_data), m_size / sizeof(wchar));
+  return std::wstring(reinterpret_cast<const wchar*>(m_ptr), m_size / sizeof(wchar));
 }
 
-bool Buffer::save_to_file(const std::string& filePath)
+bool Buffer::save_to_file(const std::string& file_path)
 {
-  if (filePath.empty())
+  if (file_path.empty())
   {
     return false;
   }
 
   bool result = true;
 
-  FileSystemA file(filePath, vu::FM_CREATEALWAY);
-  result &= file.write(m_ptr_data, ulong(m_size));
+  FileSystemA file(file_path, eFSModeFlags::FM_CREATEALWAY);
+  result &= file.write(m_ptr, ulong(m_size));
   result &= file.close();
 
   return result;
 }
 
-bool Buffer::save_to_file(const std::wstring& filePath)
+bool Buffer::save_to_file(const std::wstring& file_path)
 {
-  const auto s = vu::to_string_A(filePath);
+  const auto s = vu::to_string_A(file_path);
   return this->save_to_file(s);
 }
 

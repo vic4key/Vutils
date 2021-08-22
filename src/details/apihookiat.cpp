@@ -161,9 +161,9 @@ VUResult IATHookingA::perform(const IATAction action, sIATElement& element)
   }
 
   this->iterate(element.target, [&](
-    const std::string& m, const std::string& f, PIMAGE_THUNK_DATA& pOFT, PIMAGE_THUNK_DATA& pFT)
+    const std::string& m, const std::string& f, PIMAGE_THUNK_DATA& ptr_iat, PIMAGE_THUNK_DATA& ptr_int)
   {
-    // MsgA("[%p] [%p] %s!%s\n", pOFT->u1.Function, pFT->u1.Function, m.c_str(), f.c_str());
+    // msg_debug_A("[%p] [%p] %s!%s\n", ptr_iat->u1.Function, ptr_int->u1.Function, m.c_str(), f.c_str());
   
     if (element == sIATElement(element.target, m, f))
     {
@@ -171,21 +171,21 @@ VUResult IATHookingA::perform(const IATAction action, sIATElement& element)
 
       if (action == IATAction::IAT_INSTALL)
       {
-        element.original = reinterpret_cast<const void*>(pFT->u1.Function);
+        element.original = reinterpret_cast<const void*>(ptr_iat->u1.Function);
         address = element.replacement;
       }
       else if (action == IATAction::IAT_UNINSTALL)
       {
-        element.replacement = reinterpret_cast<const void*>(pFT->u1.Function);
+        element.replacement = reinterpret_cast<const void*>(ptr_iat->u1.Function);
         address = element.original;
       }
 
       if (address != 0)
       {
         ulong protect = 0;
-        VirtualProtect(LPVOID(&pFT->u1.Function), sizeof(ulongptr), PAGE_READWRITE, &protect);
-        pFT->u1.Function = reinterpret_cast<ulongptr>(address);
-        VirtualProtect(LPVOID(&pFT->u1.Function), sizeof(ulongptr), protect, &protect);
+        VirtualProtect(LPVOID(&ptr_iat->u1.Function), sizeof(ulongptr), PAGE_READWRITE, &protect);
+        ptr_iat->u1.Function = reinterpret_cast<ulongptr>(address);
+        VirtualProtect(LPVOID(&ptr_iat->u1.Function), sizeof(ulongptr), protect, &protect);
       }
 
       return false;
@@ -202,55 +202,55 @@ VUResult IATHookingA::iterate(
   std::function<bool(
     const std::string& module,
     const std::string& function,
-    PIMAGE_THUNK_DATA& pOFT,
-    PIMAGE_THUNK_DATA& pFT)> fn)
+    PIMAGE_THUNK_DATA& ptr_iat,
+    PIMAGE_THUNK_DATA& ptr_int)> fn)
 {
   if (module.empty())
   {
     return 1;
   }
 
-  auto pBase = GetModuleHandleA(module.c_str());
-  if (pBase == nullptr)
+  auto ptr_base = GetModuleHandleA(module.c_str());
+  if (ptr_base == nullptr)
   {
     return 2;
   }
 
-  auto pDOSHeader = reinterpret_cast<PIMAGE_DOS_HEADER>(pBase);
-  assert(pDOSHeader != nullptr);
+  auto ptr_dos_header = reinterpret_cast<PIMAGE_DOS_HEADER>(ptr_base);
+  assert(ptr_dos_header != nullptr);
 
-  auto pNTHeader = reinterpret_cast<PIMAGE_NT_HEADERS>(
-    reinterpret_cast<ulongptr>(pBase) + pDOSHeader->e_lfanew);
-  assert(pNTHeader != nullptr);
+  auto ptr_nt_header = reinterpret_cast<PIMAGE_NT_HEADERS>(
+    reinterpret_cast<ulongptr>(ptr_base) + ptr_dos_header->e_lfanew);
+  assert(ptr_nt_header != nullptr);
 
-  auto pIDD = pNTHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
-  if (pIDD.VirtualAddress == 0 || pIDD.Size == 0) // did not import any module
+  auto ptr_idd = ptr_nt_header->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT];
+  if (ptr_idd.VirtualAddress == 0 || ptr_idd.Size == 0) // did not import any module
   {
     return 2;
   }
 
-  auto pIID = reinterpret_cast<PIMAGE_IMPORT_DESCRIPTOR>(
-    reinterpret_cast<ulongptr>(pBase) + pIDD.VirtualAddress);
-  assert(pIID != nullptr);
+  auto ptr_iid = reinterpret_cast<PIMAGE_IMPORT_DESCRIPTOR>(
+    reinterpret_cast<ulongptr>(ptr_base) + ptr_idd.VirtualAddress);
+  assert(ptr_iid != nullptr);
 
   bool breaked = false;
 
-  for (int i = 0; pIID->FirstThunk != 0; i++, pIID++)
+  for (int i = 0; ptr_iid->FirstThunk != 0; i++, ptr_iid++)
   {
-    std::string module = reinterpret_cast<ulongptr>(pBase) + reinterpret_cast<LPCSTR>(pIID->Name);
+    std::string module = reinterpret_cast<ulongptr>(ptr_base) + reinterpret_cast<LPCSTR>(ptr_iid->Name);
 
     auto ptr_iat = reinterpret_cast<PIMAGE_THUNK_DATA>(
-      reinterpret_cast<ulongptr>(pBase) + pIID->FirstThunk); // IAT - Import Address Table
+      reinterpret_cast<ulongptr>(ptr_base) + ptr_iid->FirstThunk); // IAT - Import Address Table
 
     auto ptr_int = reinterpret_cast<PIMAGE_THUNK_DATA>(
-      reinterpret_cast<ulongptr>(pBase) + pIID->OriginalFirstThunk); // INT - Import Name Table
+      reinterpret_cast<ulongptr>(ptr_base) + ptr_iid->OriginalFirstThunk); // INT - Import Name Table
 
     for (; ptr_int->u1.AddressOfData != 0; ptr_iat++, ptr_int++)
     {
       std::string function = reinterpret_cast<char*>(reinterpret_cast<PIMAGE_IMPORT_BY_NAME>(
-        reinterpret_cast<ulongptr>(pBase) + ptr_int->u1.AddressOfData)->Name);
+        reinterpret_cast<ulongptr>(ptr_base) + ptr_int->u1.AddressOfData)->Name);
 
-      breaked = !fn(module, function, ptr_int, ptr_iat);
+      breaked = !fn(module, function, ptr_iat, ptr_int);
       if (breaked)
       {
         break;

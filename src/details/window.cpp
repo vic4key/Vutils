@@ -18,7 +18,7 @@ HWND vuapi get_console_window()
 {
   typedef HWND (WINAPI *PfnGetConsoleWindow)();
 
-  HWND hwConsole = NULL;
+  HWND hwnd_console = nullptr;
 
   PfnGetConsoleWindow pfnGetConsoleWindow = (PfnGetConsoleWindow)Library::quick_get_proc_address(
     _T("kernel32.dll"),
@@ -27,23 +27,23 @@ HWND vuapi get_console_window()
 
   if (pfnGetConsoleWindow)
   {
-    hwConsole = pfnGetConsoleWindow();
+    hwnd_console = pfnGetConsoleWindow();
   }
 
-  return hwConsole;
+  return hwnd_console;
 }
 
 typedef std::pair<ulong, HWND> PairPIDHWND;
 
-BOOL CALLBACK fnFindTopWindowCallback(HWND hWnd, LPARAM lParam)
+BOOL CALLBACK fnFindTopWindowCallback(HWND hwnd, LPARAM lp)
 {
-  auto& params = *(PairPIDHWND*)lParam;
+  auto& params = *(PairPIDHWND*)lp;
 
-  DWORD thePID = 0;
+  DWORD pid = 0;
 
-  if (GetWindowThreadProcessId(hWnd, &thePID) && thePID == params.first)
+  if (GetWindowThreadProcessId(hwnd, &pid) && pid == params.first)
   {
-    params.second = hWnd;
+    params.second = hwnd;
     return FALSE;
   }
 
@@ -396,14 +396,14 @@ sFontA vuapi get_font_A(HWND hwnd)
       {
         LOGFONTA lf = { 0 };
         GetObjectA(hf, sizeof(lf), &lf);
-        result.Name  = lf.lfFaceName;
-        result.Size = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(hdc, LOGPIXELSY)); // 72 pixel/inch
-        result.Italic = lf.lfItalic != FALSE;
-        result.Underline = lf.lfUnderline != FALSE;
-        result.StrikeOut = lf.lfStrikeOut != FALSE;
-        result.Weight = lf.lfWeight;
-        result.CharSet = lf.lfCharSet;
-        result.Orientation = lf.lfOrientation;
+        result.name  = lf.lfFaceName;
+        result.size = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(hdc, LOGPIXELSY)); // 72 pixel/inch
+        result.italic = lf.lfItalic != FALSE;
+        result.under_line = lf.lfUnderline != FALSE;
+        result.strike_out = lf.lfStrikeOut != FALSE;
+        result.weight = lf.lfWeight;
+        result.char_set = lf.lfCharSet;
+        result.orientation = lf.lfOrientation;
       }
     }
     ReleaseDC(hwnd, hdc);
@@ -425,14 +425,14 @@ sFontW vuapi get_font_W(HWND hwnd)
       {
         LOGFONTW lf = { 0 };
         GetObjectW(hf, sizeof(lf), &lf);
-        result.Name = lf.lfFaceName;
-        result.Size = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(hdc, LOGPIXELSY)); // 72 pixel/inch
-        result.Italic = lf.lfItalic != FALSE;
-        result.Underline = lf.lfUnderline != FALSE;
-        result.StrikeOut = lf.lfStrikeOut != FALSE;
-        result.Weight = lf.lfWeight;
-        result.CharSet = lf.lfCharSet;
-        result.Orientation = lf.lfOrientation;
+        result.name = lf.lfFaceName;
+        result.size = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(hdc, LOGPIXELSY)); // 72 pixel/inch
+        result.italic = lf.lfItalic != FALSE;
+        result.under_line = lf.lfUnderline != FALSE;
+        result.strike_out = lf.lfStrikeOut != FALSE;
+        result.weight = lf.lfWeight;
+        result.char_set = lf.lfCharSet;
+        result.orientation = lf.lfOrientation;
       }
     }
     ReleaseDC(hwnd, hdc);
@@ -548,10 +548,10 @@ WDTDialog::WDTDialog(
   if (IsWindow(m_hwnd_parent))
   {
     auto font = get_font_W(m_hwnd_parent);
-    if (!font.Name.empty())
+    if (!font.name.empty())
     {
-      m_font  = font.Name;
-      m_w_font = font.Size;
+      m_font  = font.name;
+      m_w_font = font.size;
     }
   }
 

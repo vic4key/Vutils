@@ -182,7 +182,7 @@ VUResult vuapi Socket::enable_non_blocking(bool state)
 
 VUResult vuapi Socket::bind(const sEndPoint& endpoint)
 {
-  return this->bind(endpoint.Host, endpoint.Port);
+  return this->bind(endpoint.host, endpoint.port);
 }
 
 VUResult vuapi Socket::bind(const std::string& address, const ushort port)
@@ -251,7 +251,7 @@ VUResult vuapi Socket::accept(sSocket& socket)
 
 VUResult vuapi Socket::connect(const sEndPoint& endpoint)
 {
-  return this->connect(endpoint.Host, endpoint.Port);
+  return this->connect(endpoint.host, endpoint.port);
 }
 
 VUResult vuapi Socket::connect(const std::string& address, ushort port)
@@ -303,7 +303,7 @@ IResult vuapi Socket::send(const char* ptr_data, int size, const flags_t flags)
 
 IResult vuapi Socket::send(const Buffer& buffer, const flags_t flags)
 {
-  return this->send((const char*)buffer.get_ptr_data(), int(buffer.get_size()), flags);
+  return this->send((const char*)buffer.get_ptr(), int(buffer.get_size()), flags);
 }
 
 IResult vuapi Socket::recv(char* ptr_data, int size, const flags_t flags)
@@ -329,7 +329,7 @@ IResult vuapi Socket::recv(Buffer& buffer, const flags_t flags)
     return SOCKET_ERROR;
   }
 
-  auto z = this->recv((char*)buffer.get_ptr_data(), int(buffer.get_size()), flags);
+  auto z = this->recv((char*)buffer.get_ptr(), int(buffer.get_size()), flags);
   if (z != SOCKET_ERROR)
   {
     buffer.resize(z);
@@ -369,7 +369,7 @@ IResult vuapi Socket::recv_all(Buffer& buffer, const flags_t flags)
 
 IResult vuapi Socket::send_to(const Buffer& buffer, const sSocket& socket)
 {
-  return this->send_to((const char*)buffer.get_ptr_data(), int(buffer.get_size()), socket);
+  return this->send_to((const char*)buffer.get_ptr(), int(buffer.get_size()), socket);
 }
 
 IResult vuapi Socket::send_to(const char* lpData, const int size, const sSocket& socket)
@@ -398,7 +398,7 @@ IResult vuapi Socket::send_to(const char* lpData, const int size, const sSocket&
 
 IResult vuapi Socket::recv_from(Buffer& buffer, const sSocket& socket)
 {
-  auto z = this->recv_from((char*)buffer.get_ptr_data(), int(buffer.get_size()), socket);
+  auto z = this->recv_from((char*)buffer.get_ptr(), int(buffer.get_size()), socket);
   if (z != SOCKET_ERROR)
   {
     buffer.resize(z);

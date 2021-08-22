@@ -99,7 +99,7 @@ const std::vector<PSectionHeader>& vuapi PEFileTX<T>::get_setion_headers(bool in
 }
 
 // IMAGE_REL_BASED_<X>
-// static const char* RelocationEntryTypes[] =
+// static const char* relocation_entry_types[] =
 // {
 //   "ABSOLUTE",
 //   "HIGH",
@@ -146,11 +146,11 @@ const std::vector<sRelocationEntryT<T>> vuapi PEFileTX<T>::get_relocation_entrie
       assert(ptr_entry);
 
       sRelocationEntryT<T> entry = { 0 };
-      entry.RVA = ptr_base_relocation->VirtualAddress + ptr_entry->offset;
-      auto offset = this->rva_to_offset(entry.RVA);
-      // Entry.Offset = this->RVA2Offset(Entry.RVA);
-      // Entry.VA = this->GetpPEHeader()->OptHeader.ImageBase + Entry.RVA;
-      entry.Value = *reinterpret_cast<T*>(reinterpret_cast<ulong64>(this->get_ptr_base()) + offset);
+      entry.rva = ptr_base_relocation->VirtualAddress + ptr_entry->offset;
+      auto offset = this->rva_to_offset(entry.rva);
+      // entry.offset = this->rva_to_offset(entry.rva);
+      // entry.va = this->get_ptr_pe_header()->OptHeader.ImageBase + entry.rva;
+      entry.value = *reinterpret_cast<T*>(reinterpret_cast<ulong64>(this->get_ptr_base()) + offset);
 
       m_relocation_entries.push_back(std::move(entry));
     }
@@ -250,7 +250,7 @@ const std::vector<sImportModule> vuapi PEFileTX<T>::get_import_modules(bool in_c
     sImportModule mi;
     mi.iid_id = e.iid_id;
     mi.name = e.name;
-    // mi.NumberOfFuctions = 0;
+    // mi.number_of_functions = 0;
 
     m_import_modules.push_back(std::move(mi));
   }
@@ -283,13 +283,13 @@ const std::vector<sImportFunctionT<T>> vuapi PEFileTX<T>::get_import_functions(b
     if (offset == -1 || (ptr_thunk_data = (TThunkDataT<T>*)((ulong64)m_ptr_base + offset)) == nullptr) continue;
     do
     {
-      if ((ptr_thunk_data->u1.AddressOfData & m_ordinal_flag) == m_ordinal_flag)   // Imported by ordinal
+      if ((ptr_thunk_data->u1.AddressOfData & m_ordinal_flag) == m_ordinal_flag) // Imported by ordinal
       {
         funcInfo.name = "";
         funcInfo.hint = -1;
         funcInfo.ordinal = ptr_thunk_data->u1.AddressOfData & ~m_ordinal_flag;
       }
-      else   // Imported by name
+      else // Imported by name
       {
         offset = this->rva_to_offset(ptr_thunk_data->u1.AddressOfData);
         PImportByName p = (PImportByName)((ulong64)m_ptr_base + offset);
@@ -343,7 +343,7 @@ const sImportModule* vuapi PEFileTX<T>::find_ptr_import_module(const std::string
 template<typename T>
 const sImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
   const sImportFunctionT<T>& import_function,
-  eImportedFunctionFindMethod method,
+  const eImportedFunctionFindMethod method,
   bool in_cache
 )
 {
@@ -571,7 +571,7 @@ VUResult vuapi PEFileTA<T>::parse()
   }
   else
   {
-    return 8; // The curent type data was not supported
+    return 8; // The current type data was not supported
   }
 
   PEFileTX<T>::m_initialized = true;

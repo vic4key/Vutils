@@ -27,23 +27,23 @@ namespace vu
  * CCOMSentry
  */
 
-class CCOMSentry
+class COMSentry
 {
 public:
-  CCOMSentry();
-  virtual ~CCOMSentry();
+  COMSentry();
+  virtual ~COMSentry();
 
   virtual bool ready();
 
   // private:
-  static bool m_Ready;
+  static bool m_ready;
 };
 
-bool CCOMSentry::m_Ready = false;
+bool COMSentry::m_ready = false;
 
-CCOMSentry::CCOMSentry()
+COMSentry::COMSentry()
 {
-  if (m_Ready)
+  if (m_ready)
   {
     return;
   }
@@ -73,22 +73,22 @@ CCOMSentry::CCOMSentry()
     }
   }
 
-  m_Ready = true;
+  m_ready = true;
 }
 
-CCOMSentry::~CCOMSentry()
+COMSentry::~COMSentry()
 {
-  if (m_Ready)
+  if (m_ready)
   {
     CoUninitialize();
   }
 
-  m_Ready = false;
+  m_ready = false;
 }
 
-bool CCOMSentry::ready()
+bool COMSentry::ready()
 {
-  return m_Ready;
+  return m_ready;
 }
 
 /**
@@ -99,7 +99,7 @@ bool CCOMSentry::ready()
  * CWMIProviderX
  */
 
-class WMIProviderX : public CCOMSentry
+class WMIProviderX : public COMSentry
 {
 public:
   WMIProviderX();
@@ -110,7 +110,7 @@ public:
   bool end();
 
   IEnumWbemClassObject* query(const std::wstring& qs);
-  bool query(const std::wstring& qs, const std::function<bool(IWbemClassObject& object)> fn_callback);
+  bool query(const std::wstring& qs, const std::function<bool(IWbemClassObject& object)> fn);
 
 private:
   bool setup_WBEM(const std::wstring& object_path);
@@ -120,7 +120,7 @@ private:
   IWbemServices* m_ptr_WbemServices;
 };
 
-WMIProviderX::WMIProviderX() : CCOMSentry(), m_ptr_WbemLocator(nullptr), m_ptr_WbemServices(nullptr)
+WMIProviderX::WMIProviderX() : COMSentry(), m_ptr_WbemLocator(nullptr), m_ptr_WbemServices(nullptr)
 {
 }
 
@@ -130,12 +130,12 @@ WMIProviderX::~WMIProviderX()
 
 bool WMIProviderX::ready()
 {
-  return CCOMSentry::ready() && m_ptr_WbemServices != nullptr && m_ptr_WbemLocator != nullptr;
+  return COMSentry::ready() && m_ptr_WbemServices != nullptr && m_ptr_WbemLocator != nullptr;
 }
 
 bool WMIProviderX::begin(const std::wstring& object_path)
 {
-  if (!CCOMSentry::ready())
+  if (!COMSentry::ready())
   {
     return false;
   }
@@ -254,7 +254,7 @@ IEnumWbemClassObject* WMIProviderX::query(const std::wstring& qs)
 }
 
 bool WMIProviderX::query(const std::wstring& qs,
-                          const std::function<bool(IWbemClassObject& object)> fnCallback)
+                          const std::function<bool(IWbemClassObject& object)> fn_callback)
 {
   auto ptr_enumerator = this->query(qs);
   while (ptr_enumerator)
@@ -268,7 +268,7 @@ bool WMIProviderX::query(const std::wstring& qs,
       break;
     }
 
-    if (!fnCallback(*ptr_object))
+    if (!fn_callback(*ptr_object))
     {
       break;
     }

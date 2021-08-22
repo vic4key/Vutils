@@ -170,7 +170,7 @@ const Buffer vuapi FileSystemX::read_as_buffer()
 
   buffer.resize(size);
 
-  this->read(0, buffer.get_ptr_data(), size, eMoveMethodFlags::MM_BEGIN);
+  this->read(0, buffer.get_ptr(), size, eMoveMethodFlags::MM_BEGIN);
 
   return buffer;
 }
@@ -207,9 +207,9 @@ const std::string vuapi FileSystemA::read_as_string(bool remove_bom)
   std::string result("");
 
   auto buffer = this->read_as_buffer();
-  auto p = (char*)buffer.get_ptr_data();
+  auto p = (char*)buffer.get_ptr();
 
-  auto encoding = determine_encoding_type(buffer.get_ptr_data(), buffer.get_size());
+  auto encoding = determine_encoding_type(buffer.get_ptr(), buffer.get_size());
   if (encoding == eEncodingType::ET_UNKNOWN)
   {
     assert(0);
@@ -332,9 +332,9 @@ const std::wstring vuapi FileSystemW::read_as_string(bool remove_bom)
   std::wstring result(L"");
 
   auto buffer = this->read_as_buffer();
-  auto p = (wchar*)buffer.get_ptr_data();
+  auto p = (wchar*)buffer.get_ptr();
 
-  auto encoding = determine_encoding_type(buffer.get_ptr_data(), buffer.get_size());
+  auto encoding = determine_encoding_type(buffer.get_ptr(), buffer.get_size());
   if (encoding == eEncodingType::ET_UNKNOWN)
   {
     assert(0);
@@ -343,7 +343,7 @@ const std::wstring vuapi FileSystemW::read_as_string(bool remove_bom)
 
   if (remove_bom && (encoding == eEncodingType::ET_UTF16_LE_BOM || encoding == eEncodingType::ET_UTF16_BE_BOM))
   {
-    p = (wchar*)((char*)buffer.get_ptr_data() + 2); /* remove BOM */
+    p = (wchar*)((char*)buffer.get_ptr() + 2); /* remove BOM */
   }
 
   result.assign(p);
@@ -351,21 +351,21 @@ const std::wstring vuapi FileSystemW::read_as_string(bool remove_bom)
   return result;
 }
 
-const std::wstring vuapi FileSystemW::quick_read_as_string(const std::wstring& FilePath, bool removeBOM)
+const std::wstring vuapi FileSystemW::quick_read_as_string(const std::wstring& file_path, bool remove_bom)
 {
-  FileSystemW file(FilePath, vu::eFSModeFlags::FM_OPENEXISTING);
-  auto result = file.read_as_string(removeBOM);
+  FileSystemW file(file_path, vu::eFSModeFlags::FM_OPENEXISTING);
+  auto result = file.read_as_string(remove_bom);
   return result;
 }
 
-Buffer FileSystemW::quick_read_as_buffer(const std::wstring& FilePath)
+Buffer FileSystemW::quick_read_as_buffer(const std::wstring& file_path)
 {
-  if (!is_file_exists_W(FilePath))
+  if (!is_file_exists_W(file_path))
   {
     return Buffer();
   }
 
-  FileSystemW fs(FilePath, eFSModeFlags::FM_OPENEXISTING);
+  FileSystemW fs(file_path, eFSModeFlags::FM_OPENEXISTING);
   return fs.read_as_buffer();
 }
 
@@ -386,8 +386,8 @@ bool FileSystemW::iterate(const std::wstring& path, const std::wstring& pattern,
 
   WIN32_FIND_DATAW wfd = { 0 };
 
-  auto h_find = FindFirstFileW(the_path_pattern.c_str(), &wfd);
-  if (INVALID_HANDLE_VALUE == h_find)
+  auto hfind = FindFirstFileW(the_path_pattern.c_str(), &wfd);
+  if (INVALID_HANDLE_VALUE == hfind)
   {
     return false;
   }
@@ -415,9 +415,9 @@ bool FileSystemW::iterate(const std::wstring& path, const std::wstring& pattern,
     file_object.name = wfd.cFileName;
     fn_callback(file_object);
   }
-  while (FindNextFileW(h_find, &wfd) != FALSE);
+  while (FindNextFileW(hfind, &wfd) != FALSE);
 
-  FindClose(h_find);
+  FindClose(hfind);
 
   return true;
 }

@@ -268,17 +268,17 @@ VUResult vuapi FileMappingW::create_named_shared_memory(
 }
 
 VUResult vuapi FileMappingW::open(
-  const std::wstring& MappingName,
-  eFMDesiredAccess fmDesiredAccess,
+  const std::wstring& mapping_name,
+  eFMDesiredAccess desired_access,
   bool inherit_handle
 )
 {
-  if (MappingName.empty())
+  if (mapping_name.empty())
   {
     return 1;
   }
 
-  m_map_handle = OpenFileMappingW(fmDesiredAccess, inherit_handle, MappingName.c_str());
+  m_map_handle = OpenFileMappingW(desired_access, inherit_handle, mapping_name.c_str());
 
   m_last_error_code = GetLastError();
 

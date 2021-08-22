@@ -4,7 +4,7 @@
 
 DEF_SAMPLE(Registry)
 {
-  vu::Registry reg(vu::HKLM, ts("SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting")); // ts("SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\Windows Error Reporting")
+  vu::Registry reg(vu::eRegRoot::HKLM, ts("SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting")); // ts("SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\Windows Error Reporting")
   if (!reg.key_exists())
   {
     std::tcout << ts("Reg -> Exist -> Failed") << vu::get_last_error(reg.get_last_error_code()) << std::endl;

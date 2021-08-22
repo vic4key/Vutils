@@ -114,7 +114,7 @@ ScopeStopWatchA::~ScopeStopWatchA()
   }
 }
 
-void ScopeStopWatchA::Log(const std::string& id)
+void ScopeStopWatchA::log(const std::string& id)
 {
   this->stop();
 

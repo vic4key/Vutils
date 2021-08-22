@@ -44,14 +44,16 @@ bool vuapi GetAssembleInstruction(
 {
   ulong pos_disp = 0;
   sMemoryInstruction mi = {0};
-  bool result = false, bFoundRelative = false;;
+  bool result = false, found_relative = false;;
 
   // http://wiki.osdev.org/X86-64_Instruction_Encoding
 
-  // if (IsFlagOn(hde.flags, HDE::F_MODRM)) {  // ModR/M exists
+  // if (is_flag_on(hde.flags, HDE::F_MODRM)) // ModR/M exists
+  // {
   //   // ModR/M
   // }
-  // else if (IsFlagOn(hde.flags, HDE::F_SIB)) {   // SIB exists
+  // else if (is_flag_on(hde.flags, HDE::F_SIB)) // SIB exists
+  // {
   //   // SIB
   // }
 
@@ -78,8 +80,9 @@ bool vuapi GetAssembleInstruction(
     if (hde.modrm_rm == 5 || hde.modrm_rm == 13)    // [RIP/EIP + D32] {BP, R13} *
     {
       #ifdef _WIN64
-      /*ulPosDisp += 1;   // The first opcode. Always exists a byte for opcode of each instruction.
-      if (IsFlagOn(hde.flags, HDE::F_PREFIX_SEG)) { // * In 64-bit the CS, SS, DS and ES segment overrides are ignored.
+      /* pos_disp += 1;   // The first opcode. Always exists a byte for opcode of each instruction.
+      if (is_flag_on(hde.flags, HDE::F_PREFIX_SEG)) // * In 64-bit the CS, SS, DS and ES segment overrides are ignored.
+      {
         / * Prefix group 2 (take 1 byte)
           0x2E: CS segment override
           0x36: SS segment override
@@ -90,29 +93,29 @@ bool vuapi GetAssembleInstruction(
           0x2E: Branch not taken
           0x3E: Branch taken
         * /
-        ulPosDisp += 1; // If it's being used the segment.
+         pos_disp += 1; // If it's being used the segment.
       }
-      if (IsFlagOn(hde.flags, HDE::F_MODRM)) {
-        ulPosDisp += 1; // The second opcode.
+      if (is_flag_on(hde.flags, HDE::F_MODRM)) {
+         pos_disp += 1; // The second opcode.
       }
       { // Others
         // ...
       }
       */
 
-      auto ulImmFlags = 0;
+      auto imm_flags = 0;
       #ifdef _WIN64
-      ulImmFlags = (HDE::C_IMM8 | HDE::F_IMM16 | HDE::F_IMM32 | HDE::F_IMM64);
+      imm_flags = (HDE::C_IMM8 | HDE::F_IMM16 | HDE::F_IMM32 | HDE::F_IMM64);
       #else
-      ulImmFlags = (HDE::C_IMM8 | HDE::F_IMM16 | HDE::F_IMM32);
+      imm_flags = (HDE::C_IMM8 | HDE::F_IMM16 | HDE::F_IMM32);
       #endif
 
-      pos_disp = hde.len - ((hde.flags & ulImmFlags) >> 2) - 4;
+      pos_disp = hde.len - ((hde.flags & imm_flags) >> 2) - 4;
 
       mi.position = pos_disp;
       mi.mao.A32 = hde.disp.disp32;
       mi.memory_address_type = eMemoryAddressType::MAT_32; // [RIP/EIP1,2 + disp32]
-      bFoundRelative = true;
+      found_relative = true;
       #endif
     }
     if (hde.modrm_rm == 4 || hde.modrm_rm == 12)      // [SIB] {SP, R12}
@@ -151,7 +154,7 @@ bool vuapi GetAssembleInstruction(
     break;
   }
 
-  if (bFoundRelative)
+  if (found_relative)
   {
     mi.offset = offset;
     instructions.push_back(mi);
@@ -234,8 +237,8 @@ bool vuapi INLHookingX::attach(void* ptr_function, void* ptr_hook_function, void
   // Write the jump code (trampoline -> original) on the bottom of the trampoline function
   memcpy((void*)(ulongptr(*pptr_old_function) + trampoline_size), (void*)&T2O, sizeof(T2O));
 
-  ulong ulOldProtect = 0;
-  VirtualProtect(ptr_function, trampoline_size, PAGE_EXECUTE_READWRITE, &ulOldProtect);
+  ulong old_protection = 0;
+  VirtualProtect(ptr_function, trampoline_size, PAGE_EXECUTE_READWRITE, &old_protection);
 
   O2N.jmp = 0x25FF;
   #ifdef _WIN64

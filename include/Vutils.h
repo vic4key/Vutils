@@ -302,34 +302,34 @@ bool vuapi wpm_ex(const eXBit bit, const HANDLE hp, const void* address, const v
 
 typedef struct _FONT_A
 {
-  std::string Name;
-  int  Size;
-  bool Italic;
-  bool Underline;
-  bool StrikeOut;
-  int  Weight;
-  int  CharSet;
-  int  Orientation;
+  std::string name;
+  int  size;
+  bool italic;
+  bool under_line;
+  bool strike_out;
+  int  weight;
+  int  char_set;
+  int  orientation;
   _FONT_A()
-    : Name(""), Size(-1)
-    , Italic(false), Underline(false), StrikeOut(false)
-    , Weight(0), CharSet(ANSI_CHARSET), Orientation(0) {}
+    : name(""), size(-1)
+    , italic(false), under_line(false), strike_out(false)
+    , weight(0), char_set(ANSI_CHARSET), orientation(0) {}
 } sFontA;
 
 typedef struct _FONT_W
 {
-  std::wstring Name;
-  int  Size;
-  bool Italic;
-  bool Underline;
-  bool StrikeOut;
-  int  Weight;
-  int  CharSet;
-  int  Orientation;
+  std::wstring name;
+  int  size;
+  bool italic;
+  bool under_line;
+  bool strike_out;
+  int  weight;
+  int  char_set;
+  int  orientation;
   _FONT_W()
-    : Name(L""), Size(-1)
-    , Italic(false), Underline(false), StrikeOut(false)
-    , Weight(0), CharSet(ANSI_CHARSET), Orientation(0) {}
+    : name(L""), size(-1)
+    , italic(false), under_line(false), strike_out(false)
+    , weight(0), char_set(ANSI_CHARSET), orientation(0) {}
 } sFontW;
 
 HWND vuapi get_console_window();
@@ -344,7 +344,7 @@ sFontW vuapi get_font_W(HWND hwnd);
  * File/Directory Working
  */
 
-enum ePathSep
+enum class ePathSep
 {
   WIN,
   POSIX,
@@ -525,6 +525,12 @@ protected:
   ulong m_last_error_code;
 };
 
+#ifdef _UNICODE
+#define get_last_error_message get_last_error_message_W
+#else
+#define get_last_error_message get_last_error_message_A
+#endif
+
 /**
  * Singleton Pattern
  */
@@ -617,7 +623,7 @@ public:
   Buffer operator()(int begin, int end) const;
 
   byte*  get_ptr_bytes() const;
-  void*  get_ptr_data() const;
+  void*  get_ptr() const;
   size_t get_size() const;
 
   bool empty() const;
@@ -632,7 +638,7 @@ public:
   Buffer till(const void* ptr, const size_t size) const;
   Buffer slice(int begin, int end) const;
 
-  bool append(const void* pData, const size_t size);
+  bool append(const void* ptr, const size_t size);
   bool append(const Buffer& right);
 
   std::string  to_string_A() const;
@@ -646,7 +652,7 @@ private:
   bool destroy();
 
 private:
-  void*  m_ptr_data;
+  void*  m_ptr;
   size_t m_size;
 };
 
@@ -722,10 +728,10 @@ public:
 
   struct sEndPoint
   {
-    std::string Host;
-    ushort Port;
+    std::string host;
+    ushort port;
 
-    sEndPoint(const std::string& host, const ushort port) : Host(host), Port(port) {}
+    sEndPoint(const std::string& host, const ushort port) : host(host), port(port) {}
   };
 
 public:
@@ -781,7 +787,7 @@ private:
   bool vuapi valid(const SOCKET& socket);
   bool vuapi parse(const sSocket& socket);
   bool vuapi is_host_name(const std::string& s);
-  std::string vuapi get_host_address(const std::string& Name);
+  std::string vuapi get_host_address(const std::string& name);
 
 private:
   bool m_wsa;
@@ -833,10 +839,10 @@ protected:
   void vuapi initialze();
   VUResult vuapi loop();
 
-  IResult vuapi do_open(WSANETWORKEVENTS&  Events, SOCKET& Socket);
-  IResult vuapi do_recv(WSANETWORKEVENTS&  Events, SOCKET& Socket);
-  IResult vuapi do_send(WSANETWORKEVENTS&  Events, SOCKET& Socket);
-  IResult vuapi do_close(WSANETWORKEVENTS& Events, SOCKET& Socket);
+  IResult vuapi do_open(WSANETWORKEVENTS&  events, SOCKET& socket);
+  IResult vuapi do_recv(WSANETWORKEVENTS&  events, SOCKET& socket);
+  IResult vuapi do_send(WSANETWORKEVENTS&  events, SOCKET& socket);
+  IResult vuapi do_close(WSANETWORKEVENTS& events, SOCKET& socket);
 
 protected:
   vu::Socket m_server;
@@ -1003,15 +1009,15 @@ public:
    * Iterate all imported-functions in a module.
    * @param[out] module   The imported-module name.
    * @param[out] function The imported-function name.
-   * @param[out,in] pOFT  The Original First Thunk that point to INT <Import Name Table>.
-   * @param[out,in] pFT   The First Thunk that point to IAT <Import Address Table>.
+   * @param[out,in] ptr_iat The Original First Thunk that point to INT <Import Name Table>.
+   * @param[out,in] ptr_int The First Thunk that point to IAT <Import Address Table>.
    * @return true to continue or false to exit iteration.
    */
   VUResult iterate(const std::string& module, std::function<bool(
     const std::string& module,
     const std::string& function,
-    PIMAGE_THUNK_DATA& pOFT,
-    PIMAGE_THUNK_DATA& pFT)> fn);
+    PIMAGE_THUNK_DATA& ptr_iat,
+    PIMAGE_THUNK_DATA& ptr_int)> fn);
 
 private:
   enum IATAction
@@ -1285,15 +1291,15 @@ public:
   ServiceManagerA();
   virtual ~ServiceManagerA();
 
-  TServices find(const std::string& str, bool exact = false, bool nameonly = false);
+  TServices find(const std::string& str, bool exact = false, bool name_only = false);
   std::unique_ptr<TServices::value_type> query(const std::string& service_name);
   int get_state(const std::string& service_name);
 
   TServices get_dependents(const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
   TServices get_dependencies(const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
 
-  std::unique_ptr<SERVICE_STATUS> control(const TServices::value_type* pService, const ulong ctrlcode);
-  std::unique_ptr<SERVICE_STATUS> control(const std::string& name, const ulong ctrlcode);
+  std::unique_ptr<SERVICE_STATUS> control(const TServices::value_type* ptr_service, const ulong ctrl_code);
+  std::unique_ptr<SERVICE_STATUS> control(const std::string& name, const ulong ctrl_code);
 
   VUResult install(
     const std::string& file_path,
@@ -1325,15 +1331,15 @@ public:
   ServiceManagerW();
   virtual ~ServiceManagerW();
 
-  TServices find(const std::wstring& str, bool exact = false, bool nameonly = false);
+  TServices find(const std::wstring& str, bool exact = false, bool name_only = false);
   std::unique_ptr<TServices::value_type> query(const std::wstring& service_name);
   int get_state(const std::wstring& service_name); // https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-controlservice#remarks
 
   TServices get_dependents(const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
   TServices get_dependencies(const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
 
-  std::unique_ptr<SERVICE_STATUS> control(const TServices::value_type* pService, const ulong ctrlcode);
-  std::unique_ptr<SERVICE_STATUS> control(const std::wstring& name, const ulong ctrlcode);
+  std::unique_ptr<SERVICE_STATUS> control(const TServices::value_type* ptr_service, const ulong ctrl_code);
+  std::unique_ptr<SERVICE_STATUS> control(const std::wstring& name, const ulong ctrl_code);
 
   VUResult install(
     const std::wstring& file_path,
@@ -1423,7 +1429,7 @@ public:
 
   VUResult vuapi create_within_file(
     const std::string& file_path,
-    ulong max_size_low = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
+    ulong max_size_low  = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
     ulong max_size_high = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
     eFSGenericFlags fg_flags = eFSGenericFlags::FG_ALL,
     eFSShareFlags fs_flags = eFSShareFlags::FS_ALLACCESS,
@@ -1450,8 +1456,8 @@ public:
    */
   VUResult vuapi open(
     const std::string& mapping_name,
-    eFMDesiredAccess fmDesiredAccess = eFMDesiredAccess::DA_ALL_ACCESS,
-    bool bInheritHandle = false
+    eFMDesiredAccess desired_access = eFMDesiredAccess::DA_ALL_ACCESS,
+    bool inherit_handle = false
   );
 };
 
@@ -1507,7 +1513,7 @@ class INIFileA : public LastError
 {
 public:
   INIFileA();
-  INIFileA(const std::string& FilePath);
+  INIFileA(const std::string& file_path);
   virtual ~INIFileA();
 
   void set_current_file_path(const std::string& file_path);
@@ -1616,7 +1622,7 @@ private:
 // #define HKEY_DYN_DATA                     (( HKEY ) (ULONG_PTR)((LONG)0x80000006) )
 // #define HKEY_CURRENT_USER_LOCAL_SETTINGS  (( HKEY ) (ULONG_PTR)((LONG)0x80000007) )
 
-typedef enum _HKEY : ulongptr
+typedef enum class _HKEY : ulongptr
 {
   HKCR = ulongptr(0x80000000),
   HKCU = ulongptr(0x80000001),
@@ -1673,7 +1679,7 @@ public:
 
   HKEY vuapi get_current_key_handle();
   eRegReflection vuapi query_reflection_key();
-  bool vuapi set_reflection_key(eRegReflection RegReflection);
+  bool vuapi set_reflection_key(eRegReflection reg_reflection);
   bool vuapi close_key();
 
 protected:
@@ -1845,7 +1851,7 @@ public:
   ScopeStopWatchA(const std::string& prefix, const FnLogging fn_logging = message);
   virtual ~ScopeStopWatchA();
 
-  void Log(const std::string& id = "");
+  void log(const std::string& id = "");
 
   static void message(const std::string& id, const StopWatch::TDuration& duration);
   static void console(const std::string& id, const StopWatch::TDuration& duration);
@@ -2079,7 +2085,7 @@ struct sImportModule
 {
   ulong iid_id;
   std::string name;
-  //ulong NumberOfFuctions;
+  // ulong number_of_functions;
 };
 
 template<typename T>
@@ -2104,11 +2110,11 @@ typedef enum _IMPORTED_FUNCTION_FIND_BY
 template<typename T>
 struct sRelocationEntryT
 {
-  int Type;
+  int type;
   // T Offset;
-  T RVA;
+  T rva;
   // T VA;
-  T Value;
+  T value;
 };
 
 template <typename T>
@@ -2133,8 +2139,8 @@ public:
   const sImportModule* vuapi find_ptr_import_module(const std::string& module_name, bool in_cache = true);
 
   const sImportFunctionT<T>* vuapi find_ptr_import_function(const std::string& function_name, bool in_cache = true);
-  const sImportFunctionT<T>* vuapi find_ptr_import_function(const ushort FunctionHint, bool in_cache = true);
-  const sImportFunctionT<T>* vuapi find_ptr_import_function(const sImportFunctionT<T>& importFunction, eImportedFunctionFindMethod method, bool in_cache = true);
+  const sImportFunctionT<T>* vuapi find_ptr_import_function(const ushort function_hint, bool in_cache = true);
+  const sImportFunctionT<T>* vuapi find_ptr_import_function(const sImportFunctionT<T>& import_function, const eImportedFunctionFindMethod method, bool in_cache = true);
 
   const std::vector<sRelocationEntryT<T>> vuapi get_relocation_entries(bool in_cache = true);
 
@@ -2364,8 +2370,8 @@ typedef struct _PROCESS_TIME_COUNTERS
 // Structure for GetProcessMemoryInfo()
 
 typedef struct _PROCESS_MEMORY_COUNTERS {
-  DWORD cb;
-  DWORD PageFaultCount;
+  DWORD  cb;
+  DWORD  PageFaultCount;
   SIZE_T PeakWorkingSetSize;
   SIZE_T WorkingSetSize;
   SIZE_T QuotaPeakPagedPoolUsage;
@@ -2609,8 +2615,8 @@ public:
   bool exists() const;
   std::string as_string() const;
 
-  PathA extract_file_name(bool extension = true) const;
-  PathA extract_file_directory(bool slash = true) const;
+  PathA extract_file_name(bool with_extension = true) const;
+  PathA extract_file_directory(bool with_slash = true) const;
 
 private:
   ePathSep m_separator;
@@ -2642,8 +2648,8 @@ public:
   bool exists() const;
   std::wstring as_string() const;
 
-  PathW extract_file_name(bool extension = true) const;
-  PathW extract_file_directory(bool slash = true) const;
+  PathW extract_file_name(bool with_extension = true) const;
+  PathW extract_file_directory(bool with_slash = true) const;
 
 private:
   ePathSep m_separator;

@@ -88,7 +88,7 @@ DEF_SAMPLE(Misc)
     auto file_path = fso.directory + fso.name;
     auto data = vu::FileSystem::quick_read_as_buffer(file_path);
 
-    auto result = vu::determine_encoding_type(data.get_ptr_data(), data.get_size());
+    auto result = vu::determine_encoding_type(data.get_ptr(), data.get_size());
     auto es = result == vu::eEncodingType::ET_UNKNOWN ? L"Unknown" : LES[int(result)];
     auto el = result == vu::eEncodingType::ET_UNKNOWN ? L"Unknown" : LEL[int(result)];
 

@@ -11,9 +11,9 @@
 namespace vu
 {
 
-bool vuapi is_flag_on(ulongptr ulFlags, ulongptr ulFlag)
+bool vuapi is_flag_on(ulongptr flags, ulongptr flag)
 {
-  return ((ulFlags & ulFlag) == ulFlag);
+  return ((flags & flag) == flag);
 }
 
 intptr vuapi gcd(ulongptr count, ...) // Greatest Common Divisor -> BCNN

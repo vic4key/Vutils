@@ -27,19 +27,19 @@ HKEY vuapi RegistryX::get_current_key_handle()
 
 eRegReflection vuapi RegistryX::query_reflection_key()
 {
-  BOOL bReflectedDisabled = FALSE;
+  BOOL reflected_disabled = FALSE;
 
   if (Initialize_DLL_MISC() != VU_OK)
   {
     return eRegReflection::RR_ERROR;
   }
 
-  if (pfnRegQueryReflectionKey(m_hk_sub_key, &bReflectedDisabled) != ERROR_SUCCESS)
+  if (pfnRegQueryReflectionKey(m_hk_sub_key, &reflected_disabled) != ERROR_SUCCESS)
   {
     return eRegReflection::RR_ERROR;
   }
 
-  if (bReflectedDisabled == TRUE)
+  if (reflected_disabled == TRUE)
   {
     return eRegReflection::RR_DISABLED;
   }
@@ -49,7 +49,7 @@ eRegReflection vuapi RegistryX::query_reflection_key()
   }
 }
 
-bool vuapi RegistryX::set_reflection_key(eRegReflection RegReflection)
+bool vuapi RegistryX::set_reflection_key(eRegReflection reg_reflection)
 {
   bool result = false;
 
@@ -58,7 +58,7 @@ bool vuapi RegistryX::set_reflection_key(eRegReflection RegReflection)
     return result;
   }
 
-  switch (RegReflection)
+  switch (reg_reflection)
   {
   case eRegReflection::RR_DISABLE:
     result = (pfnRegDisableReflectionKey(m_hk_sub_key) == ERROR_SUCCESS);
@@ -85,15 +85,15 @@ RegistryA::RegistryA() : RegistryX()
   m_sub_key.clear();
 }
 
-RegistryA::RegistryA(eRegRoot RegRoot) : RegistryX()
+RegistryA::RegistryA(eRegRoot reg_root) : RegistryX()
 {
-  m_hk_root_key = (HKEY)RegRoot;
+  m_hk_root_key = (HKEY)reg_root;
 }
 
-RegistryA::RegistryA(eRegRoot RegRoot, const std::string& SubKey)
+RegistryA::RegistryA(eRegRoot RegRoot, const std::string& sub_key)
 {
   m_hk_root_key = (HKEY)RegRoot;
-  m_sub_key = SubKey;
+  m_sub_key = sub_key;
 }
 
 RegistryA::~RegistryA()

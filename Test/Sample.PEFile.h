@@ -134,7 +134,7 @@ DEF_SAMPLE(PEFile)
   for (const auto& entry : pe.get_relocation_entries())
   {
     auto value = vu::peX(0);
-    vu::rpm(process.handle(), LPVOID(vu::peX(module.modBaseAddr) + entry.RVA), &value, sizeof(value));
+    vu::rpm(process.handle(), LPVOID(vu::peX(module.modBaseAddr) + entry.rva), &value, sizeof(value));
 
     #ifdef _WIN64
     auto fmt = ts("%llX : %llX -> %llX");
@@ -142,7 +142,7 @@ DEF_SAMPLE(PEFile)
     auto fmt = ts("%08X : %08X -> %08X");
     #endif // _WIN64
 
-    std::tcout << vu::format(fmt, entry.RVA, entry.Value, value) << std::endl;
+    std::tcout << vu::format(fmt, entry.rva, entry.value, value) << std::endl;
   }
 
   return vu::VU_OK;

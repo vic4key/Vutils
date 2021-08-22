@@ -38,13 +38,13 @@ bool vuapi is_directory_exists_W(const std::wstring& directory)
 std::string vuapi get_file_type_A(const std::string& file_path)
 {
   SHFILEINFOA SHINFO = {0};
-  std::unique_ptr<char[]> szFileType(new char [MAXBYTE]);
+  std::unique_ptr<char[]> ps_file_type(new char [MAXBYTE]);
   std::string s;
   s.clear();
 
   if (SHGetFileInfoA(file_path.c_str(), 0, &SHINFO, sizeof(SHFILEINFOA), SHGFI_TYPENAME) != 0)
   {
-    ZeroMemory(szFileType.get(), MAXBYTE);
+    ZeroMemory(ps_file_type.get(), MAXBYTE);
     s = SHINFO.szTypeName;
   }
 
@@ -54,13 +54,13 @@ std::string vuapi get_file_type_A(const std::string& file_path)
 std::wstring vuapi get_file_type_W(const std::wstring& file_path)
 {
   SHFILEINFOW SHINFO = {0};
-  std::unique_ptr<wchar[]> szFileType(new wchar [MAXBYTE]);
+  std::unique_ptr<wchar[]> ps_file_type(new wchar [MAXBYTE]);
   std::wstring s;
   s.clear();
 
   if (SHGetFileInfoW(file_path.c_str(), 0, &SHINFO, sizeof(SHFILEINFOA), SHGFI_TYPENAME) != 0)
   {
-    ZeroMemory(szFileType.get(), 2*MAXBYTE);
+    ZeroMemory(ps_file_type.get(), 2*MAXBYTE);
     s = SHINFO.szTypeName;
   }
 
@@ -69,32 +69,32 @@ std::wstring vuapi get_file_type_W(const std::wstring& file_path)
 
 bool vuapi is_file_exists_A(const std::string& file_path)
 {
-  bool bResult = false;
+  bool result = false;
   WIN32_FIND_DATAA wfd = {0};
 
-  HANDLE hFile = FindFirstFileA(file_path.c_str(), &wfd);
-  if (hFile != INVALID_HANDLE_VALUE)
+  HANDLE hfile = FindFirstFileA(file_path.c_str(), &wfd);
+  if (hfile != INVALID_HANDLE_VALUE)
   {
-    bResult = true;
-    FindClose(hFile);
+    result = true;
+    FindClose(hfile);
   }
 
-  return bResult;
+  return result;
 }
 
 bool vuapi is_file_exists_W(const std::wstring& file_path)
 {
-  bool bResult = false;
+  bool result = false;
   WIN32_FIND_DATAW wfd = {0};
 
-  HANDLE hFile = FindFirstFileW(file_path.c_str(), &wfd);
-  if (hFile != INVALID_HANDLE_VALUE)
+  HANDLE hfile = FindFirstFileW(file_path.c_str(), &wfd);
+  if (hfile != INVALID_HANDLE_VALUE)
   {
-    bResult = true;
-    FindClose(hFile);
+    result = true;
+    FindClose(hfile);
   }
 
-  return bResult;
+  return result;
 }
 
 std::string vuapi extract_file_directory_A(const std::string& file_path, bool last_slash)
@@ -157,10 +157,10 @@ std::wstring vuapi extract_file_name_W(const std::wstring& file_path, bool exten
   std::wstring result;
   result.clear();
 
-  size_t slashPos = file_path.rfind(L'\\');
-  if (slashPos != std::string::npos)
+  size_t pos_slash = file_path.rfind(L'\\');
+  if (pos_slash != std::string::npos)
   {
-    result = file_path.substr(slashPos + 1);
+    result = file_path.substr(pos_slash + 1);
   }
   else // only file name in file path
   {
@@ -305,7 +305,7 @@ eDiskType get_disk_type_W(const wchar_t drive)
 
   if (types.empty() || partitions.empty())
   {
-    WMIProviderW WMI;
+    WMIProviderW wmi;
 
     const auto fnIsNumber = [](const std::wstring& str)
     {
@@ -314,11 +314,11 @@ eDiskType get_disk_type_W(const wchar_t drive)
 
     // Generate a map of Partition Names and Disk IDs
 
-    WMI.begin(L"ROOT\\CIMV2");
+    wmi.begin(L"ROOT\\CIMV2");
     {
-      WMI.query(L"SELECT * FROM Win32_DiskDrive", [&](IWbemClassObject& object) -> bool
+      wmi.query(L"SELECT * FROM Win32_DiskDrive", [&](IWbemClassObject& object) -> bool
       {
-        VARIANT s;
+        VARIANT s = { 0 };
         object.Get(L"DeviceID", 0, &s, 0, 0);
         std::wstring tmp = s.bstrVal;
         tmp = tmp.substr(4); // Remove `\.\` in `\.\PHYSICALDRIVE?`
@@ -328,19 +328,19 @@ eDiskType get_disk_type_W(const wchar_t drive)
         std::wstring query = L"Associators of {Win32_DiskDrive.DeviceID='\\\\.\\";
         query += tmp;
         query += L"'} where AssocClass=Win32_DiskDriveToDiskPartition";
-        WMI.query(query, [&](IWbemClassObject& object) -> bool
+        wmi.query(query, [&](IWbemClassObject& object) -> bool
         {
-          VARIANT s;
+          VARIANT s = { 0 };
           object.Get(L"DeviceID", 0, &s, 0, 0);
 
           std::wstring query = L"Associators of {Win32_DiskPartition.DeviceID='";
           query += s.bstrVal;
           query += L"'} where AssocClass=Win32_LogicalDiskToPartition";
-          WMI.query(query, [&](IWbemClassObject& object) -> bool
+          wmi.query(query, [&](IWbemClassObject& object) -> bool
           {
             if (fnIsNumber(id))
             {
-              VARIANT s;
+              VARIANT s = { 0 };
               object.Get(L"DeviceID", 0, &s, 0, 0);
               std::wstring letter = s.bstrVal;
 
@@ -356,30 +356,30 @@ eDiskType get_disk_type_W(const wchar_t drive)
         return true;
       });
     }
-    WMI.end();
+    wmi.end();
 
     // Generate a map of Drive IDs and Disk Types
 
-    WMI.begin(L"ROOT\\Microsoft\\Windows\\Storage");
+    wmi.begin(L"ROOT\\Microsoft\\Windows\\Storage");
     {
-      WMI.query(L"SELECT * FROM MSFT_PhysicalDisk", [&](IWbemClassObject& object) -> bool
+      wmi.query(L"SELECT * FROM MSFT_PhysicalDisk", [&](IWbemClassObject& object) -> bool
       {
-        VARIANT deviceId;
-        object.Get(L"DeviceId", 0, &deviceId, 0, 0);
+        VARIANT device_id = { 0 };
+        object.Get(L"DeviceId", 0, &device_id, 0, 0);
 
-        VARIANT mediaType;
-        object.Get(L"MediaType", 0, &mediaType, 0, 0);
+        VARIANT media_type = { 0 };
+        object.Get(L"MediaType", 0, &media_type, 0, 0);
 
-        std::wstring id = deviceId.bstrVal;
+        std::wstring id = device_id.bstrVal;
         if (fnIsNumber(id))
         {
-          types[std::stoi(id)] = static_cast<eDiskType>(mediaType.uintVal);
+          types[std::stoi(id)] = static_cast<eDiskType>(media_type.uintVal);
         }
 
         return true;
       });
     }
-    WMI.end();
+    wmi.end();
   }
 
   // Find the Disk Type of a Partition
@@ -483,11 +483,11 @@ std::wstring normalize_path_W(const std::wstring& path, const ePathSep separator
  * CPathA
  */
 
-PathA::PathA(const ePathSep Separator) : m_path(""), m_separator(Separator)
+PathA::PathA(const ePathSep separator) : m_path(""), m_separator(separator)
 {
 }
 
-PathA::PathA(const std::string& Path, const ePathSep Separator) : m_path(Path), m_separator(Separator)
+PathA::PathA(const std::string& path, const ePathSep separator) : m_path(path), m_separator(separator)
 {
 }
 
@@ -563,9 +563,9 @@ bool PathA::operator!=(const PathA& right)
   return !(*this == right);
 }
 
-vu::PathA& PathA::trim(const eTrimType TrimType)
+vu::PathA& PathA::trim(const eTrimType type)
 {
-  m_path = trim_string_A(m_path, TrimType);
+  m_path = trim_string_A(m_path, type);
   return *this;
 }
 
@@ -575,9 +575,9 @@ vu::PathA& PathA::normalize()
   return *this;
 }
 
-vu::PathA& PathA::join(const std::string& Path)
+vu::PathA& PathA::join(const std::string& path)
 {
-  m_path = join_path_A(m_path, Path, m_separator);
+  m_path = join_path_A(m_path, path, m_separator);
   return *this;
 }
 
@@ -588,18 +588,18 @@ vu::PathA& PathA::finalize()
   return *this;
 }
 
-vu::PathA PathA::extract_file_name(bool Extension) const
+vu::PathA PathA::extract_file_name(bool with_extension) const
 {
   PathA tmp(*this);
   tmp.finalize();
-  return vu::extract_file_name_A(tmp.as_string(), Extension);
+  return vu::extract_file_name_A(tmp.as_string(), with_extension);
 }
 
-vu::PathA PathA::extract_file_directory(bool Slash) const
+vu::PathA PathA::extract_file_directory(bool with_slash) const
 {
   PathA tmp(*this);
   tmp.finalize();
-  return vu::extract_file_directory_A(tmp.as_string(), Slash);
+  return vu::extract_file_directory_A(tmp.as_string(), with_slash);
 }
 
 bool PathA::exists() const
@@ -628,7 +628,7 @@ PathW::PathW(const ePathSep Separator) : m_path(L""), m_separator(Separator)
 {
 }
 
-PathW::PathW(const std::wstring& Path, const ePathSep Separator) : m_path(Path), m_separator(Separator)
+PathW::PathW(const std::wstring& path, const ePathSep separator) : m_path(path), m_separator(separator)
 {
 }
 
@@ -704,9 +704,9 @@ bool PathW::operator!=(const PathW& right)
   return !(*this == right);
 }
 
-vu::PathW& PathW::trim(const eTrimType TrimType)
+vu::PathW& PathW::trim(const eTrimType type)
 {
-  m_path = trim_string_W(m_path, TrimType);
+  m_path = trim_string_W(m_path, type);
   return *this;
 }
 
@@ -729,18 +729,18 @@ vu::PathW& PathW::finalize()
   return *this;
 }
 
-vu::PathW PathW::extract_file_name(bool Extension) const
+vu::PathW PathW::extract_file_name(bool with_extension) const
 {
   PathW tmp(*this);
   tmp.finalize();
-  return vu::extract_file_name_W(tmp.as_string(), Extension);
+  return vu::extract_file_name_W(tmp.as_string(), with_extension);
 }
 
-vu::PathW PathW::extract_file_directory(bool Slash) const
+vu::PathW PathW::extract_file_directory(bool with_slash) const
 {
   PathW tmp(*this);
   tmp.finalize();
-  return vu::extract_file_directory_W(tmp.as_string(), Slash);
+  return vu::extract_file_directory_W(tmp.as_string(), with_slash);
 }
 
 bool PathW::exists() const
