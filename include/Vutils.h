@@ -159,7 +159,7 @@ void vuapi hex_dump(const void* data, int size);
  * String Formatting
  */
 
-typedef enum _ENCODING_TYPE
+typedef enum class _ENCODING_TYPE : int
 {
   ET_UNKNOWN      = -1,
   ET_UTF8         = 0, // "ANSI/UTF-8", "ANSI/UTF-8"
@@ -172,7 +172,7 @@ typedef enum _ENCODING_TYPE
   ET_UTF32_BE_BOM = 7, // "UTF-32 BE BOM", "UTF-32 Big Endian BOM"
 } eEncodingType;
 
-typedef enum _STD_BYTES : int
+typedef enum class _STD_BYTES : int
 {
   SI  = 1000, // 1 KB  = 1000 bytes
   IEC = 1024, // 1 KiB = 1024 bytes
@@ -350,13 +350,13 @@ enum ePathSep
   POSIX,
 };
 
-enum eDiskType : int
+typedef enum class _DISK_TYPE : int
 {
   Unspecified = 0,
   HDD = 3,
   SSD = 4,
   SCM = 5,
-};
+} eDiskType;
 
 #if defined(VU_WMI_ENABLED)
 eDiskType vuapi get_disk_type_A(const char drive);
@@ -1638,7 +1638,7 @@ typedef enum _HKEY : ulongptr
 #define KEY_WOW64_RES 0x0300
 #endif
 
-typedef enum _REG_ACCESS
+typedef enum class _REG_ACCESS
 {
   RA_UNKNOWN            = -1,
   RA_QUERY_VALUE        = KEY_QUERY_VALUE,
@@ -1656,7 +1656,7 @@ typedef enum _REG_ACCESS
   RA_ALL_ACCESS         = KEY_ALL_ACCESS,
 } eRegAccess;
 
-typedef enum _REG_REFLECTION
+typedef enum class _REG_REFLECTION
 {
   RR_ERROR    = -1,
   RR_DISABLED = 0,

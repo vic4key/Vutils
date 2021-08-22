@@ -517,7 +517,7 @@ std::string vuapi format_bytes_A(long long bytes, eStdByte std, int digits)
     fmt += std::to_string(digits);
     fmt += "f %s";
 
-    result = format_A(fmt, float(bytes / powl(std, idx)), Units[idx]);
+    result = format_A(fmt, float(bytes / powl(static_cast<long double>(std), idx)), Units[idx]);
   }
 
   return result;

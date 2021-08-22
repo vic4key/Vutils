@@ -20,7 +20,7 @@ DEF_SAMPLE(WMIProvider)
   {
     wmi.query(ts("SELECT * FROM MSFT_PhysicalDisk"), [](IWbemClassObject& object) -> bool
     {
-      VARIANT s;
+      VARIANT s = {0};
       object.Get(L"FriendlyName", 0, &s, 0, 0);
       std::wcout << s.bstrVal << std::endl;
       return true;

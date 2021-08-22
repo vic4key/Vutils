@@ -8,7 +8,7 @@
   * CSTLThreadT
   */
 
-enum eReturn
+enum class eReturn
 {
   Ok,
   Break,

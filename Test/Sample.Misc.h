@@ -89,8 +89,8 @@ DEF_SAMPLE(Misc)
     auto data = vu::FileSystem::quick_read_as_buffer(file_path);
 
     auto result = vu::determine_encoding_type(data.get_ptr_data(), data.get_size());
-    auto es = result == -1 ? L"Unknown" : LES[result];
-    auto el = result == -1 ? L"Unknown" : LEL[result];
+    auto es = result == vu::eEncodingType::ET_UNKNOWN ? L"Unknown" : LES[int(result)];
+    auto el = result == vu::eEncodingType::ET_UNKNOWN ? L"Unknown" : LEL[int(result)];
 
     std::wcout
       << std::left
