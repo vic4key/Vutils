@@ -48,7 +48,7 @@ bool fnContains(const StringT& _1, const StringT& _2, bool exact)
  */
 
 template <typename ServiceT>
-CServiceManagerT<ServiceT>::CServiceManagerT() : m_Manager(nullptr), m_Initialized(false)
+CServiceManagerT<ServiceT>::CServiceManagerT() : m_hmanager(nullptr), m_initialized(false)
 {
   // this->Refresh();
 }
@@ -59,26 +59,26 @@ CServiceManagerT<ServiceT>::~CServiceManagerT()
 }
 
 template <typename ServiceT>
-void CServiceManagerT<ServiceT>::Refresh()
+void CServiceManagerT<ServiceT>::refresh()
 {
-  m_Initialized = false;
-  this->Initialize();
+  m_initialized = false;
+  this->initialize();
 }
 
 template <typename ServiceT>
-typename CServiceManagerT<ServiceT>::TServices CServiceManagerT<ServiceT>::GetServices(
+typename CServiceManagerT<ServiceT>::TServices CServiceManagerT<ServiceT>::get_services(
   ulong types,
   ulong states
 )
 {
   if (types == VU_SERVICE_ALL_TYPES && states == VU_SERVICE_ALL_STATES)
   {
-    return m_Services;
+    return m_services;
   }
 
   TServices result;
 
-  for (const auto& e : m_Services)
+  for (const auto& e : m_services)
   {
     if ((types & e.ServiceStatusProcess.dwServiceType) && (states & e.ServiceStatusProcess.dwCurrentState))
     {
@@ -95,80 +95,80 @@ typename CServiceManagerT<ServiceT>::TServices CServiceManagerT<ServiceT>::GetSe
 
 CServiceManagerA::CServiceManagerA() : CServiceManagerTA()
 {
-  this->Refresh();
+  this->refresh();
 }
 
 CServiceManagerA::~CServiceManagerA()
 {
 }
 
-VUResult CServiceManagerA::Initialize()
+VUResult CServiceManagerA::initialize()
 {
-  if (m_Initialized)
+  if (m_initialized)
   {
     return VU_OK;
   }
 
-  m_Services.clear();
+  m_services.clear();
 
-  if (m_Manager == nullptr)
+  if (m_hmanager == nullptr)
   {
-    m_Manager = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
+    m_hmanager = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
     m_last_error_code = GetLastError();
   }
 
-  if (m_Manager == nullptr)
+  if (m_hmanager == nullptr)
   {
     return __LINE__;
   }
 
-  DWORD cbBytesNeeded = 0, nServicesReturned = 0;
+  DWORD cb_bytes_needed = 0, n_services_returned = 0;
 
   EnumServicesStatusExA(
-    m_Manager,
+    m_hmanager,
     SC_ENUM_PROCESS_INFO,
     SERVICE_TYPE_ALL,
     SERVICE_STATE_ALL,
     nullptr,
     0,
-    &cbBytesNeeded,
-    &nServicesReturned,
+    &cb_bytes_needed,
+    &n_services_returned,
     nullptr,
     nullptr
   );
 
   m_last_error_code = GetLastError();
 
-  if (cbBytesNeeded == 0)
+  if (cb_bytes_needed == 0)
   {
     return __LINE__;
   }
 
-  m_Services.resize(cbBytesNeeded / sizeof(TServices::value_type) + 1); // +1 for padding
+  m_services.resize(cb_bytes_needed / sizeof(TServices::value_type) + 1); // +1 for padding
 
   EnumServicesStatusExA(
-    m_Manager,
+    m_hmanager,
     SC_ENUM_PROCESS_INFO,
     SERVICE_TYPE_ALL,
     SERVICE_STATE_ALL,
-    PBYTE(m_Services.data()),
-    cbBytesNeeded,
-    &cbBytesNeeded,
-    &nServicesReturned,
+    PBYTE(m_services.data()),
+    cb_bytes_needed,
+    &cb_bytes_needed,
+    &n_services_returned,
     nullptr,
     nullptr
   );
 
   m_last_error_code = GetLastError();
 
-  m_Services.resize(nServicesReturned);
+  m_services.resize(n_services_returned);
 
-  m_Initialized = true;
+  m_initialized = true;
 
   return VU_OK;
 }
 
-std::unique_ptr<SERVICE_STATUS> CServiceManagerA::Control(
+std::unique_ptr<SERVICE_STATUS> CServiceManagerA::control(
   const CServiceManagerA::TServices::value_type* pService,
   const ulong ctrlcode
 )
@@ -178,7 +178,7 @@ std::unique_ptr<SERVICE_STATUS> CServiceManagerA::Control(
     return nullptr;
   }
 
-  auto hService = OpenServiceA(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
+  auto hService = OpenServiceA(m_hmanager, pService->lpServiceName, SERVICE_ALL_ACCESS);
 
   m_last_error_code = GetLastError();
 
@@ -201,7 +201,7 @@ std::unique_ptr<SERVICE_STATUS> CServiceManagerA::Control(
 
   // TODO: Vic. Recheck. Wait for finish here.
 
-  this->Refresh();
+  this->refresh();
 
   std::unique_ptr<SERVICE_STATUS> result(new SERVICE_STATUS);
   *result.get() = ss;
@@ -209,21 +209,21 @@ std::unique_ptr<SERVICE_STATUS> CServiceManagerA::Control(
   return result;
 }
 
-std::unique_ptr<SERVICE_STATUS> CServiceManagerA::Control(
+std::unique_ptr<SERVICE_STATUS> CServiceManagerA::control(
   const std::string& name,
   const ulong ctrlcode
 )
 {
-  auto pService = this->Query(name);
-  if (pService == nullptr)
+  auto pservice = this->query(name);
+  if (pservice == nullptr)
   {
     return nullptr;
   }
 
-  return this->Control(pService.get(), ctrlcode);
+  return this->control(pservice.get(), ctrlcode);
 }
 
-CServiceManagerA::TServices CServiceManagerA::Find(
+CServiceManagerA::TServices CServiceManagerA::find(
   const std::string& str,
   bool exact,
   bool nameonly
@@ -236,7 +236,7 @@ CServiceManagerA::TServices CServiceManagerA::Find(
     return result;
   }
 
-  for (const auto& service : m_Services)
+  for (const auto& service : m_services)
   {
     if (fnContains<std::string>(str, service.lpServiceName, exact))
     {
@@ -251,7 +251,7 @@ CServiceManagerA::TServices CServiceManagerA::Find(
   return result;
 }
 
-std::unique_ptr<CServiceManagerA::TServices::value_type> CServiceManagerA::Query(
+std::unique_ptr<CServiceManagerA::TServices::value_type> CServiceManagerA::query(
   const std::string& service_name)
 {
   if (service_name.empty())
@@ -259,7 +259,7 @@ std::unique_ptr<CServiceManagerA::TServices::value_type> CServiceManagerA::Query
     return nullptr;
   }
 
-  auto l = this->Find(service_name, true, true);
+  auto l = this->find(service_name, true, true);
   if (l.empty())
   {
     return nullptr;
@@ -271,71 +271,71 @@ std::unique_ptr<CServiceManagerA::TServices::value_type> CServiceManagerA::Query
   return result;
 }
 
-int CServiceManagerA::GetState(const std::string& service_name)
+int CServiceManagerA::get_state(const std::string& service_name)
 {
-  auto pService = this->Query(service_name);
-  if (pService == nullptr)
+  auto ptr_service = this->query(service_name);
+  if (ptr_service == nullptr)
   {
     return -1;
   }
 
-  return pService->ServiceStatusProcess.dwCurrentState;
+  return ptr_service->ServiceStatusProcess.dwCurrentState;
 }
 
-CServiceManagerA::TServices CServiceManagerA::GetDependents(
+CServiceManagerA::TServices CServiceManagerA::get_dependents(
   const std::string& service_name, const ulong states)
 {
   TServices result;
 
-  auto pService = this->Query(service_name);
-  if (pService == nullptr)
+  auto ptr_service = this->query(service_name);
+  if (ptr_service == nullptr)
   {
     return result;
   }
 
-  auto hService = OpenServiceA(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
+  auto hservice = OpenServiceA(m_hmanager, ptr_service->lpServiceName, SERVICE_ALL_ACCESS);
 
   m_last_error_code = GetLastError();
 
-  if (hService == nullptr)
+  if (hservice == nullptr)
   {
     return result;
   }
 
-  DWORD cbBytesNeeded = 0, nServicesReturned = 0;
+  DWORD cb_bytes_needed = 0, n_services_returned = 0;
 
   EnumDependentServicesA(
-    hService,
+    hservice,
     states == VU_SERVICE_ALL_STATES ? SERVICE_STATE_ALL : states,
     nullptr,
     0,
-    &cbBytesNeeded,
-    &nServicesReturned
+    &cb_bytes_needed,
+    &n_services_returned
   );
 
   m_last_error_code = GetLastError();
 
-  if (cbBytesNeeded > 0)
+  if (cb_bytes_needed > 0)
   {
     std::vector<ENUM_SERVICE_STATUSA> dependents;
-    dependents.resize(cbBytesNeeded / sizeof(ENUM_SERVICE_STATUSA) + 1); // +1 for zero padding
+    dependents.resize(cb_bytes_needed / sizeof(ENUM_SERVICE_STATUSA) + 1); // +1 for zero padding
 
     EnumDependentServicesA(
-      hService,
+      hservice,
       states == VU_SERVICE_ALL_STATES ? SERVICE_STATE_ALL : states,
       dependents.data(),
-      cbBytesNeeded,
-      &cbBytesNeeded,
-      &nServicesReturned
+      cb_bytes_needed,
+      &cb_bytes_needed,
+      &n_services_returned
     );
 
     m_last_error_code = GetLastError();
 
-    dependents.resize(nServicesReturned);
+    dependents.resize(n_services_returned);
 
     for (const auto& dependent : dependents)
     {
-      auto pService = this->Query(dependent.lpServiceName);
+      auto pService = this->query(dependent.lpServiceName);
       if (pService != nullptr)
       {
         result.push_back(*pService);
@@ -343,23 +343,23 @@ CServiceManagerA::TServices CServiceManagerA::GetDependents(
     }
   }
 
-  CloseServiceHandle(hService);
+  CloseServiceHandle(hservice);
 
   return result;
 }
 
-CServiceManagerA::TServices CServiceManagerA::GetDependencies(
+CServiceManagerA::TServices CServiceManagerA::get_dependencies(
   const std::string& service_name, const ulong states)
 {
   TServices result;
 
-  auto pService = this->Query(service_name);
+  auto pService = this->query(service_name);
   if (pService == nullptr)
   {
     return result;
   }
 
-  auto hService = OpenServiceA(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
+  auto hService = OpenServiceA(m_hmanager, pService->lpServiceName, SERVICE_ALL_ACCESS);
 
   m_last_error_code = GetLastError();
 
@@ -368,25 +368,25 @@ CServiceManagerA::TServices CServiceManagerA::GetDependencies(
     return result;
   }
 
-  DWORD cbBytesNeeded = 0;
+  DWORD cb_bytes_needed = 0;
 
-  QueryServiceConfigA(hService, nullptr, 0, &cbBytesNeeded);
+  QueryServiceConfigA(hService, nullptr, 0, &cb_bytes_needed);
 
   m_last_error_code = GetLastError();
 
-  if (cbBytesNeeded > 0)
+  if (cb_bytes_needed > 0)
   {
-    std::vector<char> buffer(cbBytesNeeded);
+    std::vector<char> buffer(cb_bytes_needed);
     auto ptr = LPQUERY_SERVICE_CONFIGA(buffer.data());
 
-    QueryServiceConfigA(hService, ptr, cbBytesNeeded, &cbBytesNeeded);
+    QueryServiceConfigA(hService, ptr, cb_bytes_needed, &cb_bytes_needed);
 
     m_last_error_code = GetLastError();
 
     const auto dependencies = multi_string_to_list_A(ptr->lpDependencies);
     for (const auto& dependency : dependencies)
     {
-      auto pService = this->Query(dependency);
+      auto pService = this->query(dependency);
       if (pService != nullptr)
       {
         if (states & pService->ServiceStatusProcess.dwCurrentState)
@@ -402,69 +402,69 @@ CServiceManagerA::TServices CServiceManagerA::GetDependencies(
   return result;
 }
 
-VUResult CServiceManagerA::Delete(const std::string& name)
+VUResult CServiceManagerA::uninstall(const std::string& name)
 {
-  auto pService = this->Query(name);
-  if (pService == nullptr)
+  auto ptr_service = this->query(name);
+  if (ptr_service == nullptr)
   {
     return __LINE__;
   }
 
-  this->Stop(name);
+  this->stop(name);
 
-  auto hService = OpenServiceA(m_Manager, name.c_str(), SERVICE_ALL_ACCESS);
+  auto hservice = OpenServiceA(m_hmanager, name.c_str(), SERVICE_ALL_ACCESS);
 
   m_last_error_code = GetLastError();
 
-  if (hService == nullptr)
+  if (hservice == nullptr)
   {
     return __LINE__;
   }
 
-  BOOL result = DeleteService(hService);
+  BOOL result = DeleteService(hservice);
 
   m_last_error_code = GetLastError();
 
-  CloseServiceHandle(hService);
+  CloseServiceHandle(hservice);
 
   if (result == FALSE)
   {
     return __LINE__;
   }
 
-  this->Refresh();
+  this->refresh();
 
   return VU_OK;
 }
 
-VUResult CServiceManagerA::Start(const std::string& name)
+VUResult CServiceManagerA::start(const std::string& name)
 {
-  auto pService = this->Query(name);
-  if (pService == nullptr)
+  auto ptr_service = this->query(name);
+  if (ptr_service == nullptr)
   {
     return __LINE__;
   }
 
-  if (pService->ServiceStatusProcess.dwCurrentState == SERVICE_RUNNING)
+  if (ptr_service->ServiceStatusProcess.dwCurrentState == SERVICE_RUNNING)
   {
     return VU_OK;
   }
-  else if (pService->ServiceStatusProcess.dwCurrentState == SERVICE_STOPPED)
+  else if (ptr_service->ServiceStatusProcess.dwCurrentState == SERVICE_STOPPED)
   {
-    auto hService = OpenServiceA(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
+    auto hservice = OpenServiceA(m_hmanager, ptr_service->lpServiceName, SERVICE_ALL_ACCESS);
 
     m_last_error_code = GetLastError();
 
-    if (hService == nullptr)
+    if (hservice == nullptr)
     {
       return __LINE__;
     }
 
-    BOOL ret = StartServiceA(hService, 0, nullptr);
+    BOOL ret = StartServiceA(hservice, 0, nullptr);
 
     m_last_error_code = GetLastError();
 
-    CloseServiceHandle(hService);
+    CloseServiceHandle(hservice);
 
     if (ret == FALSE)
     {
@@ -473,7 +473,7 @@ VUResult CServiceManagerA::Start(const std::string& name)
 
     // TODO: Vic. Recheck. Wait for finish here.
 
-    this->Refresh();
+    this->refresh();
 
     return VU_OK;
   }
@@ -485,21 +485,21 @@ VUResult CServiceManagerA::Start(const std::string& name)
   return VU_OK;
 }
 
-VUResult CServiceManagerA::Stop(const std::string& name)
+VUResult CServiceManagerA::stop(const std::string& name)
 {
-  auto pService = this->Query(name);
-  if (pService == nullptr)
+  auto ptr_service = this->query(name);
+  if (ptr_service == nullptr)
   {
     return __LINE__;
   }
 
-  if (pService->ServiceStatusProcess.dwCurrentState == SERVICE_STOPPED)
+  if (ptr_service->ServiceStatusProcess.dwCurrentState == SERVICE_STOPPED)
   {
     return VU_OK;
   }
-  else if (pService->ServiceStatusProcess.dwCurrentState == SERVICE_RUNNING)
+  else if (ptr_service->ServiceStatusProcess.dwCurrentState == SERVICE_RUNNING)
   {
-    return this->Control(pService.get(), SERVICE_CONTROL_STOP) != nullptr ? VU_OK : __LINE__;
+    return this->control(ptr_service.get(), SERVICE_CONTROL_STOP) != nullptr ? VU_OK : __LINE__;
   }
   else
   {
@@ -509,7 +509,7 @@ VUResult CServiceManagerA::Stop(const std::string& name)
   return VU_OK;
 }
 
-VUResult CServiceManagerA::Create(
+VUResult CServiceManagerA::install(
   const std::string& file_path,
   const std::string& service_name,
   const std::string& display_name,
@@ -530,14 +530,14 @@ VUResult CServiceManagerA::Create(
     return __LINE__;
   }
 
-  if (this->Query(service_name) != nullptr)
+  if (this->query(service_name) != nullptr)
   {
     m_last_error_code = ERROR_ALREADY_EXISTS;
     return __LINE__;
   }
 
-  auto hService = CreateServiceA(
-    m_Manager,
+  auto hservice = CreateServiceA(
+    m_hmanager,
     service_name.c_str(),
     display_name.c_str(),
     access_type,
@@ -550,14 +550,14 @@ VUResult CServiceManagerA::Create(
 
   m_last_error_code = GetLastError();
 
-  if (hService == nullptr)
+  if (hservice == nullptr)
   {
     return __LINE__;
   }
 
-  CloseServiceHandle(hService);
+  CloseServiceHandle(hservice);
 
-  this->Refresh();
+  this->refresh();
 
   return VU_OK;
 }
@@ -568,78 +568,78 @@ VUResult CServiceManagerA::Create(
 
 CServiceManagerW::CServiceManagerW() : CServiceManagerTW()
 {
-  this->Refresh();
+  this->refresh();
 }
 
 CServiceManagerW::~CServiceManagerW()
 {
 }
 
-VUResult CServiceManagerW::Initialize()
+VUResult CServiceManagerW::initialize()
 {
-  if (m_Initialized)
+  if (m_initialized)
   {
     return VU_OK;
   }
 
-  m_Services.clear();
+  m_services.clear();
 
-  m_Manager = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
+  m_hmanager = OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS);
 
   m_last_error_code = GetLastError();
 
-  if (m_Manager == nullptr)
+  if (m_hmanager == nullptr)
   {
     return __LINE__;
   }
 
-  DWORD cbBytesNeeded = 0, nServicesReturned = 0;
+  DWORD cb_bytes_needed = 0, n_services_returned = 0;
 
   EnumServicesStatusExW(
-    m_Manager,
+    m_hmanager,
     SC_ENUM_PROCESS_INFO,
     SERVICE_TYPE_ALL,
     SERVICE_STATE_ALL,
     nullptr,
     0,
-    &cbBytesNeeded,
-    &nServicesReturned,
+    &cb_bytes_needed,
+    &n_services_returned,
     nullptr,
     nullptr
   );
 
   m_last_error_code = GetLastError();
 
-  if (cbBytesNeeded == 0)
+  if (cb_bytes_needed == 0)
   {
     return __LINE__;
   }
 
-  m_Services.resize(cbBytesNeeded / sizeof(TServices::value_type) + 1); // +1 for zero padding
+  m_services.resize(cb_bytes_needed / sizeof(TServices::value_type) + 1); // +1 for zero padding
 
   EnumServicesStatusExW(
-    m_Manager,
+    m_hmanager,
     SC_ENUM_PROCESS_INFO,
     SERVICE_TYPE_ALL,
     SERVICE_STATE_ALL,
-    PBYTE(m_Services.data()),
-    cbBytesNeeded,
-    &cbBytesNeeded,
-    &nServicesReturned,
+    PBYTE(m_services.data()),
+    cb_bytes_needed,
+    &cb_bytes_needed,
+    &n_services_returned,
     nullptr,
     nullptr
   );
 
   m_last_error_code = GetLastError();
 
-  m_Services.resize(nServicesReturned);
+  m_services.resize(n_services_returned);
 
-  m_Initialized = true;
+  m_initialized = true;
 
   return VU_OK;
 }
 
-std::unique_ptr<SERVICE_STATUS> CServiceManagerW::Control(
+std::unique_ptr<SERVICE_STATUS> CServiceManagerW::control(
   const CServiceManagerW::TServices::value_type* pService,
   const ulong ctrlcode
 )
@@ -649,21 +649,21 @@ std::unique_ptr<SERVICE_STATUS> CServiceManagerW::Control(
     return nullptr;
   }
 
-  auto hService = OpenServiceW(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
+  auto hservice = OpenServiceW(m_hmanager, pService->lpServiceName, SERVICE_ALL_ACCESS);
 
   m_last_error_code = GetLastError();
 
-  if (hService == nullptr)
+  if (hservice == nullptr)
   {
     return nullptr;
   }
 
   SERVICE_STATUS ss = { 0 };
-  auto ret = ControlService(hService, ctrlcode, &ss);
+  auto ret = ControlService(hservice, ctrlcode, &ss);
 
   m_last_error_code = GetLastError();
 
-  CloseServiceHandle(hService);
+  CloseServiceHandle(hservice);
 
   if (ret == FALSE)
   {
@@ -672,7 +672,7 @@ std::unique_ptr<SERVICE_STATUS> CServiceManagerW::Control(
 
   // TODO: Vic. Recheck. Wait for finish here.
 
-  this->Refresh();
+  this->refresh();
 
   std::unique_ptr<SERVICE_STATUS> result(new SERVICE_STATUS);
   *result.get() = ss;
@@ -680,21 +680,21 @@ std::unique_ptr<SERVICE_STATUS> CServiceManagerW::Control(
   return result;
 }
 
-std::unique_ptr<SERVICE_STATUS> CServiceManagerW::Control(
+std::unique_ptr<SERVICE_STATUS> CServiceManagerW::control(
   const std::wstring& name,
   const ulong ctrlcode
 )
 {
-  auto pService = this->Query(name);
+  auto pService = this->query(name);
   if (pService == nullptr)
   {
     return nullptr;
   }
 
-  return this->Control(pService.get(), ctrlcode);
+  return this->control(pService.get(), ctrlcode);
 }
 
-CServiceManagerW::TServices CServiceManagerW::Find(
+CServiceManagerW::TServices CServiceManagerW::find(
   const std::wstring& str,
   bool exact,
   bool nameonly
@@ -707,7 +707,7 @@ CServiceManagerW::TServices CServiceManagerW::Find(
     return result;
   }
 
-  for (const auto& service : m_Services)
+  for (const auto& service : m_services)
   {
     if (fnContains<std::wstring>(str, service.lpServiceName, exact))
     {
@@ -722,7 +722,7 @@ CServiceManagerW::TServices CServiceManagerW::Find(
   return result;
 }
 
-std::unique_ptr<CServiceManagerW::TServices::value_type> CServiceManagerW::Query(
+std::unique_ptr<CServiceManagerW::TServices::value_type> CServiceManagerW::query(
   const std::wstring& service_name)
 {
   if (service_name.empty())
@@ -730,7 +730,7 @@ std::unique_ptr<CServiceManagerW::TServices::value_type> CServiceManagerW::Query
     return nullptr;
   }
 
-  auto l = this->Find(service_name, true, true);
+  auto l = this->find(service_name, true, true);
   if (l.empty())
   {
     return nullptr;
@@ -742,9 +742,9 @@ std::unique_ptr<CServiceManagerW::TServices::value_type> CServiceManagerW::Query
   return result;
 }
 
-int CServiceManagerW::GetState(const std::wstring& service_name)
+int CServiceManagerW::get_state(const std::wstring& service_name)
 {
-  auto pService = this->Query(service_name);
+  auto pService = this->query(service_name);
   if (pService == nullptr)
   {
     return -1;
@@ -753,18 +753,18 @@ int CServiceManagerW::GetState(const std::wstring& service_name)
   return pService->ServiceStatusProcess.dwCurrentState;
 }
 
-CServiceManagerW::TServices CServiceManagerW::GetDependents(
+CServiceManagerW::TServices CServiceManagerW::get_dependents(
   const std::wstring& service_name, const ulong states)
 {
   TServices result;
 
-  auto pService = this->Query(service_name);
-  if (pService == nullptr)
+  auto ptr_service = this->query(service_name);
+  if (ptr_service == nullptr)
   {
     return result;
   }
 
-  auto hService = OpenServiceW(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
+  auto hService = OpenServiceW(m_hmanager, ptr_service->lpServiceName, SERVICE_ALL_ACCESS);
 
   m_last_error_code = GetLastError();
 
@@ -773,40 +773,40 @@ CServiceManagerW::TServices CServiceManagerW::GetDependents(
     return result;
   }
 
-  DWORD cbBytesNeeded = 0, nServicesReturned = 0;
+  DWORD cb_bytes_needed = 0, n_services_returned = 0;
 
   EnumDependentServicesW(
     hService,
     states == VU_SERVICE_ALL_STATES ? SERVICE_STATE_ALL : states,
     nullptr,
     0,
-    &cbBytesNeeded,
-    &nServicesReturned
+    &cb_bytes_needed,
+    &n_services_returned
   );
 
   m_last_error_code = GetLastError();
 
-  if (cbBytesNeeded > 0)
+  if (cb_bytes_needed > 0)
   {
     std::vector<ENUM_SERVICE_STATUSW> dependents;
-    dependents.resize(cbBytesNeeded / sizeof(ENUM_SERVICE_STATUSW) + 1); // +1 for padding
+    dependents.resize(cb_bytes_needed / sizeof(ENUM_SERVICE_STATUSW) + 1); // +1 for padding
 
     EnumDependentServicesW(
       hService,
       states == VU_SERVICE_ALL_STATES ? SERVICE_STATE_ALL : states,
       dependents.data(),
-      cbBytesNeeded,
-      &cbBytesNeeded,
-      &nServicesReturned
+      cb_bytes_needed,
+      &cb_bytes_needed,
+      &n_services_returned
     );
 
     m_last_error_code = GetLastError();
 
-    dependents.resize(nServicesReturned);
+    dependents.resize(n_services_returned);
 
     for (const auto& dependent : dependents)
     {
-      auto pService = this->Query(dependent.lpServiceName);
+      auto pService = this->query(dependent.lpServiceName);
       if (pService != nullptr)
       {
         result.push_back(*pService);
@@ -819,45 +819,45 @@ CServiceManagerW::TServices CServiceManagerW::GetDependents(
   return result;
 }
 
-CServiceManagerW::TServices CServiceManagerW::GetDependencies(
+CServiceManagerW::TServices CServiceManagerW::get_dependencies(
   const std::wstring& service_name, const ulong states)
 {
   TServices result;
 
-  auto pService = this->Query(service_name);
+  auto pService = this->query(service_name);
   if (pService == nullptr)
   {
     return result;
   }
 
-  auto hService = OpenServiceW(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
+  auto hservice = OpenServiceW(m_hmanager, pService->lpServiceName, SERVICE_ALL_ACCESS);
 
   m_last_error_code = GetLastError();
 
-  if (hService == nullptr)
+  if (hservice == nullptr)
   {
     return result;
   }
 
-  DWORD cbBytesNeeded = 0;
+  DWORD cb_bytes_needed = 0;
 
-  QueryServiceConfigW(hService, nullptr, 0, &cbBytesNeeded);
+  QueryServiceConfigW(hservice, nullptr, 0, &cb_bytes_needed);
 
   m_last_error_code = GetLastError();
 
-  if (cbBytesNeeded > 0)
+  if (cb_bytes_needed > 0)
   {
-    std::vector<char> buffer(cbBytesNeeded);
+    std::vector<char> buffer(cb_bytes_needed);
     auto ptr = LPQUERY_SERVICE_CONFIGW(buffer.data());
 
-    QueryServiceConfigW(hService, ptr, cbBytesNeeded, &cbBytesNeeded);
+    QueryServiceConfigW(hservice, ptr, cb_bytes_needed, &cb_bytes_needed);
 
     m_last_error_code = GetLastError();
 
     const auto dependencies = multi_string_to_list_W(ptr->lpDependencies);
     for (const auto& dependency : dependencies)
     {
-      auto pService = this->Query(dependency);
+      auto pService = this->query(dependency);
       if (pService != nullptr)
       {
         if (states & pService->ServiceStatusProcess.dwCurrentState)
@@ -868,74 +868,74 @@ CServiceManagerW::TServices CServiceManagerW::GetDependencies(
     }
   }
 
-  CloseServiceHandle(hService);
+  CloseServiceHandle(hservice);
 
   return result;
 }
 
-VUResult CServiceManagerW::Delete(const std::wstring& name)
+VUResult CServiceManagerW::uninstall(const std::wstring& name)
 {
-  auto pService = this->Query(name);
-  if (pService == nullptr)
+  auto ptr_service = this->query(name);
+  if (ptr_service == nullptr)
   {
     return __LINE__;
   }
 
-  this->Stop(name);
+  this->stop(name);
 
-  auto hService = OpenServiceW(m_Manager, name.c_str(), SERVICE_ALL_ACCESS);
+  auto hservice = OpenServiceW(m_hmanager, name.c_str(), SERVICE_ALL_ACCESS);
 
   m_last_error_code = GetLastError();
 
-  if (hService == nullptr)
+  if (hservice == nullptr)
   {
     return __LINE__;
   }
 
-  BOOL result = DeleteService(hService);
+  BOOL result = DeleteService(hservice);
 
   m_last_error_code = GetLastError();
 
-  CloseServiceHandle(hService);
+  CloseServiceHandle(hservice);
 
   if (result == FALSE)
   {
     return __LINE__;
   }
 
-  this->Refresh();
+  this->refresh();
 
   return VU_OK;
 }
 
-VUResult CServiceManagerW::Start(const std::wstring& name)
+VUResult CServiceManagerW::start(const std::wstring& name)
 {
-  auto pService = this->Query(name);
-  if (pService == nullptr)
+  auto ptr_service = this->query(name);
+  if (ptr_service == nullptr)
   {
     return __LINE__;
   }
 
-  if (pService->ServiceStatusProcess.dwCurrentState == SERVICE_RUNNING)
+  if (ptr_service->ServiceStatusProcess.dwCurrentState == SERVICE_RUNNING)
   {
     return VU_OK;
   }
-  else if (pService->ServiceStatusProcess.dwCurrentState == SERVICE_STOPPED)
+  else if (ptr_service->ServiceStatusProcess.dwCurrentState == SERVICE_STOPPED)
   {
-    auto hService = OpenServiceW(m_Manager, pService->lpServiceName, SERVICE_ALL_ACCESS);
+    auto hservice = OpenServiceW(m_hmanager, ptr_service->lpServiceName, SERVICE_ALL_ACCESS);
 
     m_last_error_code = GetLastError();
 
-    if (hService == nullptr)
+    if (hservice == nullptr)
     {
       return __LINE__;
     }
 
-    BOOL ret = StartServiceW(hService, 0, nullptr);
+    BOOL ret = StartServiceW(hservice, 0, nullptr);
 
     m_last_error_code = GetLastError();
 
-    CloseServiceHandle(hService);
+    CloseServiceHandle(hservice);
 
     if (ret == FALSE)
     {
@@ -944,7 +944,7 @@ VUResult CServiceManagerW::Start(const std::wstring& name)
 
     // TODO: Vic. Recheck. Wait for finish here.
 
-    this->Refresh();
+    this->refresh();
 
     return VU_OK;
   }
@@ -956,21 +956,21 @@ VUResult CServiceManagerW::Start(const std::wstring& name)
   return VU_OK;
 }
 
-VUResult CServiceManagerW::Stop(const std::wstring& name)
+VUResult CServiceManagerW::stop(const std::wstring& name)
 {
-  auto pService = this->Query(name);
-  if (pService == nullptr)
+  auto ptr_service = this->query(name);
+  if (ptr_service == nullptr)
   {
     return __LINE__;
   }
 
-  if (pService->ServiceStatusProcess.dwCurrentState == SERVICE_STOPPED)
+  if (ptr_service->ServiceStatusProcess.dwCurrentState == SERVICE_STOPPED)
   {
     return VU_OK;
   }
-  else if (pService->ServiceStatusProcess.dwCurrentState == SERVICE_RUNNING)
+  else if (ptr_service->ServiceStatusProcess.dwCurrentState == SERVICE_RUNNING)
   {
-    return this->Control(pService.get(), SERVICE_CONTROL_STOP) != nullptr ? VU_OK : __LINE__;
+    return this->control(ptr_service.get(), SERVICE_CONTROL_STOP) != nullptr ? VU_OK : __LINE__;
   }
   else
   {
@@ -980,7 +980,7 @@ VUResult CServiceManagerW::Stop(const std::wstring& name)
   return VU_OK;
 }
 
-VUResult CServiceManagerW::Create(
+VUResult CServiceManagerW::install(
   const std::wstring& file_path,
   const std::wstring& service_name,
   const std::wstring& display_name,
@@ -1001,14 +1001,14 @@ VUResult CServiceManagerW::Create(
     return __LINE__;
   }
 
-  if (this->Query(service_name) != nullptr)
+  if (this->query(service_name) != nullptr)
   {
     m_last_error_code = ERROR_ALREADY_EXISTS;
     return __LINE__;
   }
 
-  auto hService = CreateServiceW(
-    m_Manager,
+  auto hservice = CreateServiceW(
+    m_hmanager,
     service_name.c_str(),
     display_name.c_str(),
     access_type,
@@ -1021,14 +1021,14 @@ VUResult CServiceManagerW::Create(
 
   m_last_error_code = GetLastError();
 
-  if (hService == nullptr)
+  if (hservice == nullptr)
   {
     return __LINE__;
   }
 
-  CloseServiceHandle(hService);
+  CloseServiceHandle(hservice);
 
-  this->Refresh();
+  this->refresh();
 
   return VU_OK;
 }

@@ -13,12 +13,12 @@ DEF_SAMPLE(FileMapping)
   //   std::tcout << ts("Create -> Failed") << vu::get_last_error(fm.get_last_error_code()) << std::endl;
   // }
 
-  if (fm.CreateWithinFile(ts("Test.txt")) != vu::VU_OK)
+  if (fm.create_within_file(ts("Test.txt")) != vu::VU_OK)
   {
     std::tcout << ts("Create -> Failed ") << vu::get_last_error(fm.get_last_error_code()) << std::endl;
   }
 
-  p = fm.View();
+  p = fm.view();
   if (p == nullptr)
   {
     std::tcout << ts("View -> Failed ") << vu::get_last_error(fm.get_last_error_code()) << std::endl;
@@ -28,9 +28,9 @@ DEF_SAMPLE(FileMapping)
 
   if (p != nullptr)
   {
-    if (fm.GetFileSize() != -1)
+    if (fm.get_file_size() != -1)
     {
-      vu::hex_dump(p, fm.GetFileSize());
+      vu::hex_dump(p, fm.get_file_size());
     }
     else
     {

@@ -1261,17 +1261,16 @@ public:
   CServiceManagerT();
   virtual ~CServiceManagerT();
 
-  virtual void Refresh();
-  virtual TServices GetServices(
-    ulong types = VU_SERVICE_ALL_TYPES, ulong states = VU_SERVICE_ALL_STATES);
+  virtual void refresh();
+  virtual TServices get_services(ulong types = VU_SERVICE_ALL_TYPES, ulong states = VU_SERVICE_ALL_STATES);
 
 protected:
-  virtual VUResult Initialize() = 0;
+  virtual VUResult initialize() = 0;
 
 protected:
-  bool m_Initialized;
-  SC_HANDLE m_Manager;
-  TServices m_Services;
+  bool m_initialized;
+  SC_HANDLE m_hmanager;
+  TServices m_services;
 };
 
 /**
@@ -1286,17 +1285,17 @@ public:
   CServiceManagerA();
   virtual ~CServiceManagerA();
 
-  TServices Find(const std::string& str, bool exact = false, bool nameonly = false);
-  std::unique_ptr<TServices::value_type> Query(const std::string& service_name);
-  int GetState(const std::string& service_name);
+  TServices find(const std::string& str, bool exact = false, bool nameonly = false);
+  std::unique_ptr<TServices::value_type> query(const std::string& service_name);
+  int get_state(const std::string& service_name);
 
-  TServices GetDependents(const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
-  TServices GetDependencies(const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
+  TServices get_dependents(const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
+  TServices get_dependencies(const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
 
-  std::unique_ptr<SERVICE_STATUS> Control(const TServices::value_type* pService, const ulong ctrlcode);
-  std::unique_ptr<SERVICE_STATUS> Control(const std::string& name, const ulong ctrlcode);
+  std::unique_ptr<SERVICE_STATUS> control(const TServices::value_type* pService, const ulong ctrlcode);
+  std::unique_ptr<SERVICE_STATUS> control(const std::string& name, const ulong ctrlcode);
 
-  VUResult Create(
+  VUResult install(
     const std::string& file_path,
     const std::string& service_name,
     const std::string& display_name,
@@ -1306,12 +1305,12 @@ public:
     const ulong ctrl_type = SERVICE_ERROR_NORMAL
   );
 
-  VUResult Delete(const std::string& name);
-  VUResult Start(const std::string& name);
-  VUResult Stop(const std::string& name);
+  VUResult uninstall(const std::string& name);
+  VUResult start(const std::string& name);
+  VUResult stop(const std::string& name);
 
 protected:
-  virtual VUResult Initialize();
+  virtual VUResult initialize();
 };
 
 /**
@@ -1326,17 +1325,17 @@ public:
   CServiceManagerW();
   virtual ~CServiceManagerW();
 
-  TServices Find(const std::wstring& str, bool exact = false, bool nameonly = false);
-  std::unique_ptr<TServices::value_type> Query(const std::wstring& service_name);
-  int GetState(const std::wstring& service_name); // https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-controlservice#remarks
+  TServices find(const std::wstring& str, bool exact = false, bool nameonly = false);
+  std::unique_ptr<TServices::value_type> query(const std::wstring& service_name);
+  int get_state(const std::wstring& service_name); // https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-controlservice#remarks
 
-  TServices GetDependents(const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
-  TServices GetDependencies(const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
+  TServices get_dependents(const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
+  TServices get_dependencies(const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
 
-  std::unique_ptr<SERVICE_STATUS> Control(const TServices::value_type* pService, const ulong ctrlcode);
-  std::unique_ptr<SERVICE_STATUS> Control(const std::wstring& name, const ulong ctrlcode);
+  std::unique_ptr<SERVICE_STATUS> control(const TServices::value_type* pService, const ulong ctrlcode);
+  std::unique_ptr<SERVICE_STATUS> control(const std::wstring& name, const ulong ctrlcode);
 
-  VUResult Create(
+  VUResult install(
     const std::wstring& file_path,
     const std::wstring& service_name,
     const std::wstring& display_name,
@@ -1346,12 +1345,12 @@ public:
     const ulong ctrl_type = SERVICE_ERROR_NORMAL
   );
 
-  VUResult Delete(const std::wstring& name);
-  VUResult Start(const std::wstring& name);
-  VUResult Stop(const std::wstring& name);
+  VUResult uninstall(const std::wstring& name);
+  VUResult start(const std::wstring& name);
+  VUResult stop(const std::wstring& name);
 
 protected:
-  virtual VUResult Initialize();
+  virtual VUResult initialize();
 };
 
 /**
@@ -1393,23 +1392,23 @@ public:
   CFileMappingX();
   virtual ~CFileMappingX();
 
-  void* vuapi View(
+  void* vuapi view(
     eFMDesiredAccess fmDesiredAccess = eFMDesiredAccess::DA_ALL_ACCESS,
-    ulong ulMaxFileOffsetLow = 0,
-    ulong ulMaxFileOffsetHigh = 0,
-    ulong ulNumberOfBytesToMap = 0 // The mapping extends from the specified offset to the end.
+    ulong max_file_offset_low = 0,
+    ulong max_file_offset_high = 0,
+    ulong number_of_bytes_to_map = 0 // The mapping extends from the specified offset to the end.
   );
 
-  ulong vuapi GetFileSize();
-  void vuapi Close();
+  ulong vuapi get_file_size();
+  void vuapi close();
 
 protected:
-  bool Valid(HANDLE Handle);
+  bool valid(HANDLE handle);
 
 protected:
-  HANDLE m_FileHandle;
-  HANDLE m_MapHandle;
-  void* m_pData;
+  HANDLE m_file_handle;
+  HANDLE m_map_handle;
+  void* m_ptr_data;
 };
 
 /**
@@ -1422,26 +1421,26 @@ public:
   CFileMappingA();
   virtual ~CFileMappingA();
 
-  VUResult vuapi CreateWithinFile(
-    const std::string& FileName,
-    ulong ulMaxSizeLow  = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
-    ulong ulMaxSizeHigh = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
-    eFSGenericFlags fgFlag = eFSGenericFlags::FG_ALL,
-    eFSShareFlags fsFlag = eFSShareFlags::FS_ALLACCESS,
-    eFSModeFlags fmFlag = eFSModeFlags::FM_OPENEXISTING,
-    eFSAttributeFlags faFlag = eFSAttributeFlags::FA_NORMAL,
-    ePageProtection ppFlag = ePageProtection::PP_EXECUTE_READ_WRITE
+  VUResult vuapi create_within_file(
+    const std::string& file_path,
+    ulong max_size_low = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
+    ulong max_size_high = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
+    eFSGenericFlags fg_flags = eFSGenericFlags::FG_ALL,
+    eFSShareFlags fs_flags = eFSShareFlags::FS_ALLACCESS,
+    eFSModeFlags fm_flags = eFSModeFlags::FM_OPENEXISTING,
+    eFSAttributeFlags fa_flags = eFSAttributeFlags::FA_NORMAL,
+    ePageProtection pp_flags = ePageProtection::PP_EXECUTE_READ_WRITE
   );
 
   /**
    * The mapping name object, eg. Global\\FileMappingObject, Local\\FileMappingObject, etc.
    * More detail at https://docs.microsoft.com/en-us/windows/win32/termserv/kernel-object-namespaces
    */
-  VUResult vuapi CreateNamedSharedMemory(
-    const std::string& MappingName,
-    ulong ulMaxSizeLow, // The mapping size for file mapping object.
-    ulong ulMaxSizeHigh = 0,
-    ePageProtection ppFlag = ePageProtection::PP_EXECUTE_READ_WRITE
+  VUResult vuapi create_named_shared_memory(
+    const std::string& mapping_name,
+    ulong max_size_low, // The mapping size for file mapping object.
+    ulong max_size_high = 0,
+    ePageProtection pp_flags = ePageProtection::PP_EXECUTE_READ_WRITE
   );
 
   /**
@@ -1449,8 +1448,8 @@ public:
    * The mapping name object, eg. Global\\FileMappingObject, Local\\FileMappingObject, etc.
    * More detail at https://docs.microsoft.com/en-us/windows/win32/termserv/kernel-object-namespaces
    */
-  VUResult vuapi Open(
-    const std::string& MappingName,
+  VUResult vuapi open(
+    const std::string& mapping_name,
     eFMDesiredAccess fmDesiredAccess = eFMDesiredAccess::DA_ALL_ACCESS,
     bool bInheritHandle = false
   );
@@ -1466,26 +1465,26 @@ public:
   CFileMappingW();
   virtual ~CFileMappingW();
 
-  VUResult vuapi CreateWithinFile(
-    const std::wstring& FileName,
-    ulong ulMaxSizeLow  = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
-    ulong ulMaxSizeHigh = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
-    eFSGenericFlags fgFlag = eFSGenericFlags::FG_ALL,
-    eFSShareFlags fsFlag = eFSShareFlags::FS_ALLACCESS,
-    eFSModeFlags fmFlag = eFSModeFlags::FM_OPENEXISTING,
-    eFSAttributeFlags faFlag = eFSAttributeFlags::FA_NORMAL,
-    ePageProtection ppFlag = ePageProtection::PP_EXECUTE_READ_WRITE
+  VUResult vuapi create_within_file(
+    const std::wstring& file_path,
+    ulong max_size_low = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
+    ulong max_size_high = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
+    eFSGenericFlags fg_flags = eFSGenericFlags::FG_ALL,
+    eFSShareFlags fs_flags = eFSShareFlags::FS_ALLACCESS,
+    eFSModeFlags fm_flags = eFSModeFlags::FM_OPENEXISTING,
+    eFSAttributeFlags fa_flags = eFSAttributeFlags::FA_NORMAL,
+    ePageProtection pp_flags = ePageProtection::PP_EXECUTE_READ_WRITE
   );
 
   /**
    * The mapping name object, eg. Global\\FileMappingObject, Local\\FileMappingObject, etc.
    * More detail at https://docs.microsoft.com/en-us/windows/win32/termserv/kernel-object-namespaces
    */
-  VUResult vuapi CreateNamedSharedMemory(
-    const std::wstring& MappingName,
-    ulong ulMaxSizeLow, // The mapping size for file mapping object.
-    ulong ulMaxSizeHigh = 0,
-    ePageProtection ppFlag = ePageProtection::PP_EXECUTE_READ_WRITE
+  VUResult vuapi create_named_shared_memory(
+    const std::wstring& mapping_name,
+    ulong max_size_low, // The mapping size for file mapping object.
+    ulong max_size_high = 0,
+    ePageProtection pp_flags = ePageProtection::PP_EXECUTE_READ_WRITE
   );
 
   /**
@@ -1493,10 +1492,10 @@ public:
    * The mapping name object, eg. Global\\FileMappingObject, Local\\FileMappingObject, etc.
    * More detail at https://docs.microsoft.com/en-us/windows/win32/termserv/kernel-object-namespaces
    */
-  VUResult vuapi Open(
-    const std::wstring& MappingName,
-    eFMDesiredAccess fmDesiredAccess = eFMDesiredAccess::DA_ALL_ACCESS,
-    bool bInheritHandle = false
+  VUResult vuapi open(
+    const std::wstring& mapping_name,
+    eFMDesiredAccess desired_access = eFMDesiredAccess::DA_ALL_ACCESS,
+    bool inherit_handle = false
   );
 };
 

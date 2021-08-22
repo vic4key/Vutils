@@ -509,7 +509,7 @@ CPEFileTA<T>::~CPEFileTA()
 {
   if (CPEFileTX<T>::m_Initialized)
   {
-    m_FileMap.Close();
+    m_FileMap.close();
   }
 }
 
@@ -526,7 +526,7 @@ VUResult vuapi CPEFileTA<T>::Parse(const std::string& PEFilePath)
     return 2;
   }
 
-  if (m_FileMap.CreateWithinFile(
+  if (m_FileMap.create_within_file(
     m_FilePath, 0, 0,
     eFSGenericFlags::FG_READ,
     eFSShareFlags::FS_READ,
@@ -537,7 +537,7 @@ VUResult vuapi CPEFileTA<T>::Parse(const std::string& PEFilePath)
     return 3;
   }
 
-  CPEFileTX<T>::m_pBase = m_FileMap.View(eFMDesiredAccess::DA_READ);
+  CPEFileTX<T>::m_pBase = m_FileMap.view(eFMDesiredAccess::DA_READ);
   if (CPEFileTX<T>::m_pBase == nullptr)
   {
     return 4;
@@ -599,7 +599,7 @@ CPEFileTW<T>::~CPEFileTW()
 {
   if (CPEFileTX<T>::m_Initialized)
   {
-    m_FileMap.Close();
+    m_FileMap.close();
   }
 }
 
@@ -616,7 +616,7 @@ VUResult vuapi CPEFileTW<T>::Parse()
     return 2;
   }
 
-  if (m_FileMap.CreateWithinFile(m_FilePath, 0, 0,
+  if (m_FileMap.create_within_file(m_FilePath, 0, 0,
     eFSGenericFlags::FG_READ,
     eFSShareFlags::FS_READ,
     eFSModeFlags::FM_OPENALWAYS,
@@ -626,7 +626,7 @@ VUResult vuapi CPEFileTW<T>::Parse()
     return 3;
   }
 
-  CPEFileTX<T>::m_pBase = m_FileMap.View(eFMDesiredAccess::DA_READ);
+  CPEFileTX<T>::m_pBase = m_FileMap.view(eFMDesiredAccess::DA_READ);
   if (CPEFileTX<T>::m_pBase == nullptr)
   {
     return 4;
