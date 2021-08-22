@@ -1229,7 +1229,7 @@ ProcessA::~ProcessA()
 // ProcessA& ProcessA::operator=(ProcessA& right)
 // {
 //   ProcessX::operator=(right);
-//   m_Name = right.m_Name;
+//   m_name = right.m_name;
 //   return *this;
 // }
 
@@ -1398,7 +1398,7 @@ ProcessW::~ProcessW()
 // ProcessW& ProcessW::operator=(ProcessW& right)
 // {
 //   ProcessX::operator=(right);
-//   m_Name = right.m_Name;
+//   m_name = right.m_name;
 //   return *this;
 // }
 
