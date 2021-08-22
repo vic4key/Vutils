@@ -20,7 +20,7 @@ int WINAPI HfnMessageBoxW(HWND   hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT  
   return pfnMessageBoxW(hWnd, lpText, lpCaption, uType);
 }
 
-DEF_SAMPLE(IATHook)
+DEF_SAMPLE(IATHooking)
 {
   VU_API_IAT_OVERRIDE(Test.exe, user32.dll, MessageBoxA);
   VU_API_IAT_OVERRIDE(Test.exe, user32.dll, MessageBoxW);

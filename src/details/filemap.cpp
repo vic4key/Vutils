@@ -13,24 +13,24 @@ namespace vu
  * CFileMappingX
  */
 
-CFileMappingX::CFileMappingX() : CLastError()
+FileMappingX::FileMappingX() : LastError()
 {
   m_ptr_data = nullptr;
   m_map_handle = INVALID_HANDLE_VALUE;
   m_file_handle = INVALID_HANDLE_VALUE;
 }
 
-CFileMappingX::~CFileMappingX()
+FileMappingX::~FileMappingX()
 {
   this->close();
 }
 
-bool CFileMappingX::valid(HANDLE handle)
+bool FileMappingX::valid(HANDLE handle)
 {
   return (handle != nullptr && handle != INVALID_HANDLE_VALUE);
 }
 
-void* vuapi CFileMappingX::view(
+void* vuapi FileMappingX::view(
   eFMDesiredAccess desired_access,
   ulong max_file_offset_low,
   ulong max_file_offset_high,
@@ -55,7 +55,7 @@ void* vuapi CFileMappingX::view(
   return m_ptr_data;
 }
 
-void vuapi CFileMappingX::close()
+void vuapi FileMappingX::close()
 {
   if (m_ptr_data != nullptr)
   {
@@ -76,7 +76,7 @@ void vuapi CFileMappingX::close()
   }
 }
 
-ulong vuapi CFileMappingX::get_file_size()
+ulong vuapi FileMappingX::get_file_size()
 {
   if (!this->valid(m_file_handle))
   {
@@ -94,15 +94,15 @@ ulong vuapi CFileMappingX::get_file_size()
  * CFileMappingA
  */
 
-CFileMappingA::CFileMappingA() : CFileMappingX()
+FileMappingA::FileMappingA() : FileMappingX()
 {
 }
 
-CFileMappingA::~CFileMappingA()
+FileMappingA::~FileMappingA()
 {
 }
 
-VUResult vuapi CFileMappingA::create_within_file(
+VUResult vuapi FileMappingA::create_within_file(
   const std::string& file_path,
   ulong max_size_low,
   ulong max_size_high,
@@ -136,7 +136,7 @@ VUResult vuapi CFileMappingA::create_within_file(
   return VU_OK;
 }
 
-VUResult vuapi CFileMappingA::create_named_shared_memory(
+VUResult vuapi FileMappingA::create_named_shared_memory(
   const std::string& mapping_name,
   ulong max_size_low,
   ulong max_size_high,
@@ -167,7 +167,7 @@ VUResult vuapi CFileMappingA::create_named_shared_memory(
   return VU_OK;
 }
 
-VUResult vuapi CFileMappingA::open(
+VUResult vuapi FileMappingA::open(
   const std::string& mapping_name,
   eFMDesiredAccess desired_access,
   bool inherit_handle
@@ -194,15 +194,15 @@ VUResult vuapi CFileMappingA::open(
  * CFileMappingW
  */
 
-CFileMappingW::CFileMappingW() : CFileMappingX()
+FileMappingW::FileMappingW() : FileMappingX()
 {
 }
 
-CFileMappingW::~CFileMappingW()
+FileMappingW::~FileMappingW()
 {
 }
 
-VUResult vuapi CFileMappingW::create_within_file(
+VUResult vuapi FileMappingW::create_within_file(
   const std::wstring& file_path,
   ulong max_size_low,
   ulong max_size_high,
@@ -236,7 +236,7 @@ VUResult vuapi CFileMappingW::create_within_file(
   return VU_OK;
 }
 
-VUResult vuapi CFileMappingW::create_named_shared_memory(
+VUResult vuapi FileMappingW::create_named_shared_memory(
   const std::wstring& mapping_name,
   ulong max_size_low,
   ulong max_size_high,
@@ -267,7 +267,7 @@ VUResult vuapi CFileMappingW::create_named_shared_memory(
   return VU_OK;
 }
 
-VUResult vuapi CFileMappingW::open(
+VUResult vuapi FileMappingW::open(
   const std::wstring& MappingName,
   eFMDesiredAccess fmDesiredAccess,
   bool inherit_handle

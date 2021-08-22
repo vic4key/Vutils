@@ -108,7 +108,7 @@
 namespace threadpool11
 {
   class Pool;
-  typedef std::function<void()> FnTask;
+  typedef std::function<void()> fn_task_t;
 }
 
 using namespace threadpool11;
@@ -132,15 +132,15 @@ const size_t MAX_SIZE = MAXBYTE;
  * Misc Working
  */
 
-class CBuffer;
+class Buffer;
 
 bool vuapi is_administrator();
 bool set_privilege_A(const std::string&  privilege, const bool enable);
 bool set_privilege_W(const std::wstring& privilege, const bool enable);
 std::string vuapi  get_enviroment_A(const std::string  name);
 std::wstring vuapi get_enviroment_W(const std::wstring name);
-std::pair<bool, size_t> find_pattern_A(const CBuffer& buffer, const std::string&  pattern);
-std::pair<bool, size_t> find_pattern_W(const CBuffer& buffer, const std::wstring& pattern);
+std::pair<bool, size_t> find_pattern_A(const Buffer& buffer, const std::string&  pattern);
+std::pair<bool, size_t> find_pattern_W(const Buffer& buffer, const std::wstring& pattern);
 std::pair<bool, size_t> find_pattern_A(const void* ptr, const size_t size, const std::string& pattern);
 std::pair<bool, size_t> find_pattern_W(const void* ptr, const size_t size, const std::wstring& pattern);
 
@@ -314,7 +314,7 @@ typedef struct _FONT_A
     : Name(""), Size(-1)
     , Italic(false), Underline(false), StrikeOut(false)
     , Weight(0), CharSet(ANSI_CHARSET), Orientation(0) {}
-} TFontA;
+} sFontA;
 
 typedef struct _FONT_W
 {
@@ -330,15 +330,15 @@ typedef struct _FONT_W
     : Name(L""), Size(-1)
     , Italic(false), Underline(false), StrikeOut(false)
     , Weight(0), CharSet(ANSI_CHARSET), Orientation(0) {}
-} TFontW;
+} sFontW;
 
 HWND vuapi get_console_window();
 HWND vuapi find_top_window(ulong pid);
 HWND vuapi find_main_window(HWND hwnd);
 std::string  vuapi decode_wm_A(const ulong wm);
 std::wstring vuapi decode_wm_W(const ulong wm);
-TFontA vuapi get_font_A(HWND hwnd);
-TFontW vuapi get_font_W(HWND hwnd);
+sFontA vuapi get_font_A(HWND hwnd);
+sFontW vuapi get_font_W(HWND hwnd);
 
 /**
  * File/Directory Working
@@ -489,13 +489,13 @@ std::wstring vuapi undecorate_cpp_symbol_W(const std::wstring& name, const ushor
  * Windows Last Error
  */
 
-class CLastError
+class LastError
 {
 public:
-  CLastError() : m_last_error_code(ERROR_SUCCESS) {};
-  virtual ~CLastError() {};
+  LastError() : m_last_error_code(ERROR_SUCCESS) {};
+  virtual ~LastError() {};
 
-  CLastError& operator=(const CLastError& right)
+  LastError& operator=(const LastError& right)
   {
     m_last_error_code = right.m_last_error_code;
     return *this;
@@ -549,15 +549,15 @@ struct sGUID
   bool operator != (const sGUID &right) const;
 };
 
-class CGUIDX
+class GUIDX
 {
 public:
-  CGUIDX(bool create = false);
-  virtual ~CGUIDX();
+  GUIDX(bool create = false);
+  virtual ~GUIDX();
 
-  const CGUIDX& operator = (const CGUIDX& right);
-  bool operator == (const CGUIDX& right) const;
-  bool operator != (const CGUIDX& right) const;
+  const GUIDX& operator = (const GUIDX& right);
+  bool operator == (const GUIDX& right) const;
+  bool operator != (const GUIDX& right) const;
 
   bool create();
 
@@ -569,11 +569,11 @@ protected:
   VUResult m_status;
 };
 
-class CGUIDA : public CGUIDX
+class GUIDA : public GUIDX
 {
 public:
-  CGUIDA(bool create = false) : CGUIDX(create) {}
-  virtual ~CGUIDA() {}
+  GUIDA(bool create = false) : GUIDX(create) {}
+  virtual ~GUIDA() {}
 
   void parse(const std::string& guid);
   std::string as_string() const;
@@ -582,11 +582,11 @@ public:
   static const sGUID to_guid(const std::string& guid);
 };
 
-class CGUIDW : public CGUIDX
+class GUIDW : public GUIDX
 {
 public:
-  CGUIDW(bool create = false) : CGUIDX(create) {}
-  virtual ~CGUIDW() {}
+  GUIDW(bool create = false) : GUIDX(create) {}
+  virtual ~GUIDW() {}
 
   void parse(const std::wstring& guid);
   std::wstring as_string() const;
@@ -598,23 +598,23 @@ public:
 #endif // VU_GUID_ENABLED
 
 /**
- * CBuffer
+ * Buffer
  */
 
-class CBuffer
+class Buffer
 {
 public:
-  CBuffer();
-  CBuffer(const void* ptr, const size_t size);
-  CBuffer(const size_t size);
-  CBuffer(const CBuffer& right);
-  virtual ~CBuffer();
+  Buffer();
+  Buffer(const void* ptr, const size_t size);
+  Buffer(const size_t size);
+  Buffer(const Buffer& right);
+  virtual ~Buffer();
 
-  const CBuffer& operator=(const CBuffer& right);
-  bool  operator==(const CBuffer& right) const;
-  bool  operator!=(const CBuffer& right) const;
+  const Buffer& operator=(const Buffer& right);
+  bool  operator==(const Buffer& right) const;
+  bool  operator!=(const Buffer& right) const;
   byte& operator[](const size_t offset);
-  CBuffer operator()(int begin, int end) const;
+  Buffer operator()(int begin, int end) const;
 
   byte*  get_ptr_bytes() const;
   void*  get_ptr_data() const;
@@ -626,14 +626,14 @@ public:
   void fill(const byte v = 0);
   bool resize(const size_t size);
   bool replace(const void* ptr, const size_t size);
-  bool replace(const CBuffer& right);
+  bool replace(const Buffer& right);
   bool match(const void* ptr, const size_t size) const;
   size_t find(const void* ptr, const size_t size) const;
-  CBuffer till(const void* ptr, const size_t size) const;
-  CBuffer slice(int begin, int end) const;
+  Buffer till(const void* ptr, const size_t size) const;
+  Buffer slice(int begin, int end) const;
 
   bool append(const void* pData, const size_t size);
-  bool append(const CBuffer& right);
+  bool append(const Buffer& right);
 
   std::string  to_string_A() const;
   std::wstring to_string_W() const;
@@ -662,13 +662,13 @@ private:
  * @param[in] F The function name.
  * @return  The function.
  */
-#define VU_GET_API(M, F) pfn ## F = (Pfn ## F)vu::CLibrary::quick_get_proc_address(_T( # M ), _T( # F ))
+#define VU_GET_API(M, F) pfn ## F = (Pfn ## F)vu::Library::quick_get_proc_address(_T( # M ), _T( # F ))
 
-class CLibraryA : public CLastError
+class LibraryA : public LastError
 {
 public:
-  CLibraryA(const std::string& module_name);
-  virtual ~CLibraryA();
+  LibraryA(const std::string& module_name);
+  virtual ~LibraryA();
 
   const HMODULE& vuapi handle() const;
   bool  vuapi available();
@@ -679,11 +679,11 @@ private:
   HMODULE m_module_handle;
 };
 
-class CLibraryW : public CLastError
+class LibraryW : public LastError
 {
 public:
-  CLibraryW(const std::wstring& module_name);
-  virtual ~CLibraryW();
+  LibraryW(const std::wstring& module_name);
+  virtual ~LibraryW();
 
   const HMODULE& vuapi handle() const;
   bool  vuapi available();
@@ -704,69 +704,69 @@ private:
 #define MSG_NONE 0
 #endif // MSG_NONE
 
-class CSocket : public CLastError
+class Socket : public LastError
 {
 public:
-  typedef int AddressFamily;
-  typedef int Type;
-  typedef int Protocol;
-  typedef int Flags;
-  typedef int Shutdowns;
+  typedef int address_family_t;
+  typedef int type_t;
+  typedef int protocol_t;
+  typedef int flags_t;
+  typedef int shutdowns_t;
 
-  struct TSocket
+  struct sSocket
   {
     SOCKET s;
     sockaddr_in sai;
     char ip[15];
   };
 
-  struct TEndPoint
+  struct sEndPoint
   {
     std::string Host;
     ushort Port;
 
-    TEndPoint(const std::string& host, const ushort port) : Host(host), Port(port) {}
+    sEndPoint(const std::string& host, const ushort port) : Host(host), Port(port) {}
   };
 
 public:
-  CSocket(const AddressFamily af = AF_INET, const Type type = SOCK_STREAM, const Protocol proto = IPPROTO_IP, bool wsa = true);
-  virtual ~CSocket();
+  Socket(const address_family_t af = AF_INET, const type_t type = SOCK_STREAM, const protocol_t proto = IPPROTO_IP, bool wsa = true);
+  virtual ~Socket();
 
   bool vuapi available();
 
   void vuapi attach(const SOCKET&  socket);
-  void vuapi attach(const TSocket& socket);
+  void vuapi attach(const sSocket& socket);
   void vuapi detach();
 
-  VUResult vuapi bind(const TEndPoint& endpoint);
+  VUResult vuapi bind(const sEndPoint& endpoint);
   VUResult vuapi bind(const std::string& address, const ushort port);
 
   VUResult vuapi listen(const int maxcon = SOMAXCONN);
-  VUResult vuapi accept(TSocket& socket);
+  VUResult vuapi accept(sSocket& socket);
 
-  VUResult vuapi connect(const TEndPoint& endpoint);
+  VUResult vuapi connect(const sEndPoint& endpoint);
   VUResult vuapi connect(const std::string& address, const ushort port);
 
-  IResult vuapi send(const char* pData, int size, const Flags flags = MSG_NONE);
-  IResult vuapi send(const CBuffer& data, const Flags flags = MSG_NONE);
+  IResult vuapi send(const char* pData, int size, const flags_t flags = MSG_NONE);
+  IResult vuapi send(const Buffer& data, const flags_t flags = MSG_NONE);
 
-  IResult vuapi recv(char* pData, int size, const Flags flags = MSG_NONE);
-  IResult vuapi recv(CBuffer& data, const Flags flags = MSG_NONE);
-  IResult vuapi recv_all(CBuffer& data, const Flags flags = MSG_NONE);
+  IResult vuapi recv(char* pData, int size, const flags_t flags = MSG_NONE);
+  IResult vuapi recv(Buffer& data, const flags_t flags = MSG_NONE);
+  IResult vuapi recv_all(Buffer& data, const flags_t flags = MSG_NONE);
 
-  IResult vuapi send_to(const char* pData, const int size, const TSocket& socket);
-  IResult vuapi send_to(const CBuffer& data, const TSocket& socket);
+  IResult vuapi send_to(const char* pData, const int size, const sSocket& socket);
+  IResult vuapi send_to(const Buffer& data, const sSocket& socket);
 
-  IResult vuapi recv_from(char* pData, int size, const TSocket& socket);
-  IResult vuapi recv_from(CBuffer& data, const TSocket& socket);
-  IResult vuapi recv_all_from(CBuffer& data, const TSocket& socket);
+  IResult vuapi recv_from(char* pData, int size, const sSocket& socket);
+  IResult vuapi recv_from(Buffer& data, const sSocket& socket);
+  IResult vuapi recv_all_from(Buffer& data, const sSocket& socket);
 
   IResult vuapi close();
 
   const WSADATA& vuapi get_wsa_data() const;
-  const AddressFamily vuapi get_af() const;
-  const Type vuapi get_type() const;
-  const Protocol vuapi  get_protocol() const;
+  const address_family_t vuapi get_af() const;
+  const type_t vuapi get_type() const;
+  const protocol_t vuapi  get_protocol() const;
 
   SOCKET& vuapi get_socket();
   const sockaddr_in vuapi get_local_sai();
@@ -775,28 +775,28 @@ public:
 
   VUResult vuapi set_option(const int level, const int opt, const std::string& val, const int size);
   VUResult vuapi enable_non_blocking(bool state = true);
-  VUResult vuapi shutdown(const Shutdowns flags);
+  VUResult vuapi shutdown(const shutdowns_t flags);
 
 private:
   bool vuapi valid(const SOCKET& socket);
-  bool vuapi parse(const TSocket& socket);
+  bool vuapi parse(const sSocket& socket);
   bool vuapi is_host_name(const std::string& s);
   std::string vuapi get_host_address(const std::string& Name);
 
 private:
   bool m_wsa;
-  Type m_type;
+  type_t m_type;
   WSADATA m_wsa_data;
-  AddressFamily m_af;
-  Protocol m_proto;
+  address_family_t m_af;
+  protocol_t m_proto;
   sockaddr_in m_sai;
   SOCKET m_socket;
 };
 
-class CAsyncSocket
+class AsyncSocket
 {
 public:
-  typedef std::function<void(CSocket& client)> FnPrototype;
+  typedef std::function<void(Socket& client)> fn_prototype_t;
 
   typedef enum _FN_TYPE : uint
   {
@@ -807,27 +807,27 @@ public:
     UNDEFINED,
   } eFnType;
 
-  CAsyncSocket(const vu::CSocket::AddressFamily af = AF_INET, const vu::CSocket::Type type = SOCK_STREAM, const vu::CSocket::Protocol proto = IPPROTO_IP);
-  virtual ~CAsyncSocket();
+  AsyncSocket(const vu::Socket::address_family_t af = AF_INET, const vu::Socket::type_t type = SOCK_STREAM, const vu::Socket::protocol_t proto = IPPROTO_IP);
+  virtual ~AsyncSocket();
 
   std::set<SOCKET> vuapi get_clients();
 
   bool vuapi available();
   bool vuapi running();
 
-  VUResult vuapi bind(const CSocket::TEndPoint& endpoint);
+  VUResult vuapi bind(const Socket::sEndPoint& endpoint);
   VUResult vuapi bind(const std::string& address, const ushort port);
   VUResult vuapi listen(const int maxcon = SOMAXCONN);
   VUResult vuapi run();
   VUResult vuapi stop();
   IResult  vuapi close();
 
-  virtual void on(const eFnType type, const FnPrototype fn); // must be mapping before call Run(...)
+  virtual void on(const eFnType type, const fn_prototype_t fn); // must be mapping before call Run(...)
 
-  virtual void on_open(CSocket&  client);
-  virtual void on_close(CSocket& client);
-  virtual void on_send(CSocket&  client);
-  virtual void on_recv(CSocket&  client);
+  virtual void on_open(Socket&  client);
+  virtual void on_close(Socket& client);
+  virtual void on_send(Socket&  client);
+  virtual void on_recv(Socket&  client);
 
 protected:
   void vuapi initialze();
@@ -839,12 +839,12 @@ protected:
   IResult vuapi do_close(WSANETWORKEVENTS& Events, SOCKET& Socket);
 
 protected:
-  vu::CSocket m_server;
+  vu::Socket m_server;
   bool m_running;
   DWORD m_n_events;
   SOCKET m_sockets[WSA_MAXIMUM_WAIT_EVENTS];
   WSAEVENT m_events[WSA_MAXIMUM_WAIT_EVENTS];
-  FnPrototype m_functions[eFnType::UNDEFINED];
+  fn_prototype_t m_functions[eFnType::UNDEFINED];
   std::mutex m_mutex;
 };
 
@@ -894,9 +894,9 @@ typedef struct _MEMORY_INSTRUCTION
     ulong   A32;
     ulong64 A64;
   } man;
-} TMemoryInstruction;
+} sMemoryInstruction;
 
-class CINLHookX
+class INLHookingX
 {
 protected:
   typedef struct _REDIRECT
@@ -904,10 +904,10 @@ protected:
     ushort   jmp;
     ulong    unknown;
     ulongptr address;
-  } TRedirect;
+  } sRedirect;
 
   bool m_hooked;
-  std::vector<TMemoryInstruction> m_memory_instructions;
+  std::vector<sMemoryInstruction> m_memory_instructions;
 
   static const ulong JMP_OPCODE_SIZE = 6;
 
@@ -918,18 +918,18 @@ protected:
   #endif // _M_IX86
 
 public:
-  CINLHookX() : m_hooked(false) {};
-  virtual ~CINLHookX() {};
+  INLHookingX() : m_hooked(false) {};
+  virtual ~INLHookingX() {};
 
   bool vuapi attach(void* ptr_function, void* ptr_hook_function, void** pptr_old_function);
   bool vuapi detach(void* ptr_function, void** pptr_old_function);
 };
 
-class CINLHookA: public CINLHookX
+class INLHookingA: public INLHookingX
 {
 public:
-  CINLHookA() {};
-  virtual ~CINLHookA() {};
+  INLHookingA() {};
+  virtual ~INLHookingA() {};
 
   bool vuapi install(
     const std::string& module_name,
@@ -943,11 +943,11 @@ public:
   );
 };
 
-class CINLHookW: public CINLHookX
+class INLHookingW: public INLHookingX
 {
 public:
-  CINLHookW() {};
-  virtual ~CINLHookW() {};
+  INLHookingW() {};
+  virtual ~INLHookingW() {};
 
   bool vuapi install(
     const std::wstring& module_name,
@@ -967,22 +967,22 @@ public:
  */
 
 #define VU_API_IAT_OVERRIDE(O, M, F)\
-  vu::CIATHookManager::instance().install(\
+  vu::IATHooking::instance().install(\
     _T( # O ), _T( # M ), _T( # F ),\
     (const void*)(reinterpret_cast<void*>(&Hfn ## F)),\
     (const void**)(reinterpret_cast<void**>(&pfn ## F)))
 
 #define VU_API_IAT_RESTORE(O, M, F)\
-  vu::CIATHookManager::instance().uninstall(\
+  vu::IATHooking::instance().uninstall(\
     _T( # O ), _T( # M ), _T( # F ))
 
-struct IATElement;
+struct sIATElement;
 
-class CIATHookManagerA : public CSingletonT<CIATHookManagerA>
+class IATHookingA : public SingletonT<IATHookingA>
 {
 public:
-  CIATHookManagerA();
-  virtual ~CIATHookManagerA();
+  IATHookingA();
+  virtual ~IATHookingA();
 
   VUResult install(
     const std::string& target,
@@ -1020,12 +1020,12 @@ private:
     IAT_UNINSTALL,
   };
 
-  typedef std::vector<IATElement> IATElements;
+  typedef std::vector<sIATElement> IATElements;
 
   IATElements m_iat_elements;
 
 private:
-  IATElements::iterator find(const IATElement& element);
+  IATElements::iterator find(const sIATElement& element);
 
   IATElements::iterator find(
     const std::string& target,
@@ -1037,14 +1037,14 @@ private:
     const std::string& module,
     const std::string& function);
 
-  VUResult perform(const IATAction action, IATElement& element);
+  VUResult perform(const IATAction action, sIATElement& element);
 };
 
-class CIATHookManagerW : public CSingletonT<CIATHookManagerW>
+class IATHookingW : public SingletonT<IATHookingW>
 {
 public:
-  CIATHookManagerW();
-  virtual ~CIATHookManagerW();
+  IATHookingW();
+  virtual ~IATHookingW();
 
   VUResult install(
     const std::wstring& target,
@@ -1066,11 +1066,11 @@ public:
  * Windows Messages Hooking
  */
 
-class CWMHookX : public CLastError
+class WMHookingX : public LastError
 {
 public:
-  CWMHookX();
-  virtual ~CWMHookX();
+  WMHookingX();
+  virtual ~WMHookingX();
 
   VUResult vuapi uninstall(int Type);
 
@@ -1084,28 +1084,28 @@ protected:
   ulong m_pid;
 };
 
-class CWMHookA : public CWMHookX
+class WMHookingA : public WMHookingX
 {
 public:
-  CWMHookA(ulong pid, const std::string& dll_file_path);
-  virtual ~CWMHookA();
+  WMHookingA(ulong pid, const std::string& dll_file_path);
+  virtual ~WMHookingA();
 
   VUResult vuapi install(int type, const std::string& function_name);
 
 private:
-  CLibraryA m_library;
+  LibraryA m_library;
 };
 
-class CWMHookW : public CWMHookX
+class WMHookingW : public WMHookingX
 {
 public:
-  CWMHookW(ulong pid, const std::wstring& dll_file_path);
-  virtual ~CWMHookW();
+  WMHookingW(ulong pid, const std::wstring& dll_file_path);
+  virtual ~WMHookingW();
 
   VUResult vuapi install(int type, const std::wstring& function_name);
 
 private:
-  CLibraryW m_library;
+  LibraryW m_library;
 };
 
 /**
@@ -1136,7 +1136,7 @@ typedef enum _FS_ATTRIBUTE_FLAGS
   FA_REPARSEPOINT     = 0x00000400,   // FILE_ATTRIBUTE_REPARSE_POINT        = $00000400;
   FA_COMPRESSED       = 0x00000800,   // FILE_ATTRIBUTE_COMPRESSED           = $00000800;
   FA_OFFLINE          = 0x00001000,   // FILE_ATTRIBUTE_OFFLINE              = $00001000;
-  FANOTCONTENTINDEXED = 0x00002000,// FILE_ATTRIBUTE_NOT_CONTENT_INDEXED  = $00002000;
+  FANOTCONTENTINDEXED = 0x00002000,   // FILE_ATTRIBUTE_NOT_CONTENT_INDEXED  = $00002000;
   FAENCRYPTED         = 0x00004000,   // FILE_ATTRIBUTE_ENCRYPTED           = $00004000;
 } eFSAttributeFlags;
 
@@ -1172,7 +1172,7 @@ typedef struct _FS_OBJECT_A
   std::string name;
   int64 size;
   ulong attributes;
-} TFSObjectA;
+} sFSObjectA;
 
 typedef struct _FS_OBJECT_W
 {
@@ -1180,19 +1180,19 @@ typedef struct _FS_OBJECT_W
   std::wstring name;
   int64 size;
   ulong attributes;
-} TFSObjectW;
+} sFSObjectW;
 
-class CFileSystemX : public CLastError
+class FileSystemX : public LastError
 {
 public:
-  CFileSystemX();
-  virtual ~CFileSystemX();
+  FileSystemX();
+  virtual ~FileSystemX();
 
   virtual bool vuapi ready();
   virtual bool vuapi valid(HANDLE handle);
   virtual ulong vuapi get_file_size();
 
-  virtual const CBuffer vuapi read_as_buffer();
+  virtual const Buffer vuapi read_as_buffer();
   virtual bool vuapi read(void* ptr_buffer, ulong size);
   virtual bool vuapi read(ulong offset, void* ptr_buffer, ulong size, eMoveMethodFlags flags = MM_BEGIN);
 
@@ -1211,34 +1211,34 @@ private:
   ulong m_read_size, m_wrote_size;
 };
 
-class CFileSystemA: public CFileSystemX
+class FileSystemA: public FileSystemX
 {
 public:
-  CFileSystemA();
-  CFileSystemA(const std::string& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags = FG_READWRITE, eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
-  virtual ~CFileSystemA();
+  FileSystemA();
+  FileSystemA(const std::string& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags = FG_READWRITE, eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
+  virtual ~FileSystemA();
 
   bool vuapi initialize(const std::string& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags = FG_READWRITE, eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
   const std::string vuapi read_as_string(bool remove_bom = true);
 
   static const std::string vuapi quick_read_as_string(const std::string& file_path, bool force_bom = true);
-  static CBuffer quick_read_as_buffer(const std::string& file_path);
-  static bool iterate(const std::string& path, const std::string& pattern, const std::function<bool(const TFSObjectA& fso)> fn_callback);
+  static Buffer quick_read_as_buffer(const std::string& file_path);
+  static bool iterate(const std::string& path, const std::string& pattern, const std::function<bool(const sFSObjectA& fso)> fn_callback);
 };
 
-class CFileSystemW: public CFileSystemX
+class FileSystemW: public FileSystemX
 {
 public:
-  CFileSystemW();
-  CFileSystemW(const std::wstring& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags = FG_READWRITE, eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
-  virtual ~CFileSystemW();
+  FileSystemW();
+  FileSystemW(const std::wstring& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags = FG_READWRITE, eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
+  virtual ~FileSystemW();
 
   bool vuapi initialize(const std::wstring& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags = FG_READWRITE, eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
   const std::wstring vuapi read_as_string(bool remove_bom = true);
 
   static const std::wstring vuapi quick_read_as_string(const std::wstring& file_path, bool remove_bom = true);
-  static CBuffer vuapi quick_read_as_buffer(const std::wstring& file_path);
-  static bool vuapi iterate(const std::wstring& path, const std::wstring& pattern, const std::function<bool(const TFSObjectW& fso)> fn_callback);
+  static Buffer vuapi quick_read_as_buffer(const std::wstring& file_path);
+  static bool vuapi iterate(const std::wstring& path, const std::wstring& pattern, const std::function<bool(const sFSObjectW& fso)> fn_callback);
 };
 
 /**
@@ -1249,17 +1249,17 @@ public:
 #define VU_SERVICE_ALL_STATES -1
 
  /**
-  * CServiceManagerT
+  * ServiceManagerT
   */
 
-template <typename ServiceT>
-class CServiceManagerT : public CLastError
+template <typename service_t>
+class ServiceManagerT : public LastError
 {
 public:
-  typedef std::vector<ServiceT> TServices;
+  typedef std::vector<service_t> TServices;
 
-  CServiceManagerT();
-  virtual ~CServiceManagerT();
+  ServiceManagerT();
+  virtual ~ServiceManagerT();
 
   virtual void refresh();
   virtual TServices get_services(ulong types = VU_SERVICE_ALL_TYPES, ulong states = VU_SERVICE_ALL_STATES);
@@ -1274,16 +1274,16 @@ protected:
 };
 
 /**
- * CServiceManagerA
+ * ServiceManagerA
  */
 
-typedef CServiceManagerT<ENUM_SERVICE_STATUS_PROCESSA> CServiceManagerTA;
+typedef ServiceManagerT<ENUM_SERVICE_STATUS_PROCESSA> ServiceManagerTA;
 
-class CServiceManagerA : public CServiceManagerTA, public CSingletonT<CServiceManagerA>
+class ServiceManagerA : public ServiceManagerTA, public SingletonT<ServiceManagerA>
 {
 public:
-  CServiceManagerA();
-  virtual ~CServiceManagerA();
+  ServiceManagerA();
+  virtual ~ServiceManagerA();
 
   TServices find(const std::string& str, bool exact = false, bool nameonly = false);
   std::unique_ptr<TServices::value_type> query(const std::string& service_name);
@@ -1314,16 +1314,16 @@ protected:
 };
 
 /**
- * CServiceManagerW
+ * ServiceManagerW
  */
 
-typedef CServiceManagerT<ENUM_SERVICE_STATUS_PROCESSW> CServiceManagerTW;
+typedef ServiceManagerT<ENUM_SERVICE_STATUS_PROCESSW> ServiceManagerTW;
 
-class CServiceManagerW : public CServiceManagerTW, public CSingletonT<CServiceManagerW>
+class ServiceManagerW : public ServiceManagerTW, public SingletonT<ServiceManagerW>
 {
 public:
-  CServiceManagerW();
-  virtual ~CServiceManagerW();
+  ServiceManagerW();
+  virtual ~ServiceManagerW();
 
   TServices find(const std::wstring& str, bool exact = false, bool nameonly = false);
   std::unique_ptr<TServices::value_type> query(const std::wstring& service_name);
@@ -1386,11 +1386,11 @@ typedef enum _PAGE_PROTECTION
   PP_SEC_WRITE_COMBINE = SEC_WRITECOMBINE,
 } ePageProtection;
 
-class CFileMappingX : public CLastError
+class FileMappingX : public LastError
 {
 public:
-  CFileMappingX();
-  virtual ~CFileMappingX();
+  FileMappingX();
+  virtual ~FileMappingX();
 
   void* vuapi view(
     eFMDesiredAccess fmDesiredAccess = eFMDesiredAccess::DA_ALL_ACCESS,
@@ -1412,14 +1412,14 @@ protected:
 };
 
 /**
- * CFileMappingA
+ * FileMappingA
  */
 
-class CFileMappingA : public CFileMappingX
+class FileMappingA : public FileMappingX
 {
 public:
-  CFileMappingA();
-  virtual ~CFileMappingA();
+  FileMappingA();
+  virtual ~FileMappingA();
 
   VUResult vuapi create_within_file(
     const std::string& file_path,
@@ -1456,14 +1456,14 @@ public:
 };
 
 /**
- * CFileMappingW
+ * FileMappingW
  */
 
-class CFileMappingW : public CFileMappingX
+class FileMappingW : public FileMappingX
 {
 public:
-  CFileMappingW();
-  virtual ~CFileMappingW();
+  FileMappingW();
+  virtual ~FileMappingW();
 
   VUResult vuapi create_within_file(
     const std::wstring& file_path,
@@ -1503,12 +1503,12 @@ public:
  * INI File
  */
 
-class CINIFileA : public CLastError
+class INIFileA : public LastError
 {
 public:
-  CINIFileA();
-  CINIFileA(const std::string& FilePath);
-  virtual ~CINIFileA();
+  INIFileA();
+  INIFileA(const std::string& FilePath);
+  virtual ~INIFileA();
 
   void set_current_file_path(const std::string& file_path);
   void set_current_section(const std::string& section);
@@ -1550,12 +1550,12 @@ private:
   std::string m_section;
 };
 
-class CINIFileW : public CLastError
+class INIFileW : public LastError
 {
 public:
-  CINIFileW();
-  CINIFileW(const std::wstring& file_path);
-  virtual ~CINIFileW();
+  INIFileW();
+  INIFileW(const std::wstring& file_path);
+  virtual ~INIFileW();
 
   void set_current_file_path(const std::wstring& file_path);
   void set_current_section(const std::wstring& section);
@@ -1665,11 +1665,11 @@ typedef enum _REG_REFLECTION
   RR_ENABLE   = 3,
 } eRegReflection;
 
-class CRegistryX : public CLastError
+class RegistryX : public LastError
 {
 public:
-  CRegistryX();
-  virtual ~CRegistryX();
+  RegistryX();
+  virtual ~RegistryX();
 
   HKEY vuapi get_current_key_handle();
   eRegReflection vuapi query_reflection_key();
@@ -1681,13 +1681,13 @@ protected:
   HKEY m_hk_sub_key;
 };
 
-class CRegistryA : public CRegistryX
+class RegistryA : public RegistryX
 {
 public:
-  CRegistryA();
-  CRegistryA(eRegRoot reg_root);
-  CRegistryA(eRegRoot reg_root, const std::string& sub_key);
-  virtual ~CRegistryA();
+  RegistryA();
+  RegistryA(eRegRoot reg_root);
+  RegistryA(eRegRoot reg_root, const std::string& sub_key);
+  virtual ~RegistryA();
 
   ulong vuapi set_size_of_multi_string(const char* multi_string);
   ulong vuapi get_data_size(const std::string& value_name, ulong type);
@@ -1726,13 +1726,13 @@ private:
   std::string m_sub_key;
 };
 
-class CRegistryW : public CRegistryX
+class RegistryW : public RegistryX
 {
 public:
-  CRegistryW();
-  CRegistryW(eRegRoot reg_root);
-  CRegistryW(eRegRoot reg_root, const std::wstring& sub_key);
-  virtual ~CRegistryW();
+  RegistryW();
+  RegistryW(eRegRoot reg_root);
+  RegistryW(eRegRoot reg_root, const std::wstring& sub_key);
+  virtual ~RegistryW();
 
   ulong vuapi set_size_of_multi_string(const wchar* multi_string);
   ulong vuapi get_data_size(const std::wstring& value_name, ulong type);
@@ -1777,11 +1777,11 @@ private:
 
 typedef CRITICAL_SECTION    TCriticalSection, *PCriticalSection;
 
-class CCriticalSection
+class CriticalSection
 {
 public:
-  CCriticalSection();
-  virtual ~CCriticalSection();
+  CriticalSection();
+  virtual ~CriticalSection();
 
   void vuapi initialize();
   void vuapi enter();
@@ -1796,14 +1796,14 @@ private:
  * Stop Watch
  */
 
-class CStopWatch
+class StopWatch
 {
 public:
   typedef std::pair<unsigned long, float> TDuration;
 
 public:
-  CStopWatch();
-  ~CStopWatch();
+  StopWatch();
+  virtual ~StopWatch();
   void start(bool reset = false);
   const TDuration stop();
   const TDuration duration();
@@ -1816,14 +1816,14 @@ private:
 };
 
 /**
- * CScopeStopWatchX
+ * ScopeStopWatchX
  */
 
-class CScopeStopWatchX
+class ScopeStopWatchX
 {
 public:
-  CScopeStopWatchX();
-  virtual ~CScopeStopWatchX();
+  ScopeStopWatchX();
+  virtual ~ScopeStopWatchX();
 
   void active(bool state = true);
   void reset();
@@ -1834,39 +1834,39 @@ protected:
 
 protected:
   bool m_activated;
-  CStopWatch m_watcher;
+  StopWatch m_watcher;
 };
 
-class CScopeStopWatchA : public CScopeStopWatchX
+class ScopeStopWatchA : public ScopeStopWatchX
 {
 public:
-  typedef std::function<void(const std::string& id, const CStopWatch::TDuration& duration)> FnLogging;
+  typedef std::function<void(const std::string& id, const StopWatch::TDuration& duration)> FnLogging;
 
-  CScopeStopWatchA(const std::string& prefix, const FnLogging fn_logging = message);
-  virtual ~CScopeStopWatchA();
+  ScopeStopWatchA(const std::string& prefix, const FnLogging fn_logging = message);
+  virtual ~ScopeStopWatchA();
 
   void Log(const std::string& id = "");
 
-  static void message(const std::string& id, const CStopWatch::TDuration& duration);
-  static void console(const std::string& id, const CStopWatch::TDuration& duration);
+  static void message(const std::string& id, const StopWatch::TDuration& duration);
+  static void console(const std::string& id, const StopWatch::TDuration& duration);
 
 private:
   std::string m_prefix;
   FnLogging m_fn_logging;
 };
 
-class CScopeStopWatchW : public CScopeStopWatchX
+class ScopeStopWatchW : public ScopeStopWatchX
 {
 public:
-  typedef std::function<void(const std::wstring& id, const CStopWatch::TDuration& duration)> FnLogging;
+  typedef std::function<void(const std::wstring& id, const StopWatch::TDuration& duration)> FnLogging;
 
-  CScopeStopWatchW(const std::wstring& prefix, const FnLogging fn_logging = message);
-  virtual ~CScopeStopWatchW();
+  ScopeStopWatchW(const std::wstring& prefix, const FnLogging fn_logging = message);
+  virtual ~ScopeStopWatchW();
 
   void log(const std::wstring& id = L"");
 
-  static void message(const std::wstring& id, const CStopWatch::TDuration& duration);
-  static void console(const std::wstring& id, const CStopWatch::TDuration& duration);
+  static void message(const std::wstring& id, const StopWatch::TDuration& duration);
+  static void console(const std::wstring& id, const StopWatch::TDuration& duration);
 
 private:
   std::wstring m_prefix;
@@ -2068,32 +2068,32 @@ typedef TThunkData32  TThunkData, *PThunkData;
 typedef TPEHeader32   TPEHeader,  *PPEHeader;
 #endif
 
-typedef struct
+struct sExIID
 {
-  ulong IIDID;
-  std::string Name;
-  PImportDescriptor pIID;
-} TExIID;
-
-typedef struct
-{
-  ulong IIDID;
-  std::string Name;
-  //ulong NumberOfFuctions;
-} TImportModule;
-
-template<typename T>
-struct TImportFunctionT
-{
-  ulong IIDID;
-  std::string Name;
-  T Ordinal;
-  ushort Hint;
-  T RVA;
+  ulong iid_id;
+  std::string name;
+  PImportDescriptor ptr_iid;
 };
 
-typedef TImportFunctionT<ulong32> TFunctionInfo32;
-typedef TImportFunctionT<ulong64> TFunctionInfo64;
+struct sImportModule
+{
+  ulong iid_id;
+  std::string name;
+  //ulong NumberOfFuctions;
+};
+
+template<typename T>
+struct sImportFunctionT
+{
+  ulong iid_id;
+  std::string name;
+  T ordinal;
+  ushort hint;
+  T rva;
+};
+
+typedef sImportFunctionT<ulong32> sImportFunction32T;
+typedef sImportFunctionT<ulong64> sImportFunction64T;
 
 typedef enum _IMPORTED_FUNCTION_FIND_BY
 {
@@ -2102,7 +2102,7 @@ typedef enum _IMPORTED_FUNCTION_FIND_BY
 } eImportedFunctionFindMethod;
 
 template<typename T>
-struct TRelocationEntryT
+struct sRelocationEntryT
 {
   int Type;
   // T Offset;
@@ -2112,11 +2112,11 @@ struct TRelocationEntryT
 };
 
 template <typename T>
-class CPEFileTX
+class PEFileTX
 {
 public:
-  CPEFileTX();
-  virtual ~CPEFileTX();
+  PEFileTX();
+  virtual ~PEFileTX();
 
   void* vuapi get_ptr_base();
   TPEHeaderT<T>* vuapi get_ptr_pe_header();
@@ -2127,16 +2127,16 @@ public:
   const std::vector<PSectionHeader>& vuapi get_setion_headers(bool in_cache = true);
 
   const std::vector<PImportDescriptor>& vuapi get_import_descriptors(bool in_cache = true);
-  const std::vector<TImportModule> vuapi get_import_modules(bool in_cache = true);
-  const std::vector<TImportFunctionT<T>> vuapi get_import_functions(bool in_cache = true); // Didn't include import by index
+  const std::vector<sImportModule> vuapi get_import_modules(bool in_cache = true);
+  const std::vector<sImportFunctionT<T>> vuapi get_import_functions(bool in_cache = true); // Didn't include import by index
 
-  const TImportModule* vuapi find_ptr_import_module(const std::string& module_name, bool in_cache = true);
+  const sImportModule* vuapi find_ptr_import_module(const std::string& module_name, bool in_cache = true);
 
-  const TImportFunctionT<T>* vuapi find_ptr_import_function(const std::string& function_name, bool in_cache = true);
-  const TImportFunctionT<T>* vuapi find_ptr_import_function(const ushort FunctionHint, bool in_cache = true);
-  const TImportFunctionT<T>* vuapi find_ptr_import_function(const TImportFunctionT<T>& ImportFunction, eImportedFunctionFindMethod Method, bool in_cache = true);
+  const sImportFunctionT<T>* vuapi find_ptr_import_function(const std::string& function_name, bool in_cache = true);
+  const sImportFunctionT<T>* vuapi find_ptr_import_function(const ushort FunctionHint, bool in_cache = true);
+  const sImportFunctionT<T>* vuapi find_ptr_import_function(const sImportFunctionT<T>& importFunction, eImportedFunctionFindMethod method, bool in_cache = true);
 
-  const std::vector<TRelocationEntryT<T>> vuapi get_relocation_entries(bool in_cache = true);
+  const std::vector<sRelocationEntryT<T>> vuapi get_relocation_entries(bool in_cache = true);
 
 protected:
   bool m_initialized;
@@ -2149,60 +2149,60 @@ protected:
 private:
   T m_ordinal_flag;
 
-  std::vector<TExIID> m_ex_iids;
+  std::vector<sExIID> m_ex_iids;
 
   std::vector<PSectionHeader> m_section_headers;
   std::vector<PImportDescriptor> m_import_descriptors;
-  std::vector<TImportModule> m_import_modules;
-  std::vector<TImportFunctionT<T>> m_import_functions;
-  std::vector<TRelocationEntryT<T>> m_relocation_entries;
+  std::vector<sImportModule> m_import_modules;
+  std::vector<sImportFunctionT<T>> m_import_functions;
+  std::vector<sRelocationEntryT<T>> m_relocation_entries;
 
 protected:
-  const std::vector<TExIID>& vuapi get_ex_iids(bool in_cache = true);
+  const std::vector<sExIID>& vuapi get_ex_iids(bool in_cache = true);
 };
 
 template <typename T>
-class CPEFileTA : public CPEFileTX<T>
+class PEFileTA : public PEFileTX<T>
 {
 public:
-  CPEFileTA() {};
-  CPEFileTA(const std::string& pe_file_path);
-  virtual ~CPEFileTA();
+  PEFileTA() {};
+  PEFileTA(const std::string& pe_file_path);
+  virtual ~PEFileTA();
 
   VUResult vuapi parse();
 
 private:
   std::string m_file_path;
-  CFileMappingA m_file_map;
+  FileMappingA m_file_map;
 };
 
 template <typename T>
-class CPEFileTW : public CPEFileTX<T>
+class PEFileTW : public PEFileTX<T>
 {
 public:
-  CPEFileTW() {};
-  CPEFileTW(const std::wstring& pe_file_path);
-  virtual ~CPEFileTW();
+  PEFileTW() {};
+  PEFileTW(const std::wstring& pe_file_path);
+  virtual ~PEFileTW();
 
   VUResult vuapi parse();
 
 private:
   std::wstring m_file_path;
-  CFileMappingW m_file_map;
+  FileMappingW m_file_map;
 };
 
 /**
- * CFundamental
+ * Fundamental
  */
 
-class CFundamentalA
+class FundamentalA
 {
 public:
-  CFundamentalA();
-  virtual ~CFundamentalA();
+  FundamentalA();
+  virtual ~FundamentalA();
 
   template<typename T>
-  friend CFundamentalA& operator<<(CFundamentalA& stream, T v)
+  friend FundamentalA& operator<<(FundamentalA& stream, T v)
   {
     stream.m_data << v;
     return stream;
@@ -2220,14 +2220,14 @@ private:
   std::stringstream m_data;
 };
 
-class CFundamentalW
+class FundamentalW
 {
 public:
-  CFundamentalW();
-  virtual ~CFundamentalW();
+  FundamentalW();
+  virtual ~FundamentalW();
 
   template<typename T>
-  friend CFundamentalW& operator<<(CFundamentalW& stream, T v)
+  friend FundamentalW& operator<<(FundamentalW& stream, T v)
   {
     stream.m_data << v;
     return stream;
@@ -2246,10 +2246,10 @@ private:
 };
 
 /**
- * CWDTControl
+ * WDTControl
  */
 
-class CWDTControl
+class WDTControl
 {
 public:
   enum eControlClass : WORD
@@ -2263,7 +2263,7 @@ public:
     CT_UNKNOW     = 0xFFFF,
   };
 
-  CWDTControl(
+  WDTControl(
     const std::wstring& caption,
     const eControlClass type,
     const WORD  id,
@@ -2275,7 +2275,7 @@ public:
     const DWORD exstyle = 0
   );
 
-  virtual ~CWDTControl();
+  virtual ~WDTControl();
 
   void serialize(void** pptr);
 
@@ -2287,10 +2287,10 @@ protected:
   WORD m_w_data;
 };
 
-class CWDTDialog : public CLastError
+class WDTDialog : public LastError
 {
 public:
-  CWDTDialog(
+  WDTDialog(
     const std::wstring& caption,
     const DWORD style,
     const DWORD exstyle,
@@ -2301,46 +2301,46 @@ public:
     HWND hwnd_parent = nullptr
   );
 
-  virtual ~CWDTDialog();
+  virtual ~WDTDialog();
 
-  void add(const CWDTControl& control);
+  void add(const WDTControl& control);
   void serialize(void** pptr);
-  INT_PTR do_modal(DLGPROC pfnDlgProc, CWDTDialog* ptr_parent);
+  INT_PTR do_modal(DLGPROC pfn_dlg_proc, WDTDialog* ptr_parent);
 
-  const std::vector<CWDTControl>& controls() const;
+  const std::vector<WDTControl>& controls() const;
 
 protected:
-  HGLOBAL m_h_global;
+  HGLOBAL m_hglobal;
   std::wstring m_caption;
   std::wstring m_font;
   HWND m_hwnd_parent;
-  std::vector<CWDTControl> m_controls;
+  std::vector<WDTControl> m_controls;
   DLGTEMPLATE m_shape;
   WORD m_w_menu;
   WORD m_w_class;
   WORD m_w_font;
 };
 
-class CInputDialog : public CWDTDialog
+class InputDialog : public WDTDialog
 {
 public:
   const WORD IDC_LABEL;
   const WORD IDC_INPUT;
 
-  CInputDialog(const std::wstring& label, const HWND hwnd_parent = nullptr, bool number_only = false);
-  virtual ~CInputDialog();
+  InputDialog(const std::wstring& label, const HWND hwnd_parent = nullptr, bool number_only = false);
+  virtual ~InputDialog();
 
   void label(const std::wstring& label);
   const std::wstring& label() const;
-  CFundamentalW& input();
+  FundamentalW& input();
 
   INT_PTR do_modal();
 
   static LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
 private:
-  std::wstring  m_label;
-  CFundamentalW m_input;
+  std::wstring m_label;
+  FundamentalW m_input;
   bool m_number_only;
 };
 
@@ -2402,34 +2402,34 @@ typedef struct _MODULEINFO_PTR {
 #define MEM_ALL_TYPE  (MEM_IMAGE | MEM_MAPPED | MEM_PRIVATE)
 #define PAGE_ALL_PROTECTION -1
 
-class CProcessX : public CLastError
+class ProcessX : public LastError
 {
 public:
   typedef std::vector<THREADENTRY32> threads;
   typedef std::vector<MEMORY_BASIC_INFORMATION> memories;
 
-  CProcessX();
-  // CProcessX(const ulong pid);
-  virtual ~CProcessX();
+  ProcessX();
+  // ProcessX(const ulong pid);
+  virtual ~ProcessX();
 
-  // CProcessX(CProcessX& right);
-  // CProcessX& operator=(CProcessX& right);
-  bool operator==(CProcessX& right);
-  bool operator!=(CProcessX& right);
+  // ProcessX(ProcessX& right);
+  // ProcessX& operator=(ProcessX& right);
+  bool operator==(ProcessX& right);
+  bool operator!=(ProcessX& right);
 
   const ulong  pid() const;
   const HANDLE handle() const;
   const eWow64 wow64() const;
-  const eXBit  bits() const;
+  const eXBit  bit() const;
 
   bool ready();
 
   bool attach(const ulong pid);
   bool attach(const HANDLE hp);
 
-  bool read_memory(const ulongptr address, CBuffer& buffer);
+  bool read_memory(const ulongptr address, Buffer& buffer);
   bool read_memory(const ulongptr address, void* ptr_data, const size_t size);
-  bool write_memory(const ulongptr address, const CBuffer& buffer);
+  bool write_memory(const ulongptr address, const Buffer& buffer);
   bool write_memory(const ulongptr address, const void* ptr_data, const size_t size);
 
   PROCESS_CPU_COUNTERS get_cpu_information(const double interval = 1.); // 1 second
@@ -2444,7 +2444,7 @@ protected:
   virtual void parse();
 
 private:
-  bool close(const HANDLE hp);
+  bool   close(const HANDLE hp);
   HANDLE open(const ulong pid);
   double get_cpu_percent_usage();
 
@@ -2481,20 +2481,20 @@ typedef struct tagMODULEENTRY32
 typedef MODULEENTRY32* PMODULEENTRY32;
 typedef MODULEENTRY32* LPMODULEENTRY32;
 
-class CProcessA : public CProcessX
+class ProcessA : public ProcessX
 {
 public:
   typedef std::vector<MODULEENTRY32> modules;
 
-  CProcessA();
-  // CProcessA(const ulong PID);
-  virtual ~CProcessA();
+  ProcessA();
+  // ProcessA(const ulong PID);
+  virtual ~ProcessA();
 
-  // CProcessA(CProcessA& right);
-  // CProcessA& operator=(CProcessA& right);
-  bool operator==(CProcessA& right);
-  bool operator!=(CProcessA& right);
-  friend std::ostream& operator<<(std::ostream& os, CProcessA& process);
+  // ProcessA(ProcessA& right);
+  // ProcessA& operator=(ProcessA& right);
+  bool operator==(ProcessA& right);
+  bool operator!=(ProcessA& right);
+  friend std::ostream& operator<<(std::ostream& os, ProcessA& process);
 
   const std::string& name() const;
   const modules& get_modules();
@@ -2525,20 +2525,20 @@ typedef struct tagMODULEENTRY32W
 typedef MODULEENTRY32W* PMODULEENTRY32W;
 typedef MODULEENTRY32W* LPMODULEENTRY32W;
 
-class CProcessW : public CProcessX
+class ProcessW : public ProcessX
 {
 public:
   typedef std::vector<MODULEENTRY32W> modules;
 
-  CProcessW();
-  // CProcessW(const ulong pid);
-  virtual ~CProcessW();
+  ProcessW();
+  // ProcessW(const ulong pid);
+  virtual ~ProcessW();
 
-  // CProcessW(CProcessW& right);
-  // CProcessW& operator=(CProcessW& right);
-  bool operator==(CProcessW& right);
-  bool operator!=(CProcessW& right);
-  friend std::ostream& operator<<(std::ostream& os, CProcessW& process);
+  // ProcessW(ProcessW& right);
+  // ProcessW& operator=(ProcessW& right);
+  bool operator==(ProcessW& right);
+  bool operator!=(ProcessW& right);
+  friend std::ostream& operator<<(std::ostream& os, ProcessW& process);
 
   const std::wstring& name() const;
   const modules& get_modules();
@@ -2565,7 +2565,7 @@ public:
   CThreadPool(size_t n_threads = MAX_NTHREADS);
   virtual ~CThreadPool();
 
-  void add_task(FnTask&& fn);
+  void add_task(fn_task_t&& fn);
   void launch();
 
   size_t worker_count() const;
@@ -2581,69 +2581,69 @@ private:
 #include "template/stlthread.tpl"
 
 /**
- * CPath
+ * Path
  */
 
-class CPathA
+class PathA
 {
 public:
-  CPathA(const ePathSep separator = ePathSep::WIN);
-  CPathA(const std::string& path, const ePathSep separator = ePathSep::WIN);
-  CPathA(const CPathA& right);
-  virtual ~CPathA();
+  PathA(const ePathSep separator = ePathSep::WIN);
+  PathA(const std::string& path, const ePathSep separator = ePathSep::WIN);
+  PathA(const PathA& right);
+  virtual ~PathA();
 
-  const CPathA& operator=(const CPathA& right);
-  const CPathA& operator=(const std::string& right);
-  const CPathA& operator+=(const CPathA& right);
-  const CPathA& operator+=(const std::string& right);
-  CPathA operator+(const CPathA& right);
-  CPathA operator+(const std::string& right);
-  bool operator==(const CPathA& right);
-  bool operator!=(const CPathA& right);
-  friend std::ostream& operator<<(std::ostream& os, CPathA& path);
+  const PathA& operator=(const PathA& right);
+  const PathA& operator=(const std::string& right);
+  const PathA& operator+=(const PathA& right);
+  const PathA& operator+=(const std::string& right);
+  PathA operator+(const PathA& right);
+  PathA operator+(const std::string& right);
+  bool operator==(const PathA& right);
+  bool operator!=(const PathA& right);
+  friend std::ostream& operator<<(std::ostream& os, PathA& path);
 
-  CPathA& trim(const eTrimType type = eTrimType::TS_BOTH);
-  CPathA& normalize();
-  CPathA& join(const std::string& path);
-  CPathA& finalize();
+  PathA& trim(const eTrimType type = eTrimType::TS_BOTH);
+  PathA& normalize();
+  PathA& join(const std::string& path);
+  PathA& finalize();
   bool exists() const;
   std::string as_string() const;
 
-  CPathA extract_file_name(bool extension = true) const;
-  CPathA extract_file_directory(bool slash = true) const;
+  PathA extract_file_name(bool extension = true) const;
+  PathA extract_file_directory(bool slash = true) const;
 
 private:
   ePathSep m_separator;
   std::string m_path;
 };
 
-class CPathW
+class PathW
 {
 public:
-  CPathW(const ePathSep separator = ePathSep::WIN);
-  CPathW(const std::wstring& path, const ePathSep separator = ePathSep::WIN);
-  CPathW(const CPathW& right);
-  virtual ~CPathW();
+  PathW(const ePathSep separator = ePathSep::WIN);
+  PathW(const std::wstring& path, const ePathSep separator = ePathSep::WIN);
+  PathW(const PathW& right);
+  virtual ~PathW();
 
-  const CPathW& operator=(const CPathW& right);
-  const CPathW& operator=(const std::wstring& right);
-  const CPathW& operator+=(const CPathW& right);
-  const CPathW& operator+=(const std::wstring& right);
-  CPathW operator+(const CPathW& right);
-  CPathW operator+(const std::wstring& right);
-  bool operator==(const CPathW& right);
-  bool operator!=(const CPathW& right);
-  friend std::wostream& operator<<(std::wostream& os, CPathW& path);
+  const PathW& operator=(const PathW& right);
+  const PathW& operator=(const std::wstring& right);
+  const PathW& operator+=(const PathW& right);
+  const PathW& operator+=(const std::wstring& right);
+  PathW operator+(const PathW& right);
+  PathW operator+(const std::wstring& right);
+  bool operator==(const PathW& right);
+  bool operator!=(const PathW& right);
+  friend std::wostream& operator<<(std::wostream& os, PathW& path);
 
-  CPathW& trim(const eTrimType type = eTrimType::TS_BOTH);
-  CPathW& normalize();
-  CPathW& join(const std::wstring& path);
-  CPathW& finalize();
+  PathW& trim(const eTrimType type = eTrimType::TS_BOTH);
+  PathW& normalize();
+  PathW& join(const std::wstring& path);
+  PathW& finalize();
   bool exists() const;
   std::wstring as_string() const;
 
-  CPathW extract_file_name(bool extension = true) const;
-  CPathW extract_file_directory(bool slash = true) const;
+  PathW extract_file_name(bool extension = true) const;
+  PathW extract_file_directory(bool slash = true) const;
 
 private:
   ePathSep m_separator;
@@ -2651,22 +2651,18 @@ private:
 };
 
 /**
- * Windows Management Instrumentation
+ * WMIProvider - Windows Management Instrumentation
  */
 
 #ifdef VU_WMI_ENABLED
 
-class CWMIProviderX;
+class WMIProviderX;
 
-/**
- * CWMIProviderA
- */
-
-class CWMIProviderA
+class WMIProviderA
 {
 public:
-  CWMIProviderA();
-  virtual ~CWMIProviderA();
+  WMIProviderA();
+  virtual ~WMIProviderA();
 
   virtual bool ready();
   bool begin(const std::string& ns);
@@ -2676,18 +2672,14 @@ public:
   bool query(const std::string& qs, const std::function<bool(IWbemClassObject& object)> fn);
 
 private:
-  CWMIProviderX* m_ptr_impl;
+  WMIProviderX* m_ptr_impl;
 };
 
-/**
- * CWMIProviderW
- */
-
-class CWMIProviderW
+class WMIProviderW
 {
 public:
-  CWMIProviderW();
-  virtual ~CWMIProviderW();
+  WMIProviderW();
+  virtual ~WMIProviderW();
 
   virtual bool ready();
   bool begin(const std::wstring& ns);
@@ -2697,7 +2689,7 @@ public:
   bool query(const std::wstring& qs, const std::function<bool(IWbemClassObject& object)> fn);
 
 private:
-  CWMIProviderX* m_ptr_impl;
+  WMIProviderX* m_ptr_impl;
 };
 
 #endif // VU_WMI_ENABLED
@@ -2705,47 +2697,47 @@ private:
 /*---------- The definition of common structure(s) which compatible both ANSI & UNICODE ----------*/
 
 #ifdef _UNICODE
-#define TFSObject TFSObjectW
+#define sFSObject sFSObjectW
 #else
-#define TFSObject TFSObjectA
+#define sFSObject sFSObjectA
 #endif
 
 /*------------ The definition of common Class(es) which compatible both ANSI & UNICODE -----------*/
 
 #ifdef _UNICODE
-#define CGUID CGUIDW
-#define CINLHook CINLHookW
-#define CIATHookManager CIATHookManagerW
-#define CWMHook CWMHookW
-#define CProcess CProcessW
-#define CServiceManager CServiceManagerW
-#define CLibrary CLibraryW
-#define CFileSystem CFileSystemW
-#define CFileMapping CFileMappingW
-#define CINIFile CINIFileW
-#define CRegistry CRegistryW
-#define CPEFileT CPEFileTW
-#define CPath CPathW
-#define CScopeStopWatch CScopeStopWatchW
-#define CWMIProvider CWMIProviderW
-#define CFundamental CFundamentalW
+#define UIDGlobal GUIDW
+#define INLHooking INLHookingW
+#define IATHooking IATHookingW
+#define WMHooking WMHookingW
+#define Process ProcessW
+#define ServiceManager ServiceManagerW
+#define Library LibraryW
+#define FileSystem FileSystemW
+#define FileMapping FileMappingW
+#define INIFile INIFileW
+#define Registry RegistryW
+#define PEFileT PEFileTW
+#define Path PathW
+#define ScopeStopWatch ScopeStopWatchW
+#define WMIProvider WMIProviderW
+#define Fundamental FundamentalW
 #else
-#define CGUID CGUIDA
-#define CINLHook CINLHookA
-#define CIATHookManager CIATHookManagerA
-#define CWMHook CWMHookA
-#define CProcess CProcessA
-#define CServiceManager CServiceManagerA
-#define CLibrary CLibraryA
-#define CFileSystem CFileSystemA
-#define CFileMapping CFileMappingA
-#define CINIFile CINIFileA
-#define CRegistry CRegistryA
-#define CPEFileT CPEFileTA
-#define CPath CPathA
-#define CScopeStopWatch CScopeStopWatchA
-#define CWMIProvider CWMIProviderA
-#define CFundamental CFundamentalA
+#define UIDGlobal GUIDA
+#define INLHooking INLHookingA
+#define IATHooking IATHookingA
+#define WMHooking WMHookingA
+#define Process ProcessA
+#define ServiceManager ServiceManagerA
+#define Library LibraryA
+#define FileSystem FileSystemA
+#define FileMapping FileMappingA
+#define INIFile INIFileA
+#define Registry RegistryA
+#define PEFileT PEFileTA
+#define Path PathA
+#define ScopeStopWatch ScopeStopWatchA
+#define WMIProvider WMIProviderA
+#define Fundamental FundamentalA
 #endif
 
 } // namespace vu

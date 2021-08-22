@@ -83,10 +83,10 @@ DEF_SAMPLE(Misc)
     L"UTF-32 Little Endian BOM", L"UTF-32 Big Endian BOM"
   };
 
-  vu::CFileSystem::iterate(ts("path\\to\\example"), ts("*.txt"), [](const vu::TFSObject& fso) -> bool
+  vu::FileSystem::iterate(ts("path\\to\\example"), ts("*.txt"), [](const vu::sFSObject& fso) -> bool
   {
     auto file_path = fso.directory + fso.name;
-    auto data = vu::CFileSystem::quick_read_as_buffer(file_path);
+    auto data = vu::FileSystem::quick_read_as_buffer(file_path);
 
     auto result = vu::determine_encoding_type(data.get_ptr_data(), data.get_size());
     auto es = result == -1 ? L"Unknown" : LES[result];
@@ -114,12 +114,12 @@ DEF_SAMPLE(Misc)
   std::tcout << vu::format_bytes(9123456789101213, type, digits) << std::endl; // PB/PiB
   std::tcout << vu::format_bytes(9123456789101213145, type, digits) << std::endl; // EB/EiB*/
 
-  vu::CBuffer data;
+  vu::Buffer data;
   auto result = vu::find_pattern(data, ts("11 ?? 33 ?? 44 ?? 55"));
   std::tcout << ts("Result is ") << result.first << ts(" at Offset ") << result.second << std::endl;
 
-  std::string  s = "0123456789";
-  vu::CBuffer  slicer(s.data(), s.size());
+  std::string s = "0123456789";
+  vu::Buffer  slicer(s.data(), s.size());
 
   std::cout << slicer(0, 0).to_string_A() << std::endl;
   std::cout << slicer(9, 9).to_string_A() << std::endl;

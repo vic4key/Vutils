@@ -9,31 +9,31 @@
 namespace vu
 {
 
-CCriticalSection::CCriticalSection()
+CriticalSection::CriticalSection()
 {
   memset(&m_cs, 0, sizeof(m_cs));
 }
 
-CCriticalSection::~CCriticalSection()
+CriticalSection::~CriticalSection()
 {
 }
 
-void vuapi CCriticalSection::initialize()
+void vuapi CriticalSection::initialize()
 {
   InitializeCriticalSection(&m_cs);
 }
 
-void vuapi CCriticalSection::enter()
+void vuapi CriticalSection::enter()
 {
   EnterCriticalSection(&m_cs);
 }
 
-void vuapi CCriticalSection::leave()
+void vuapi CriticalSection::leave()
 {
   LeaveCriticalSection(&m_cs);
 }
 
-void vuapi CCriticalSection::destroy()
+void vuapi CriticalSection::destroy()
 {
   DeleteCriticalSection(&m_cs);
 }

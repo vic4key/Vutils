@@ -61,5 +61,5 @@ void SampleManager::run()
 }
 
 #define VU_SM_INIT() SampleManager samples
-#define VU_SM_ADD_SAMPLE(sample) samples.add(#sample, new sample)
+#define VU_SM_ADD_SAMPLE(sample) samples.add(#sample, new sample ## _Sample)
 #define VU_SM_RUN() samples.run()

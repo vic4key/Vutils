@@ -11,7 +11,7 @@ namespace vu
 
 #ifdef VU_SOCKET_ENABLED
 
-CAsyncSocket::CAsyncSocket(const vu::CSocket::AddressFamily af, const vu::CSocket::Type type, const vu::CSocket::Protocol proto) : m_server(af, type, proto)
+AsyncSocket::AsyncSocket(const vu::Socket::address_family_t af, const vu::Socket::type_t type, const vu::Socket::protocol_t proto) : m_server(af, type, proto)
 {
   this->initialze();
 
@@ -21,12 +21,12 @@ CAsyncSocket::CAsyncSocket(const vu::CSocket::AddressFamily af, const vu::CSocke
   }
 }
 
-CAsyncSocket::~CAsyncSocket()
+AsyncSocket::~AsyncSocket()
 {
   this->close();
 }
 
-void vuapi CAsyncSocket::initialze()
+void vuapi AsyncSocket::initialze()
 {
   m_n_events = 0;
 
@@ -36,7 +36,7 @@ void vuapi CAsyncSocket::initialze()
   m_running = false;
 }
 
-std::set<SOCKET> vuapi CAsyncSocket::get_clients()
+std::set<SOCKET> vuapi AsyncSocket::get_clients()
 {
   std::set<SOCKET> result;
 
@@ -54,27 +54,27 @@ std::set<SOCKET> vuapi CAsyncSocket::get_clients()
   return result;
 }
 
-bool vuapi CAsyncSocket::available()
+bool vuapi AsyncSocket::available()
 {
   return m_server.available();
 }
 
-bool vuapi CAsyncSocket::running()
+bool vuapi AsyncSocket::running()
 {
   return m_running;
 }
 
-VUResult vuapi CAsyncSocket::bind(const CSocket::TEndPoint& endpoint)
+VUResult vuapi AsyncSocket::bind(const Socket::sEndPoint& endpoint)
 {
   return m_server.bind(endpoint);
 }
 
-VUResult vuapi CAsyncSocket::bind(const std::string& address, const ushort port)
+VUResult vuapi AsyncSocket::bind(const std::string& address, const ushort port)
 {
   return m_server.bind(address, port);
 }
 
-VUResult vuapi CAsyncSocket::listen(const int maxcon)
+VUResult vuapi AsyncSocket::listen(const int maxcon)
 {
   if (!m_server.available())
   {
@@ -96,12 +96,12 @@ VUResult vuapi CAsyncSocket::listen(const int maxcon)
   return m_server.listen(maxcon);
 }
 
-IResult vuapi CAsyncSocket::close()
+IResult vuapi AsyncSocket::close()
 {
   return m_server.close();
 }
 
-VUResult vuapi CAsyncSocket::stop()
+VUResult vuapi AsyncSocket::stop()
 {
   m_mutex.lock();
   m_running = false;
@@ -109,7 +109,7 @@ VUResult vuapi CAsyncSocket::stop()
   return VU_OK;
 }
 
-VUResult vuapi CAsyncSocket::run()
+VUResult vuapi AsyncSocket::run()
 {
   if (!m_server.available())
   {
@@ -138,7 +138,7 @@ VUResult vuapi CAsyncSocket::run()
   return VU_OK;
 }
 
-VUResult vuapi CAsyncSocket::loop()
+VUResult vuapi AsyncSocket::loop()
 {
   VUResult result = VU_OK;
 
@@ -203,14 +203,14 @@ VUResult vuapi CAsyncSocket::loop()
   return result;
 }
 
-IResult vuapi CAsyncSocket::do_open(WSANETWORKEVENTS& events, SOCKET& socket)
+IResult vuapi AsyncSocket::do_open(WSANETWORKEVENTS& events, SOCKET& socket)
 {
   if (events.iErrorCode[FD_ACCEPT_BIT] != 0)
   {
     return events.iErrorCode[FD_ACCEPT_BIT];
   }
 
-  CSocket::TSocket obj = { 0 };
+  Socket::sSocket obj = { 0 };
   int n = static_cast<int>(sizeof(obj.sai));
 
   obj.s = accept(socket, (struct sockaddr*)&obj.sai, &n);
@@ -226,7 +226,7 @@ IResult vuapi CAsyncSocket::do_open(WSANETWORKEVENTS& events, SOCKET& socket)
   m_sockets[m_n_events] = obj.s;
   m_n_events++;
 
-  CSocket client(m_server.get_af(), m_server.get_type(), m_server.get_protocol(), false);
+  Socket client(m_server.get_af(), m_server.get_type(), m_server.get_protocol(), false);
   client.attach(obj);
   this->on_open(client);
   client.detach();
@@ -234,14 +234,14 @@ IResult vuapi CAsyncSocket::do_open(WSANETWORKEVENTS& events, SOCKET& socket)
   return VU_OK;
 }
 
-IResult vuapi CAsyncSocket::do_recv(WSANETWORKEVENTS& events, SOCKET& socket)
+IResult vuapi AsyncSocket::do_recv(WSANETWORKEVENTS& events, SOCKET& socket)
 {
   if (events.iErrorCode[FD_READ_BIT] != 0)
   {
     return events.iErrorCode[FD_READ_BIT];
   }
 
-  CSocket client(m_server.get_af(), m_server.get_type(), m_server.get_protocol(), false);
+  Socket client(m_server.get_af(), m_server.get_type(), m_server.get_protocol(), false);
   client.attach(socket);
   this->on_recv(client);
   client.detach();
@@ -249,14 +249,14 @@ IResult vuapi CAsyncSocket::do_recv(WSANETWORKEVENTS& events, SOCKET& socket)
   return VU_OK;
 }
 
-IResult vuapi CAsyncSocket::do_send(WSANETWORKEVENTS& events, SOCKET& socket)
+IResult vuapi AsyncSocket::do_send(WSANETWORKEVENTS& events, SOCKET& socket)
 {
   if (events.iErrorCode[FD_WRITE_BIT] != 0)
   {
     return events.iErrorCode[FD_WRITE_BIT];
   }
 
-  CSocket client(m_server.get_af(), m_server.get_type(), m_server.get_protocol(), false);
+  Socket client(m_server.get_af(), m_server.get_type(), m_server.get_protocol(), false);
   client.attach(socket);
   this->on_send(client);
   client.detach();
@@ -264,14 +264,14 @@ IResult vuapi CAsyncSocket::do_send(WSANETWORKEVENTS& events, SOCKET& socket)
   return VU_OK;
 }
 
-IResult vuapi CAsyncSocket::do_close(WSANETWORKEVENTS& events, SOCKET& socket)
+IResult vuapi AsyncSocket::do_close(WSANETWORKEVENTS& events, SOCKET& socket)
 {
   if (events.iErrorCode[FD_CLOSE_BIT] != 0)
   {
     return events.iErrorCode[FD_CLOSE_BIT];
   }
 
-  CSocket client(m_server.get_af(), m_server.get_type(), m_server.get_protocol(), false);
+  Socket client(m_server.get_af(), m_server.get_type(), m_server.get_protocol(), false);
   client.attach(socket);
   this->on_close(client);
   client.detach();
@@ -283,13 +283,13 @@ IResult vuapi CAsyncSocket::do_close(WSANETWORKEVENTS& events, SOCKET& socket)
   return VU_OK;
 }
 
-void CAsyncSocket::on(const eFnType type, const FnPrototype fn)
+void AsyncSocket::on(const eFnType type, const fn_prototype_t fn)
 {
   assert(!m_running && type < eFnType::UNDEFINED);
   m_functions[type] = fn;
 }
 
-void CAsyncSocket::on_open(CSocket& client)
+void AsyncSocket::on_open(Socket& client)
 {
   if (auto& fn = m_functions[eFnType::OPEN])
   {
@@ -297,7 +297,7 @@ void CAsyncSocket::on_open(CSocket& client)
   }
 }
 
-void CAsyncSocket::on_send(CSocket& client)
+void AsyncSocket::on_send(Socket& client)
 {
   if (auto& fn = m_functions[eFnType::SEND])
   {
@@ -305,7 +305,7 @@ void CAsyncSocket::on_send(CSocket& client)
   }
 }
 
-void CAsyncSocket::on_recv(CSocket& client)
+void AsyncSocket::on_recv(Socket& client)
 {
   if (auto& fn = m_functions[eFnType::RECV])
   {
@@ -313,7 +313,7 @@ void CAsyncSocket::on_recv(CSocket& client)
   }
 }
 
-void CAsyncSocket::on_close(CSocket& client)
+void AsyncSocket::on_close(Socket& client)
 {
   if (auto& fn = m_functions[eFnType::CLOSE])
   {

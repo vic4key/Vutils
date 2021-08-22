@@ -20,7 +20,7 @@ HWND vuapi get_console_window()
 
   HWND hwConsole = NULL;
 
-  PfnGetConsoleWindow pfnGetConsoleWindow = (PfnGetConsoleWindow)CLibrary::quick_get_proc_address(
+  PfnGetConsoleWindow pfnGetConsoleWindow = (PfnGetConsoleWindow)Library::quick_get_proc_address(
     _T("kernel32.dll"),
     _T("GetConsoleWindow")
   );
@@ -383,9 +383,9 @@ std::wstring vuapi decode_wm_W(const ulong wm)
   return to_string_W(decode_wm_A(wm));
 }
 
-TFontA vuapi get_font_A(HWND hwnd)
+sFontA vuapi get_font_A(HWND hwnd)
 {
-  TFontA result;
+  sFontA result;
 
   if (IsWindow(hwnd))
   {
@@ -412,9 +412,9 @@ TFontA vuapi get_font_A(HWND hwnd)
   return result;
 }
 
-TFontW vuapi get_font_W(HWND hwnd)
+sFontW vuapi get_font_W(HWND hwnd)
 {
-  TFontW result;
+  sFontW result;
 
   if (IsWindow(hwnd))
   {
@@ -479,9 +479,9 @@ void* fn_copy_memory(void** ppdst, void* psrc, size_t nsrc)
 
 const WCHAR NullChar = L'\0';
 
-CWDTControl::CWDTControl(
+WDTControl::WDTControl(
   const std::wstring& caption,
-  const CWDTControl::eControlClass type,
+  const WDTControl::eControlClass type,
   const WORD  id,
   const short x,
   const short y,
@@ -500,11 +500,11 @@ CWDTControl::CWDTControl(
   m_shape.dwExtendedStyle = exstyle;
 }
 
-CWDTControl::~CWDTControl()
+WDTControl::~WDTControl()
 {
 }
 
-void CWDTControl::serialize(void** pptr)
+void WDTControl::serialize(void** pptr)
 {
   auto ptr = *pptr;
 
@@ -523,7 +523,7 @@ void CWDTControl::serialize(void** pptr)
  * CWDTDialog
  */
 
-CWDTDialog::CWDTDialog(
+WDTDialog::WDTDialog(
   const std::wstring& caption,
   const DWORD style,
   const DWORD exstyle,
@@ -534,8 +534,8 @@ CWDTDialog::CWDTDialog(
   HWND hwParent
 ) : m_caption(caption), m_w_class(0), m_w_menu(0), m_hwnd_parent(hwParent)
 {
-  m_h_global = GlobalAlloc(GMEM_ZEROINIT, KiB); // 1 KiB
-  assert(m_h_global != nullptr);
+  m_hglobal = GlobalAlloc(GMEM_ZEROINIT, KiB); // 1 KiB
+  assert(m_hglobal != nullptr);
 
   m_font  = L"Segoe UI";
   m_w_font = 9;
@@ -568,26 +568,26 @@ CWDTDialog::CWDTDialog(
   }
 }
 
-CWDTDialog::~CWDTDialog()
+WDTDialog::~WDTDialog()
 {
-  if (m_h_global != nullptr)
+  if (m_hglobal != nullptr)
   {
-    GlobalFree(m_h_global);
+    GlobalFree(m_hglobal);
   }
 }
 
-const std::vector<vu::CWDTControl>& CWDTDialog::controls() const
+const std::vector<vu::WDTControl>& WDTDialog::controls() const
 {
   return m_controls;
 }
 
-void CWDTDialog::add(const CWDTControl& control)
+void WDTDialog::add(const WDTControl& control)
 {
   m_controls.push_back(control);
   m_shape.cdit = static_cast<WORD>(m_controls.size());
 }
 
-void CWDTDialog::serialize(void** pptr)
+void WDTDialog::serialize(void** pptr)
 {
   auto ptr = *pptr;
 
@@ -608,17 +608,17 @@ void CWDTDialog::serialize(void** pptr)
   *pptr = ptr;
 }
 
-INT_PTR CWDTDialog::do_modal(DLGPROC pfnDlgProc, CWDTDialog* pSelf)
+INT_PTR WDTDialog::do_modal(DLGPROC pfn_dlg_proc, WDTDialog* ptr_parent)
 {
   m_last_error_code = ERROR_SUCCESS;
 
-  if (m_h_global == nullptr)
+  if (m_hglobal == nullptr)
   {
     m_last_error_code = GetLastError();
     return -1;
   }
 
-  auto ptr = GlobalLock(m_h_global);
+  auto ptr = GlobalLock(m_hglobal);
   if (ptr == nullptr)
   {
     m_last_error_code = GetLastError();
@@ -627,10 +627,10 @@ INT_PTR CWDTDialog::do_modal(DLGPROC pfnDlgProc, CWDTDialog* pSelf)
 
   serialize(&ptr);
 
-  GlobalUnlock(m_h_global);
+  GlobalUnlock(m_hglobal);
 
   auto ret = DialogBoxIndirectParamA(
-    GetModuleHandle(0), LPDLGTEMPLATE(m_h_global), 0, pfnDlgProc, LPARAM(pSelf));
+    GetModuleHandle(0), LPDLGTEMPLATE(m_hglobal), 0, pfn_dlg_proc, LPARAM(ptr_parent));
 
   m_last_error_code = GetLastError();
 
@@ -641,84 +641,84 @@ INT_PTR CWDTDialog::do_modal(DLGPROC pfnDlgProc, CWDTDialog* pSelf)
  * CInputDialog
  */
 
-CInputDialog::CInputDialog(const std::wstring& label, HWND hwnd_parent, bool number_only)
+InputDialog::InputDialog(const std::wstring& label, HWND hwnd_parent, bool number_only)
   : IDC_LABEL(0x1001)
   , IDC_INPUT(0x1002)
   , m_label(label)
   , m_number_only(number_only)
-  , vu::CWDTDialog(L"Input Dialog"
+  , vu::WDTDialog(L"Input Dialog"
   , DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
   , WS_EX_DLGMODALFRAME
   , 0, 0, 179, 60
   , hwnd_parent)
 {
-  this->add(CWDTControl(
+  this->add(WDTControl(
     L"Label",
-    CWDTControl::CT_STATIC,
+    WDTControl::CT_STATIC,
     IDC_LABEL,
     7, 5, 165, 8,
     WS_CHILD | WS_VISIBLE | SS_LEFT | BF_FLAT)
   );
 
-  this->add(CWDTControl(
+  this->add(WDTControl(
     L"",
-    CWDTControl::CT_EDIT,
+    WDTControl::CT_EDIT,
     IDC_INPUT,
     7, 18, 165, 14,
     WS_CHILD | WS_VISIBLE | ES_LEFT | WS_BORDER | (m_number_only ? ES_NUMBER : 0))
   );
 
-  this->add(CWDTControl(
+  this->add(WDTControl(
     L"OK",
-    CWDTControl::CT_BUTTON,
+    WDTControl::CT_BUTTON,
     IDOK,
     66, 39, 50, 14,
     WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_FLAT)
   );
 
-  this->add(CWDTControl(
+  this->add(WDTControl(
     L"Cancel",
-    CWDTControl::CT_BUTTON,
+    WDTControl::CT_BUTTON,
     IDCANCEL,
     121, 39, 50, 14,
     WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_FLAT)
   );
 }
 
-CInputDialog::~CInputDialog()
+InputDialog::~InputDialog()
 {
 }
 
-void CInputDialog::label(const std::wstring& label)
+void InputDialog::label(const std::wstring& label)
 {
   m_label = label;
 }
 
-const std::wstring& CInputDialog::label() const
+const std::wstring& InputDialog::label() const
 {
   return m_label;
 }
 
-vu::CFundamentalW& CInputDialog::input()
+vu::FundamentalW& InputDialog::input()
 {
   return m_input;
 }
 
-INT_PTR CInputDialog::do_modal()
+INT_PTR InputDialog::do_modal()
 {
-  return CWDTDialog::do_modal(DLGPROC(DlgProc), this);
+  return WDTDialog::do_modal(DLGPROC(DlgProc), this);
 }
 
-LRESULT CALLBACK CInputDialog::DlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT CALLBACK InputDialog::DlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-  static CInputDialog* ptr_self = nullptr;
+  static InputDialog* ptr_self = nullptr;
   switch (msg)
   {
   case WM_INITDIALOG:
   {
     if (ptr_self == nullptr)
     {
-      ptr_self = reinterpret_cast<CInputDialog*>(lp);
+      ptr_self = reinterpret_cast<InputDialog*>(lp);
     }
 
     if (ptr_self != nullptr)

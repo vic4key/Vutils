@@ -19,7 +19,7 @@ DEF_SAMPLE(Process)
 
   auto pid = pids.back();
 
-  vu::CProcess process;
+  vu::Process process;
   process.attach(pid);
   assert(process.ready());
 

@@ -24,12 +24,12 @@ namespace vu
 
 const size_t VU_DEF_BLOCK_SIZE = KiB;
 
-CSocket::CSocket(
-  const AddressFamily af,
-  const Type type,
-  const Protocol proto,
+Socket::Socket(
+  const address_family_t af,
+  const type_t type,
+  const protocol_t proto,
   bool  wsa
-) : CLastError(), m_af(af), m_type(type), m_proto(proto), m_wsa(wsa)
+) : LastError(), m_af(af), m_type(type), m_proto(proto), m_wsa(wsa)
 {
   ZeroMemory(&m_wsa_data, sizeof(m_wsa_data));
   ZeroMemory(&m_sai, sizeof(m_sai));
@@ -47,7 +47,7 @@ CSocket::CSocket(
   m_sai.sin_family = m_af;
 }
 
-CSocket::~CSocket()
+Socket::~Socket()
 {
   this->close();
 
@@ -59,61 +59,61 @@ CSocket::~CSocket()
   m_last_error_code = GetLastError();
 }
 
-bool vuapi CSocket::valid(const SOCKET& socket)
+bool vuapi Socket::valid(const SOCKET& socket)
 {
   return !(socket == 0 || socket == INVALID_SOCKET);
 }
 
-bool vuapi CSocket::available()
+bool vuapi Socket::available()
 {
   return this->valid(m_socket);
 }
 
-void vuapi CSocket::attach(const SOCKET& socket)
+void vuapi Socket::attach(const SOCKET& socket)
 {
-  TSocket obj = { 0 };
+  sSocket obj = { 0 };
   obj.s = socket;
   this->attach(obj);
 }
 
-void vuapi CSocket::attach(const TSocket& socket)
+void vuapi Socket::attach(const sSocket& socket)
 {
   m_socket = socket.s;
   m_sai = socket.sai;
 }
 
-void vuapi CSocket::detach()
+void vuapi Socket::detach()
 {
   m_socket = INVALID_SOCKET;
   ZeroMemory(&m_sai, sizeof(m_sai));
 }
 
-const WSADATA& vuapi CSocket::get_wsa_data() const
+const WSADATA& vuapi Socket::get_wsa_data() const
 {
   return m_wsa_data;
 }
 
-const CSocket::AddressFamily vuapi CSocket::get_af() const
+const Socket::address_family_t vuapi Socket::get_af() const
 {
   return m_af;
 }
 
-const CSocket::Type vuapi CSocket::get_type() const
+const Socket::type_t vuapi Socket::get_type() const
 {
   return m_type;
 }
 
-const CSocket::Protocol vuapi CSocket::get_protocol() const
+const Socket::protocol_t vuapi Socket::get_protocol() const
 {
   return m_proto;
 }
 
-SOCKET& vuapi CSocket::get_socket()
+SOCKET& vuapi Socket::get_socket()
 {
   return m_socket;
 }
 
-const sockaddr_in vuapi CSocket::get_local_sai()
+const sockaddr_in vuapi Socket::get_local_sai()
 {
   sockaddr_in result = { 0 };
 
@@ -126,7 +126,7 @@ const sockaddr_in vuapi CSocket::get_local_sai()
   return result;
 }
 
-const sockaddr_in vuapi CSocket::get_remote_sai()
+const sockaddr_in vuapi Socket::get_remote_sai()
 {
   sockaddr_in result = { 0 };
 
@@ -139,7 +139,7 @@ const sockaddr_in vuapi CSocket::get_remote_sai()
   return result;
 }
 
-VUResult vuapi CSocket::set_option(
+VUResult vuapi Socket::set_option(
   const int level,
   const int opt,
   const std::string& val,
@@ -164,7 +164,7 @@ VUResult vuapi CSocket::set_option(
   return VU_OK;
 }
 
-VUResult vuapi CSocket::enable_non_blocking(bool state)
+VUResult vuapi Socket::enable_non_blocking(bool state)
 {
   if (!this->available())
   {
@@ -180,12 +180,12 @@ VUResult vuapi CSocket::enable_non_blocking(bool state)
   return VU_OK;
 }
 
-VUResult vuapi CSocket::bind(const TEndPoint& endpoint)
+VUResult vuapi Socket::bind(const sEndPoint& endpoint)
 {
   return this->bind(endpoint.Host, endpoint.Port);
 }
 
-VUResult vuapi CSocket::bind(const std::string& address, const ushort port)
+VUResult vuapi Socket::bind(const std::string& address, const ushort port)
 {
   if (!this->available())
   {
@@ -210,7 +210,7 @@ VUResult vuapi CSocket::bind(const std::string& address, const ushort port)
   return VU_OK;
 }
 
-VUResult vuapi CSocket::listen(const int maxcon)
+VUResult vuapi Socket::listen(const int maxcon)
 {
   if (!this->available())
   {
@@ -224,7 +224,7 @@ VUResult vuapi CSocket::listen(const int maxcon)
   return (result == SOCKET_ERROR ? 2 : VU_OK);
 }
 
-VUResult vuapi CSocket::accept(TSocket& socket)
+VUResult vuapi Socket::accept(sSocket& socket)
 {
   if (!this->available())
   {
@@ -249,12 +249,12 @@ VUResult vuapi CSocket::accept(TSocket& socket)
   return VU_OK;
 }
 
-VUResult vuapi CSocket::connect(const TEndPoint& endpoint)
+VUResult vuapi Socket::connect(const sEndPoint& endpoint)
 {
   return this->connect(endpoint.Host, endpoint.Port);
 }
 
-VUResult vuapi CSocket::connect(const std::string& address, ushort port)
+VUResult vuapi Socket::connect(const std::string& address, ushort port)
 {
   std::string ip;
 
@@ -285,7 +285,7 @@ VUResult vuapi CSocket::connect(const std::string& address, ushort port)
   return VU_OK;
 }
 
-IResult vuapi CSocket::send(const char* ptr_data, int size, const Flags flags)
+IResult vuapi Socket::send(const char* ptr_data, int size, const flags_t flags)
 {
   if (!this->available())
   {
@@ -301,12 +301,12 @@ IResult vuapi CSocket::send(const char* ptr_data, int size, const Flags flags)
   return z;
 }
 
-IResult vuapi CSocket::send(const CBuffer& buffer, const Flags flags)
+IResult vuapi Socket::send(const Buffer& buffer, const flags_t flags)
 {
   return this->send((const char*)buffer.get_ptr_data(), int(buffer.get_size()), flags);
 }
 
-IResult vuapi CSocket::recv(char* ptr_data, int size, const Flags flags)
+IResult vuapi Socket::recv(char* ptr_data, int size, const flags_t flags)
 {
   if (!this->available())
   {
@@ -322,7 +322,7 @@ IResult vuapi CSocket::recv(char* ptr_data, int size, const Flags flags)
   return z;
 }
 
-IResult vuapi CSocket::recv(CBuffer& buffer, const Flags flags)
+IResult vuapi Socket::recv(Buffer& buffer, const flags_t flags)
 {
   if (!this->available())
   {
@@ -338,9 +338,9 @@ IResult vuapi CSocket::recv(CBuffer& buffer, const Flags flags)
   return z;
 }
 
-IResult vuapi CSocket::recv_all(CBuffer& buffer, const Flags flags)
+IResult vuapi Socket::recv_all(Buffer& buffer, const flags_t flags)
 {
-  CBuffer block;
+  Buffer block;
 
   do
   {
@@ -367,12 +367,12 @@ IResult vuapi CSocket::recv_all(CBuffer& buffer, const Flags flags)
   return IResult(buffer.get_size());
 }
 
-IResult vuapi CSocket::send_to(const CBuffer& buffer, const TSocket& socket)
+IResult vuapi Socket::send_to(const Buffer& buffer, const sSocket& socket)
 {
   return this->send_to((const char*)buffer.get_ptr_data(), int(buffer.get_size()), socket);
 }
 
-IResult vuapi CSocket::send_to(const char* lpData, const int size, const TSocket& socket)
+IResult vuapi Socket::send_to(const char* lpData, const int size, const sSocket& socket)
 {
   if (!this->available())
   {
@@ -396,7 +396,7 @@ IResult vuapi CSocket::send_to(const char* lpData, const int size, const TSocket
   return z;
 }
 
-IResult vuapi CSocket::recv_from(CBuffer& buffer, const TSocket& socket)
+IResult vuapi Socket::recv_from(Buffer& buffer, const sSocket& socket)
 {
   auto z = this->recv_from((char*)buffer.get_ptr_data(), int(buffer.get_size()), socket);
   if (z != SOCKET_ERROR)
@@ -407,7 +407,7 @@ IResult vuapi CSocket::recv_from(CBuffer& buffer, const TSocket& socket)
   return z;
 }
 
-IResult vuapi CSocket::recv_from(char* ptr_data, int size, const TSocket& socket)
+IResult vuapi Socket::recv_from(char* ptr_data, int size, const sSocket& socket)
 {
   if (!this->available())
   {
@@ -428,9 +428,9 @@ IResult vuapi CSocket::recv_from(char* ptr_data, int size, const TSocket& socket
   return z;
 }
 
-IResult vuapi CSocket::recv_all_from(CBuffer& buffer, const TSocket& socket)
+IResult vuapi Socket::recv_all_from(Buffer& buffer, const sSocket& socket)
 {
-  CBuffer block;
+  Buffer block;
 
   do
   {
@@ -457,7 +457,7 @@ IResult vuapi CSocket::recv_all_from(CBuffer& buffer, const TSocket& socket)
   return IResult(buffer.get_size());
 }
 
-VUResult vuapi CSocket::close()
+VUResult vuapi Socket::close()
 {
   if (!this->available())
   {
@@ -470,7 +470,7 @@ VUResult vuapi CSocket::close()
   return VU_OK;
 }
 
-VUResult vuapi CSocket::shutdown(const Shutdowns flags)
+VUResult vuapi Socket::shutdown(const shutdowns_t flags)
 {
   if (!this->available())
   {
@@ -486,7 +486,7 @@ VUResult vuapi CSocket::shutdown(const Shutdowns flags)
   return VU_OK;
 }
 
-std::string vuapi CSocket::get_host_name()
+std::string vuapi Socket::get_host_name()
 {
   std::string result = "";
 
@@ -513,7 +513,7 @@ std::string vuapi CSocket::get_host_name()
   return result;
 }
 
-std::string vuapi CSocket::get_host_address(const std::string& name)
+std::string vuapi Socket::get_host_address(const std::string& name)
 {
   std::string result = "";
 
@@ -553,7 +553,7 @@ std::string vuapi CSocket::get_host_address(const std::string& name)
   return result;
 }
 
-bool vuapi CSocket::is_host_name(const std::string& s)
+bool vuapi Socket::is_host_name(const std::string& s)
 {
   bool result = false;
   const std::string MASK = "01234567890.";
@@ -580,7 +580,7 @@ bool vuapi CSocket::is_host_name(const std::string& s)
   return result;
 }
 
-bool vuapi CSocket::parse(const TSocket& socket)
+bool vuapi Socket::parse(const sSocket& socket)
 {
   if (sprintf(
     (char*)socket.ip,

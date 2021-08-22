@@ -21,7 +21,7 @@ namespace vu
  * IATElement
  */
 
-struct IATElement
+struct sIATElement
 {
   std::string target;
   std::string module;
@@ -29,16 +29,16 @@ struct IATElement
   const void* original;
   const void* replacement;
 
-  IATElement() : target(""), module(""), function(""), original(nullptr), replacement(nullptr) {}
+  sIATElement() : target(""), module(""), function(""), original(nullptr), replacement(nullptr) {}
 
-  IATElement(
+  sIATElement(
     const std::string& t,
     const std::string& m,
     const std::string& f,
     const void* o = 0,
     const void* r = 0) : target(t), module(m), function(f), original(o), replacement(r) {}
 
-  const IATElement& operator=(const IATElement& right)
+  const sIATElement& operator=(const sIATElement& right)
   {
     target = right.target;
     module = right.module;
@@ -48,7 +48,7 @@ struct IATElement
     return *this;
   }
 
-  bool operator==(const IATElement& right) const
+  bool operator==(const sIATElement& right) const
   {
     return\
       upper_string_A(target) == upper_string_A(right.target) &&
@@ -56,7 +56,7 @@ struct IATElement
       upper_string_A(function) == upper_string_A(right.function);
   }
 
-  bool operator!=(const IATElement& right) const
+  bool operator!=(const sIATElement& right) const
   {
     return !(*this == right);
   }
@@ -66,28 +66,28 @@ struct IATElement
  * CIATHookManagerA
  */
 
-CIATHookManagerA::CIATHookManagerA()
+IATHookingA::IATHookingA()
 {
 }
 
-CIATHookManagerA::~CIATHookManagerA()
+IATHookingA::~IATHookingA()
 {
 }
 
-CIATHookManagerA::IATElements::iterator CIATHookManagerA::find(
+IATHookingA::IATElements::iterator IATHookingA::find(
   const std::string& target,
   const std::string& module,
   const std::string& function)
 {
-  return std::find(m_iat_elements.begin(), m_iat_elements.end(), IATElement(target, module, function));
+  return std::find(m_iat_elements.begin(), m_iat_elements.end(), sIATElement(target, module, function));
 }
 
-CIATHookManagerA::IATElements::iterator CIATHookManagerA::find(const IATElement& element)
+IATHookingA::IATElements::iterator IATHookingA::find(const sIATElement& element)
 {
   return this->find(element.target, element.module, element.function);
 }
 
-bool CIATHookManagerA::exist(
+bool IATHookingA::exist(
   const std::string& target,
   const std::string& module,
   const std::string& function)
@@ -95,7 +95,7 @@ bool CIATHookManagerA::exist(
   return this->find(target, module, function) != m_iat_elements.end();
 }
 
-VUResult CIATHookManagerA::install(
+VUResult IATHookingA::install(
   const std::string& target,
   const std::string& module,
   const std::string& function,
@@ -107,7 +107,7 @@ VUResult CIATHookManagerA::install(
     return 1;
   }
 
-  auto element = IATElement(target, module, function, nullptr, replacement);
+  auto element = sIATElement(target, module, function, nullptr, replacement);
 
   if (this->perform(IATAction::IAT_INSTALL, element) != VU_OK)
   {
@@ -124,7 +124,7 @@ VUResult CIATHookManagerA::install(
   return VU_OK;
 }
 
-VUResult CIATHookManagerA::uninstall(
+VUResult IATHookingA::uninstall(
   const std::string& target,
   const std::string& module,
   const std::string& function,
@@ -153,7 +153,7 @@ VUResult CIATHookManagerA::uninstall(
   return VU_OK;
 }
 
-VUResult CIATHookManagerA::perform(const IATAction action, IATElement& element)
+VUResult IATHookingA::perform(const IATAction action, sIATElement& element)
 {
   if (element.target.empty() || element.module.empty() || element.function.empty())
   {
@@ -165,7 +165,7 @@ VUResult CIATHookManagerA::perform(const IATAction action, IATElement& element)
   {
     // MsgA("[%p] [%p] %s!%s\n", pOFT->u1.Function, pFT->u1.Function, m.c_str(), f.c_str());
   
-    if (element == IATElement(element.target, m, f))
+    if (element == sIATElement(element.target, m, f))
     {
       const void* address = 0;
 
@@ -197,7 +197,7 @@ VUResult CIATHookManagerA::perform(const IATAction action, IATElement& element)
   return VU_OK;
 }
 
-VUResult CIATHookManagerA::iterate(
+VUResult IATHookingA::iterate(
   const std::string& module,
   std::function<bool(
     const std::string& module,
@@ -270,32 +270,32 @@ VUResult CIATHookManagerA::iterate(
  * CIATHookManagerW
  */
 
-CIATHookManagerW::CIATHookManagerW()
+IATHookingW::IATHookingW()
 {
 }
 
-CIATHookManagerW::~CIATHookManagerW()
+IATHookingW::~IATHookingW()
 {
 }
 
-VUResult CIATHookManagerW::install(
+VUResult IATHookingW::install(
   const std::wstring& target,
   const std::wstring& module,
   const std::wstring& function,
   const void* replacement,
   const void** original)
 {
-  return CIATHookManagerA::instance().install(
+  return IATHookingA::instance().install(
     to_string_A(target), to_string_A(module), to_string_A(function), replacement, original);
 }
 
-VUResult CIATHookManagerW::uninstall(
+VUResult IATHookingW::uninstall(
   const std::wstring& target,
   const std::wstring& module,
   const std::wstring& function,
   const void** replacement)
 {
-  return CIATHookManagerA::instance().uninstall(
+  return IATHookingA::instance().uninstall(
     to_string_A(target), to_string_A(module), to_string_A(function), replacement);
 }
 

@@ -195,7 +195,7 @@ const TPattern to_pattern(const std::string& buffer)
   return result;
 }
 
-std::pair<bool, size_t> find_pattern_A(const CBuffer& buffer, const std::string& pattern)
+std::pair<bool, size_t> find_pattern_A(const Buffer& buffer, const std::string& pattern)
 {
   std::pair<bool, size_t> result(false, 0);
 
@@ -210,7 +210,7 @@ std::pair<bool, size_t> find_pattern_A(const CBuffer& buffer, const std::string&
   return find_pattern_A(pointer, size, pattern);
 }
 
-std::pair<bool, size_t> find_pattern_W(const CBuffer& buffer, const std::wstring& pattern)
+std::pair<bool, size_t> find_pattern_W(const Buffer& buffer, const std::wstring& pattern)
 {
   const auto s = to_string_A(pattern);
   return find_pattern_A(buffer, s);

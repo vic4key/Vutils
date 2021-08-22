@@ -4,7 +4,7 @@
 
 #include <conio.h>
 
-DEF_SAMPLE(WMHook)
+DEF_SAMPLE(WMHooking)
 {
   // extern "C" __declspec(dllexport) LRESULT CALLBACK fnXProc(int nCode, WPARAM wParam, LPARAM lParam)
   // {
@@ -32,7 +32,7 @@ DEF_SAMPLE(WMHook)
 
   auto pid = pids.back();
 
-  vu::CWMHook wh(pid, DLL_PATH);
+  vu::WMHooking wh(pid, DLL_PATH);
 
   std::tcout << ts("Enter to start Window Message hooking ...") << std::endl; _getch();
 

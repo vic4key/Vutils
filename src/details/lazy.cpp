@@ -49,7 +49,7 @@ VUResult vuapi Initialize_DLL_TLHELP32()
     return VU_OK;
   }
 
-  CLibrary kernel32(_T("kernel32.dll"));
+  Library kernel32(_T("kernel32.dll"));
   if (!kernel32.available())
   {
     return ERROR_CODE(__LINE__);
@@ -185,13 +185,13 @@ VUResult vuapi Initialize_DLL_PSAPI()
     return VU_OK;
   }
 
-  CLibrary kernel32(_T("kernel32.dll"));
+  Library kernel32(_T("kernel32.dll"));
   if (!kernel32.available())
   {
     return ERROR_CODE(__LINE__);
   }
 
-  CLibrary psapi(_T("psapi.dll"));
+  Library psapi(_T("psapi.dll"));
   if (!psapi.available())
   {
     return ERROR_CODE(__LINE__);

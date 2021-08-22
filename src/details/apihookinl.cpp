@@ -39,11 +39,11 @@ namespace vu
 bool vuapi GetAssembleInstruction(
   const HDE::tagHDE& hde,
   const ulong offset,
-  std::vector<TMemoryInstruction>& instructions
+  std::vector<sMemoryInstruction>& instructions
 )
 {
   ulong pos_disp = 0;
-  TMemoryInstruction mi = {0};
+  sMemoryInstruction mi = {0};
   bool result = false, bFoundRelative = false;;
 
   // http://wiki.osdev.org/X86-64_Instruction_Encoding
@@ -162,7 +162,7 @@ bool vuapi GetAssembleInstruction(
   return result;
 }
 
-bool vuapi CINLHookX::attach(void* ptr_function, void* ptr_hook_function, void** pptr_old_function)
+bool vuapi INLHookingX::attach(void* ptr_function, void* ptr_hook_function, void** pptr_old_function)
 {
   /*
     // x86
@@ -173,7 +173,7 @@ bool vuapi CINLHookX::attach(void* ptr_function, void* ptr_hook_function, void**
     RIP + 6 | ?? ?? ?? ?? ?? ?? ?? ?? | XXXXXXXXXXXXXXXX
   */
 
-  TRedirect O2N = {0}, T2O = {0};
+  sRedirect O2N = {0}, T2O = {0};
 
   ulong trampoline_size = 0;
   bool found_trampoline_size = true;
@@ -251,7 +251,7 @@ bool vuapi CINLHookX::attach(void* ptr_function, void* ptr_hook_function, void**
   return true;
 }
 
-bool vuapi CINLHookX::detach(void* ptr_function, void** pptr_old_function)
+bool vuapi INLHookingX::detach(void* ptr_function, void** pptr_old_function)
 {
   if (!m_hooked)
   {
@@ -278,14 +278,14 @@ bool vuapi CINLHookX::detach(void* ptr_function, void** pptr_old_function)
   return true;
 }
 
-bool vuapi CINLHookA::install(
+bool vuapi INLHookingA::install(
   const std::string& module_name,
   const std::string& function_name,
   void* ptr_hook_function,
   void** pptr_old_function
 )
 {
-  void* ptr_function = CLibraryA::quick_get_proc_address(module_name, function_name);
+  void* ptr_function = LibraryA::quick_get_proc_address(module_name, function_name);
   if (ptr_function == nullptr)
   {
     return false;
@@ -296,7 +296,7 @@ bool vuapi CINLHookA::install(
   return m_hooked;
 }
 
-bool vuapi CINLHookA::uninstall(
+bool vuapi INLHookingA::uninstall(
   const std::string& module_name,
   const std::string& function_name,
   void** pptr_old_function
@@ -307,7 +307,7 @@ bool vuapi CINLHookA::uninstall(
     return false;
   }
 
-  void* ptr_function = CLibraryA::quick_get_proc_address(module_name, function_name);
+  void* ptr_function = LibraryA::quick_get_proc_address(module_name, function_name);
   if (ptr_function == nullptr)
   {
     return false;
@@ -316,14 +316,14 @@ bool vuapi CINLHookA::uninstall(
   return this->detach(ptr_function, pptr_old_function);
 }
 
-bool vuapi CINLHookW::install(
+bool vuapi INLHookingW::install(
   const std::wstring& module_name,
   const std::wstring& function_name,
   void* ptr_hook_function,
   void** pptr_old_function
 )
 {
-  void* ptr_function = CLibraryW::quick_get_proc_address(module_name, function_name);
+  void* ptr_function = LibraryW::quick_get_proc_address(module_name, function_name);
   if (ptr_function == nullptr)
   {
     return false;
@@ -334,7 +334,7 @@ bool vuapi CINLHookW::install(
   return m_hooked;
 }
 
-bool vuapi CINLHookW::uninstall(
+bool vuapi INLHookingW::uninstall(
   const std::wstring& module_name,
   const std::wstring& function_name,
   void** pptr_old_function
@@ -345,7 +345,7 @@ bool vuapi CINLHookW::uninstall(
     return false;
   }
 
-  void* ptr_function = CLibraryW::quick_get_proc_address(module_name, function_name);
+  void* ptr_function = LibraryW::quick_get_proc_address(module_name, function_name);
   if (ptr_function == nullptr)
   {
     return false;

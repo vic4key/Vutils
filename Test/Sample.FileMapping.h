@@ -4,7 +4,7 @@
 
 DEF_SAMPLE(FileMapping)
 {
-  vu::CFileMapping fm;
+  vu::FileMapping fm;
 
   void* p = nullptr;
 

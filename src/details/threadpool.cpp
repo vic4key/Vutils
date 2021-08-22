@@ -29,7 +29,7 @@ CThreadPool::~CThreadPool()
   delete m_ptr_impl;
 }
 
-void CThreadPool::add_task(FnTask&& fn)
+void CThreadPool::add_task(fn_task_t&& fn)
 {
   m_ptr_impl->postWork(static_cast<Worker::WorkType>(fn));
 }

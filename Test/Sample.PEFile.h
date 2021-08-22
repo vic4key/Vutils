@@ -21,11 +21,11 @@ DEF_SAMPLE(PEFile)
 
   auto pid = pids.back();
 
-  vu::CProcess process;
+  vu::Process process;
   process.attach(pid);
   auto module = process.get_module_information();
 
-  vu::CPEFileT<vu::peX> pe(module.szExePath);
+  vu::PEFileT<vu::peX> pe(module.szExePath);
   vu::VUResult result = pe.parse();
   if (result != vu::VU_OK)
   {
@@ -99,7 +99,7 @@ DEF_SAMPLE(PEFile)
 
   for (auto e: modules)
   {
-    printf("%08X, '%s'\n", e.IIDID, e.Name.c_str());
+    printf("%08X, '%s'\n", e.iid_id, e.name.c_str());
   }
 
   SEPERATOR()
@@ -109,7 +109,7 @@ DEF_SAMPLE(PEFile)
 
   // for (auto e : functions)
   // {
-  //   auto s = vu::FormatA("iidID = %08X, Hint = %04X, '%s'", e.iidID, e.Hint, e.Name.c_str());
+  //   auto s = vu::FormatA("iid_id = %08X, Hint = %04X, '%s'", e.iid_id, e.hint, e.name.c_str());
   //   std::cout << s << std::endl;
   // }
 
@@ -118,7 +118,7 @@ DEF_SAMPLE(PEFile)
   auto ptr_module = pe.find_ptr_import_module("KERNEL32.DLL");
   if (ptr_module != nullptr)
   {
-    printf("%08X, '%s'\n", ptr_module->IIDID, ptr_module->Name.c_str());
+    printf("%08X, '%s'\n", ptr_module->iid_id, ptr_module->name.c_str());
   }
 
   SEPERATOR()
@@ -126,15 +126,15 @@ DEF_SAMPLE(PEFile)
   auto pfn = pe.find_ptr_import_function("GetLastError");
   if (pfn != nullptr)
   {
-    printf("%08X, %04X, '%s'\n", pfn->IIDID, pfn->Hint, pfn->Name.c_str());
+    printf("%08X, %04X, '%s'\n", pfn->iid_id, pfn->hint, pfn->name.c_str());
   }
 
   SEPERATOR()
 
-  for (const auto& Entry : pe.get_relocation_entries())
+  for (const auto& entry : pe.get_relocation_entries())
   {
-    auto Value = vu::peX(0);
-    vu::rpm(process.handle(), LPVOID(vu::peX(module.modBaseAddr) + Entry.RVA), &Value, sizeof(Value));
+    auto value = vu::peX(0);
+    vu::rpm(process.handle(), LPVOID(vu::peX(module.modBaseAddr) + entry.RVA), &value, sizeof(value));
 
     #ifdef _WIN64
     auto fmt = ts("%llX : %llX -> %llX");
@@ -142,7 +142,7 @@ DEF_SAMPLE(PEFile)
     auto fmt = ts("%08X : %08X -> %08X");
     #endif // _WIN64
 
-    std::tcout << vu::format(fmt, Entry.RVA, Entry.Value, Value) << std::endl;
+    std::tcout << vu::format(fmt, entry.RVA, entry.Value, value) << std::endl;
   }
 
   return vu::VU_OK;

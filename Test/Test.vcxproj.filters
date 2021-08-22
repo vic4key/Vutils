@@ -42,7 +42,7 @@
     <ClInclude Include="Sample.DF.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sample.WMHook.h">
+    <ClInclude Include="Sample.WMHooking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sample.INIFile.h">
@@ -84,10 +84,10 @@
     <ClInclude Include="Sample.StopWatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sample.IATHook.h">
+    <ClInclude Include="Sample.IATHooking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sample.INLHook.h">
+    <ClInclude Include="Sample.INLHooking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sample.WMI.h">

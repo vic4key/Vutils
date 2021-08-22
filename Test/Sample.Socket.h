@@ -18,7 +18,7 @@ DEF_SAMPLE(Socket)
   REQ_CONTENT.append("DNT: 1\r\n");
   REQ_CONTENT.append("\r\n");
 
-  vu::CSocket socket;
+  vu::Socket socket;
 
   if (socket.connect(REQ_HOST, 80) != vu::VU_OK)
   {
@@ -42,7 +42,7 @@ DEF_SAMPLE(Socket)
 
   // request to get file
 
-  vu::CBuffer response(KiB);
+  vu::Buffer response(KiB);
   const auto N = socket.recv(response);
   if (response.empty())
   {
@@ -67,11 +67,11 @@ DEF_SAMPLE(Socket)
     std::cout << std::tab << e << std::endl;
   }
 
-  vu::CBuffer buffer(response.get_ptr_bytes() + ResponseHeader.length(), N - ResponseHeader.length());
+  vu::Buffer buffer(response.get_ptr_bytes() + ResponseHeader.length(), N - ResponseHeader.length());
 
   // receive file chunks and append to the file buffer
 
-  vu::CBuffer file;
+  vu::Buffer file;
 
   while (!buffer.empty())
   {

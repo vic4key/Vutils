@@ -4,7 +4,7 @@
 
 DEF_SAMPLE(Singleton)
 {
-  class CService : public vu::CSingletonT<CService>
+  class CService : public vu::SingletonT<CService>
   {
   public:
     void Start() {}

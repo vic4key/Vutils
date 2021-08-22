@@ -43,17 +43,17 @@ DEF_SAMPLE(DF)
   std::tcout << vu::normalize_path(ts("C:\\path\\\\to\\file.exe")) << std::endl;
   std::tcout << vu::normalize_path(ts("C:\\\\path\\to/file.exe")) << std::endl;
 
-  vu::CPath file_dir;
+  vu::Path file_dir;
   file_dir.join(ts("   C:/Users")).join(ts("/Vic")).join(ts("\\.vscode\\")).finalize();
 
-  vu::CPath file_dir_tmp = std::tstring(ts("C:/Users/Vic\\.vscode\\extensions"));
+  vu::Path file_dir_tmp = std::tstring(ts("C:/Users/Vic\\.vscode\\extensions"));
   
-  vu::CPath file_path(file_dir);
-  file_path += vu::CPath(ts("argv.json"));
+  vu::Path file_path(file_dir);
+  file_path += vu::Path(ts("argv.json"));
   file_path.finalize();
 
-  vu::CPath file_path_tmp(file_dir);
-  file_path_tmp = file_path_tmp + vu::CPath(ts("argv-tmp.json"));
+  vu::Path file_path_tmp(file_dir);
+  file_path_tmp = file_path_tmp + vu::Path(ts("argv-tmp.json"));
   file_path_tmp.finalize();
 
   std::tcout << file_dir  << std::endl;

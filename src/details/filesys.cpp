@@ -11,19 +11,19 @@
 namespace vu
 {
 
-CFileSystemX::CFileSystemX() : CLastError()
+FileSystemX::FileSystemX() : LastError()
 {
   m_read_size  = 0;
   m_wrote_size = 0;
   m_handle = nullptr;
 }
 
-CFileSystemX::~CFileSystemX()
+FileSystemX::~FileSystemX()
 {
   this->close();
 }
 
-bool vuapi CFileSystemX::valid(HANDLE handle)
+bool vuapi FileSystemX::valid(HANDLE handle)
 {
   if (handle == nullptr || handle == INVALID_HANDLE_VALUE)
   {
@@ -33,12 +33,12 @@ bool vuapi CFileSystemX::valid(HANDLE handle)
   return true;
 }
 
-bool vuapi CFileSystemX::ready()
+bool vuapi FileSystemX::ready()
 {
   return this->valid(m_handle);
 }
 
-bool vuapi CFileSystemX::read(ulong offset, void* ptr_buffer, ulong size, eMoveMethodFlags flags)
+bool vuapi FileSystemX::read(ulong offset, void* ptr_buffer, ulong size, eMoveMethodFlags flags)
 {
   if (!this->seek(offset, flags))
   {
@@ -55,7 +55,7 @@ bool vuapi CFileSystemX::read(ulong offset, void* ptr_buffer, ulong size, eMoveM
   return true;
 }
 
-bool vuapi CFileSystemX::read(void* ptr_buffer, ulong size)
+bool vuapi FileSystemX::read(void* ptr_buffer, ulong size)
 {
   BOOL result = ReadFile(m_handle, ptr_buffer, size, (LPDWORD)&m_read_size, NULL);
   if (!result && size != m_read_size)
@@ -67,7 +67,7 @@ bool vuapi CFileSystemX::read(void* ptr_buffer, ulong size)
   return true;
 }
 
-bool vuapi CFileSystemX::write(ulong offset, const void* ptr_buffer, ulong size, eMoveMethodFlags flags)
+bool vuapi FileSystemX::write(ulong offset, const void* ptr_buffer, ulong size, eMoveMethodFlags flags)
 {
   if (!this->seek(offset, flags)) return false;
 
@@ -81,7 +81,7 @@ bool vuapi CFileSystemX::write(ulong offset, const void* ptr_buffer, ulong size,
   return true;
 }
 
-bool vuapi CFileSystemX::write(const void* ptr_buffer, ulong size)
+bool vuapi FileSystemX::write(const void* ptr_buffer, ulong size)
 {
   BOOL result = WriteFile(m_handle, ptr_buffer, size, (LPDWORD)&m_wrote_size, NULL);
   if (!result && size != m_wrote_size)
@@ -93,7 +93,7 @@ bool vuapi CFileSystemX::write(const void* ptr_buffer, ulong size)
   return true;
 }
 
-bool vuapi CFileSystemX::seek(ulong offset, eMoveMethodFlags flags)
+bool vuapi FileSystemX::seek(ulong offset, eMoveMethodFlags flags)
 {
   if (!this->valid(m_handle))
   {
@@ -107,7 +107,7 @@ bool vuapi CFileSystemX::seek(ulong offset, eMoveMethodFlags flags)
   return (result != INVALID_SET_FILE_POINTER);
 }
 
-ulong vuapi CFileSystemX::get_file_size()
+ulong vuapi FileSystemX::get_file_size()
 {
   if (!this->valid(m_handle))
   {
@@ -121,7 +121,7 @@ ulong vuapi CFileSystemX::get_file_size()
   return result;
 }
 
-bool vuapi CFileSystemX::io_control(ulong code, void* ptr_send_buffer, ulong send_size, void* ptr_recv_buffer, ulong recv_size)
+bool vuapi FileSystemX::io_control(ulong code, void* ptr_send_buffer, ulong send_size, void* ptr_recv_buffer, ulong recv_size)
 {
   ulong return_length = 0;
 
@@ -141,7 +141,7 @@ bool vuapi CFileSystemX::io_control(ulong code, void* ptr_send_buffer, ulong sen
   return result;
 }
 
-bool vuapi CFileSystemX::close()
+bool vuapi FileSystemX::close()
 {
   if (!this->valid(m_handle))
   {
@@ -158,9 +158,9 @@ bool vuapi CFileSystemX::close()
   return true;
 }
 
-const CBuffer vuapi CFileSystemX::read_as_buffer()
+const Buffer vuapi FileSystemX::read_as_buffer()
 {
-  CBuffer buffer(0);
+  Buffer buffer(0);
 
   auto size = this->get_file_size();
   if (size == 0)
@@ -177,20 +177,20 @@ const CBuffer vuapi CFileSystemX::read_as_buffer()
 
 // A
 
-CFileSystemA::CFileSystemA() : CFileSystemX()
+FileSystemA::FileSystemA() : FileSystemX()
 {
 }
 
-CFileSystemA::CFileSystemA(const std::string& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags, eFSShareFlags fs_flags, eFSAttributeFlags fa_flags) : CFileSystemX()
+FileSystemA::FileSystemA(const std::string& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags, eFSShareFlags fs_flags, eFSAttributeFlags fa_flags) : FileSystemX()
 {
   this->initialize(file_path, fm_flags, fg_flags, fs_flags, fa_flags);
 }
 
-CFileSystemA::~CFileSystemA()
+FileSystemA::~FileSystemA()
 {
 }
 
-bool vuapi CFileSystemA::initialize(const std::string& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags, eFSShareFlags fs_flags, eFSAttributeFlags fa_flags)
+bool vuapi FileSystemA::initialize(const std::string& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags, eFSShareFlags fs_flags, eFSAttributeFlags fa_flags)
 {
   m_handle = CreateFileA(file_path.c_str(), fg_flags, fs_flags, NULL, fm_flags, fa_flags, NULL);
   if (!this->valid(m_handle))
@@ -202,7 +202,7 @@ bool vuapi CFileSystemA::initialize(const std::string& file_path, eFSModeFlags f
   return true;
 }
 
-const std::string vuapi CFileSystemA::read_as_string(bool remove_bom)
+const std::string vuapi FileSystemA::read_as_string(bool remove_bom)
 {
   std::string result("");
 
@@ -226,25 +226,25 @@ const std::string vuapi CFileSystemA::read_as_string(bool remove_bom)
   return result;
 }
 
-const std::string vuapi CFileSystemA::quick_read_as_string(const std::string& file_path, bool remove_bom)
+const std::string vuapi FileSystemA::quick_read_as_string(const std::string& file_path, bool remove_bom)
 {
-  CFileSystemA file(file_path, vu::eFSModeFlags::FM_OPENEXISTING);
+  FileSystemA file(file_path, vu::eFSModeFlags::FM_OPENEXISTING);
   auto result = file.read_as_string(remove_bom);
   return result;
 }
 
-CBuffer CFileSystemA::quick_read_as_buffer(const std::string& file_path)
+Buffer FileSystemA::quick_read_as_buffer(const std::string& file_path)
 {
   if (!is_file_exists_A(file_path))
   {
-    return CBuffer();
+    return Buffer();
   }
 
-  CFileSystemA fs(file_path, eFSModeFlags::FM_OPENEXISTING);
+  FileSystemA fs(file_path, eFSModeFlags::FM_OPENEXISTING);
   return fs.read_as_buffer();
 }
 
-bool CFileSystemA::iterate(const std::string& path, const std::string& pattern, const std::function<bool(const TFSObjectA& fso)> fn_callback)
+bool FileSystemA::iterate(const std::string& path, const std::string& pattern, const std::function<bool(const sFSObjectA& fso)> fn_callback)
 {
   auto the_path = vu::trim_string_A(path);
   if (the_path.empty())
@@ -267,7 +267,7 @@ bool CFileSystemA::iterate(const std::string& path, const std::string& pattern, 
     return false;
   }
 
-  TFSObjectA file_object;
+  sFSObjectA file_object;
   file_object.directory = the_path;
 
   LARGE_INTEGER file_size = { 0 };
@@ -302,20 +302,20 @@ bool CFileSystemA::iterate(const std::string& path, const std::string& pattern, 
 
 // W
 
-CFileSystemW::CFileSystemW() : CFileSystemX()
+FileSystemW::FileSystemW() : FileSystemX()
 {
 }
 
-CFileSystemW::CFileSystemW(const std::wstring& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags, eFSShareFlags fs_flags, eFSAttributeFlags fa_flags) : CFileSystemX()
+FileSystemW::FileSystemW(const std::wstring& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags, eFSShareFlags fs_flags, eFSAttributeFlags fa_flags) : FileSystemX()
 {
   this->initialize(file_path, fm_flags, fg_flags, fs_flags, fa_flags);
 }
 
-CFileSystemW::~CFileSystemW()
+FileSystemW::~FileSystemW()
 {
 }
 
-bool vuapi CFileSystemW::initialize(const std::wstring& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags, eFSShareFlags fs_flags, eFSAttributeFlags fa_flags)
+bool vuapi FileSystemW::initialize(const std::wstring& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags, eFSShareFlags fs_flags, eFSAttributeFlags fa_flags)
 {
   m_handle = CreateFileW(file_path.c_str(), fg_flags, fs_flags, NULL, fm_flags, fa_flags, NULL);
   if (!this->valid(m_handle))
@@ -327,7 +327,7 @@ bool vuapi CFileSystemW::initialize(const std::wstring& file_path, eFSModeFlags 
   return true;
 }
 
-const std::wstring vuapi CFileSystemW::read_as_string(bool remove_bom)
+const std::wstring vuapi FileSystemW::read_as_string(bool remove_bom)
 {
   std::wstring result(L"");
 
@@ -351,25 +351,25 @@ const std::wstring vuapi CFileSystemW::read_as_string(bool remove_bom)
   return result;
 }
 
-const std::wstring vuapi CFileSystemW::quick_read_as_string(const std::wstring& FilePath, bool removeBOM)
+const std::wstring vuapi FileSystemW::quick_read_as_string(const std::wstring& FilePath, bool removeBOM)
 {
-  CFileSystemW file(FilePath, vu::eFSModeFlags::FM_OPENEXISTING);
+  FileSystemW file(FilePath, vu::eFSModeFlags::FM_OPENEXISTING);
   auto result = file.read_as_string(removeBOM);
   return result;
 }
 
-CBuffer CFileSystemW::quick_read_as_buffer(const std::wstring& FilePath)
+Buffer FileSystemW::quick_read_as_buffer(const std::wstring& FilePath)
 {
   if (!is_file_exists_W(FilePath))
   {
-    return CBuffer();
+    return Buffer();
   }
 
-  CFileSystemW fs(FilePath, eFSModeFlags::FM_OPENEXISTING);
+  FileSystemW fs(FilePath, eFSModeFlags::FM_OPENEXISTING);
   return fs.read_as_buffer();
 }
 
-bool CFileSystemW::iterate(const std::wstring& path, const std::wstring& pattern, const std::function<bool(const TFSObjectW& FSObject)> fn_callback)
+bool FileSystemW::iterate(const std::wstring& path, const std::wstring& pattern, const std::function<bool(const sFSObjectW& FSObject)> fn_callback)
 {
   auto the_path = vu::trim_string_W(path);
   if (the_path.empty())
@@ -392,7 +392,7 @@ bool CFileSystemW::iterate(const std::wstring& path, const std::wstring& pattern
     return false;
   }
 
-  TFSObjectW file_object;
+  sFSObjectW file_object;
   file_object.directory = the_path;
 
   LARGE_INTEGER file_size = { 0 };

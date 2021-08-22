@@ -11,20 +11,20 @@
 namespace vu
 {
 
-template class CPEFileTX<ulong32>;
-template class CPEFileTX<ulong64>;
+template class PEFileTX<ulong32>;
+template class PEFileTX<ulong64>;
 
 typedef struct _IMAGE_BASE_RELOCATION_ENTRY
 {
-  USHORT Offset : 12;
-  USHORT Type : 4;
+  USHORT offset : 12;
+  USHORT type : 4;
 } IMAGE_BASE_RELOCATION_ENTRY, * PIMAGE_BASE_RELOCATION_ENTRY;
 
 #define COUNT_RELOCATION_ENTRY(ptr)\
   (ptr == nullptr ? 0 : (PIMAGE_BASE_RELOCATION(ptr)->SizeOfBlock - sizeof(IMAGE_BASE_RELOCATION)) / sizeof(IMAGE_BASE_RELOCATION_ENTRY))
 
 template<typename T>
-CPEFileTX<T>::CPEFileTX()
+PEFileTX<T>::PEFileTX()
 {
   m_initialized = false;
 
@@ -48,16 +48,16 @@ CPEFileTX<T>::CPEFileTX()
 }
 
 template<typename T>
-CPEFileTX<T>::~CPEFileTX() {};
+PEFileTX<T>::~PEFileTX() {};
 
 template<typename T>
-void* vuapi CPEFileTX<T>::get_ptr_base()
+void* vuapi PEFileTX<T>::get_ptr_base()
 {
   return m_ptr_base;
 }
 
 template<typename T>
-TPEHeaderT<T>* vuapi CPEFileTX<T>::get_ptr_pe_header()
+TPEHeaderT<T>* vuapi PEFileTX<T>::get_ptr_pe_header()
 {
   if (!m_initialized)
   {
@@ -68,22 +68,22 @@ TPEHeaderT<T>* vuapi CPEFileTX<T>::get_ptr_pe_header()
 }
 
 template<typename T>
-const std::vector<PSectionHeader>& vuapi CPEFileTX<T>::get_setion_headers(bool InCache)
+const std::vector<PSectionHeader>& vuapi PEFileTX<T>::get_setion_headers(bool in_cache)
 {
   if (!m_initialized)
   {
     assert(0);
   }
 
-  if (InCache && !m_section_headers.empty())
+  if (in_cache && !m_section_headers.empty())
   {
     return m_section_headers;
   }
 
   m_section_headers.clear();
 
-  vu::PSectionHeader pSH = (PSectionHeader)((ulong64)m_ptr_pe_header + sizeof(vu::TNTHeaderT<T>));
-  if (pSH == nullptr)
+  vu::PSectionHeader ptr_section_header = (PSectionHeader)((ulong64)m_ptr_pe_header + sizeof(vu::TNTHeaderT<T>));
+  if (ptr_section_header == nullptr)
   {
     return m_section_headers;
   }
@@ -91,8 +91,8 @@ const std::vector<PSectionHeader>& vuapi CPEFileTX<T>::get_setion_headers(bool I
   m_section_headers.clear();
   for (int i = 0; i < m_ptr_pe_header->FileHeader.NumberOfSections; i++)
   {
-    m_section_headers.push_back(pSH);
-    pSH++;
+    m_section_headers.push_back(ptr_section_header);
+    ptr_section_header++;
   }
 
   return m_section_headers;
@@ -115,141 +115,141 @@ const std::vector<PSectionHeader>& vuapi CPEFileTX<T>::get_setion_headers(bool I
 // };
 
 template<typename T>
-const std::vector<TRelocationEntryT<T>> vuapi CPEFileTX<T>::get_relocation_entries(bool InCache)
+const std::vector<sRelocationEntryT<T>> vuapi PEFileTX<T>::get_relocation_entries(bool in_cache)
 {
   if (!m_initialized)
   {
     assert(0);
   }
 
-  if (InCache && !m_relocation_entries.empty())
+  if (in_cache && !m_relocation_entries.empty())
   {
     return m_relocation_entries;
   }
 
-  auto IDD = this->get_ptr_pe_header()->OptHeader.Relocation;
+  auto idd = this->get_ptr_pe_header()->OptHeader.Relocation;
 
-  for (DWORD Size = 0; Size < IDD.Size; )
+  for (DWORD size = 0; size < idd.Size; )
   {
-    auto ptr = PUCHAR(reinterpret_cast<ulong64>(this->get_ptr_base()) + this->rva_to_offset(IDD.VirtualAddress) + Size);
+    auto ptr = PUCHAR(reinterpret_cast<ulong64>(this->get_ptr_base()) + this->rva_to_offset(idd.VirtualAddress) + size);
     assert(ptr != nullptr);
 
-    auto pIBR = PIMAGE_BASE_RELOCATION(ptr);
-    assert(pIBR != nullptr);
+    auto ptr_base_relocation = PIMAGE_BASE_RELOCATION(ptr);
+    assert(ptr_base_relocation != nullptr);
 
-    auto nEntries = COUNT_RELOCATION_ENTRY(ptr);
+    auto n_entries = COUNT_RELOCATION_ENTRY(ptr);
     ptr += sizeof(IMAGE_BASE_RELOCATION);
 
-    for (DWORD idx = 0; idx < nEntries; idx++)
+    for (DWORD idx = 0; idx < n_entries; idx++)
     {
-      const auto pEntry = PIMAGE_BASE_RELOCATION_ENTRY(ptr + idx * sizeof(IMAGE_BASE_RELOCATION_ENTRY));
-      assert(pEntry);
+      const auto ptr_entry = PIMAGE_BASE_RELOCATION_ENTRY(ptr + idx * sizeof(IMAGE_BASE_RELOCATION_ENTRY));
+      assert(ptr_entry);
 
-      TRelocationEntryT<T> Entry = { 0 };
-      Entry.RVA = pIBR->VirtualAddress + pEntry->Offset;
-      auto Offset = this->rva_to_offset(Entry.RVA);
+      sRelocationEntryT<T> entry = { 0 };
+      entry.RVA = ptr_base_relocation->VirtualAddress + ptr_entry->offset;
+      auto offset = this->rva_to_offset(entry.RVA);
       // Entry.Offset = this->RVA2Offset(Entry.RVA);
       // Entry.VA = this->GetpPEHeader()->OptHeader.ImageBase + Entry.RVA;
-      Entry.Value = *reinterpret_cast<T*>(reinterpret_cast<ulong64>(this->get_ptr_base()) + Offset);
+      entry.Value = *reinterpret_cast<T*>(reinterpret_cast<ulong64>(this->get_ptr_base()) + offset);
 
-      m_relocation_entries.push_back(std::move(Entry));
+      m_relocation_entries.push_back(std::move(entry));
     }
 
-    Size += pIBR->SizeOfBlock;
+    size += ptr_base_relocation->SizeOfBlock;
   }
 
   return m_relocation_entries;
 }
 
 template<typename T>
-const std::vector<TExIID>& vuapi CPEFileTX<T>::get_ex_iids(bool InCache)
+const std::vector<sExIID>& vuapi PEFileTX<T>::get_ex_iids(bool in_cache)
 {
   if (!m_initialized)
   {
     assert(0);
   }
 
-  if (InCache && !m_ex_iids.empty())
+  if (in_cache && !m_ex_iids.empty())
   {
     return m_ex_iids;
   }
 
   m_ex_iids.clear();
 
-  T ulIIDOffset = this->rva_to_offset(m_ptr_pe_header->OptHeader.Import.VirtualAddress);
-  if (ulIIDOffset == T(-1))
+  T iid_offset = this->rva_to_offset(m_ptr_pe_header->OptHeader.Import.VirtualAddress);
+  if (iid_offset == T(-1))
   {
     return m_ex_iids;
   }
 
-  auto pIID = (PImportDescriptor)((ulong64)m_ptr_base + ulIIDOffset);
-  if (pIID == nullptr)
+  auto ptr_iid = (PImportDescriptor)((ulong64)m_ptr_base + iid_offset);
+  if (ptr_iid == nullptr)
   {
     return m_ex_iids;
   }
 
   m_ex_iids.clear();
 
-  for (int i = 0; pIID->FirstThunk != 0; i++, pIID++)
+  for (int i = 0; ptr_iid->FirstThunk != 0; i++, ptr_iid++)
   {
-    TExIID ExIID;
-    ExIID.IIDID = i;
-    ExIID.Name = (char*)((ulong64)m_ptr_base + this->rva_to_offset(pIID->Name));;
-    ExIID.pIID = pIID;
+    sExIID ex_iid;
+    ex_iid.iid_id = i;
+    ex_iid.name = (char*)((ulong64)m_ptr_base + this->rva_to_offset(ptr_iid->Name));;
+    ex_iid.ptr_iid = ptr_iid;
 
-    m_ex_iids.push_back(std::move(ExIID));
+    m_ex_iids.push_back(std::move(ex_iid));
   }
 
   return m_ex_iids;
 }
 
 template<typename T>
-const std::vector<PImportDescriptor>& vuapi CPEFileTX<T>::get_import_descriptors(bool InCache)
+const std::vector<PImportDescriptor>& vuapi PEFileTX<T>::get_import_descriptors(bool in_cache)
 {
   if (!m_initialized)
   {
     assert(0);
   }
 
-  if (InCache && !m_import_descriptors.empty())
+  if (in_cache && !m_import_descriptors.empty())
   {
     return m_import_descriptors;
   }
 
-  this->get_ex_iids(InCache);
+  this->get_ex_iids(in_cache);
 
   m_import_descriptors.clear();
 
   for (const auto& e: m_ex_iids)
   {
-    m_import_descriptors.push_back(e.pIID);
+    m_import_descriptors.push_back(e.ptr_iid);
   }
 
   return m_import_descriptors;
 }
 
 template<typename T>
-const std::vector<TImportModule> vuapi CPEFileTX<T>::get_import_modules(bool InCache)
+const std::vector<sImportModule> vuapi PEFileTX<T>::get_import_modules(bool in_cache)
 {
   if (!m_initialized)
   {
     assert(0);
   }
 
-  if (InCache && !m_import_modules.empty())
+  if (in_cache && !m_import_modules.empty())
   {
     return m_import_modules;
   }
 
   m_import_modules.clear();
 
-  this->get_ex_iids(InCache);
+  this->get_ex_iids(in_cache);
 
   for (const auto& e: m_ex_iids)
   {
-    TImportModule mi;
-    mi.IIDID = e.IIDID;
-    mi.Name  = e.Name;
+    sImportModule mi;
+    mi.iid_id = e.iid_id;
+    mi.name = e.name;
     // mi.NumberOfFuctions = 0;
 
     m_import_modules.push_back(std::move(mi));
@@ -259,77 +259,77 @@ const std::vector<TImportModule> vuapi CPEFileTX<T>::get_import_modules(bool InC
 }
 
 template<typename T>
-const std::vector<TImportFunctionT<T>> vuapi CPEFileTX<T>::get_import_functions(bool InCache)
+const std::vector<sImportFunctionT<T>> vuapi PEFileTX<T>::get_import_functions(bool in_cache)
 {
   if (!m_initialized)
   {
     assert(0);
   }
 
-  if (InCache && !m_import_functions.empty())
+  if (in_cache && !m_import_functions.empty())
   {
     return m_import_functions;
   }
 
-  this->get_ex_iids(InCache);
+  this->get_ex_iids(in_cache);
 
   m_import_functions.clear();
 
-  TThunkDataT<T>* pThunkData = nullptr;
-  TImportFunctionT<T> funcInfo;
+  TThunkDataT<T>* ptr_thunk_data = nullptr;
+  sImportFunctionT<T> funcInfo;
   for (const auto& e: m_ex_iids)
   {
-    T ulOffset = this->rva_to_offset(e.pIID->FirstThunk);
-    if (ulOffset == -1 || (pThunkData = (TThunkDataT<T>*)((ulong64)m_ptr_base + ulOffset)) == nullptr) continue;
+    T offset = this->rva_to_offset(e.ptr_iid->FirstThunk);
+    if (offset == -1 || (ptr_thunk_data = (TThunkDataT<T>*)((ulong64)m_ptr_base + offset)) == nullptr) continue;
     do
     {
-      if ((pThunkData->u1.AddressOfData & m_ordinal_flag) == m_ordinal_flag)   // Imported by ordinal
+      if ((ptr_thunk_data->u1.AddressOfData & m_ordinal_flag) == m_ordinal_flag)   // Imported by ordinal
       {
-        funcInfo.Name = "";
-        funcInfo.Hint = -1;
-        funcInfo.Ordinal = pThunkData->u1.AddressOfData & ~m_ordinal_flag;
+        funcInfo.name = "";
+        funcInfo.hint = -1;
+        funcInfo.ordinal = ptr_thunk_data->u1.AddressOfData & ~m_ordinal_flag;
       }
       else   // Imported by name
       {
-        ulOffset = this->rva_to_offset(pThunkData->u1.AddressOfData);
-        PImportByName p = (PImportByName)((ulong64)m_ptr_base + ulOffset);
-        if (ulOffset != -1 && p != nullptr)
+        offset = this->rva_to_offset(ptr_thunk_data->u1.AddressOfData);
+        PImportByName p = (PImportByName)((ulong64)m_ptr_base + offset);
+        if (offset != -1 && p != nullptr)
         {
-          funcInfo.Hint = p->Hint;
-          funcInfo.Ordinal = T(-1);
-          funcInfo.Name = (char*)p->Name;
+          funcInfo.hint = p->Hint;
+          funcInfo.ordinal = T(-1);
+          funcInfo.name = (char*)p->Name;
         }
       }
 
-      funcInfo.IIDID = e.IIDID;
-      funcInfo.RVA = pThunkData->u1.AddressOfData;
+      funcInfo.iid_id = e.iid_id;
+      funcInfo.rva = ptr_thunk_data->u1.AddressOfData;
       m_import_functions.push_back(funcInfo);
 
-      pThunkData++;
+      ptr_thunk_data++;
     }
-    while (pThunkData->u1.AddressOfData != 0);
+    while (ptr_thunk_data->u1.AddressOfData != 0);
   }
 
   return m_import_functions;
 }
 
 template<typename T>
-const TImportModule* vuapi CPEFileTX<T>::find_ptr_import_module(const std::string& ModuleName, bool InCache)
+const sImportModule* vuapi PEFileTX<T>::find_ptr_import_module(const std::string& module_name, bool in_cache)
 {
   if (!m_initialized)
   {
     assert(0);
   }
 
-  this->get_import_modules(InCache);
+  this->get_import_modules(in_cache);
 
-  const TImportModule* result = nullptr;
+  const sImportModule* result = nullptr;
 
-  auto s1 = upper_string_A(ModuleName);
+  auto s1 = upper_string_A(module_name);
 
   for (const auto& e: m_import_modules)
   {
-    auto s2 = upper_string_A(e.Name);
+    auto s2 = upper_string_A(e.name);
     if (s1 == s2)
     {
       result = &e;
@@ -341,10 +341,10 @@ const TImportModule* vuapi CPEFileTX<T>::find_ptr_import_module(const std::strin
 }
 
 template<typename T>
-const TImportFunctionT<T>* vuapi CPEFileTX<T>::find_ptr_import_function(
-  const TImportFunctionT<T>& ImportFunction,
-  eImportedFunctionFindMethod Method,
-  bool InCache
+const sImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
+  const sImportFunctionT<T>& import_function,
+  eImportedFunctionFindMethod method,
+  bool in_cache
 )
 {
   if (!m_initialized)
@@ -352,16 +352,16 @@ const TImportFunctionT<T>* vuapi CPEFileTX<T>::find_ptr_import_function(
     assert(0);
   }
 
-  const TImportFunctionT<T>* result = nullptr;
+  const sImportFunctionT<T>* result = nullptr;
 
-  this->get_import_functions(InCache);
+  this->get_import_functions(in_cache);
 
-  switch (Method)
+  switch (method)
   {
   case eImportedFunctionFindMethod::IFFM_HINT:
     for (const auto& e: m_import_functions)
     {
-      if (e.Hint == ImportFunction.Hint)
+      if (e.hint == import_function.hint)
       {
         result = &e;
         break;
@@ -372,7 +372,7 @@ const TImportFunctionT<T>* vuapi CPEFileTX<T>::find_ptr_import_function(
   case eImportedFunctionFindMethod::IFFM_NAME:
     for (const auto& e: m_import_functions)
     {
-      if (e.Name == ImportFunction.Name)
+      if (e.name == import_function.name)
       {
         result = &e;
         break;
@@ -388,34 +388,34 @@ const TImportFunctionT<T>* vuapi CPEFileTX<T>::find_ptr_import_function(
 }
 
 template<typename T>
-const TImportFunctionT<T>* vuapi CPEFileTX<T>::find_ptr_import_function(
-  const std::string& FunctionName,
-  bool InCache)
+const sImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
+  const std::string& function_name,
+  bool in_cache)
 {
-  TImportFunctionT<T> o = {0};
-  o.Name = FunctionName;
+  sImportFunctionT<T> o = {0};
+  o.name = function_name;
   return this->find_ptr_import_function(o, eImportedFunctionFindMethod::IFFM_NAME);
 }
 
 template<typename T>
-const TImportFunctionT<T>* vuapi CPEFileTX<T>::find_ptr_import_function(
-  const ushort FunctionHint,
-  bool InCache)
+const sImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
+  const ushort function_hint,
+  bool in_cache)
 {
-  TImportFunctionT<T> o = {0};
-  o.Hint = FunctionHint;
+  sImportFunctionT<T> o = {0};
+  o.hint = function_hint;
   return this->find_ptr_import_function(o, eImportedFunctionFindMethod::IFFM_HINT);
 }
 
 template<typename T>
-T vuapi CPEFileTX<T>::rva_to_offset(T RVA, bool InCache)
+T vuapi PEFileTX<T>::rva_to_offset(T rva, bool in_cache)
 {
   if (!m_initialized)
   {
     assert(0);
   }
 
-  if (!InCache || m_section_headers.empty())
+  if (!in_cache || m_section_headers.empty())
   {
     this->get_setion_headers(false);
   }
@@ -425,22 +425,22 @@ T vuapi CPEFileTX<T>::rva_to_offset(T RVA, bool InCache)
     return T(-1);
   }
 
-  const auto& theLastSection = *m_section_headers.rbegin();
+  const auto& the_last_section = *m_section_headers.rbegin();
 
-  std::pair<T, T> range(T(0), T(theLastSection->VirtualAddress) + T(theLastSection->Misc.VirtualSize));
-  if (RVA < range.first || RVA > range.second)
+  std::pair<T, T> range(T(0), T(the_last_section->VirtualAddress) + T(the_last_section->Misc.VirtualSize));
+  if (rva < range.first || rva > range.second)
   {
     return T(-1);
   }
 
-  T result = RVA;
+  T result = rva;
 
   for (auto& e : m_section_headers)
   {
-    if ((RVA >= e->VirtualAddress) && (RVA < (e->VirtualAddress + e->Misc.VirtualSize)))
+    if ((rva >= e->VirtualAddress) && (rva < (e->VirtualAddress + e->Misc.VirtualSize)))
     {
       result  = e->PointerToRawData;
-      result += (RVA - e->VirtualAddress);
+      result += (rva - e->VirtualAddress);
       break;
     }
   }
@@ -449,14 +449,14 @@ T vuapi CPEFileTX<T>::rva_to_offset(T RVA, bool InCache)
 }
 
 template<typename T>
-T vuapi CPEFileTX<T>::offset_to_rva(T Offset, bool InCache)
+T vuapi PEFileTX<T>::offset_to_rva(T offset, bool in_cache)
 {
   if (!m_initialized)
   {
     assert(0);
   }
 
-  if (!InCache || m_section_headers.empty())
+  if (!in_cache || m_section_headers.empty())
   {
     this->get_setion_headers(false);
   }
@@ -466,22 +466,22 @@ T vuapi CPEFileTX<T>::offset_to_rva(T Offset, bool InCache)
     return T(-1);
   }
 
-  const auto& theLastSection = *m_section_headers.rbegin();
+  const auto& the_last_section = *m_section_headers.rbegin();
 
-  std::pair<T, T> range(T(0), T(theLastSection->PointerToRawData) + T(theLastSection->SizeOfRawData));
-  if (Offset < range.first || Offset > range.second)
+  std::pair<T, T> range(T(0), T(the_last_section->PointerToRawData) + T(the_last_section->SizeOfRawData));
+  if (offset < range.first || offset > range.second)
   {
     return T(-1);
   }
 
-  T result = Offset;
+  T result = offset;
 
   for (auto& e : m_section_headers)
   {
-    if ((Offset >= e->PointerToRawData) && (Offset < (e->PointerToRawData + e->SizeOfRawData)))
+    if ((offset >= e->PointerToRawData) && (offset < (e->PointerToRawData + e->SizeOfRawData)))
     {
       result  = e->VirtualAddress;
-      result += (Offset - e->PointerToRawData);
+      result += (offset - e->PointerToRawData);
       break;
     }
   }
@@ -489,32 +489,32 @@ T vuapi CPEFileTX<T>::offset_to_rva(T Offset, bool InCache)
   return result;
 }
 
-template class CPEFileTA<ulong32>;
-template class CPEFileTA<ulong64>;
+template class PEFileTA<ulong32>;
+template class PEFileTA<ulong64>;
 
 template<typename T>
-CPEFileTA<T>::CPEFileTA(const std::string& pe_file_path)
+PEFileTA<T>::PEFileTA(const std::string& pe_file_path)
 {
-  CPEFileTX<T>::m_initialized = false;
+  PEFileTX<T>::m_initialized = false;
 
-  CPEFileTX<T>::m_ptr_base = nullptr;
-  CPEFileTX<T>::m_ptr_dos_header = nullptr;
-  CPEFileTX<T>::m_ptr_pe_header = nullptr;
+  PEFileTX<T>::m_ptr_base = nullptr;
+  PEFileTX<T>::m_ptr_dos_header = nullptr;
+  PEFileTX<T>::m_ptr_pe_header = nullptr;
 
   m_file_path = pe_file_path;
 }
 
 template<typename T>
-CPEFileTA<T>::~CPEFileTA()
+PEFileTA<T>::~PEFileTA()
 {
-  if (CPEFileTX<T>::m_initialized)
+  if (PEFileTX<T>::m_initialized)
   {
     m_file_map.close();
   }
 }
 
 template<typename T>
-VUResult vuapi CPEFileTA<T>::parse()
+VUResult vuapi PEFileTA<T>::parse()
 {
   if (m_file_path.empty())
   {
@@ -537,34 +537,34 @@ VUResult vuapi CPEFileTA<T>::parse()
     return 3;
   }
 
-  CPEFileTX<T>::m_ptr_base = m_file_map.view(eFMDesiredAccess::DA_READ);
-  if (CPEFileTX<T>::m_ptr_base == nullptr)
+  PEFileTX<T>::m_ptr_base = m_file_map.view(eFMDesiredAccess::DA_READ);
+  if (PEFileTX<T>::m_ptr_base == nullptr)
   {
     return 4;
   }
 
-  CPEFileTX<T>::m_ptr_dos_header = (PDOSHeader)CPEFileTX<T>::m_ptr_base;
-  if (CPEFileTX<T>::m_ptr_dos_header == nullptr)
+  PEFileTX<T>::m_ptr_dos_header = (PDOSHeader)PEFileTX<T>::m_ptr_base;
+  if (PEFileTX<T>::m_ptr_dos_header == nullptr)
   {
     return 5;
   }
 
-  CPEFileTX<T>::m_ptr_pe_header = (TPEHeaderT<T>*)((ulong64)CPEFileTX<T>::m_ptr_base + CPEFileTX<T>::m_ptr_dos_header->e_lfanew);
-  if (CPEFileTX<T>::m_ptr_pe_header == nullptr)
+  PEFileTX<T>::m_ptr_pe_header = (TPEHeaderT<T>*)((ulong64)PEFileTX<T>::m_ptr_base + PEFileTX<T>::m_ptr_dos_header->e_lfanew);
+  if (PEFileTX<T>::m_ptr_pe_header == nullptr)
   {
     return 6;
   }
 
   if (sizeof(T) == sizeof(pe32))
   {
-    if (CPEFileTX<T>::m_ptr_pe_header->OptHeader.Magic != IMAGE_NT_OPTIONAL_HDR32_MAGIC)
+    if (PEFileTX<T>::m_ptr_pe_header->OptHeader.Magic != IMAGE_NT_OPTIONAL_HDR32_MAGIC)
     {
       return 7; // Used wrong type data for the current PE file
     }
   }
   else if (sizeof(T) == sizeof(pe64))
   {
-    if (CPEFileTX<T>::m_ptr_pe_header->OptHeader.Magic != IMAGE_NT_OPTIONAL_HDR64_MAGIC)
+    if (PEFileTX<T>::m_ptr_pe_header->OptHeader.Magic != IMAGE_NT_OPTIONAL_HDR64_MAGIC)
     {
       return 7; // Used wrong type data for the current PE file
     }
@@ -574,37 +574,37 @@ VUResult vuapi CPEFileTA<T>::parse()
     return 8; // The curent type data was not supported
   }
 
-  CPEFileTX<T>::m_initialized = true;
+  PEFileTX<T>::m_initialized = true;
 
   return VU_OK;
 }
 
-template class CPEFileTW<ulong32>;
-template class CPEFileTW<ulong64>;
+template class PEFileTW<ulong32>;
+template class PEFileTW<ulong64>;
 
 template<typename T>
-CPEFileTW<T>::CPEFileTW(const std::wstring& pe_file_path)
+PEFileTW<T>::PEFileTW(const std::wstring& pe_file_path)
 {
-  CPEFileTX<T>::m_initialized = false;
+  PEFileTX<T>::m_initialized = false;
 
-  CPEFileTX<T>::m_ptr_base = nullptr;
-  CPEFileTX<T>::m_ptr_dos_header = nullptr;
-  CPEFileTX<T>::m_ptr_pe_header  = nullptr;
+  PEFileTX<T>::m_ptr_base = nullptr;
+  PEFileTX<T>::m_ptr_dos_header = nullptr;
+  PEFileTX<T>::m_ptr_pe_header  = nullptr;
 
   m_file_path = pe_file_path;
 }
 
 template<typename T>
-CPEFileTW<T>::~CPEFileTW()
+PEFileTW<T>::~PEFileTW()
 {
-  if (CPEFileTX<T>::m_initialized)
+  if (PEFileTX<T>::m_initialized)
   {
     m_file_map.close();
   }
 }
 
 template<typename T>
-VUResult vuapi CPEFileTW<T>::parse()
+VUResult vuapi PEFileTW<T>::parse()
 {
   if (m_file_path.empty())
   {
@@ -626,34 +626,34 @@ VUResult vuapi CPEFileTW<T>::parse()
     return 3;
   }
 
-  CPEFileTX<T>::m_ptr_base = m_file_map.view(eFMDesiredAccess::DA_READ);
-  if (CPEFileTX<T>::m_ptr_base == nullptr)
+  PEFileTX<T>::m_ptr_base = m_file_map.view(eFMDesiredAccess::DA_READ);
+  if (PEFileTX<T>::m_ptr_base == nullptr)
   {
     return 4;
   }
 
-  CPEFileTX<T>::m_ptr_dos_header = (PDOSHeader)CPEFileTX<T>::m_ptr_base;
-  if (CPEFileTX<T>::m_ptr_dos_header == nullptr)
+  PEFileTX<T>::m_ptr_dos_header = (PDOSHeader)PEFileTX<T>::m_ptr_base;
+  if (PEFileTX<T>::m_ptr_dos_header == nullptr)
   {
     return 5;
   }
 
-  CPEFileTX<T>::m_ptr_pe_header = (TPEHeaderT<T>*)((ulong64)CPEFileTX<T>::m_ptr_base + CPEFileTX<T>::m_ptr_dos_header->e_lfanew);
-  if (CPEFileTX<T>::m_ptr_pe_header == nullptr)
+  PEFileTX<T>::m_ptr_pe_header = (TPEHeaderT<T>*)((ulong64)PEFileTX<T>::m_ptr_base + PEFileTX<T>::m_ptr_dos_header->e_lfanew);
+  if (PEFileTX<T>::m_ptr_pe_header == nullptr)
   {
     return 6;
   }
 
   if (sizeof(T) == sizeof(pe32))
   {
-    if (CPEFileTX<T>::m_ptr_pe_header->OptHeader.Magic != IMAGE_NT_OPTIONAL_HDR32_MAGIC)
+    if (PEFileTX<T>::m_ptr_pe_header->OptHeader.Magic != IMAGE_NT_OPTIONAL_HDR32_MAGIC)
     {
       return 7; // Used wrong type data for the current PE file
     }
   }
   else if (sizeof(T) == sizeof(pe64))
   {
-    if (CPEFileTX<T>::m_ptr_pe_header->OptHeader.Magic != IMAGE_NT_OPTIONAL_HDR64_MAGIC)
+    if (PEFileTX<T>::m_ptr_pe_header->OptHeader.Magic != IMAGE_NT_OPTIONAL_HDR64_MAGIC)
     {
       return 7; // Used wrong type data for the current PE file
     }
@@ -663,7 +663,7 @@ VUResult vuapi CPEFileTW<T>::parse()
     return 8; // The curent type data was not supported
   }
 
-  CPEFileTX<T>::m_initialized = true;
+  PEFileTX<T>::m_initialized = true;
 
   return VU_OK;
 }

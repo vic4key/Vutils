@@ -15,7 +15,7 @@ DEF_SAMPLE(WMIProvider)
   // Example 1
   // Get-WmiObject -Class MSFT_PhysicalDisk -Namespace ROOT\Microsoft\Windows\Storage | Select FriendlyName
 
-  vu::CWMIProvider wmi;
+  vu::WMIProvider wmi;
   wmi.begin(ts("ROOT\\Microsoft\\Windows\\Storage"));
   {
     wmi.query(ts("SELECT * FROM MSFT_PhysicalDisk"), [](IWbemClassObject& object) -> bool

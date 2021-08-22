@@ -47,26 +47,26 @@ bool fnContains(const StringT& _1, const StringT& _2, bool exact)
  * CServiceManagerT
  */
 
-template <typename ServiceT>
-CServiceManagerT<ServiceT>::CServiceManagerT() : m_hmanager(nullptr), m_initialized(false)
+template <typename service_t>
+ServiceManagerT<service_t>::ServiceManagerT() : m_hmanager(nullptr), m_initialized(false)
 {
   // this->Refresh();
 }
 
-template <typename ServiceT>
-CServiceManagerT<ServiceT>::~CServiceManagerT()
+template <typename service_t>
+ServiceManagerT<service_t>::~ServiceManagerT()
 {
 }
 
-template <typename ServiceT>
-void CServiceManagerT<ServiceT>::refresh()
+template <typename service_t>
+void ServiceManagerT<service_t>::refresh()
 {
   m_initialized = false;
   this->initialize();
 }
 
-template <typename ServiceT>
-typename CServiceManagerT<ServiceT>::TServices CServiceManagerT<ServiceT>::get_services(
+template <typename service_t>
+typename ServiceManagerT<service_t>::TServices ServiceManagerT<service_t>::get_services(
   ulong types,
   ulong states
 )
@@ -93,16 +93,16 @@ typename CServiceManagerT<ServiceT>::TServices CServiceManagerT<ServiceT>::get_s
  * CServiceManagerA
  */
 
-CServiceManagerA::CServiceManagerA() : CServiceManagerTA()
+ServiceManagerA::ServiceManagerA() : ServiceManagerTA()
 {
   this->refresh();
 }
 
-CServiceManagerA::~CServiceManagerA()
+ServiceManagerA::~ServiceManagerA()
 {
 }
 
-VUResult CServiceManagerA::initialize()
+VUResult ServiceManagerA::initialize()
 {
   if (m_initialized)
   {
@@ -168,8 +168,8 @@ VUResult CServiceManagerA::initialize()
   return VU_OK;
 }
 
-std::unique_ptr<SERVICE_STATUS> CServiceManagerA::control(
-  const CServiceManagerA::TServices::value_type* pService,
+std::unique_ptr<SERVICE_STATUS> ServiceManagerA::control(
+  const ServiceManagerA::TServices::value_type* pService,
   const ulong ctrlcode
 )
 {
@@ -209,7 +209,7 @@ std::unique_ptr<SERVICE_STATUS> CServiceManagerA::control(
   return result;
 }
 
-std::unique_ptr<SERVICE_STATUS> CServiceManagerA::control(
+std::unique_ptr<SERVICE_STATUS> ServiceManagerA::control(
   const std::string& name,
   const ulong ctrlcode
 )
@@ -223,7 +223,7 @@ std::unique_ptr<SERVICE_STATUS> CServiceManagerA::control(
   return this->control(pservice.get(), ctrlcode);
 }
 
-CServiceManagerA::TServices CServiceManagerA::find(
+ServiceManagerA::TServices ServiceManagerA::find(
   const std::string& str,
   bool exact,
   bool nameonly
@@ -251,7 +251,7 @@ CServiceManagerA::TServices CServiceManagerA::find(
   return result;
 }
 
-std::unique_ptr<CServiceManagerA::TServices::value_type> CServiceManagerA::query(
+std::unique_ptr<ServiceManagerA::TServices::value_type> ServiceManagerA::query(
   const std::string& service_name)
 {
   if (service_name.empty())
@@ -271,7 +271,7 @@ std::unique_ptr<CServiceManagerA::TServices::value_type> CServiceManagerA::query
   return result;
 }
 
-int CServiceManagerA::get_state(const std::string& service_name)
+int ServiceManagerA::get_state(const std::string& service_name)
 {
   auto ptr_service = this->query(service_name);
   if (ptr_service == nullptr)
@@ -282,7 +282,7 @@ int CServiceManagerA::get_state(const std::string& service_name)
   return ptr_service->ServiceStatusProcess.dwCurrentState;
 }
 
-CServiceManagerA::TServices CServiceManagerA::get_dependents(
+ServiceManagerA::TServices ServiceManagerA::get_dependents(
   const std::string& service_name, const ulong states)
 {
   TServices result;
@@ -348,7 +348,7 @@ CServiceManagerA::TServices CServiceManagerA::get_dependents(
   return result;
 }
 
-CServiceManagerA::TServices CServiceManagerA::get_dependencies(
+ServiceManagerA::TServices ServiceManagerA::get_dependencies(
   const std::string& service_name, const ulong states)
 {
   TServices result;
@@ -402,7 +402,7 @@ CServiceManagerA::TServices CServiceManagerA::get_dependencies(
   return result;
 }
 
-VUResult CServiceManagerA::uninstall(const std::string& name)
+VUResult ServiceManagerA::uninstall(const std::string& name)
 {
   auto ptr_service = this->query(name);
   if (ptr_service == nullptr)
@@ -437,7 +437,7 @@ VUResult CServiceManagerA::uninstall(const std::string& name)
   return VU_OK;
 }
 
-VUResult CServiceManagerA::start(const std::string& name)
+VUResult ServiceManagerA::start(const std::string& name)
 {
   auto ptr_service = this->query(name);
   if (ptr_service == nullptr)
@@ -485,7 +485,7 @@ VUResult CServiceManagerA::start(const std::string& name)
   return VU_OK;
 }
 
-VUResult CServiceManagerA::stop(const std::string& name)
+VUResult ServiceManagerA::stop(const std::string& name)
 {
   auto ptr_service = this->query(name);
   if (ptr_service == nullptr)
@@ -509,7 +509,7 @@ VUResult CServiceManagerA::stop(const std::string& name)
   return VU_OK;
 }
 
-VUResult CServiceManagerA::install(
+VUResult ServiceManagerA::install(
   const std::string& file_path,
   const std::string& service_name,
   const std::string& display_name,
@@ -566,16 +566,16 @@ VUResult CServiceManagerA::install(
  * CServiceManagerW
  */
 
-CServiceManagerW::CServiceManagerW() : CServiceManagerTW()
+ServiceManagerW::ServiceManagerW() : ServiceManagerTW()
 {
   this->refresh();
 }
 
-CServiceManagerW::~CServiceManagerW()
+ServiceManagerW::~ServiceManagerW()
 {
 }
 
-VUResult CServiceManagerW::initialize()
+VUResult ServiceManagerW::initialize()
 {
   if (m_initialized)
   {
@@ -639,8 +639,8 @@ VUResult CServiceManagerW::initialize()
   return VU_OK;
 }
 
-std::unique_ptr<SERVICE_STATUS> CServiceManagerW::control(
-  const CServiceManagerW::TServices::value_type* pService,
+std::unique_ptr<SERVICE_STATUS> ServiceManagerW::control(
+  const ServiceManagerW::TServices::value_type* pService,
   const ulong ctrlcode
 )
 {
@@ -680,7 +680,7 @@ std::unique_ptr<SERVICE_STATUS> CServiceManagerW::control(
   return result;
 }
 
-std::unique_ptr<SERVICE_STATUS> CServiceManagerW::control(
+std::unique_ptr<SERVICE_STATUS> ServiceManagerW::control(
   const std::wstring& name,
   const ulong ctrlcode
 )
@@ -694,7 +694,7 @@ std::unique_ptr<SERVICE_STATUS> CServiceManagerW::control(
   return this->control(pService.get(), ctrlcode);
 }
 
-CServiceManagerW::TServices CServiceManagerW::find(
+ServiceManagerW::TServices ServiceManagerW::find(
   const std::wstring& str,
   bool exact,
   bool nameonly
@@ -722,7 +722,7 @@ CServiceManagerW::TServices CServiceManagerW::find(
   return result;
 }
 
-std::unique_ptr<CServiceManagerW::TServices::value_type> CServiceManagerW::query(
+std::unique_ptr<ServiceManagerW::TServices::value_type> ServiceManagerW::query(
   const std::wstring& service_name)
 {
   if (service_name.empty())
@@ -742,7 +742,7 @@ std::unique_ptr<CServiceManagerW::TServices::value_type> CServiceManagerW::query
   return result;
 }
 
-int CServiceManagerW::get_state(const std::wstring& service_name)
+int ServiceManagerW::get_state(const std::wstring& service_name)
 {
   auto pService = this->query(service_name);
   if (pService == nullptr)
@@ -753,7 +753,7 @@ int CServiceManagerW::get_state(const std::wstring& service_name)
   return pService->ServiceStatusProcess.dwCurrentState;
 }
 
-CServiceManagerW::TServices CServiceManagerW::get_dependents(
+ServiceManagerW::TServices ServiceManagerW::get_dependents(
   const std::wstring& service_name, const ulong states)
 {
   TServices result;
@@ -819,7 +819,7 @@ CServiceManagerW::TServices CServiceManagerW::get_dependents(
   return result;
 }
 
-CServiceManagerW::TServices CServiceManagerW::get_dependencies(
+ServiceManagerW::TServices ServiceManagerW::get_dependencies(
   const std::wstring& service_name, const ulong states)
 {
   TServices result;
@@ -873,7 +873,7 @@ CServiceManagerW::TServices CServiceManagerW::get_dependencies(
   return result;
 }
 
-VUResult CServiceManagerW::uninstall(const std::wstring& name)
+VUResult ServiceManagerW::uninstall(const std::wstring& name)
 {
   auto ptr_service = this->query(name);
   if (ptr_service == nullptr)
@@ -908,7 +908,7 @@ VUResult CServiceManagerW::uninstall(const std::wstring& name)
   return VU_OK;
 }
 
-VUResult CServiceManagerW::start(const std::wstring& name)
+VUResult ServiceManagerW::start(const std::wstring& name)
 {
   auto ptr_service = this->query(name);
   if (ptr_service == nullptr)
@@ -956,7 +956,7 @@ VUResult CServiceManagerW::start(const std::wstring& name)
   return VU_OK;
 }
 
-VUResult CServiceManagerW::stop(const std::wstring& name)
+VUResult ServiceManagerW::stop(const std::wstring& name)
 {
   auto ptr_service = this->query(name);
   if (ptr_service == nullptr)
@@ -980,7 +980,7 @@ VUResult CServiceManagerW::stop(const std::wstring& name)
   return VU_OK;
 }
 
-VUResult CServiceManagerW::install(
+VUResult ServiceManagerW::install(
   const std::wstring& file_path,
   const std::wstring& service_name,
   const std::wstring& display_name,

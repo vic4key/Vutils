@@ -41,13 +41,13 @@ vu::IResult Example::run()
 */
 
 #define DEF_SAMPLE(sample)\
-class sample : public Sample\
+class sample ## _Sample : public Sample\
 {\
 public:\
   virtual vu::IResult run();\
 };\
 \
-vu::IResult sample::run()
+vu::IResult sample ## _Sample ::run()
 
 /*
 

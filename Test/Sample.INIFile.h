@@ -4,7 +4,7 @@
 
 DEF_SAMPLE(INIFile)
 {
-  vu::CINIFile ini(vu::get_current_file_path() + ts(".ini"));
+  vu::INIFile ini(vu::get_current_file_path() + ts(".ini"));
 
   ini.set_current_section(ts("Section"));
 
@@ -48,7 +48,7 @@ DEF_SAMPLE(INIFile)
     _tprintf(ts("KeyString = '%s'\n"), s.c_str());
   }
 
-  struct TStruct
+  struct sStruct
   {
     char a;
     int b;
@@ -62,9 +62,9 @@ DEF_SAMPLE(INIFile)
 
   if (ini.write_struct(ts("KeyStruct"), &Input, sizeof(Input)))
   {
-    std::shared_ptr<void> p = ini.read_struct(ts("KeyStruct"), sizeof(TStruct));
-    TStruct* Output = (TStruct*)p.get();
-    _tprintf(ts("Value = [%c, %d, %.2f]\n"), Output->a, Output->b, Output->c);
+    std::shared_ptr<void> p = ini.read_struct(ts("KeyStruct"), sizeof(sStruct));
+    auto output = (sStruct*)p.get();
+    _tprintf(ts("Value = [%c, %d, %.2f]\n"), output->a, output->b, output->c);
   }
 
   return vu::VU_OK;

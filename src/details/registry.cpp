@@ -10,22 +10,22 @@
 namespace vu
 {
 
-CRegistryX::CRegistryX() : CLastError()
+RegistryX::RegistryX() : LastError()
 {
   m_hk_root_key = nullptr;
   m_hk_sub_key  = nullptr;
 }
 
-CRegistryX::~CRegistryX()
+RegistryX::~RegistryX()
 {
 }
 
-HKEY vuapi CRegistryX::get_current_key_handle()
+HKEY vuapi RegistryX::get_current_key_handle()
 {
   return m_hk_sub_key;
 }
 
-eRegReflection vuapi CRegistryX::query_reflection_key()
+eRegReflection vuapi RegistryX::query_reflection_key()
 {
   BOOL bReflectedDisabled = FALSE;
 
@@ -49,7 +49,7 @@ eRegReflection vuapi CRegistryX::query_reflection_key()
   }
 }
 
-bool vuapi CRegistryX::set_reflection_key(eRegReflection RegReflection)
+bool vuapi RegistryX::set_reflection_key(eRegReflection RegReflection)
 {
   bool result = false;
 
@@ -74,33 +74,33 @@ bool vuapi CRegistryX::set_reflection_key(eRegReflection RegReflection)
   return result;
 }
 
-bool vuapi CRegistryX::close_key()
+bool vuapi RegistryX::close_key()
 {
   m_last_error_code = RegCloseKey(m_hk_sub_key);
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-CRegistryA::CRegistryA() : CRegistryX()
+RegistryA::RegistryA() : RegistryX()
 {
   m_sub_key.clear();
 }
 
-CRegistryA::CRegistryA(eRegRoot RegRoot) : CRegistryX()
+RegistryA::RegistryA(eRegRoot RegRoot) : RegistryX()
 {
   m_hk_root_key = (HKEY)RegRoot;
 }
 
-CRegistryA::CRegistryA(eRegRoot RegRoot, const std::string& SubKey)
+RegistryA::RegistryA(eRegRoot RegRoot, const std::string& SubKey)
 {
   m_hk_root_key = (HKEY)RegRoot;
   m_sub_key = SubKey;
 }
 
-CRegistryA::~CRegistryA()
+RegistryA::~RegistryA()
 {
 }
 
-ulong vuapi CRegistryA::set_size_of_multi_string(const char* multi_string)
+ulong vuapi RegistryA::set_size_of_multi_string(const char* multi_string)
 {
   ulong ulLength = 0;
 
@@ -114,7 +114,7 @@ ulong vuapi CRegistryA::set_size_of_multi_string(const char* multi_string)
   return ulLength;
 }
 
-ulong vuapi CRegistryA::get_data_size(const std::string& value_name, ulong type)
+ulong vuapi RegistryA::get_data_size(const std::string& value_name, ulong type)
 {
   ulong ulDataSize = 0;
 
@@ -127,45 +127,45 @@ ulong vuapi CRegistryA::get_data_size(const std::string& value_name, ulong type)
   return ulDataSize;
 }
 
-bool vuapi CRegistryA::create_key()
+bool vuapi RegistryA::create_key()
 {
   return this->create_key(m_sub_key);
 }
 
-bool vuapi CRegistryA::create_key(const std::string& SubKey)
+bool vuapi RegistryA::create_key(const std::string& SubKey)
 {
   m_last_error_code = RegCreateKeyA(m_hk_root_key, SubKey.c_str(), &m_hk_sub_key);
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryA::key_exists()
+bool vuapi RegistryA::key_exists()
 {
   return this->key_exists(m_sub_key);
 }
 
-bool vuapi CRegistryA::key_exists(const std::string& sub_key)
+bool vuapi RegistryA::key_exists(const std::string& sub_key)
 {
   m_last_error_code = RegOpenKeyA(m_hk_root_key, sub_key.c_str(), &m_hk_sub_key);
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryA::open_key(eRegAccess reg_access)
+bool vuapi RegistryA::open_key(eRegAccess reg_access)
 {
   return this->open_key(m_sub_key, reg_access);
 }
 
-bool vuapi CRegistryA::open_key(const std::string& sub_key, eRegAccess reg_access)
+bool vuapi RegistryA::open_key(const std::string& sub_key, eRegAccess reg_access)
 {
   m_last_error_code = RegOpenKeyExA(m_hk_root_key, sub_key.c_str(), 0, (REGSAM)reg_access, &m_hk_sub_key);
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryA::delete_key()
+bool vuapi RegistryA::delete_key()
 {
   return this->delete_key(m_sub_key);
 }
 
-bool vuapi CRegistryA::delete_key(const std::string& sub_key)
+bool vuapi RegistryA::delete_key(const std::string& sub_key)
 {
   if (m_hk_root_key == 0)
   {
@@ -177,7 +177,7 @@ bool vuapi CRegistryA::delete_key(const std::string& sub_key)
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryA::delete_value(const std::string& value)
+bool vuapi RegistryA::delete_value(const std::string& value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -189,7 +189,7 @@ bool vuapi CRegistryA::delete_value(const std::string& value)
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-std::vector<std::string> vuapi CRegistryA::enum_keys()
+std::vector<std::string> vuapi RegistryA::enum_keys()
 {
   std::vector<std::string> l;
   l.clear();
@@ -241,7 +241,7 @@ std::vector<std::string> vuapi CRegistryA::enum_keys()
   return l;
 }
 
-std::vector<std::string> vuapi CRegistryA::enum_values()
+std::vector<std::string> vuapi RegistryA::enum_values()
 {
   std::vector<std::string> l;
   l.clear();
@@ -296,7 +296,7 @@ std::vector<std::string> vuapi CRegistryA::enum_values()
 
 // Write
 
-bool vuapi CRegistryA::write_integer(const std::string& value_name, int Value)
+bool vuapi RegistryA::write_integer(const std::string& value_name, int Value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -310,7 +310,7 @@ bool vuapi CRegistryA::write_integer(const std::string& value_name, int Value)
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryA::write_bool(const std::string& value_name, bool Value)
+bool vuapi RegistryA::write_bool(const std::string& value_name, bool Value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -324,7 +324,7 @@ bool vuapi CRegistryA::write_bool(const std::string& value_name, bool Value)
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryA::write_float(const std::string& value_name, float Value)
+bool vuapi RegistryA::write_float(const std::string& value_name, float Value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -341,7 +341,7 @@ bool vuapi CRegistryA::write_float(const std::string& value_name, float Value)
 // For REG_SZ, REG_MULTI_SZ and REG_EXPAND_SZ:
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724884(v=vs.85).aspx
 
-bool vuapi CRegistryA::write_string(const std::string& value_name, const std::string& Value)
+bool vuapi RegistryA::write_string(const std::string& value_name, const std::string& Value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -362,7 +362,7 @@ bool vuapi CRegistryA::write_string(const std::string& value_name, const std::st
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryA::write_multi_string(const std::string& value_name, const char* ps_value)
+bool vuapi RegistryA::write_multi_string(const std::string& value_name, const char* ps_value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -383,13 +383,13 @@ bool vuapi CRegistryA::write_multi_string(const std::string& value_name, const c
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryA::write_multi_string(const std::string& value_name, const std::vector<std::string>& value)
+bool vuapi RegistryA::write_multi_string(const std::string& value_name, const std::vector<std::string>& value)
 {
   auto p = list_to_multi_string_A(value);
   return this->write_multi_string(value_name, p.get());
 }
 
-bool vuapi CRegistryA::write_expand_string(const std::string& value_name, const std::string& value)
+bool vuapi RegistryA::write_expand_string(const std::string& value_name, const std::string& value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -410,7 +410,7 @@ bool vuapi CRegistryA::write_expand_string(const std::string& value_name, const 
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryA::write_binary(const std::string& value_name, void* lpData, ulong ulSize)
+bool vuapi RegistryA::write_binary(const std::string& value_name, void* lpData, ulong ulSize)
 {
   if (m_hk_sub_key == 0)
   {
@@ -426,7 +426,7 @@ bool vuapi CRegistryA::write_binary(const std::string& value_name, void* lpData,
 
 // Read
 
-int vuapi CRegistryA::read_integer(const std::string& value_name, int default_value)
+int vuapi RegistryA::read_integer(const std::string& value_name, int default_value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -447,7 +447,7 @@ int vuapi CRegistryA::read_integer(const std::string& value_name, int default_va
   return result;
 }
 
-bool vuapi CRegistryA::read_bool(const std::string& value_name, bool default_value)
+bool vuapi RegistryA::read_bool(const std::string& value_name, bool default_value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -468,7 +468,7 @@ bool vuapi CRegistryA::read_bool(const std::string& value_name, bool default_val
   return result;
 }
 
-float vuapi CRegistryA::read_float(const std::string& value_name, float default_value)
+float vuapi RegistryA::read_float(const std::string& value_name, float default_value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -489,7 +489,7 @@ float vuapi CRegistryA::read_float(const std::string& value_name, float default_
   return result;
 }
 
-std::string vuapi CRegistryA::read_string(const std::string& value_name, const std::string& default_value)
+std::string vuapi RegistryA::read_string(const std::string& value_name, const std::string& default_value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -525,7 +525,7 @@ std::string vuapi CRegistryA::read_string(const std::string& value_name, const s
   return s;
 }
 
-std::vector<std::string> vuapi CRegistryA::read_multi_string(
+std::vector<std::string> vuapi RegistryA::read_multi_string(
   const std::string& value_name,
   std::vector<std::string> default_value
 )
@@ -564,7 +564,7 @@ std::vector<std::string> vuapi CRegistryA::read_multi_string(
   return l;
 }
 
-std::string vuapi CRegistryA::read_expand_string(const std::string& value_name, const std::string& default_value)
+std::string vuapi RegistryA::read_expand_string(const std::string& value_name, const std::string& default_value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -600,7 +600,7 @@ std::string vuapi CRegistryA::read_expand_string(const std::string& value_name, 
   return s;
 }
 
-std::unique_ptr<uchar[]> vuapi CRegistryA::read_binary(const std::string& value_name, const void* pDefault)
+std::unique_ptr<uchar[]> vuapi RegistryA::read_binary(const std::string& value_name, const void* pDefault)
 {
   std::unique_ptr<uchar[]> pDef((uchar*)pDefault);
 
@@ -638,27 +638,27 @@ std::unique_ptr<uchar[]> vuapi CRegistryA::read_binary(const std::string& value_
   return p;
 }
 
-CRegistryW::CRegistryW() : CRegistryX()
+RegistryW::RegistryW() : RegistryX()
 {
   m_sub_key.clear();
 }
 
-CRegistryW::CRegistryW(eRegRoot RegRoot) : CRegistryX()
+RegistryW::RegistryW(eRegRoot RegRoot) : RegistryX()
 {
   m_hk_root_key = (HKEY)RegRoot;
 }
 
-CRegistryW::CRegistryW(eRegRoot RegRoot, const std::wstring& sub_key) : CRegistryX()
+RegistryW::RegistryW(eRegRoot RegRoot, const std::wstring& sub_key) : RegistryX()
 {
   m_hk_root_key = (HKEY)RegRoot;
   m_sub_key = sub_key;
 }
 
-CRegistryW::~CRegistryW()
+RegistryW::~RegistryW()
 {
 }
 
-ulong vuapi CRegistryW::set_size_of_multi_string(const wchar* multi_string)
+ulong vuapi RegistryW::set_size_of_multi_string(const wchar* multi_string)
 {
   ulong ulLength = 0;
 
@@ -672,7 +672,7 @@ ulong vuapi CRegistryW::set_size_of_multi_string(const wchar* multi_string)
   return ulLength;
 }
 
-ulong vuapi CRegistryW::get_data_size(const std::wstring& value_name, ulong type)
+ulong vuapi RegistryW::get_data_size(const std::wstring& value_name, ulong type)
 {
   ulong ulDataSize = 0;
 
@@ -685,45 +685,45 @@ ulong vuapi CRegistryW::get_data_size(const std::wstring& value_name, ulong type
   return ulDataSize;
 }
 
-bool vuapi CRegistryW::create_key()
+bool vuapi RegistryW::create_key()
 {
   return this->create_key(m_sub_key);
 }
 
-bool vuapi CRegistryW::create_key(const std::wstring& sub_key)
+bool vuapi RegistryW::create_key(const std::wstring& sub_key)
 {
   m_last_error_code = RegCreateKeyW(m_hk_root_key, sub_key.c_str(), &m_hk_root_key);
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryW::key_exists()
+bool vuapi RegistryW::key_exists()
 {
   return this->key_exists(m_sub_key);
 }
 
-bool vuapi CRegistryW::key_exists(const std::wstring& sub_key)
+bool vuapi RegistryW::key_exists(const std::wstring& sub_key)
 {
   m_last_error_code = RegOpenKeyW(m_hk_root_key, sub_key.c_str(), &m_hk_sub_key);
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryW::open_key(eRegAccess reg_access)
+bool vuapi RegistryW::open_key(eRegAccess reg_access)
 {
   return this->open_key(m_sub_key, reg_access);
 }
 
-bool vuapi CRegistryW::open_key(const std::wstring& sub_key, eRegAccess reg_access)
+bool vuapi RegistryW::open_key(const std::wstring& sub_key, eRegAccess reg_access)
 {
   m_last_error_code = RegOpenKeyExW(m_hk_root_key, sub_key.c_str(), 0, (REGSAM)reg_access, &m_hk_sub_key);
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryW::delete_key()
+bool vuapi RegistryW::delete_key()
 {
   return this->delete_key(m_sub_key);
 }
 
-bool vuapi CRegistryW::delete_key(const std::wstring& sub_key)
+bool vuapi RegistryW::delete_key(const std::wstring& sub_key)
 {
   if (m_hk_root_key == 0)
   {
@@ -735,7 +735,7 @@ bool vuapi CRegistryW::delete_key(const std::wstring& sub_key)
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryW::delete_value(const std::wstring& value)
+bool vuapi RegistryW::delete_value(const std::wstring& value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -747,7 +747,7 @@ bool vuapi CRegistryW::delete_value(const std::wstring& value)
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-std::vector<std::wstring> vuapi CRegistryW::enum_keys()
+std::vector<std::wstring> vuapi RegistryW::enum_keys()
 {
   std::vector<std::wstring> l;
   l.clear();
@@ -799,7 +799,7 @@ std::vector<std::wstring> vuapi CRegistryW::enum_keys()
   return l;
 }
 
-std::vector<std::wstring> vuapi CRegistryW::enum_values()
+std::vector<std::wstring> vuapi RegistryW::enum_values()
 {
   std::vector<std::wstring> l;
   l.clear();
@@ -854,7 +854,7 @@ std::vector<std::wstring> vuapi CRegistryW::enum_values()
 
 // Write
 
-bool vuapi CRegistryW::write_integer(const std::wstring& value_name, int Value)
+bool vuapi RegistryW::write_integer(const std::wstring& value_name, int Value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -868,7 +868,7 @@ bool vuapi CRegistryW::write_integer(const std::wstring& value_name, int Value)
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryW::write_bool(const std::wstring& value_name, bool Value)
+bool vuapi RegistryW::write_bool(const std::wstring& value_name, bool Value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -882,7 +882,7 @@ bool vuapi CRegistryW::write_bool(const std::wstring& value_name, bool Value)
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryW::write_float(const std::wstring& value_name, float Value)
+bool vuapi RegistryW::write_float(const std::wstring& value_name, float Value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -899,7 +899,7 @@ bool vuapi CRegistryW::write_float(const std::wstring& value_name, float Value)
 // For REG_SZ, REG_MULTI_SZ and REG_EXPAND_SZ:
 // https://msdn.microsoft.com/en-us/library/windows/desktop/ms724884(v=vs.85).aspx
 
-bool vuapi CRegistryW::write_string(const std::wstring& value_name, const std::wstring& Value)
+bool vuapi RegistryW::write_string(const std::wstring& value_name, const std::wstring& Value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -920,7 +920,7 @@ bool vuapi CRegistryW::write_string(const std::wstring& value_name, const std::w
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryW::write_multi_string(const std::wstring& value_name, const wchar* ps_value)
+bool vuapi RegistryW::write_multi_string(const std::wstring& value_name, const wchar* ps_value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -941,13 +941,13 @@ bool vuapi CRegistryW::write_multi_string(const std::wstring& value_name, const 
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryW::write_multi_string(const std::wstring& value_name, const std::vector<std::wstring> value)
+bool vuapi RegistryW::write_multi_string(const std::wstring& value_name, const std::vector<std::wstring> value)
 {
   auto p = list_to_multi_string_W(value);
   return this->write_multi_string(value_name, p.get());
 }
 
-bool vuapi CRegistryW::write_expand_string(const std::wstring& value_name, const std::wstring& value)
+bool vuapi RegistryW::write_expand_string(const std::wstring& value_name, const std::wstring& value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -968,7 +968,7 @@ bool vuapi CRegistryW::write_expand_string(const std::wstring& value_name, const
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi CRegistryW::write_binary(const std::wstring& value_name, void* lpData, ulong size)
+bool vuapi RegistryW::write_binary(const std::wstring& value_name, void* lpData, ulong size)
 {
   if (m_hk_sub_key == 0)
   {
@@ -984,7 +984,7 @@ bool vuapi CRegistryW::write_binary(const std::wstring& value_name, void* lpData
 
 // Read
 
-int vuapi CRegistryW::read_integer(const std::wstring& value_name, int default_value)
+int vuapi RegistryW::read_integer(const std::wstring& value_name, int default_value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -1005,7 +1005,7 @@ int vuapi CRegistryW::read_integer(const std::wstring& value_name, int default_v
   return result;
 }
 
-bool vuapi CRegistryW::read_bool(const std::wstring& value_name, bool default_value)
+bool vuapi RegistryW::read_bool(const std::wstring& value_name, bool default_value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -1026,7 +1026,7 @@ bool vuapi CRegistryW::read_bool(const std::wstring& value_name, bool default_va
   return result;
 }
 
-float vuapi CRegistryW::read_float(const std::wstring& value_name, float default_value)
+float vuapi RegistryW::read_float(const std::wstring& value_name, float default_value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -1047,7 +1047,7 @@ float vuapi CRegistryW::read_float(const std::wstring& value_name, float default
   return result;
 }
 
-std::wstring vuapi CRegistryW::read_string(const std::wstring& value_name, const std::wstring& default_value)
+std::wstring vuapi RegistryW::read_string(const std::wstring& value_name, const std::wstring& default_value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -1083,7 +1083,7 @@ std::wstring vuapi CRegistryW::read_string(const std::wstring& value_name, const
   return s;
 }
 
-std::vector<std::wstring> vuapi CRegistryW::read_multi_string(
+std::vector<std::wstring> vuapi RegistryW::read_multi_string(
   const std::wstring& value_name,
   std::vector<std::wstring> default_value
 )
@@ -1122,7 +1122,7 @@ std::vector<std::wstring> vuapi CRegistryW::read_multi_string(
   return l;
 }
 
-std::wstring vuapi CRegistryW::read_expand_string(const std::wstring& value_name, const std::wstring& default_value)
+std::wstring vuapi RegistryW::read_expand_string(const std::wstring& value_name, const std::wstring& default_value)
 {
   if (m_hk_sub_key == 0)
   {
@@ -1158,7 +1158,7 @@ std::wstring vuapi CRegistryW::read_expand_string(const std::wstring& value_name
   return s;
 }
 
-std::unique_ptr<uchar[]> vuapi CRegistryW::read_binary(const std::wstring& value_name, const void* pDefault)
+std::unique_ptr<uchar[]> vuapi RegistryW::read_binary(const std::wstring& value_name, const void* pDefault)
 {
   std::unique_ptr<uchar[]> pDef((uchar*)pDefault);
 

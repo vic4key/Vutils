@@ -12,28 +12,28 @@
 namespace vu
 {
 
-CLibraryA::CLibraryA(const std::string& module_name) : CLastError()
+LibraryA::LibraryA(const std::string& module_name) : LastError()
 {
   m_module_handle  = LoadLibraryA(module_name.c_str());
   m_last_error_code = GetLastError();
 }
 
-CLibraryA::~CLibraryA()
+LibraryA::~LibraryA()
 {
   FreeLibrary(m_module_handle);
 }
 
-const HMODULE& vuapi CLibraryA::handle() const
+const HMODULE& vuapi LibraryA::handle() const
 {
   return m_module_handle;
 }
 
-bool vuapi CLibraryA::available()
+bool vuapi LibraryA::available()
 {
   return m_module_handle != nullptr;
 }
 
-void* vuapi CLibraryA::get_proc_address(const std::string& function_name)
+void* vuapi LibraryA::get_proc_address(const std::string& function_name)
 {
   if (m_module_handle == nullptr || function_name.empty())
   {
@@ -43,14 +43,14 @@ void* vuapi CLibraryA::get_proc_address(const std::string& function_name)
   return (void*)::GetProcAddress(m_module_handle, function_name.c_str());
 }
 
-void* vuapi CLibraryA::quick_get_proc_address(const std::string& module_name, const std::string& function_name)
+void* vuapi LibraryA::quick_get_proc_address(const std::string& module_name, const std::string& function_name)
 {
   if (module_name.empty() || function_name.empty())
   {
     return nullptr;
   }
 
-  CLibraryA lib(module_name);
+  LibraryA lib(module_name);
   if (!lib.available())
   {
     return nullptr;
@@ -59,28 +59,28 @@ void* vuapi CLibraryA::quick_get_proc_address(const std::string& module_name, co
   return lib.get_proc_address(function_name);
 }
 
-CLibraryW::CLibraryW(const std::wstring& module_name) : CLastError()
+LibraryW::LibraryW(const std::wstring& module_name) : LastError()
 {
   m_module_handle  = LoadLibraryW(module_name.c_str());
   m_last_error_code = GetLastError();
 }
 
-CLibraryW::~CLibraryW()
+LibraryW::~LibraryW()
 {
   FreeLibrary(m_module_handle);
 }
 
-const HMODULE& vuapi CLibraryW::handle() const
+const HMODULE& vuapi LibraryW::handle() const
 {
   return m_module_handle;
 }
 
-bool vuapi CLibraryW::available()
+bool vuapi LibraryW::available()
 {
   return m_module_handle != nullptr;
 }
 
-void* vuapi CLibraryW::get_proc_address(const std::wstring& function_name)
+void* vuapi LibraryW::get_proc_address(const std::wstring& function_name)
 {
   if (m_module_handle == nullptr || function_name.empty())
   {
@@ -92,14 +92,14 @@ void* vuapi CLibraryW::get_proc_address(const std::wstring& function_name)
   return (void*)::GetProcAddress(m_module_handle, s.c_str());
 }
 
-void* vuapi CLibraryW::quick_get_proc_address(const std::wstring& module_name, const std::wstring& function_name)
+void* vuapi LibraryW::quick_get_proc_address(const std::wstring& module_name, const std::wstring& function_name)
 {
   if (module_name.empty() || function_name.empty())
   {
     return nullptr;
   }
 
-  CLibraryW lib(module_name);
+  LibraryW lib(module_name);
   if (!lib.available())
   {
     return nullptr;

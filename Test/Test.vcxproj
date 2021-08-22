@@ -73,6 +73,8 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(Vutils)include;$(IncludePath)</IncludePath>
     <LibraryPath>$(Vutils)lib\$(Platform);$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -83,6 +85,8 @@
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(Vutils)include;$(IncludePath)</IncludePath>
     <LibraryPath>$(Vutils)lib\$(Platform);$(LibraryPath)</LibraryPath>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -153,12 +157,12 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sample.INLHook.h" />
+    <ClInclude Include="Sample.INLHooking.h" />
     <ClInclude Include="Sample.AsyncSocket.h" />
     <ClInclude Include="Sample.DF.h" />
     <ClInclude Include="Sample.FileMapping.h" />
     <ClInclude Include="Sample.FileSystem.h" />
-    <ClInclude Include="Sample.IATHook.h" />
+    <ClInclude Include="Sample.IATHooking.h" />
     <ClInclude Include="Sample.INIFile.h" />
     <ClInclude Include="Sample.InputDialog.h" />
     <ClInclude Include="Sample.Math.h" />
@@ -173,7 +177,7 @@
     <ClInclude Include="Sample.GUID.h" />
     <ClInclude Include="Sample.StopWatch.h" />
     <ClInclude Include="Sample.ThreadPool.h" />
-    <ClInclude Include="Sample.WMHook.h" />
+    <ClInclude Include="Sample.WMHooking.h" />
     <ClInclude Include="Sample.WMI.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />

@@ -532,90 +532,90 @@ std::wstring vuapi format_bytes_W(long long bytes, eStdByte std, int digits)
  * CFundamental
  */
 
-CFundamentalA::CFundamentalA()
+FundamentalA::FundamentalA()
 {
   m_data.clear();
 }
 
-CFundamentalA::~CFundamentalA()
+FundamentalA::~FundamentalA()
 {
 }
 
-std::stringstream& CFundamentalA::data()
+std::stringstream& FundamentalA::data()
 {
   return m_data;
 }
 
-std::string CFundamentalA::to_string() const
+std::string FundamentalA::to_string() const
 {
   return m_data.str();
 }
 
-bool CFundamentalA::to_boolean() const
+bool FundamentalA::to_boolean() const
 {
   return to_integer() != 0;
 }
 
-int CFundamentalA::to_integer() const
+int FundamentalA::to_integer() const
 {
   return atoi(m_data.str().c_str());
 }
 
-long CFundamentalA::to_long() const
+long FundamentalA::to_long() const
 {
   return atol(m_data.str().c_str());
 }
 
-float CFundamentalA::to_float() const
+float FundamentalA::to_float() const
 {
   return float(to_double());
 }
 
-double CFundamentalA::to_double() const
+double FundamentalA::to_double() const
 {
   return atof(m_data.str().c_str());
 }
 
-CFundamentalW::CFundamentalW()
+FundamentalW::FundamentalW()
 {
   m_data.clear();
 }
 
-CFundamentalW::~CFundamentalW()
+FundamentalW::~FundamentalW()
 {
 }
 
-std::wstringstream& CFundamentalW::data()
+std::wstringstream& FundamentalW::data()
 {
   return m_data;
 }
 
-std::wstring CFundamentalW::to_string() const
+std::wstring FundamentalW::to_string() const
 {
   return m_data.str();
 }
 
-bool CFundamentalW::to_boolean() const
+bool FundamentalW::to_boolean() const
 {
   return to_integer() != 0;
 }
 
-int CFundamentalW::to_integer() const
+int FundamentalW::to_integer() const
 {
   return atoi(to_string_A(m_data.str()).c_str());
 }
 
-long CFundamentalW::to_long() const
+long FundamentalW::to_long() const
 {
   return atol(to_string_A(m_data.str()).c_str());
 }
 
-float CFundamentalW::to_float() const
+float FundamentalW::to_float() const
 {
   return float(to_double());
 }
 
-double CFundamentalW::to_double() const
+double FundamentalW::to_double() const
 {
   return atof(to_string_A(m_data.str()).c_str());
 }

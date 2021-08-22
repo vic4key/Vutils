@@ -9,32 +9,32 @@
 namespace vu
 {
 
-CBuffer::CBuffer() : m_ptr_data(nullptr), m_size(0)
+Buffer::Buffer() : m_ptr_data(nullptr), m_size(0)
 {
   this->create(nullptr, 0);
 }
 
-CBuffer::CBuffer(const size_t size) : m_ptr_data(nullptr), m_size(0)
+Buffer::Buffer(const size_t size) : m_ptr_data(nullptr), m_size(0)
 {
   this->create(nullptr, size);
 }
 
-CBuffer::CBuffer(const void* ptr, const size_t size) : m_ptr_data(nullptr), m_size(0)
+Buffer::Buffer(const void* ptr, const size_t size) : m_ptr_data(nullptr), m_size(0)
 {
   this->replace(ptr, size);
 }
 
-CBuffer::CBuffer(const CBuffer& right) : m_ptr_data(nullptr), m_size(0)
+Buffer::Buffer(const Buffer& right) : m_ptr_data(nullptr), m_size(0)
 {
   *this = right;
 }
 
-CBuffer::~CBuffer()
+Buffer::~Buffer()
 {
   this->destroy();
 }
 
-const CBuffer& CBuffer::operator=(const CBuffer& right)
+const Buffer& Buffer::operator=(const Buffer& right)
 {
   if (*this != right)
   {
@@ -50,7 +50,7 @@ const CBuffer& CBuffer::operator=(const CBuffer& right)
   return *this;
 }
 
-bool CBuffer::operator==(const CBuffer& right) const
+bool Buffer::operator==(const Buffer& right) const
 {
   if (m_size != right.m_size)
   {
@@ -60,12 +60,12 @@ bool CBuffer::operator==(const CBuffer& right) const
   return memcmp(m_ptr_data, right.m_ptr_data, m_size) == 0;
 }
 
-bool CBuffer::operator!=(const CBuffer& right) const
+bool Buffer::operator!=(const Buffer& right) const
 {
   return !(*this == right);
 }
 
-byte& CBuffer::operator[](const size_t offset)
+byte& Buffer::operator[](const size_t offset)
 {
   if (m_ptr_data == nullptr)
   {
@@ -80,12 +80,12 @@ byte& CBuffer::operator[](const size_t offset)
   return static_cast<byte*>(m_ptr_data)[offset];
 }
 
-CBuffer CBuffer::operator()(int begin, int end) const
+Buffer Buffer::operator()(int begin, int end) const
 {
   return this->slice(begin, end);
 }
 
-size_t CBuffer::find(const void* ptr, const size_t size) const
+size_t Buffer::find(const void* ptr, const size_t size) const
 {
   size_t result = -1;
 
@@ -108,14 +108,14 @@ size_t CBuffer::find(const void* ptr, const size_t size) const
   return result;
 }
 
-bool CBuffer::match(const void* ptr, const size_t size) const
+bool Buffer::match(const void* ptr, const size_t size) const
 {
   return this->find(ptr, size) != -1;
 }
 
-CBuffer CBuffer::till(const void* ptr, const size_t size) const
+Buffer Buffer::till(const void* ptr, const size_t size) const
 {
-  CBuffer result;
+  Buffer result;
 
   size_t offset = this->find(ptr, size);
   if (offset > 0)
@@ -126,9 +126,9 @@ CBuffer CBuffer::till(const void* ptr, const size_t size) const
   return result;
 }
 
-CBuffer CBuffer::slice(int begin, int end) const
+Buffer Buffer::slice(int begin, int end) const
 {
-  CBuffer result;
+  Buffer result;
 
   if (m_ptr_data == nullptr || m_size == 0)
   {
@@ -162,22 +162,22 @@ CBuffer CBuffer::slice(int begin, int end) const
   return result;
 }
 
-byte* CBuffer::get_ptr_bytes() const
+byte* Buffer::get_ptr_bytes() const
 {
   return static_cast<byte*>(m_ptr_data);
 }
 
-void* CBuffer::get_ptr_data() const
+void* Buffer::get_ptr_data() const
 {
   return m_ptr_data;
 }
 
-size_t CBuffer::get_size() const
+size_t Buffer::get_size() const
 {
   return m_size;
 }
 
-bool CBuffer::create(void* ptr, const size_t size, const bool clean)
+bool Buffer::create(void* ptr, const size_t size, const bool clean)
 {
   if (clean || size == 0)
   {
@@ -215,7 +215,7 @@ bool CBuffer::create(void* ptr, const size_t size, const bool clean)
   return true;
 }
 
-bool CBuffer::destroy()
+bool Buffer::destroy()
 {
   if (m_ptr_data != nullptr)
   {
@@ -228,12 +228,12 @@ bool CBuffer::destroy()
   return true;
 }
 
-void CBuffer::reset()
+void Buffer::reset()
 {
   this->destroy();
 }
 
-void CBuffer::fill(const byte v)
+void Buffer::fill(const byte v)
 {
   if (m_ptr_data != nullptr && m_size != 0)
   {
@@ -241,7 +241,7 @@ void CBuffer::fill(const byte v)
   }
 }
 
-bool CBuffer::resize(const size_t size)
+bool Buffer::resize(const size_t size)
 {
   if (size == m_size)
   {
@@ -251,7 +251,7 @@ bool CBuffer::resize(const size_t size)
   return this->create(m_ptr_data, size, false);
 }
 
-bool CBuffer::replace(const void* pData, const size_t size)
+bool Buffer::replace(const void* pData, const size_t size)
 {
   if (this->create(nullptr, size))
   {
@@ -264,17 +264,17 @@ bool CBuffer::replace(const void* pData, const size_t size)
   return true;
 }
 
-bool CBuffer::replace(const CBuffer& right)
+bool Buffer::replace(const Buffer& right)
 {
   return this->replace(right.get_ptr_data(), right.get_size());
 }
 
-bool CBuffer::empty() const
+bool Buffer::empty() const
 {
   return m_ptr_data == nullptr || m_size == 0;
 }
 
-bool CBuffer::append(const void* pData, const size_t size)
+bool Buffer::append(const void* pData, const size_t size)
 {
   if (pData == nullptr || size == 0)
   {
@@ -290,22 +290,22 @@ bool CBuffer::append(const void* pData, const size_t size)
   return true;
 }
 
-bool CBuffer::append(const CBuffer& right)
+bool Buffer::append(const Buffer& right)
 {
   return this->append(right.get_ptr_data(), right.get_size());
 }
 
-std::string CBuffer::to_string_A() const
+std::string Buffer::to_string_A() const
 {
   return std::string(reinterpret_cast<const char*>(m_ptr_data), m_size / sizeof(char));
 }
 
-std::wstring CBuffer::to_string_W() const
+std::wstring Buffer::to_string_W() const
 {
   return std::wstring(reinterpret_cast<const wchar*>(m_ptr_data), m_size / sizeof(wchar));
 }
 
-bool CBuffer::save_to_file(const std::string& filePath)
+bool Buffer::save_to_file(const std::string& filePath)
 {
   if (filePath.empty())
   {
@@ -314,14 +314,14 @@ bool CBuffer::save_to_file(const std::string& filePath)
 
   bool result = true;
 
-  CFileSystemA file(filePath, vu::FM_CREATEALWAY);
+  FileSystemA file(filePath, vu::FM_CREATEALWAY);
   result &= file.write(m_ptr_data, ulong(m_size));
   result &= file.close();
 
   return result;
 }
 
-bool CBuffer::save_to_file(const std::wstring& filePath)
+bool Buffer::save_to_file(const std::wstring& filePath)
 {
   const auto s = vu::to_string_A(filePath);
   return this->save_to_file(s);

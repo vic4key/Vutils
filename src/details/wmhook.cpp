@@ -9,18 +9,18 @@
 namespace vu
 {
 
-HHOOK CWMHookX::m_handles[WH_MAXHOOK] = { 0 };
+HHOOK WMHookingX::m_handles[WH_MAXHOOK] = { 0 };
 
-CWMHookX::CWMHookX() : CLastError()
+WMHookingX::WMHookingX() : LastError()
 {
   m_pid = INVALID_PID_VALUE;
 }
 
-CWMHookX::~CWMHookX()
+WMHookingX::~WMHookingX()
 {
 }
 
-VUResult CWMHookX::set_windows_hook_ex_X(int type, HMODULE hmodule, HOOKPROC pfn_hook_function)
+VUResult WMHookingX::set_windows_hook_ex_X(int type, HMODULE hmodule, HOOKPROC pfn_hook_function)
 {
   m_last_error_code = ERROR_SUCCESS;
 
@@ -60,7 +60,7 @@ VUResult CWMHookX::set_windows_hook_ex_X(int type, HMODULE hmodule, HOOKPROC pfn
   return VU_OK;
 }
 
-VUResult CWMHookX::uninstall(int type)
+VUResult WMHookingX::uninstall(int type)
 {
   m_last_error_code = ERROR_SUCCESS;
 
@@ -86,30 +86,30 @@ VUResult CWMHookX::uninstall(int type)
   return VU_OK;
 }
 
-CWMHookA::CWMHookA(ulong pid, const std::string& dll_file_path) : CWMHookX(), m_library(dll_file_path)
+WMHookingA::WMHookingA(ulong pid, const std::string& dll_file_path) : WMHookingX(), m_library(dll_file_path)
 {
   m_pid = pid;
 }
 
-CWMHookA::~CWMHookA()
+WMHookingA::~WMHookingA()
 {
 }
 
-VUResult CWMHookA::install(int type, const std::string& function_name)
+VUResult WMHookingA::install(int type, const std::string& function_name)
 {
   return set_windows_hook_ex_X(type, m_library.handle(), (HOOKPROC)m_library.get_proc_address(function_name));
 }
 
-CWMHookW::CWMHookW(ulong pid, const std::wstring& dll_file_path) : CWMHookX(), m_library(dll_file_path)
+WMHookingW::WMHookingW(ulong pid, const std::wstring& dll_file_path) : WMHookingX(), m_library(dll_file_path)
 {
   m_pid = pid;
 }
 
-CWMHookW::~CWMHookW()
+WMHookingW::~WMHookingW()
 {
 }
 
-VUResult CWMHookW::install(int type, const std::wstring& function_name)
+VUResult WMHookingW::install(int type, const std::wstring& function_name)
 {
   return set_windows_hook_ex_X(type, m_library.handle(), (HOOKPROC)m_library.get_proc_address(function_name));
 }

@@ -185,9 +185,9 @@ std::string vuapi get_current_file_path_A()
 
   ZeroMemory(p.get(), MAXPATH);
 
-  HMODULE hModule = GetModuleHandleA(NULL);
-  GetModuleFileNameA(hModule, p.get(), MAXPATH);
-  FreeLibrary(hModule);
+  HMODULE hmodule = GetModuleHandleA(NULL);
+  GetModuleFileNameA(hmodule, p.get(), MAXPATH);
+  FreeLibrary(hmodule);
 
   std::string s(p.get());
 
@@ -200,9 +200,9 @@ std::wstring vuapi get_current_file_path_W()
 
   ZeroMemory(p.get(), 2*MAXPATH);
 
-  HMODULE hModule = GetModuleHandleW(NULL);
-  GetModuleFileNameW(hModule, p.get(), 2*MAXPATH);
-  FreeLibrary(hModule);
+  HMODULE hmodule = GetModuleHandleW(NULL);
+  GetModuleFileNameW(hmodule, p.get(), 2*MAXPATH);
+  FreeLibrary(hmodule);
 
   std::wstring s(p.get());
 
@@ -271,7 +271,7 @@ std::wstring vuapi get_contain_directory_W(bool last_slash)
   return extract_file_directory_W(get_current_file_path_W(), last_slash);
 }
 
-// wchar_t ExtractDriveLetter(const std::wstring& path)
+// wchar_t extract_drive_letter(const std::wstring& path)
 // {
 //   wchar_t result = L'';
 // 
@@ -305,7 +305,7 @@ eDiskType get_disk_type_W(const wchar_t drive)
 
   if (types.empty() || partitions.empty())
   {
-    CWMIProviderW WMI;
+    WMIProviderW WMI;
 
     const auto fnIsNumber = [](const std::wstring& str)
     {
@@ -483,63 +483,63 @@ std::wstring normalize_path_W(const std::wstring& path, const ePathSep separator
  * CPathA
  */
 
-CPathA::CPathA(const ePathSep Separator) : m_path(""), m_separator(Separator)
+PathA::PathA(const ePathSep Separator) : m_path(""), m_separator(Separator)
 {
 }
 
-CPathA::CPathA(const std::string& Path, const ePathSep Separator) : m_path(Path), m_separator(Separator)
+PathA::PathA(const std::string& Path, const ePathSep Separator) : m_path(Path), m_separator(Separator)
 {
 }
 
-CPathA::CPathA(const CPathA& right)
+PathA::PathA(const PathA& right)
 {
   *this = right;
 }
 
-CPathA::~CPathA()
+PathA::~PathA()
 {
 }
 
-const vu::CPathA& CPathA::operator=(const CPathA& right)
+const vu::PathA& PathA::operator=(const PathA& right)
 {
   m_path = right.m_path;
   m_separator  = right.m_separator;
   return *this;
 }
 
-const vu::CPathA& CPathA::operator=(const std::string& right)
+const vu::PathA& PathA::operator=(const std::string& right)
 {
   m_path = right;
   return *this;
 }
 
-const vu::CPathA& CPathA::operator+=(const CPathA& right)
+const vu::PathA& PathA::operator+=(const PathA& right)
 {
   *this += right.m_path;
   return *this;
 }
 
-const vu::CPathA& CPathA::operator+=(const std::string& right)
+const vu::PathA& PathA::operator+=(const std::string& right)
 {
   this->join(right);
   return *this;
 }
 
-vu::CPathA CPathA::operator+(const CPathA& right)
+vu::PathA PathA::operator+(const PathA& right)
 {
-  CPathA result(*this);
+  PathA result(*this);
   result += right.m_path;
   return result;
 }
 
-vu::CPathA CPathA::operator+(const std::string& right)
+vu::PathA PathA::operator+(const std::string& right)
 {
-  CPathA result(*this);
+  PathA result(*this);
   result += right;
   return result;
 }
 
-bool CPathA::operator==(const CPathA& right)
+bool PathA::operator==(const PathA& right)
 {
   bool result = m_separator == right.m_separator;
 
@@ -558,63 +558,63 @@ bool CPathA::operator==(const CPathA& right)
   return result;
 }
 
-bool CPathA::operator!=(const CPathA& right)
+bool PathA::operator!=(const PathA& right)
 {
   return !(*this == right);
 }
 
-vu::CPathA& CPathA::trim(const eTrimType TrimType)
+vu::PathA& PathA::trim(const eTrimType TrimType)
 {
   m_path = trim_string_A(m_path, TrimType);
   return *this;
 }
 
-vu::CPathA& CPathA::normalize()
+vu::PathA& PathA::normalize()
 {
   m_path = normalize_path_A(m_path, m_separator);
   return *this;
 }
 
-vu::CPathA& CPathA::join(const std::string& Path)
+vu::PathA& PathA::join(const std::string& Path)
 {
   m_path = join_path_A(m_path, Path, m_separator);
   return *this;
 }
 
-vu::CPathA& CPathA::finalize()
+vu::PathA& PathA::finalize()
 {
   this->trim();
   this->normalize();
   return *this;
 }
 
-vu::CPathA CPathA::extract_file_name(bool Extension) const
+vu::PathA PathA::extract_file_name(bool Extension) const
 {
-  CPathA tmp(*this);
+  PathA tmp(*this);
   tmp.finalize();
   return vu::extract_file_name_A(tmp.as_string(), Extension);
 }
 
-vu::CPathA CPathA::extract_file_directory(bool Slash) const
+vu::PathA PathA::extract_file_directory(bool Slash) const
 {
-  CPathA tmp(*this);
+  PathA tmp(*this);
   tmp.finalize();
   return vu::extract_file_directory_A(tmp.as_string(), Slash);
 }
 
-bool CPathA::exists() const
+bool PathA::exists() const
 {
-  CPathA tmp(*this);
+  PathA tmp(*this);
   tmp.finalize();
   return is_directory_exists_A(tmp.as_string()) || is_file_exists_A(tmp.as_string());
 }
 
-std::string CPathA::as_string() const
+std::string PathA::as_string() const
 {
   return m_path;
 }
 
-std::ostream& operator<<(std::ostream& os, CPathA& Path)
+std::ostream& operator<<(std::ostream& os, PathA& Path)
 {
   os << Path.m_path;
   return os;
@@ -624,63 +624,63 @@ std::ostream& operator<<(std::ostream& os, CPathA& Path)
  * CPathW
  */
 
-CPathW::CPathW(const ePathSep Separator) : m_path(L""), m_separator(Separator)
+PathW::PathW(const ePathSep Separator) : m_path(L""), m_separator(Separator)
 {
 }
 
-CPathW::CPathW(const std::wstring& Path, const ePathSep Separator) : m_path(Path), m_separator(Separator)
+PathW::PathW(const std::wstring& Path, const ePathSep Separator) : m_path(Path), m_separator(Separator)
 {
 }
 
-CPathW::CPathW(const CPathW& right)
+PathW::PathW(const PathW& right)
 {
   *this = right;
 }
 
-CPathW::~CPathW()
+PathW::~PathW()
 {
 }
 
-const vu::CPathW& CPathW::operator=(const CPathW& right)
+const vu::PathW& PathW::operator=(const PathW& right)
 {
   m_path = right.m_path;
   m_separator  = right.m_separator;
   return *this;
 }
 
-const vu::CPathW& CPathW::operator=(const std::wstring& right)
+const vu::PathW& PathW::operator=(const std::wstring& right)
 {
   m_path = right;
   return *this;
 }
 
-const vu::CPathW& CPathW::operator+=(const CPathW& right)
+const vu::PathW& PathW::operator+=(const PathW& right)
 {
   *this += right.m_path;
   return *this;
 }
 
-const vu::CPathW& CPathW::operator+=(const std::wstring& right)
+const vu::PathW& PathW::operator+=(const std::wstring& right)
 {
   this->join(right);
   return *this;
 }
 
-vu::CPathW CPathW::operator+(const CPathW& right)
+vu::PathW PathW::operator+(const PathW& right)
 {
-  CPathW result(*this);
+  PathW result(*this);
   result += right.m_path;
   return result;
 }
 
-vu::CPathW CPathW::operator+(const std::wstring& right)
+vu::PathW PathW::operator+(const std::wstring& right)
 {
-  CPathW result(*this);
+  PathW result(*this);
   result += right;
   return result;
 }
 
-bool CPathW::operator==(const CPathW& right)
+bool PathW::operator==(const PathW& right)
 {
   bool result = m_separator == right.m_separator;
 
@@ -699,63 +699,63 @@ bool CPathW::operator==(const CPathW& right)
   return result;
 }
 
-bool CPathW::operator!=(const CPathW& right)
+bool PathW::operator!=(const PathW& right)
 {
   return !(*this == right);
 }
 
-vu::CPathW& CPathW::trim(const eTrimType TrimType)
+vu::PathW& PathW::trim(const eTrimType TrimType)
 {
   m_path = trim_string_W(m_path, TrimType);
   return *this;
 }
 
-vu::CPathW& CPathW::normalize()
+vu::PathW& PathW::normalize()
 {
   m_path = normalize_path_W(m_path, m_separator);
   return *this;
 }
 
-vu::CPathW& CPathW::join(const std::wstring& Path)
+vu::PathW& PathW::join(const std::wstring& Path)
 {
   m_path = join_path_W(m_path, Path, m_separator);
   return *this;
 }
 
-vu::CPathW& CPathW::finalize()
+vu::PathW& PathW::finalize()
 {
   this->trim();
   this->normalize();
   return *this;
 }
 
-vu::CPathW CPathW::extract_file_name(bool Extension) const
+vu::PathW PathW::extract_file_name(bool Extension) const
 {
-  CPathW tmp(*this);
+  PathW tmp(*this);
   tmp.finalize();
   return vu::extract_file_name_W(tmp.as_string(), Extension);
 }
 
-vu::CPathW CPathW::extract_file_directory(bool Slash) const
+vu::PathW PathW::extract_file_directory(bool Slash) const
 {
-  CPathW tmp(*this);
+  PathW tmp(*this);
   tmp.finalize();
   return vu::extract_file_directory_W(tmp.as_string(), Slash);
 }
 
-bool CPathW::exists() const
+bool PathW::exists() const
 {
-  CPathW tmp(*this);
+  PathW tmp(*this);
   tmp.finalize();
   return is_directory_exists_W(tmp.as_string()) || is_file_exists_W(tmp.as_string());
 }
 
-std::wstring CPathW::as_string() const
+std::wstring PathW::as_string() const
 {
   return m_path;
 }
 
-std::wostream& operator<<(std::wostream& os, CPathW& Path)
+std::wostream& operator<<(std::wostream& os, PathW& Path)
 {
   os << Path.m_path;
   return os;

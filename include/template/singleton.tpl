@@ -5,19 +5,19 @@
  */
 
  /**
-  * CSingletonT
+  * SingletonT
   */
 
 template<typename T>
-class CSingletonT
+class SingletonT
 {
 public:
-  CSingletonT()
+  SingletonT()
   {
     m_ptr_instance = static_cast<T*>(this);
   }
 
-  virtual ~CSingletonT()
+  virtual ~SingletonT()
   {
   }
 
@@ -25,7 +25,7 @@ public:
   {
     if (m_ptr_instance == nullptr)
     {
-      CSingletonT<T>::m_ptr_instance = new T();
+      SingletonT<T>::m_ptr_instance = new T();
     }
 
     return *m_ptr_instance;
@@ -33,10 +33,10 @@ public:
 
   static void destroy()
   {
-    if (CSingletonT<T>::m_ptr_instance != nullptr)
+    if (SingletonT<T>::m_ptr_instance != nullptr)
     {
-      delete CSingletonT<T>::m_ptr_instance;
-      CSingletonT<T>::m_ptr_instance = nullptr;
+      delete SingletonT<T>::m_ptr_instance;
+      SingletonT<T>::m_ptr_instance = nullptr;
     }
   }
 
@@ -45,4 +45,4 @@ protected:
 };
 
 template<typename T>
-T* CSingletonT<T>::m_ptr_instance = nullptr;
+T* SingletonT<T>::m_ptr_instance = nullptr;
