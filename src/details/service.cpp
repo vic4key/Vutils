@@ -16,8 +16,8 @@ namespace vu
 #pragma warning(disable: 26812)
 #endif // _MSC_VER
 
-template <class StringT>
-bool fnContains(const StringT& _1, const StringT& _2, bool exact)
+template <class string_t>
+bool fn_contains(const string_t& _1, const string_t& _2, bool exact)
 {
   auto v1 = _1;
   std::transform(v1.begin(), v1.end(), v1.begin(), tolower);
@@ -34,7 +34,7 @@ bool fnContains(const StringT& _1, const StringT& _2, bool exact)
   }
   else
   {
-    if (v2.find(v1) != StringT::npos)
+    if (v2.find(v1) != string_t::npos)
     {
       return true;
     }
@@ -44,7 +44,7 @@ bool fnContains(const StringT& _1, const StringT& _2, bool exact)
 };
 
 /**
- * CServiceManagerT
+ * ServiceManagerT
  */
 
 template <typename service_t>
@@ -80,7 +80,8 @@ typename ServiceManagerT<service_t>::TServices ServiceManagerT<service_t>::get_s
 
   for (const auto& e : m_services)
   {
-    if ((types & e.ServiceStatusProcess.dwServiceType) && (states & e.ServiceStatusProcess.dwCurrentState))
+    if ((types  & e.ServiceStatusProcess.dwServiceType) &&
+        (states & e.ServiceStatusProcess.dwCurrentState))
     {
       result.push_back(e);
     }
@@ -90,7 +91,7 @@ typename ServiceManagerT<service_t>::TServices ServiceManagerT<service_t>::get_s
 }
 
 /**
- * CServiceManagerA
+ * ServiceManagerA
  */
 
 ServiceManagerA::ServiceManagerA() : ServiceManagerTA()
@@ -238,11 +239,11 @@ ServiceManagerA::TServices ServiceManagerA::find(
 
   for (const auto& service : m_services)
   {
-    if (fnContains<std::string>(str, service.lpServiceName, exact))
+    if (fn_contains<std::string>(str, service.lpServiceName, exact))
     {
       result.push_back(service);
     }
-    else if (!name_only && fnContains<std::string>(str, service.lpDisplayName, exact))
+    else if (!name_only && fn_contains<std::string>(str, service.lpDisplayName, exact))
     {
       result.push_back(service);
     }
@@ -563,7 +564,7 @@ VUResult ServiceManagerA::install(
 }
 
 /**
- * CServiceManagerW
+ * ServiceManagerW
  */
 
 ServiceManagerW::ServiceManagerW() : ServiceManagerTW()
@@ -709,11 +710,11 @@ ServiceManagerW::TServices ServiceManagerW::find(
 
   for (const auto& service : m_services)
   {
-    if (fnContains<std::wstring>(str, service.lpServiceName, exact))
+    if (fn_contains<std::wstring>(str, service.lpServiceName, exact))
     {
       result.push_back(service);
     }
-    else if (!name_only && fnContains<std::wstring>(str, service.lpDisplayName, exact))
+    else if (!name_only && fn_contains<std::wstring>(str, service.lpDisplayName, exact))
     {
       result.push_back(service);
     }

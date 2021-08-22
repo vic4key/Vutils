@@ -10,7 +10,7 @@ namespace vu
 {
 
 /**
- * CFileMappingX
+ * FileMappingX
  */
 
 FileMappingX::FileMappingX() : LastError()
@@ -91,7 +91,7 @@ ulong vuapi FileMappingX::get_file_size()
 }
 
 /**
- * CFileMappingA
+ * FileMappingA
  */
 
 FileMappingA::FileMappingA() : FileMappingX()
@@ -191,7 +191,7 @@ VUResult vuapi FileMappingA::open(
 }
 
 /**
- * CFileMappingW
+ * FileMappingW
  */
 
 FileMappingW::FileMappingW() : FileMappingX()

@@ -15,26 +15,27 @@ namespace vu
 
 bool vuapi is_administrator()
 {
-  BOOL IsMember = FALSE;
-  SID_IDENTIFIER_AUTHORITY IA = SECURITY_NT_AUTHORITY;
-  PSID SID;
+  BOOL is_member = FALSE;
+  SID_IDENTIFIER_AUTHORITY ia = SECURITY_NT_AUTHORITY;
+  PSID sid;
 
   if (Initialize_DLL_MISC() != VU_OK)
   {
     return FALSE;
   }
 
-  if (AllocateAndInitializeSid(&IA, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, &SID))
+  if (AllocateAndInitializeSid(
+    &ia, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, &sid))
   {
-    if (!pfnCheckTokenMembership(NULL, SID, &IsMember))
+    if (!pfnCheckTokenMembership(NULL, sid, &is_member))
     {
-      IsMember = FALSE;
+      is_member = FALSE;
     }
 
-    FreeSid(SID);
+    FreeSid(sid);
   }
 
-  return (IsMember != FALSE);
+  return (is_member != FALSE);
 }
 
 bool set_privilege_A(const std::string& privilege, const bool enable)
@@ -45,8 +46,8 @@ bool set_privilege_A(const std::string& privilege, const bool enable)
 
 bool set_privilege_W(const std::wstring& privilege, const bool enable)
 {
-  HANDLE hToken = INVALID_HANDLE_VALUE;
-  if (!OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &hToken))
+  HANDLE htoken = INVALID_HANDLE_VALUE;
+  if (!OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &htoken))
   {
     if (GetLastError() != ERROR_NO_TOKEN)
     {
@@ -58,13 +59,13 @@ bool set_privilege_W(const std::wstring& privilege, const bool enable)
       return false;
     }
 
-    if (!OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &hToken))
+    if (!OpenThreadToken(GetCurrentThread(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &htoken))
     {
       return false;
     }
   }
 
-  if (hToken == INVALID_HANDLE_VALUE)
+  if (htoken == INVALID_HANDLE_VALUE)
   {
     return false;
   }
@@ -79,13 +80,13 @@ bool set_privilege_W(const std::wstring& privilege, const bool enable)
     tp.Privileges[0].Luid = luid;
     tp.Privileges[0].Attributes = enable ? SE_PRIVILEGE_ENABLED : 0;
 
-    if (AdjustTokenPrivileges(hToken, FALSE, &tp, sizeof(tp), nullptr, nullptr))
+    if (AdjustTokenPrivileges(htoken, FALSE, &tp, sizeof(tp), nullptr, nullptr))
     {
       result = GetLastError() != ERROR_NOT_ALL_ASSIGNED;
     }
   }
 
-  CloseHandle(hToken);
+  CloseHandle(htoken);
 
   return result;
 }
@@ -216,7 +217,8 @@ std::pair<bool, size_t> find_pattern_W(const Buffer& buffer, const std::wstring&
   return find_pattern_A(buffer, s);
 }
 
-std::pair<bool, size_t> find_pattern_A(const void* ptr, const size_t size, const std::string& pattern)
+std::pair<bool, size_t> find_pattern_A(
+  const void* ptr, const size_t size, const std::string& pattern)
 {
   std::pair<bool, size_t> result(false, 0);
 
@@ -233,11 +235,11 @@ std::pair<bool, size_t> find_pattern_A(const void* ptr, const size_t size, const
 
   const auto pointer = static_cast<const byte*>(ptr);
 
-  for (size_t i = 0; i < size; ++i)
+  for (size_t i = 0; i < size; i++)
   {
     size_t j = 0;
 
-    for (j = 0; j < pattern.size(); ++j)
+    for (j = 0; j < patternn.size(); j++)
     {
       if (patternn[j].first && patternn[j].second != pointer[i + j])
       {
@@ -245,7 +247,7 @@ std::pair<bool, size_t> find_pattern_A(const void* ptr, const size_t size, const
       }
     }
 
-    if (j == pattern.size())
+    if (j == patternn.size())
     {
       result = std::make_pair(true, i);
       break;
@@ -255,7 +257,8 @@ std::pair<bool, size_t> find_pattern_A(const void* ptr, const size_t size, const
   return result;
 }
 
-std::pair<bool, size_t> find_pattern_W(const void* ptr, const size_t size, const std::wstring& pattern)
+std::pair<bool, size_t> find_pattern_W(
+  const void* ptr, const size_t size, const std::wstring& pattern)
 {
   const auto s = to_string_A(pattern);
   return find_pattern_A(ptr, size, s);

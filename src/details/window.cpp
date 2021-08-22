@@ -20,10 +20,8 @@ HWND vuapi get_console_window()
 
   HWND hwnd_console = nullptr;
 
-  PfnGetConsoleWindow pfnGetConsoleWindow = (PfnGetConsoleWindow)Library::quick_get_proc_address(
-    _T("kernel32.dll"),
-    _T("GetConsoleWindow")
-  );
+  PfnGetConsoleWindow pfnGetConsoleWindow =\
+    (PfnGetConsoleWindow)Library::quick_get_proc_address(_T("kernel32.dll"), _T("GetConsoleWindow"));
 
   if (pfnGetConsoleWindow)
   {
@@ -442,7 +440,7 @@ sFontW vuapi get_font_W(HWND hwnd)
 }
 
 /**
- * CWDT
+ * WDT
  */
 
 #define PTR_ALIGN(p, t)\
@@ -469,7 +467,7 @@ void* fn_copy_memory(void** ppdst, void* psrc, size_t nsrc)
   PTR_COPY_NEXT_EX(d, &s, sizeof(s));
 
 /**
- * CWDTControl
+ * WDTControl
  */
 
 // https://docs.microsoft.com/en-us/windows/win32/dlgbox/dialog-box-overviews
@@ -520,7 +518,7 @@ void WDTControl::serialize(void** pptr)
 }
 
 /**
- * CWDTDialog
+ * WDTDialog
  */
 
 WDTDialog::WDTDialog(
@@ -638,7 +636,7 @@ INT_PTR WDTDialog::do_modal(DLGPROC pfn_dlg_proc, WDTDialog* ptr_parent)
 }
 
 /**
- * CInputDialog
+ * InputDialog
  */
 
 InputDialog::InputDialog(const std::wstring& label, HWND hwnd_parent, bool number_only)

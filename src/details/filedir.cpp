@@ -437,13 +437,15 @@ std_string_t join_path_T(const std_string_t& left, const std_string_t& right, co
   }
 }
 
-std::string vuapi join_path_A(const std::string& left, const std::string& right, const ePathSep separator)
+std::string vuapi join_path_A(
+  const std::string& left, const std::string& right, const ePathSep separator)
 {
   const auto Sep = separator == ePathSep::WIN ? '\\' : '/';
   return join_path_T<std::string, char>(left, right, Sep);
 }
 
-std::wstring vuapi join_path_W(const std::wstring& left, const std::wstring& right, const ePathSep separator)
+std::wstring vuapi join_path_W(
+  const std::wstring& left, const std::wstring& right, const ePathSep separator)
 {
   const auto sep = separator == ePathSep::WIN ? L'\\' : L'/';
   return join_path_T<std::wstring, wchar_t>(left, right, sep);
@@ -480,7 +482,7 @@ std::wstring normalize_path_W(const std::wstring& path, const ePathSep separator
 }
 
 /**
- * CPathA
+ * PathA
  */
 
 PathA::PathA(const ePathSep separator) : m_path(""), m_separator(separator)
@@ -621,7 +623,7 @@ std::ostream& operator<<(std::ostream& os, PathA& Path)
 }
 
 /**
- * CPathW
+ * PathW
  */
 
 PathW::PathW(const ePathSep Separator) : m_path(L""), m_separator(Separator)

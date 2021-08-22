@@ -95,7 +95,8 @@ bool vuapi GetAssembleInstruction(
         * /
          pos_disp += 1; // If it's being used the segment.
       }
-      if (is_flag_on(hde.flags, HDE::F_MODRM)) {
+      if (is_flag_on(hde.flags, HDE::F_MODRM))
+      {
          pos_disp += 1; // The second opcode.
       }
       { // Others

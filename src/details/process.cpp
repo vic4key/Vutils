@@ -18,6 +18,11 @@
 namespace vu
 {
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 6335)
+#endif // _MSC_VER
+
 eProcessorArchitecture get_processor_architecture()
 {
   typedef void (WINAPI *PfnGetNativeSystemInfo)(LPSYSTEM_INFO lpSystemInfo);
@@ -29,7 +34,7 @@ eProcessorArchitecture get_processor_architecture()
 
   if (!pfnGetNativeSystemInfo)
   {
-    return PA_UNKNOWN;
+    return eProcessorArchitecture::PA_UNKNOWN;
   }
 
   _SYSTEM_INFO si = {0};
@@ -76,16 +81,16 @@ eWow64 vuapi is_wow64(HANDLE hp)
   );
   if (pfnIsWow64Process == nullptr)
   {
-    return WOW64_ERROR;
+    return eWow64::WOW64_ERROR;
   }
 
   BOOL wow64 = false;
   if (!pfnIsWow64Process(hp, &wow64))
   {
-    return WOW64_ERROR;
+    return eWow64::WOW64_ERROR;
   }
 
-  return (wow64 ? WOW64_YES : WOW64_NO);
+  return (wow64 ? eWow64::WOW64_YES : eWow64::WOW64_NO);
 }
 
 bool vuapi is_64bits(HANDLE hp)
@@ -116,7 +121,8 @@ bool vuapi is_64bits(ulong pid)
   return process.bit() == eXBit::x64;
 }
 
-bool vuapi rpm(const HANDLE hp, const void* address, void* buffer, const SIZE_T size, const bool force)
+bool vuapi rpm(
+  const HANDLE hp, const void* address, void* buffer, const SIZE_T size, const bool force)
 {
   ulong  protection = 0;
   if (force) VirtualProtectEx(hp, LPVOID(address), size, PAGE_EXECUTE_READWRITE, &protection);
@@ -131,7 +137,14 @@ bool vuapi rpm(const HANDLE hp, const void* address, void* buffer, const SIZE_T 
   return num_read_bytes == size;
 }
 
-bool vuapi rpm_ex(const eXBit bit, const HANDLE hp, const void* address, void* buffer, const SIZE_T size, const bool force, const SIZE_T n_offsets, ...)
+bool vuapi rpm_ex(
+  const eXBit bit,
+  const HANDLE hp,
+  const void* address,
+  void* buffer,
+  const SIZE_T size,
+  const bool force,
+  const SIZE_T n_offsets, ...)
 {
   va_list args;
   va_start(args, n_offsets);
@@ -150,15 +163,27 @@ bool vuapi rpm_ex(const eXBit bit, const HANDLE hp, const void* address, void* b
     for (size_t i = 0; i < n_offsets; i++)
     {
       bool is_offset = i < n_offsets - 1;
-      result &= rpm(hp, LPCVOID(ulonglong(address) + offsets.at(i)), is_offset ? LPVOID(&address) : buffer, is_offset ? bit : size, force);
-      if (!result) break;
+
+      result &= rpm(
+        hp,
+        LPCVOID(ulonglong(address) + offsets.at(i)),
+        is_offset ? LPVOID(&address) : buffer,
+        is_offset ? bit : size,
+        force
+      );
+
+      if (!result)
+      {
+        break;
+      }
     }
   }
 
   return result;
 }
 
-bool vuapi wpm(const HANDLE hp, const void* address, const void* buffer, const SIZE_T size, const bool force)
+bool vuapi wpm(
+  const HANDLE hp, const void* address, const void* buffer, const SIZE_T size, const bool force)
 {
 
   ulong protection = 0;
@@ -174,7 +199,14 @@ bool vuapi wpm(const HANDLE hp, const void* address, const void* buffer, const S
   return n_written_bytes == size;
 }
 
-bool vuapi wpm_ex(const eXBit bit, const HANDLE hp, const void* address, const void* buffer, const SIZE_T size, const bool force, const SIZE_T n_offsets, ...)
+bool vuapi wpm_ex(
+  const eXBit bit,
+  const HANDLE hp,
+  const void* address,
+  const void* buffer,
+  const SIZE_T size,
+  const bool force,
+  const SIZE_T n_offsets, ...)
 {
   va_list args;
   va_start(args, n_offsets);
@@ -193,8 +225,19 @@ bool vuapi wpm_ex(const eXBit bit, const HANDLE hp, const void* address, const v
     for (size_t i = 0; i < n_offsets; i++)
     {
       bool is_offset = i < n_offsets - 1;
-      result &= rpm(hp, LPCVOID(ulonglong(address) + offsets.at(i)), LPVOID(&address), is_offset ? bit : size, force);
-      if (!result) break;
+
+      result &= rpm(
+        hp,
+        LPCVOID(ulonglong(address) + offsets.at(i)),
+        LPVOID(&address),
+        is_offset ? bit : size,
+        force
+      );
+
+      if (!result)
+      {
+        break;
+      }
     }
   }
 
@@ -792,7 +835,7 @@ ProcessX::ProcessX()
 }
 
 // ProcessX::ProcessX(const vu::ulong pid)
-//   : m_pid(PID)
+//   : m_pid(pid)
 //   , m_handle(nullptr)
 //   , m_wow64(eWow64::WOW64_ERROR)
 //   , m_bit(eXBit::x86)
@@ -1019,7 +1062,8 @@ double ProcessX::get_cpu_percent_usage()
     return 0.; // get_cpu_percent_usage();
   }
 
-  const int64_t system_time_delta_per_core_UTC = system_time_per_core_UTC - m_last_system_time_per_core_UTC;
+  const int64_t system_time_delta_per_core_UTC =\
+    system_time_per_core_UTC - m_last_system_time_per_core_UTC;
   const int64_t system_time_delta_UTC = system_time_UTC - m_last_system_time_UTC;
 
   if (system_time_delta_UTC == 0)
@@ -1027,7 +1071,8 @@ double ProcessX::get_cpu_percent_usage()
     return 0.; // get_cpu_percent_usage();
   }
 
-  double result = (system_time_delta_per_core_UTC * 100. + system_time_delta_UTC / 2.) / system_time_delta_UTC;
+  double result =\
+    (system_time_delta_per_core_UTC * 100. + system_time_delta_UTC / 2.) / system_time_delta_UTC;
 
   m_last_system_time_per_core_UTC = system_time_per_core_UTC;
   m_last_system_time_UTC = system_time_UTC;
@@ -1135,7 +1180,8 @@ const ProcessX::threads& ProcessX::get_threads()
 // https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-memory_basic_information
 // https://docs.microsoft.com/en-us/windows/win32/memory/memory-protection-constants
 
-const ProcessX::memories& ProcessX::get_memories(const ulong state, const ulong type, const ulong protection)
+const ProcessX::memories& ProcessX::get_memories(
+  const ulong state, const ulong type, const ulong protection)
 {
   m_memories.clear();
 
@@ -1209,6 +1255,47 @@ std::ostream& operator<<(std::ostream& os, ProcessA& process)
 const std::string& ProcessA::name() const
 {
   return m_name;
+}
+
+bool ProcessA::create(
+  const std::string& file_path,
+  const std::string& file_dir,
+  const std::string& command_line,
+  const uint creation_flags,
+  const bool inherit_handle,
+  PROCESS_INFORMATION* ptr_pi
+)
+{
+  STARTUPINFOA si = { 0 };
+  si.cb = sizeof(si);
+
+  PROCESS_INFORMATION pi = { 0 };
+
+  bool result = CreateProcessA(
+    file_path.c_str(),
+    const_cast<LPSTR>(command_line.c_str()),
+    nullptr,
+    nullptr,
+    FALSE,
+    creation_flags,
+    nullptr,
+    file_dir.c_str(),
+    &si,
+    &pi
+  ) != FALSE;
+
+  if (!result)
+  {
+    m_last_error_code = GetLastError();
+    return false;
+  }
+
+  if (ptr_pi != nullptr)
+  {
+    *ptr_pi = pi;
+  }
+
+  return this->attach(pi.hProcess);
 }
 
 void ProcessA::parse()
@@ -1339,6 +1426,47 @@ const std::wstring& ProcessW::name() const
   return m_name;
 }
 
+bool ProcessW::create(
+  const std::wstring& file_path,
+  const std::wstring& file_dir,
+  const std::wstring& command_line,
+  const uint creation_flags,
+  const bool inherit_handle,
+  PROCESS_INFORMATION* ptr_pi
+)
+{
+  STARTUPINFOW si = { 0 };
+  si.cb = sizeof(si);
+
+  PROCESS_INFORMATION pi = { 0 };
+
+  bool result = CreateProcessW(
+    file_path.c_str(),
+    const_cast<LPWSTR>(command_line.c_str()),
+    nullptr,
+    nullptr,
+    FALSE,
+    creation_flags,
+    nullptr,
+    file_dir.c_str(),
+    &si,
+    &pi
+  ) != FALSE;
+
+  if (!result)
+  {
+    m_last_error_code = GetLastError();
+    return false;
+  }
+
+  if (ptr_pi != nullptr)
+  {
+    *ptr_pi = pi;
+  }
+
+  return this->attach(pi.hProcess);
+}
+
 void ProcessW::parse()
 {
   ProcessX::parse();
@@ -1407,5 +1535,9 @@ const MODULEENTRY32W ProcessW::get_module_information()
 
   return result;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
 
 } // namespace vu

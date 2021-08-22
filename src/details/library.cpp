@@ -43,7 +43,8 @@ void* vuapi LibraryA::get_proc_address(const std::string& function_name)
   return (void*)::GetProcAddress(m_module_handle, function_name.c_str());
 }
 
-void* vuapi LibraryA::quick_get_proc_address(const std::string& module_name, const std::string& function_name)
+void* vuapi LibraryA::quick_get_proc_address(
+  const std::string& module_name, const std::string& function_name)
 {
   if (module_name.empty() || function_name.empty())
   {
@@ -92,7 +93,8 @@ void* vuapi LibraryW::get_proc_address(const std::wstring& function_name)
   return (void*)::GetProcAddress(m_module_handle, s.c_str());
 }
 
-void* vuapi LibraryW::quick_get_proc_address(const std::wstring& module_name, const std::wstring& function_name)
+void* vuapi LibraryW::quick_get_proc_address(
+  const std::wstring& module_name, const std::wstring& function_name)
 {
   if (module_name.empty() || function_name.empty())
   {

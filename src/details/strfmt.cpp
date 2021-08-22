@@ -529,7 +529,7 @@ std::wstring vuapi format_bytes_W(long long bytes, eStdByte std, int digits)
 }
 
 /**
- * CFundamental
+ * FundamentalA
  */
 
 FundamentalA::FundamentalA()

@@ -24,7 +24,7 @@ namespace vu
  */
 
 /**
- * CCOMSentry
+ * COMSentry
  */
 
 class COMSentry
@@ -96,7 +96,7 @@ bool COMSentry::ready()
  */
 
 /**
- * CWMIProviderX
+ * WMIProviderX
  */
 
 class WMIProviderX : public COMSentry
@@ -280,7 +280,7 @@ bool WMIProviderX::query(const std::wstring& qs,
 }
 
 /**
- * CWMIProviderA
+ * WMIProviderA
  */
 
 WMIProviderA::WMIProviderA()
@@ -315,14 +315,15 @@ IEnumWbemClassObject* WMIProviderA::query(const std::string& qs)
   return m_ptr_impl->query(s);
 }
 
-bool WMIProviderA::query(const std::string& qs, const std::function<bool(IWbemClassObject& object)> fn)
+bool WMIProviderA::query(
+  const std::string& qs, const std::function<bool(IWbemClassObject& object)> fn)
 {
   auto s = vu::to_string_W(qs);
   return m_ptr_impl->query(s, fn);
 }
 
 /**
- * CWMIProviderW
+ * WMIProviderW
  */
 
 WMIProviderW::WMIProviderW()
@@ -355,7 +356,8 @@ IEnumWbemClassObject* WMIProviderW::query(const std::wstring& qs)
   return m_ptr_impl->query(qs);
 }
 
-bool WMIProviderW::query(const std::wstring& qs, const std::function<bool(IWbemClassObject& object)> fn)
+bool WMIProviderW::query(
+  const std::wstring& qs, const std::function<bool(IWbemClassObject& object)> fn)
 {
   return m_ptr_impl->query(qs, fn);
 }

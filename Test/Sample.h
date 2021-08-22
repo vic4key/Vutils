@@ -3,7 +3,7 @@
 #include <vu>
 
 /**
- * CSample
+ * Sample
  */
 
 class Sample

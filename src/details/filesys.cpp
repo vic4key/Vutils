@@ -228,7 +228,7 @@ const std::string vuapi FileSystemA::read_as_string(bool remove_bom)
 
 const std::string vuapi FileSystemA::quick_read_as_string(const std::string& file_path, bool remove_bom)
 {
-  FileSystemA file(file_path, vu::eFSModeFlags::FM_OPENEXISTING);
+  FileSystemA file(file_path, vu::eFSModeFlags::FM_OPENEXISTING, eFSGenericFlags::FG_READ, eFSShareFlags::FS_READ);
   auto result = file.read_as_string(remove_bom);
   return result;
 }
@@ -240,7 +240,7 @@ Buffer FileSystemA::quick_read_as_buffer(const std::string& file_path)
     return Buffer();
   }
 
-  FileSystemA fs(file_path, eFSModeFlags::FM_OPENEXISTING);
+  FileSystemA fs(file_path, eFSModeFlags::FM_OPENEXISTING, eFSGenericFlags::FG_READ, eFSShareFlags::FS_READ);
   return fs.read_as_buffer();
 }
 
@@ -353,7 +353,7 @@ const std::wstring vuapi FileSystemW::read_as_string(bool remove_bom)
 
 const std::wstring vuapi FileSystemW::quick_read_as_string(const std::wstring& file_path, bool remove_bom)
 {
-  FileSystemW file(file_path, vu::eFSModeFlags::FM_OPENEXISTING);
+  FileSystemW file(file_path, vu::eFSModeFlags::FM_OPENEXISTING, eFSGenericFlags::FG_READ, eFSShareFlags::FS_READ);
   auto result = file.read_as_string(remove_bom);
   return result;
 }
@@ -365,7 +365,7 @@ Buffer FileSystemW::quick_read_as_buffer(const std::wstring& file_path)
     return Buffer();
   }
 
-  FileSystemW fs(file_path, eFSModeFlags::FM_OPENEXISTING);
+  FileSystemW fs(file_path, eFSModeFlags::FM_OPENEXISTING, eFSGenericFlags::FG_READ, eFSShareFlags::FS_READ);
   return fs.read_as_buffer();
 }
 

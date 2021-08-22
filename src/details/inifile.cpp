@@ -105,23 +105,28 @@ std::vector<std::string> vuapi INIFileA::read_section(const std::string& section
   return l;
 }
 
-int vuapi INIFileA::read_integer(const std::string& section, const std::string& key, int default_value)
+int vuapi INIFileA::read_integer(
+  const std::string& section, const std::string& key, int default_value)
 {
   this->update_file_path();
-  uint result = GetPrivateProfileIntA(section.c_str(), key.c_str(), default_value, m_file_path.c_str());
+  uint result = GetPrivateProfileIntA(
+    section.c_str(), key.c_str(), default_value, m_file_path.c_str());
   m_last_error_code = GetLastError();
   return result;
 }
 
-bool vuapi INIFileA::read_bool(const std::string& section, const std::string& key, bool default_value)
+bool vuapi INIFileA::read_bool(
+  const std::string& section, const std::string& key, bool default_value)
 {
   this->update_file_path();
-  bool result = GetPrivateProfileIntA(section.c_str(), key.c_str(), default_value, m_file_path.c_str()) == 1 ? true : false;
+  bool result = GetPrivateProfileIntA(
+    section.c_str(), key.c_str(), default_value, m_file_path.c_str()) == 1 ? true : false;
   m_last_error_code = GetLastError();
   return result;
 }
 
-float vuapi INIFileA::read_float(const std::string& section, const std::string& key, float default_value)
+float vuapi INIFileA::read_float(
+  const std::string& section, const std::string& key, float default_value)
 {
   const std::string tmp_default = number_to_string_A(default_value);
   char sz_result[MAX_SIZE];
@@ -130,7 +135,8 @@ float vuapi INIFileA::read_float(const std::string& section, const std::string& 
 
   this->update_file_path();
 
-  GetPrivateProfileStringA(section.c_str(), key.c_str(), tmp_default.c_str(), sz_result, MAX_SIZE, m_file_path.c_str());
+  GetPrivateProfileStringA(
+    section.c_str(), key.c_str(), tmp_default.c_str(), sz_result, MAX_SIZE, m_file_path.c_str());
 
   m_last_error_code = GetLastError();
 
@@ -138,10 +144,7 @@ float vuapi INIFileA::read_float(const std::string& section, const std::string& 
 }
 
 std::string vuapi INIFileA::read_string(
-  const std::string& section,
-  const std::string& key,
-  const std::string& default_value
-)
+  const std::string& section, const std::string& key, const std::string& default_value)
 {
   std::string s;
   s.clear();
@@ -176,7 +179,8 @@ std::string vuapi INIFileA::read_string(
   return s;
 }
 
-std::unique_ptr<uchar[]> vuapi INIFileA::read_struct(const std::string& section, const std::string& key, ulong size)
+std::unique_ptr<uchar[]> vuapi INIFileA::read_struct(
+  const std::string& section, const std::string& key, ulong size)
 {
   std::unique_ptr<uchar[]> p(new uchar[size]);
   if (p == nullptr)
@@ -188,7 +192,8 @@ std::unique_ptr<uchar[]> vuapi INIFileA::read_struct(const std::string& section,
 
   this->update_file_path();
 
-  if (GetPrivateProfileStructA(section.c_str(), key.c_str(), (void*)p.get(), size, m_file_path.c_str()) == 0)
+  if (GetPrivateProfileStructA(
+    section.c_str(), key.c_str(), (void*)p.get(), size, m_file_path.c_str()) == 0)
   {
     m_last_error_code = GetLastError();
     return nullptr;
@@ -235,7 +240,8 @@ bool vuapi INIFileA::write_integer(const std::string& section, const std::string
 {
   this->update_file_path();
   const std::string s = number_to_string_A(value);
-  bool result = WritePrivateProfileStringA(section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
+  bool result = WritePrivateProfileStringA(
+    section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
@@ -244,7 +250,8 @@ bool vuapi INIFileA::write_bool(const std::string& section, const std::string& k
 {
   this->update_file_path();
   const std::string s(value ? "1" : "0");
-  bool result = WritePrivateProfileStringA(section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
+  bool result = WritePrivateProfileStringA(
+    section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
@@ -253,23 +260,28 @@ bool vuapi INIFileA::write_float(const std::string& section, const std::string& 
 {
   this->update_file_path();
   const std::string s = number_to_string_A(value);
-  bool result = WritePrivateProfileStringA(section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
+  bool result = WritePrivateProfileStringA(
+    section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
 
-bool vuapi INIFileA::write_string(const std::string& section, const std::string& key, const std::string& value)
+bool vuapi INIFileA::write_string(
+  const std::string& section, const std::string& key, const std::string& value)
 {
   this->update_file_path();
-  bool result = WritePrivateProfileStringA(section.c_str(), key.c_str(), value.c_str(), m_file_path.c_str()) != 0;
+  bool result = WritePrivateProfileStringA(
+    section.c_str(), key.c_str(), value.c_str(), m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
 
-bool vuapi INIFileA::write_struct(const std::string& section, const std::string& key, void* ptr_struct, ulong size)
+bool vuapi INIFileA::write_struct(
+  const std::string& section, const std::string& key, void* ptr_struct, ulong size)
 {
   this->update_file_path();
-  bool result = WritePrivateProfileStructA(section.c_str(), key.c_str(), ptr_struct, size, m_file_path.c_str()) != 0;
+  bool result = WritePrivateProfileStructA(
+    section.c_str(), key.c_str(), ptr_struct, size, m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
@@ -396,23 +408,28 @@ std::vector<std::wstring> vuapi INIFileW::read_section(const std::wstring& secti
   return l;
 }
 
-int vuapi INIFileW::read_integer(const std::wstring& section, const std::wstring& key, int default_value)
+int vuapi INIFileW::read_integer(
+  const std::wstring& section, const std::wstring& key, int default_value)
 {
   this->update_file_path();
-  int result = GetPrivateProfileIntW(section.c_str(), key.c_str(), default_value, m_file_path.c_str());
+  int result = GetPrivateProfileIntW(
+    section.c_str(), key.c_str(), default_value, m_file_path.c_str());
   m_last_error_code = GetLastError();
   return result;
 }
 
-bool vuapi INIFileW::read_bool(const std::wstring& section, const std::wstring& key, bool default_value)
+bool vuapi INIFileW::read_bool(
+  const std::wstring& section, const std::wstring& key, bool default_value)
 {
   this->update_file_path();
-  bool result = GetPrivateProfileIntW(section.c_str(), key.c_str(), default_value, m_file_path.c_str()) == 1 ? true : false;
+  bool result = GetPrivateProfileIntW(
+    section.c_str(), key.c_str(), default_value, m_file_path.c_str()) == 1 ? true : false;
   m_last_error_code = GetLastError();
   return result;
 }
 
-float vuapi INIFileW::read_float(const std::wstring& section, const std::wstring& key, float default_value)
+float vuapi INIFileW::read_float(
+  const std::wstring& section, const std::wstring& key, float default_value)
 {
   this->update_file_path();
 
@@ -438,10 +455,7 @@ float vuapi INIFileW::read_float(const std::wstring& section, const std::wstring
 }
 
 std::wstring vuapi INIFileW::read_string(
-  const std::wstring& section,
-  const std::wstring& key,
-  const std::wstring& default_value
-)
+  const std::wstring& section, const std::wstring& key, const std::wstring& default_value)
 {
   std::wstring s;
   s.clear();
@@ -491,7 +505,8 @@ std::unique_ptr<uchar[]> vuapi INIFileW::read_struct(
 
   this->update_file_path();
 
-  if (GetPrivateProfileStructW(section.c_str(), key.c_str(), (void*)p.get(), size, m_file_path.c_str()) == 0)
+  if (GetPrivateProfileStructW(
+    section.c_str(), key.c_str(), (void*)p.get(), size, m_file_path.c_str()) == 0)
   {
     m_last_error_code = GetLastError();
     return nullptr;
@@ -522,7 +537,8 @@ float vuapi INIFileW::read_float(const std::wstring& key, float default_value)
   return this->read_float(m_section, key, default_value);
 }
 
-std::wstring vuapi INIFileW::read_string(const std::wstring& key, const std::wstring& default_value)
+std::wstring vuapi INIFileW::read_string(
+  const std::wstring& key, const std::wstring& default_value)
 {
   return this->read_string(m_section, key, default_value);
 }
@@ -538,7 +554,8 @@ bool vuapi INIFileW::write_integer(const std::wstring& section, const std::wstri
 {
   this->update_file_path();
   const std::wstring s = number_to_string_W(value);
-  bool result = WritePrivateProfileStringW(section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
+  bool result = WritePrivateProfileStringW(
+    section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
@@ -547,22 +564,26 @@ bool vuapi INIFileW::write_bool(const std::wstring& section, const std::wstring&
 {
   this->update_file_path();
   const std::wstring s(value ? L"1" : L"0");
-  return (WritePrivateProfileStringW(section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0);
+  return (WritePrivateProfileStringW(
+    section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0);
 }
 
 bool vuapi INIFileW::write_float(const std::wstring& section, const std::wstring& key, float value)
 {
   this->update_file_path();
   const std::wstring s = number_to_string_W(value);
-  bool result = WritePrivateProfileStringW(section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
+  bool result = WritePrivateProfileStringW(
+    section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
 
-bool vuapi INIFileW::write_string(const std::wstring& section, const std::wstring& key, const std::wstring& value)
+bool vuapi INIFileW::write_string(
+  const std::wstring& section, const std::wstring& key, const std::wstring& value)
 {
   this->update_file_path();
-  bool result = WritePrivateProfileStringW(section.c_str(), key.c_str(), value.c_str(), m_file_path.c_str()) != 0;
+  bool result = WritePrivateProfileStringW(
+    section.c_str(), key.c_str(), value.c_str(), m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
@@ -575,7 +596,8 @@ bool vuapi INIFileW::write_struct(
 )
 {
   this->update_file_path();
-  bool result = WritePrivateProfileStructW(section.c_str(), key.c_str(), ptr_struct, size, m_file_path.c_str()) != 0;
+  bool result = WritePrivateProfileStructW(
+    section.c_str(), key.c_str(), ptr_struct, size, m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }

@@ -63,7 +63,7 @@ struct sIATElement
 };
 
 /**
- * CIATHookManagerA
+ * IATHookingA
  */
 
 IATHookingA::IATHookingA()
@@ -267,7 +267,7 @@ VUResult IATHookingA::iterate(
 }
 
 /**
- * CIATHookManagerW
+ * IATHookingW
  */
 
 IATHookingW::IATHookingW()

@@ -11,7 +11,11 @@ namespace vu
 
 #ifdef VU_SOCKET_ENABLED
 
-AsyncSocket::AsyncSocket(const vu::Socket::address_family_t af, const vu::Socket::type_t type, const vu::Socket::protocol_t proto) : m_server(af, type, proto)
+AsyncSocket::AsyncSocket(
+  const vu::Socket::address_family_t af,
+  const vu::Socket::type_t type,
+  const vu::Socket::protocol_t proto)
+  : m_server(af, type, proto)
 {
   this->initialze();
 

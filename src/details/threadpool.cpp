@@ -14,7 +14,7 @@ using namespace threadpool11;
 namespace vu
 {
 
-CThreadPool::CThreadPool(size_t n_threads)
+ThreadPool::ThreadPool(size_t n_threads)
 {
   if (n_threads == MAX_NTHREADS)
   {
@@ -24,37 +24,37 @@ CThreadPool::CThreadPool(size_t n_threads)
   m_ptr_impl = new Pool(n_threads);
 }
 
-CThreadPool::~CThreadPool()
+ThreadPool::~ThreadPool()
 {
   delete m_ptr_impl;
 }
 
-void CThreadPool::add_task(fn_task_t&& fn)
+void ThreadPool::add_task(fn_task_t&& fn)
 {
   m_ptr_impl->postWork(static_cast<Worker::WorkType>(fn));
 }
 
-void CThreadPool::launch()
+void ThreadPool::launch()
 {
   m_ptr_impl->waitAll();
 }
 
-size_t CThreadPool::worker_count() const
+size_t ThreadPool::worker_count() const
 {
   return m_ptr_impl->getWorkerCount();
 }
 
-size_t CThreadPool::work_queue_count() const
+size_t ThreadPool::work_queue_count() const
 {
   return m_ptr_impl->getWorkQueueCount();
 }
 
-size_t CThreadPool::active_worker_count() const
+size_t ThreadPool::active_worker_count() const
 {
   return m_ptr_impl->getActiveWorkerCount();
 }
 
-size_t CThreadPool::inactive_worker_count() const
+size_t ThreadPool::inactive_worker_count() const
 {
   return m_ptr_impl->getInactiveWorkerCount();
 }

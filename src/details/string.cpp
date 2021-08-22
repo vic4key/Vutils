@@ -47,28 +47,52 @@ eEncodingType vuapi determine_encoding_type(const void* data, const size_t size)
   try
   {
     /* UTF-8 BOM */
-    if (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF) return eEncodingType::ET_UTF8_BOM;
+    if (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)
+    {
+      return eEncodingType::ET_UTF8_BOM;
+    }
 
     /* UTF-32 LE BOM */
-    if (p[0] == 0xFF && p[1] == 0xFE && p[2] == 0x00 && p[3] == 0x00) return eEncodingType::ET_UTF32_LE_BOM;
+    if (p[0] == 0xFF && p[1] == 0xFE && p[2] == 0x00 && p[3] == 0x00)
+    {
+      return eEncodingType::ET_UTF32_LE_BOM;
+    }
 
     /* UTF-32 BE BOM */
-    if (p[0] == 0x00 && p[1] == 0x00 && p[2] == 0xFE && p[3] == 0xFF) return eEncodingType::ET_UTF32_BE_BOM;
+    if (p[0] == 0x00 && p[1] == 0x00 && p[2] == 0xFE && p[3] == 0xFF)
+    {
+      return eEncodingType::ET_UTF32_BE_BOM;
+    }
 
     /* UTF-16 LE BOM */
-    if (p[0] == 0xFF && p[1] == 0xFE) return eEncodingType::ET_UTF16_LE_BOM;
+    if (p[0] == 0xFF && p[1] == 0xFE)
+    {
+      return eEncodingType::ET_UTF16_LE_BOM;
+    }
 
     /* UTF-16 BE BOM */
-    if (p[0] == 0xFE && p[1] == 0xFF) return eEncodingType::ET_UTF16_BE_BOM;
+    if (p[0] == 0xFE && p[1] == 0xFF)
+    {
+      return eEncodingType::ET_UTF16_BE_BOM;
+    }
 
     /* UTF-16 LE */
-    if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && p[1] == 0x00) return eEncodingType::ET_UTF16_LE;
+    if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && p[1] == 0x00)
+    {
+      return eEncodingType::ET_UTF16_LE;
+    }
 
     /* UTF-16 BE */
-    if ((p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX) && p[0] == 0x00) return eEncodingType::ET_UTF16_BE;
+    if ((p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX) && p[0] == 0x00)
+    {
+      return eEncodingType::ET_UTF16_BE;
+    }
 
     /* UTF-8 */
-    if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && (p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX)) return eEncodingType::ET_UTF8;
+    if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && (p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX))
+    {
+      return eEncodingType::ET_UTF8;
+    }
   }
   catch (int)
   {
@@ -163,7 +187,8 @@ std::wstring vuapi to_string_W(const std::string& string)
 }
 
 template <class std_string_t>
-std::vector<std_string_t> SplitStringT(const std_string_t& string, const std_string_t& seperate, bool remempty)
+std::vector<std_string_t> split_string_T(
+  const std_string_t& string, const std_string_t& seperate, bool remove_empty)
 {
   std::vector<std_string_t> l;
   l.clear();
@@ -181,50 +206,52 @@ std::vector<std_string_t> SplitStringT(const std_string_t& string, const std_str
   while (end != std_string_t::npos)
   {
     sub = s.substr(start, end - start);
-    if (!sub.empty() || !remempty) l.push_back(std_string_t(sub.c_str()));
+    if (!sub.empty() || !remove_empty) l.push_back(std_string_t(sub.c_str()));
     start = end + sep.length();
     end = s.find(sep, start);
   }
 
   sub = s.substr(start, end);
-  if (!sub.empty() || !remempty) l.push_back(std_string_t(sub.c_str()));
+  if (!sub.empty() || !remove_empty) l.push_back(std_string_t(sub.c_str()));
 
   return l;
 }
 
-std::vector<std::string> vuapi split_string_A(const std::string& string, const std::string& seperate, bool remempty)
+std::vector<std::string> vuapi split_string_A(
+  const std::string& string, const std::string& seperate, bool remove_empty)
 {
-  return SplitStringT<std::string>(string, seperate, remempty);
+  return split_string_T<std::string>(string, seperate, remove_empty);
 }
 
-std::vector<std::wstring> vuapi split_string_W(const std::wstring& string, const std::wstring& seperate, bool remempty)
+std::vector<std::wstring> vuapi split_string_W(
+  const std::wstring& string, const std::wstring& seperate, bool remove_empty)
 {
-  return SplitStringT<std::wstring>(string, seperate, remempty);
+  return split_string_T<std::wstring>(string, seperate, remove_empty);
 }
 
-std::vector<std::string> vuapi multi_string_to_list_A(const char* ptr_multi_string)
+std::vector<std::string> vuapi multi_string_to_list_A(const char* ps_multi_string)
 {
   std::vector<std::string> l;
   l.clear();
 
-  while (*ptr_multi_string)
+  while (*ps_multi_string)
   {
-    l.push_back(std::string(ptr_multi_string));
-    ptr_multi_string += (lstrlenA(ptr_multi_string) + 1);
+    l.push_back(std::string(ps_multi_string));
+    ps_multi_string += (lstrlenA(ps_multi_string) + 1);
   }
 
   return l;
 }
 
-std::vector<std::wstring> vuapi multi_string_to_list_W(const wchar* ptr_multi_string)
+std::vector<std::wstring> vuapi multi_string_to_list_W(const wchar* ps_multi_string)
 {
   std::vector<std::wstring> l;
   l.clear();
 
-  while (*ptr_multi_string)
+  while (*ps_multi_string)
   {
-    l.push_back(std::wstring(ptr_multi_string));
-    ptr_multi_string += (lstrlenW(ptr_multi_string) + 1);
+    l.push_back(std::wstring(ps_multi_string));
+    ps_multi_string += (lstrlenW(ps_multi_string) + 1);
   }
 
   return l;
@@ -357,18 +384,21 @@ std_string_t TrimStringT(
   return s;
 }
 
-std::string vuapi trim_string_A(const std::string& string, const eTrimType& type, const std::string& chars)
+std::string vuapi trim_string_A(
+  const std::string& string, const eTrimType& type, const std::string& chars)
 {
   return TrimStringT<std::string>(string, type, chars);
 }
 
-std::wstring vuapi trim_string_W(const std::wstring& string, const eTrimType& type, const std::wstring& chars)
+std::wstring vuapi trim_string_W(
+  const std::wstring& string, const eTrimType& type, const std::wstring& chars)
 {
   return TrimStringT<std::wstring>(string, type, chars);
 }
 
 template <class std_string_t>
-std_string_t replace_string_T(const std_string_t& string, const std_string_t& from, const std_string_t& to)
+std_string_t replace_string_T(
+  const std_string_t& string, const std_string_t& from, const std_string_t& to)
 {
   std_string_t result = string;
 
@@ -383,12 +413,14 @@ std_string_t replace_string_T(const std_string_t& string, const std_string_t& fr
   return result;
 }
 
-std::string vuapi replace_string_A(const std::string& text, const std::string& from, const std::string& to)
+std::string vuapi replace_string_A(
+  const std::string& text, const std::string& from, const std::string& to)
 {
   return replace_string_T<std::string>(text, from, to);
 }
 
-std::wstring vuapi replace_string_W(const std::wstring& text, const std::wstring& from, const std::wstring& to)
+std::wstring vuapi replace_string_W(
+  const std::wstring& text, const std::wstring& from, const std::wstring& to)
 {
   return replace_string_T<std::wstring>(text, from, to);
 }

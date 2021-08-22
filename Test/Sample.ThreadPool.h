@@ -27,7 +27,7 @@ DEF_SAMPLE(ThreadPool)
 
   logger.reset();
 
-  vu::CThreadPool pool;
+  vu::ThreadPool pool;
   for (int i = 0; i < 10; i++)
   {
     pool.add_task(fn);
@@ -38,10 +38,10 @@ DEF_SAMPLE(ThreadPool)
 
   // STL Multi-threading
 
-  class CSampleTask : public vu::CSTLThreadT<std::vector<int>>
+  class SampleTask : public vu::STLThreadT<std::vector<int>>
   {
   public:
-    CSampleTask(std::vector<int>& items) : CSTLThreadT(items)
+    SampleTask(std::vector<int>& items) : STLThreadT(items)
     {
       m_results.resize(this->iterations());
     };
@@ -70,7 +70,7 @@ DEF_SAMPLE(ThreadPool)
   std::vector<int> items(10);
   std::iota(items.begin(), items.end(), 0);
 
-  CSampleTask task(items);
+  SampleTask task(items);
   task.launch();
   std::cout << "result is " << task.result() << std::endl;
 

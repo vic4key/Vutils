@@ -215,18 +215,28 @@ std::string vuapi upper_string_A(const std::string& string);
 std::wstring vuapi upper_string_W(const std::wstring& string);
 std::string vuapi to_string_A(const std::wstring& string);
 std::wstring vuapi to_string_W(const std::string& string);
-std::vector<std::string> vuapi split_string_A(const std::string& string, const std::string& seperate, bool remempty = false);
-std::vector<std::wstring> vuapi split_string_W(const std::wstring& string, const std::wstring& seperate, bool remempty = false);
-std::vector<std::string> vuapi multi_string_to_list_A(const char* ptr_multi_string);
-std::vector<std::wstring> vuapi multi_string_to_list_W(const wchar* ptr_multi_string);
+std::vector<std::string> vuapi split_string_A(
+  const std::string& string, const std::string& seperate, bool remove_empty = false);
+std::vector<std::wstring> vuapi split_string_W(
+  const std::wstring& string, const std::wstring& seperate, bool remove_empty = false);
+std::vector<std::string> vuapi multi_string_to_list_A(const char* ps_multi_string);
+std::vector<std::wstring> vuapi multi_string_to_list_W(const wchar* ps_multi_string);
 std::unique_ptr<char[]> vuapi list_to_multi_string_A(const std::vector<std::string>& strings);
 std::unique_ptr<wchar[]> vuapi list_to_multi_string_W(const std::vector<std::wstring>& strings);
 std::string vuapi load_rs_string_A(const uint id, const std::string& module_name = "");
 std::wstring vuapi load_rs_string_W(const uint id, const std::wstring& module_name = L"");
-std::string vuapi trim_string_A(const std::string& string, const eTrimType& type = eTrimType::TS_BOTH, const std::string& chars = " \t\n\r\f\v");
-std::wstring vuapi trim_string_W(const std::wstring& string, const eTrimType& type = eTrimType::TS_BOTH, const std::wstring& chars = L" \t\n\r\f\v");
-std::string vuapi replace_string_A(const std::string& text, const std::string& from, const std::string& to);
-std::wstring vuapi replace_string_W(const std::wstring& text, const std::wstring& from, const std::wstring& to);
+std::string vuapi trim_string_A(
+  const std::string& string,
+  const eTrimType& type = eTrimType::TS_BOTH,
+  const std::string& chars = " \t\n\r\f\v");
+std::wstring vuapi trim_string_W(
+  const std::wstring& string,
+  const eTrimType& type = eTrimType::TS_BOTH,
+  const std::wstring& chars = L" \t\n\r\f\v");
+std::string vuapi replace_string_A(
+  const std::string& text, const std::string& from, const std::string& to);
+std::wstring vuapi replace_string_W(
+  const std::wstring& text, const std::wstring& from, const std::wstring& to);
 bool vuapi starts_with_A(const std::string& text, const std::string& with);
 bool vuapi starts_with_W(const std::wstring& text, const std::wstring& with);
 bool vuapi ends_with_A(const std::string& text, const std::string& with);
@@ -287,14 +297,35 @@ std::vector<ulong> vuapi name_to_pid_A(const std::string& name);
 std::vector<ulong> vuapi name_to_pid_W(const std::wstring& name);
 std::string vuapi pid_to_name_A(ulong pid);
 std::wstring vuapi pid_to_name_W(ulong pid);
-HMODULE vuapi remote_get_module_handle_A(ulong pid, const std::string& module_name); // TODO: Uncompleted.
+HMODULE vuapi remote_get_module_handle_A(ulong pid, const std::string& module_name); // TODO: uncompleted.
 HMODULE vuapi remote_get_module_handle_W(ulong pid, const std::wstring& module_name);
 VUResult vuapi inject_dll_A(ulong pid, const std::string& dll_file_path, bool wait_loading = true);
 VUResult vuapi inject_dll_W(ulong pid, const std::wstring& dll_file_path, bool wait_loading = true);
-bool vuapi rpm(const HANDLE hp, const void* address, void* buffer, const SIZE_T size, const bool force = false);
-bool vuapi rpm_ex(const eXBit bit, const HANDLE hp, const void* address, void* buffer, const SIZE_T size, const bool force = false, const SIZE_T n_offsets = 0, ...);
-bool vuapi wpm(const HANDLE hp, const void* address, const void* buffer, const SIZE_T size, const bool force = false);
-bool vuapi wpm_ex(const eXBit bit, const HANDLE hp, const void* address, const void* buffer, const SIZE_T size, const bool force = false, const SIZE_T n_offsets = 0, ...);
+bool vuapi rpm(
+  const HANDLE hp,
+  const void* address,
+  void* buffer,
+  const SIZE_T size,
+  const bool force = false);
+bool vuapi rpm_ex(
+  const eXBit bit,
+  const HANDLE hp,
+  const void* address,
+  void* buffer,
+  const SIZE_T size,
+  const bool force = false,
+  const SIZE_T n_offsets = 0, ...);
+bool vuapi wpm(const HANDLE hp,
+  const void* address,
+  const void* buffer,
+  const SIZE_T size,
+  const bool force = false);
+bool vuapi wpm_ex(const eXBit bit,
+  const HANDLE hp,
+  const void* address,
+  const void* buffer,
+  const SIZE_T size,
+const bool force = false, const SIZE_T n_offsets = 0, ...);
 
 /**
  * Window Working
@@ -381,12 +412,18 @@ std::string vuapi get_contain_directory_A(bool last_slash = true);
 std::wstring vuapi get_contain_directory_W(bool last_slash = true);
 std::string vuapi get_file_name_from_handle_A(HANDLE hf);
 std::wstring vuapi get_file_name_from_handle_W(HANDLE hf);
-std::string vuapi join_path_A(const std::string& left, const std::string& right, const ePathSep separator = ePathSep::WIN);
-std::wstring vuapi join_path_W(const std::wstring& left, const std::wstring& right, const ePathSep separator = ePathSep::WIN);
-std::string vuapi normalize_path_A(const std::string& path, const ePathSep separator = ePathSep::WIN);
-std::wstring vuapi normalize_path_W(const std::wstring& path, const ePathSep separator = ePathSep::WIN);
-std::string vuapi undecorate_cpp_symbol_A(const std::string& name, const ushort flags = 0);   // UNDNAME_COMPLETE
-std::wstring vuapi undecorate_cpp_symbol_W(const std::wstring& name, const ushort flags = 0); // UNDNAME_COMPLETE
+std::string vuapi join_path_A(
+  const std::string& left, const std::string& right, const ePathSep separator = ePathSep::WIN);
+std::wstring vuapi join_path_W(
+  const std::wstring& left, const std::wstring& right, const ePathSep separator = ePathSep::WIN);
+std::string vuapi normalize_path_A(
+  const std::string& path, const ePathSep separator = ePathSep::WIN);
+std::wstring vuapi normalize_path_W(
+  const std::wstring& path, const ePathSep separator = ePathSep::WIN);
+std::string vuapi undecorate_cpp_symbol_A(
+  const std::string& name, const ushort flags = 0);   // UNDNAME_COMPLETE
+std::wstring vuapi undecorate_cpp_symbol_W(
+  const std::wstring& name, const ushort flags = 0); // UNDNAME_COMPLETE
 
 /*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
 
@@ -679,7 +716,8 @@ public:
   const HMODULE& vuapi handle() const;
   bool  vuapi available();
   void* vuapi get_proc_address(const std::string& function_name);
-  static void* vuapi quick_get_proc_address(const std::string& module_name, const std::string& function_name);
+  static void* vuapi quick_get_proc_address(
+    const std::string& module_name, const std::string& function_name);
 
 private:
   HMODULE m_module_handle;
@@ -694,7 +732,8 @@ public:
   const HMODULE& vuapi handle() const;
   bool  vuapi available();
   void* vuapi get_proc_address(const std::wstring& function_name);
-  static void* vuapi quick_get_proc_address(const std::wstring& module_name, const std::wstring& function_name);
+  static void* vuapi quick_get_proc_address(
+    const std::wstring& module_name, const std::wstring& function_name);
 
 private:
   HMODULE m_module_handle;
@@ -735,7 +774,11 @@ public:
   };
 
 public:
-  Socket(const address_family_t af = AF_INET, const type_t type = SOCK_STREAM, const protocol_t proto = IPPROTO_IP, bool wsa = true);
+  Socket(
+    const address_family_t af = AF_INET,
+    const type_t type = SOCK_STREAM,
+    const protocol_t proto = IPPROTO_IP,
+    bool  wsa = true);
   virtual ~Socket();
 
   bool vuapi available();
@@ -813,7 +856,10 @@ public:
     UNDEFINED,
   } eFnType;
 
-  AsyncSocket(const vu::Socket::address_family_t af = AF_INET, const vu::Socket::type_t type = SOCK_STREAM, const vu::Socket::protocol_t proto = IPPROTO_IP);
+  AsyncSocket(
+    const vu::Socket::address_family_t af = AF_INET,
+    const vu::Socket::type_t type = SOCK_STREAM,
+    const vu::Socket::protocol_t proto = IPPROTO_IP);
   virtual ~AsyncSocket();
 
   std::set<SOCKET> vuapi get_clients();
@@ -872,7 +918,7 @@ protected:
 #define VU_API_INL_OVERRIDE(O, M, F) O.install(_T( # M ), _T( # F ), (void*)&Hfn ## F, (void**)&pfn ## F)
 #define VU_API_INL_RESTORE(O, M, F) O.uninstall(_T( # M ), _T( # F ), (void**)&pfn ## F)
 
-typedef enum _MEMORY_ADDRESS_TYPE
+typedef enum class _MEMORY_ADDRESS_TYPE
 {
   MAT_NONE = 0,
   MAT_8    = 1,
@@ -1143,7 +1189,7 @@ typedef enum _FS_ATTRIBUTE_FLAGS
   FA_COMPRESSED       = 0x00000800,   // FILE_ATTRIBUTE_COMPRESSED           = $00000800;
   FA_OFFLINE          = 0x00001000,   // FILE_ATTRIBUTE_OFFLINE              = $00001000;
   FANOTCONTENTINDEXED = 0x00002000,   // FILE_ATTRIBUTE_NOT_CONTENT_INDEXED  = $00002000;
-  FAENCRYPTED         = 0x00004000,   // FILE_ATTRIBUTE_ENCRYPTED           = $00004000;
+  FAENCRYPTED         = 0x00004000,   // FILE_ATTRIBUTE_ENCRYPTED            = $00004000;
 } eFSAttributeFlags;
 
 typedef enum _FS_SHARE_FLAGS
@@ -1200,13 +1246,16 @@ public:
 
   virtual const Buffer vuapi read_as_buffer();
   virtual bool vuapi read(void* ptr_buffer, ulong size);
-  virtual bool vuapi read(ulong offset, void* ptr_buffer, ulong size, eMoveMethodFlags flags = MM_BEGIN);
+  virtual bool vuapi read(
+    ulong offset, void* ptr_buffer, ulong size, eMoveMethodFlags flags = MM_BEGIN);
 
   virtual bool vuapi write(const void* ptr_buffer, ulong size);
-  virtual bool vuapi write(ulong offset, const void* ptr_buffer, ulong size, eMoveMethodFlags flags = MM_BEGIN);
+  virtual bool vuapi write(
+    ulong offset, const void* ptr_buffer, ulong size, eMoveMethodFlags flags = MM_BEGIN);
 
   virtual bool vuapi seek(ulong offset, eMoveMethodFlags flags);
-  virtual bool vuapi io_control(ulong code, void* ptr_send_buffer, ulong send_size, void* ptr_recv_buffer, ulong recv_size);
+  virtual bool vuapi io_control(
+    ulong code, void* ptr_send_buffer, ulong send_size, void* ptr_recv_buffer, ulong recv_size);
 
   virtual bool vuapi close();
 
@@ -1221,30 +1270,56 @@ class FileSystemA: public FileSystemX
 {
 public:
   FileSystemA();
-  FileSystemA(const std::string& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags = FG_READWRITE, eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
+  FileSystemA(
+    const std::string& file_path,
+    eFSModeFlags fm_flags,
+    eFSGenericFlags fg_flags = FG_READWRITE,
+    eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
   virtual ~FileSystemA();
 
-  bool vuapi initialize(const std::string& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags = FG_READWRITE, eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
+  bool vuapi initialize(const std::string& file_path,
+    eFSModeFlags fm_flags,
+    eFSGenericFlags fg_flags = FG_READWRITE,
+    eFSShareFlags fs_flags = FS_ALLACCESS,
+    eFSAttributeFlags fa_flags = FA_NORMAL);
   const std::string vuapi read_as_string(bool remove_bom = true);
 
-  static const std::string vuapi quick_read_as_string(const std::string& file_path, bool force_bom = true);
+  static const std::string vuapi quick_read_as_string(
+    const std::string& file_path, bool force_bom = true);
   static Buffer quick_read_as_buffer(const std::string& file_path);
-  static bool iterate(const std::string& path, const std::string& pattern, const std::function<bool(const sFSObjectA& fso)> fn_callback);
+  static bool iterate(
+    const std::string& path,
+    const std::string& pattern,
+    const std::function<bool(const sFSObjectA& fso)> fn_callback);
 };
 
 class FileSystemW: public FileSystemX
 {
 public:
   FileSystemW();
-  FileSystemW(const std::wstring& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags = FG_READWRITE, eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
+  FileSystemW(
+    const std::wstring& file_path,
+    eFSModeFlags fm_flags,
+    eFSGenericFlags fg_flags = FG_READWRITE,
+    eFSShareFlags fs_flags = FS_ALLACCESS,
+    eFSAttributeFlags fa_flags = FA_NORMAL);
   virtual ~FileSystemW();
 
-  bool vuapi initialize(const std::wstring& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags = FG_READWRITE, eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
+  bool vuapi initialize(
+    const std::wstring& file_path,
+    eFSModeFlags fm_flags,
+    eFSGenericFlags fg_flags = FG_READWRITE,
+    eFSShareFlags fs_flags = FS_ALLACCESS,
+    eFSAttributeFlags fa_flags = FA_NORMAL);
   const std::wstring vuapi read_as_string(bool remove_bom = true);
 
-  static const std::wstring vuapi quick_read_as_string(const std::wstring& file_path, bool remove_bom = true);
+  static const std::wstring vuapi quick_read_as_string(
+    const std::wstring& file_path, bool remove_bom = true);
   static Buffer vuapi quick_read_as_buffer(const std::wstring& file_path);
-  static bool vuapi iterate(const std::wstring& path, const std::wstring& pattern, const std::function<bool(const sFSObjectW& fso)> fn_callback);
+  static bool vuapi iterate(
+    const std::wstring& path,
+    const std::wstring& pattern,
+    const std::function<bool(const sFSObjectW& fso)> fn_callback);
 };
 
 /**
@@ -1268,7 +1343,8 @@ public:
   virtual ~ServiceManagerT();
 
   virtual void refresh();
-  virtual TServices get_services(ulong types = VU_SERVICE_ALL_TYPES, ulong states = VU_SERVICE_ALL_STATES);
+  virtual TServices get_services(
+    ulong types = VU_SERVICE_ALL_TYPES, ulong states = VU_SERVICE_ALL_STATES);
 
 protected:
   virtual VUResult initialize() = 0;
@@ -1293,13 +1369,17 @@ public:
 
   TServices find(const std::string& str, bool exact = false, bool name_only = false);
   std::unique_ptr<TServices::value_type> query(const std::string& service_name);
-  int get_state(const std::string& service_name);
+  int get_state(const std::string& service_name); // https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-controlservice#remarks
 
-  TServices get_dependents(const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
-  TServices get_dependencies(const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
+  TServices get_dependents(
+    const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
+  TServices get_dependencies(
+    const std::string& service_name, const ulong states = VU_SERVICE_ALL_STATES);
 
-  std::unique_ptr<SERVICE_STATUS> control(const TServices::value_type* ptr_service, const ulong ctrl_code);
-  std::unique_ptr<SERVICE_STATUS> control(const std::string& name, const ulong ctrl_code);
+  std::unique_ptr<SERVICE_STATUS> control(
+    const TServices::value_type* ptr_service, const ulong ctrl_code);
+  std::unique_ptr<SERVICE_STATUS> control(
+    const std::string& name, const ulong ctrl_code);
 
   VUResult install(
     const std::string& file_path,
@@ -1335,11 +1415,15 @@ public:
   std::unique_ptr<TServices::value_type> query(const std::wstring& service_name);
   int get_state(const std::wstring& service_name); // https://docs.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-controlservice#remarks
 
-  TServices get_dependents(const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
-  TServices get_dependencies(const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
+  TServices get_dependents(
+    const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
+  TServices get_dependencies(
+    const std::wstring& service_name, const ulong states = VU_SERVICE_ALL_STATES);
 
-  std::unique_ptr<SERVICE_STATUS> control(const TServices::value_type* ptr_service, const ulong ctrl_code);
-  std::unique_ptr<SERVICE_STATUS> control(const std::wstring& name, const ulong ctrl_code);
+  std::unique_ptr<SERVICE_STATUS> control(
+    const TServices::value_type* ptr_service, const ulong ctrl_code);
+  std::unique_ptr<SERVICE_STATUS> control(
+    const std::wstring& name, const ulong ctrl_code);
 
   VUResult install(
     const std::wstring& file_path,
@@ -1527,8 +1611,10 @@ public:
   int vuapi read_integer(const std::string& section, const std::string& key, int default_value);
   bool vuapi read_bool(const std::string& section, const std::string& key, bool default_value);
   float vuapi read_float(const std::string& section, const std::string& key, float default_value);
-  std::string vuapi read_string(const std::string& section, const std::string& key, const std::string& default_value);
-  std::unique_ptr<uchar[]> vuapi read_struct(const std::string& section, const std::string& key, ulong size);
+  std::string vuapi read_string(
+    const std::string& section, const std::string& key, const std::string& default_value);
+  std::unique_ptr<uchar[]> vuapi read_struct(
+    const std::string& section, const std::string& key, ulong size);
 
   int vuapi read_integer(const std::string& key, int default_value);
   bool vuapi read_bool(const std::string& key, bool default_value);
@@ -1539,8 +1625,10 @@ public:
   bool vuapi write_integer(const std::string& section, const std::string& key, int value);
   bool vuapi write_bool(const std::string& section, const std::string& key, bool value);
   bool vuapi write_float(const std::string& section, const std::string& key, float value);
-  bool vuapi write_string(const std::string& section, const std::string& key, const std::string& Value);
-  bool vuapi write_struct(const std::string& section, const std::string& key, void* ptr_struct, ulong size);
+  bool vuapi write_string(
+    const std::string& section, const std::string& key, const std::string& Value);
+  bool vuapi write_struct(
+    const std::string& section, const std::string& key, void* ptr_struct, ulong size);
 
   bool vuapi write_integer(const std::string& key, int value);
   bool vuapi write_bool(const std::string& key, bool value);
@@ -1574,8 +1662,10 @@ public:
   int vuapi read_integer(const std::wstring& section, const std::wstring& key, int default_value);
   bool vuapi read_bool(const std::wstring& section, const std::wstring& key, bool default_value);
   float vuapi read_float(const std::wstring& section, const std::wstring& key, float default_value);
-  std::wstring vuapi read_string(const std::wstring& section, const std::wstring& key, const std::wstring& default_value);
-  std::unique_ptr<uchar[]> vuapi read_struct(const std::wstring& section, const std::wstring& key, ulong size);
+  std::wstring vuapi read_string(
+    const std::wstring& section, const std::wstring& key, const std::wstring& default_value);
+  std::unique_ptr<uchar[]> vuapi read_struct(
+    const std::wstring& section, const std::wstring& key, ulong size);
 
   int vuapi read_integer(const std::wstring& key, int default_value);
   bool vuapi read_bool(const std::wstring& key, bool default_value);
@@ -1586,8 +1676,10 @@ public:
   bool vuapi write_integer(const std::wstring& section, const std::wstring& key, int value);
   bool vuapi write_bool(const std::wstring& section, const std::wstring& key, bool value);
   bool vuapi write_float(const std::wstring& section, const std::wstring& key, float value);
-  bool vuapi write_string(const std::wstring& section, const std::wstring& key, const std::wstring& value);
-  bool vuapi write_struct(const std::wstring& section, const std::wstring& key, void* ptr_struct, ulong size);
+  bool vuapi write_string(
+    const std::wstring& section, const std::wstring& key, const std::wstring& value);
+  bool vuapi write_struct(
+    const std::wstring& section, const std::wstring& key, void* ptr_struct, ulong size);
 
   bool vuapi write_integer(const std::wstring& key, int value);
   bool vuapi write_bool(const std::wstring& key, bool value);
@@ -1723,10 +1815,14 @@ public:
   int vuapi read_integer(const std::string& name, int default_value);
   bool vuapi read_bool(const std::string& name, bool default_value);
   float vuapi read_float(const std::string& name, float default_value);
-  std::string vuapi read_string(const std::string& name, const std::string& default_value);
-  std::vector<std::string> vuapi read_multi_string(const std::string& name, const std::vector<std::string> default_value);
-  std::string vuapi read_expand_string(const std::string& name, const std::string& default_value);
-  std::unique_ptr<uchar[]> vuapi read_binary(const std::string& name, const void* pdefault_value);
+  std::string vuapi read_string(
+    const std::string& name, const std::string& default_value);
+  std::vector<std::string> vuapi read_multi_string(
+    const std::string& name, const std::vector<std::string> default_value);
+  std::string vuapi read_expand_string(
+    const std::string& name, const std::string& default_value);
+  std::unique_ptr<uchar[]> vuapi read_binary(
+    const std::string& name, const void* pdefault_value);
 
 private:
   std::string m_sub_key;
@@ -1768,17 +1864,21 @@ public:
   int vuapi read_integer(const std::wstring& value_name, int default_value);
   bool vuapi read_bool(const std::wstring& value_name, bool default_value);
   float vuapi read_float(const std::wstring& value_name, float default_value);
-  std::wstring vuapi read_string(const std::wstring& value_name, const std::wstring& default_value);
-  std::vector<std::wstring> vuapi read_multi_string(const std::wstring& value_name, const std::vector<std::wstring> default_value);
-  std::wstring vuapi read_expand_string(const std::wstring& value_name, const std::wstring& default_value);
-  std::unique_ptr<uchar[]> vuapi read_binary(const std::wstring& value_name, const void* default_value);
+  std::wstring vuapi read_string(
+    const std::wstring& value_name, const std::wstring& default_value);
+  std::vector<std::wstring> vuapi read_multi_string(
+    const std::wstring& value_name, const std::vector<std::wstring> default_value);
+  std::wstring vuapi read_expand_string(
+    const std::wstring& value_name, const std::wstring& default_value);
+  std::unique_ptr<uchar[]> vuapi read_binary(
+    const std::wstring& value_name, const void* default_value);
 
 private:
   std::wstring m_sub_key;
 };
 
 /**
- * Critical Section
+ * CriticalSection
  */
 
 typedef CRITICAL_SECTION    TCriticalSection, *PCriticalSection;
@@ -2101,7 +2201,7 @@ struct sImportFunctionT
 typedef sImportFunctionT<ulong32> sImportFunction32T;
 typedef sImportFunctionT<ulong64> sImportFunction64T;
 
-typedef enum _IMPORTED_FUNCTION_FIND_BY
+typedef enum class _IMPORTED_FUNCTION_FIND_BY
 {
   IFFM_HINT,
   IFFM_NAME,
@@ -2134,13 +2234,19 @@ public:
 
   const std::vector<PImportDescriptor>& vuapi get_import_descriptors(bool in_cache = true);
   const std::vector<sImportModule> vuapi get_import_modules(bool in_cache = true);
-  const std::vector<sImportFunctionT<T>> vuapi get_import_functions(bool in_cache = true); // Didn't include import by index
+  const std::vector<sImportFunctionT<T>> vuapi get_import_functions(bool in_cache = true); // Did not include import by index
 
-  const sImportModule* vuapi find_ptr_import_module(const std::string& module_name, bool in_cache = true);
+  const sImportModule* vuapi find_ptr_import_module(
+    const std::string& module_name, bool in_cache = true);
 
-  const sImportFunctionT<T>* vuapi find_ptr_import_function(const std::string& function_name, bool in_cache = true);
-  const sImportFunctionT<T>* vuapi find_ptr_import_function(const ushort function_hint, bool in_cache = true);
-  const sImportFunctionT<T>* vuapi find_ptr_import_function(const sImportFunctionT<T>& import_function, const eImportedFunctionFindMethod method, bool in_cache = true);
+  const sImportFunctionT<T>* vuapi find_ptr_import_function(
+    const std::string& function_name, bool in_cache = true);
+  const sImportFunctionT<T>* vuapi find_ptr_import_function(
+    const ushort function_hint, bool in_cache = true);
+  const sImportFunctionT<T>* vuapi find_ptr_import_function(
+    const sImportFunctionT<T>& import_function,
+    const eImportedFunctionFindMethod method,
+    bool in_cache = true);
 
   const std::vector<sRelocationEntryT<T>> vuapi get_relocation_entries(bool in_cache = true);
 
@@ -2444,7 +2550,10 @@ public:
   PROCESS_IO_COUNTERS get_io_information();
 
   const threads& get_threads();
-  const memories& get_memories(const ulong state = MEM_ALL_STATE, const ulong type  = MEM_ALL_TYPE, const ulong protection = PAGE_ALL_PROTECTION);
+  const memories& get_memories(
+    const ulong state = MEM_ALL_STATE,
+    const ulong type  = MEM_ALL_TYPE,
+    const ulong protection = PAGE_ALL_PROTECTION);
 
 protected:
   virtual void parse();
@@ -2493,7 +2602,7 @@ public:
   typedef std::vector<MODULEENTRY32> modules;
 
   ProcessA();
-  // ProcessA(const ulong PID);
+  // ProcessA(const ulong pid);
   virtual ~ProcessA();
 
   // ProcessA(ProcessA& right);
@@ -2501,6 +2610,14 @@ public:
   bool operator==(ProcessA& right);
   bool operator!=(ProcessA& right);
   friend std::ostream& operator<<(std::ostream& os, ProcessA& process);
+
+  bool create(
+    const std::string& file_path,
+    const std::string& file_dir = "",
+    const std::string& command_line = "",
+    const uint creation_flags = NORMAL_PRIORITY_CLASS,
+    const bool inherit_handle = false,
+    PROCESS_INFORMATION* ptr_pi = nullptr);
 
   const std::string& name() const;
   const modules& get_modules();
@@ -2546,6 +2663,14 @@ public:
   bool operator!=(ProcessW& right);
   friend std::ostream& operator<<(std::ostream& os, ProcessW& process);
 
+  bool create(
+    const std::wstring& file_path,
+    const std::wstring& file_dir = L"",
+    const std::wstring& command_line = L"",
+    const uint creation_flags = NORMAL_PRIORITY_CLASS,
+    const bool inherit_handle = false,
+    PROCESS_INFORMATION* ptr_pi = nullptr);
+
   const std::wstring& name() const;
   const modules& get_modules();
 
@@ -2565,11 +2690,11 @@ protected:
 
 #define MAX_NTHREADS -1
 
-class CThreadPool
+class ThreadPool
 {
 public:
-  CThreadPool(size_t n_threads = MAX_NTHREADS);
-  virtual ~CThreadPool();
+  ThreadPool(size_t n_threads = MAX_NTHREADS);
+  virtual ~ThreadPool();
 
   void add_task(fn_task_t&& fn);
   void launch();

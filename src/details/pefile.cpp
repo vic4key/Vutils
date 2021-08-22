@@ -82,7 +82,7 @@ const std::vector<PSectionHeader>& vuapi PEFileTX<T>::get_setion_headers(bool in
 
   m_section_headers.clear();
 
-  vu::PSectionHeader ptr_section_header = (PSectionHeader)((ulong64)m_ptr_pe_header + sizeof(vu::TNTHeaderT<T>));
+  auto ptr_section_header = (PSectionHeader)((ulong64)m_ptr_pe_header + sizeof(vu::TNTHeaderT<T>));
   if (ptr_section_header == nullptr)
   {
     return m_section_headers;
@@ -131,7 +131,8 @@ const std::vector<sRelocationEntryT<T>> vuapi PEFileTX<T>::get_relocation_entrie
 
   for (DWORD size = 0; size < idd.Size; )
   {
-    auto ptr = PUCHAR(reinterpret_cast<ulong64>(this->get_ptr_base()) + this->rva_to_offset(idd.VirtualAddress) + size);
+    auto ptr = PUCHAR(reinterpret_cast<ulong64>(this->get_ptr_base()) +\
+      this->rva_to_offset(idd.VirtualAddress) + size);
     assert(ptr != nullptr);
 
     auto ptr_base_relocation = PIMAGE_BASE_RELOCATION(ptr);
@@ -142,7 +143,8 @@ const std::vector<sRelocationEntryT<T>> vuapi PEFileTX<T>::get_relocation_entrie
 
     for (DWORD idx = 0; idx < n_entries; idx++)
     {
-      const auto ptr_entry = PIMAGE_BASE_RELOCATION_ENTRY(ptr + idx * sizeof(IMAGE_BASE_RELOCATION_ENTRY));
+      const auto ptr_entry =\
+        PIMAGE_BASE_RELOCATION_ENTRY(ptr + idx * sizeof(IMAGE_BASE_RELOCATION_ENTRY));
       assert(ptr_entry);
 
       sRelocationEntryT<T> entry = { 0 };
@@ -280,16 +282,20 @@ const std::vector<sImportFunctionT<T>> vuapi PEFileTX<T>::get_import_functions(b
   for (const auto& e: m_ex_iids)
   {
     T offset = this->rva_to_offset(e.ptr_iid->FirstThunk);
-    if (offset == -1 || (ptr_thunk_data = (TThunkDataT<T>*)((ulong64)m_ptr_base + offset)) == nullptr) continue;
+    if (offset == -1 || (ptr_thunk_data = (TThunkDataT<T>*)((ulong64)m_ptr_base + offset)) == nullptr)
+    {
+      continue;
+    }
+
     do
     {
-      if ((ptr_thunk_data->u1.AddressOfData & m_ordinal_flag) == m_ordinal_flag) // Imported by ordinal
+      if ((ptr_thunk_data->u1.AddressOfData & m_ordinal_flag) == m_ordinal_flag) // imported by ordinal
       {
         funcInfo.name = "";
         funcInfo.hint = -1;
         funcInfo.ordinal = ptr_thunk_data->u1.AddressOfData & ~m_ordinal_flag;
       }
-      else // Imported by name
+      else // imported by name
       {
         offset = this->rva_to_offset(ptr_thunk_data->u1.AddressOfData);
         PImportByName p = (PImportByName)((ulong64)m_ptr_base + offset);
@@ -314,7 +320,8 @@ const std::vector<sImportFunctionT<T>> vuapi PEFileTX<T>::get_import_functions(b
 }
 
 template<typename T>
-const sImportModule* vuapi PEFileTX<T>::find_ptr_import_module(const std::string& module_name, bool in_cache)
+const sImportModule* vuapi PEFileTX<T>::find_ptr_import_module(
+  const std::string& module_name, bool in_cache)
 {
   if (!m_initialized)
   {
@@ -427,7 +434,8 @@ T vuapi PEFileTX<T>::rva_to_offset(T rva, bool in_cache)
 
   const auto& the_last_section = *m_section_headers.rbegin();
 
-  std::pair<T, T> range(T(0), T(the_last_section->VirtualAddress) + T(the_last_section->Misc.VirtualSize));
+  std::pair<T, T> range(T(0), T(the_last_section->VirtualAddress) +\
+    T(the_last_section->Misc.VirtualSize));
   if (rva < range.first || rva > range.second)
   {
     return T(-1);
@@ -468,7 +476,8 @@ T vuapi PEFileTX<T>::offset_to_rva(T offset, bool in_cache)
 
   const auto& the_last_section = *m_section_headers.rbegin();
 
-  std::pair<T, T> range(T(0), T(the_last_section->PointerToRawData) + T(the_last_section->SizeOfRawData));
+  std::pair<T, T> range(T(0), T(the_last_section->PointerToRawData) +\
+    T(the_last_section->SizeOfRawData));
   if (offset < range.first || offset > range.second)
   {
     return T(-1);
@@ -549,7 +558,8 @@ VUResult vuapi PEFileTA<T>::parse()
     return 5;
   }
 
-  PEFileTX<T>::m_ptr_pe_header = (TPEHeaderT<T>*)((ulong64)PEFileTX<T>::m_ptr_base + PEFileTX<T>::m_ptr_dos_header->e_lfanew);
+  PEFileTX<T>::m_ptr_pe_header = (TPEHeaderT<T>*)((ulong64)PEFileTX<T>::m_ptr_base +\
+    PEFileTX<T>::m_ptr_dos_header->e_lfanew);
   if (PEFileTX<T>::m_ptr_pe_header == nullptr)
   {
     return 6;
@@ -638,7 +648,8 @@ VUResult vuapi PEFileTW<T>::parse()
     return 5;
   }
 
-  PEFileTX<T>::m_ptr_pe_header = (TPEHeaderT<T>*)((ulong64)PEFileTX<T>::m_ptr_base + PEFileTX<T>::m_ptr_dos_header->e_lfanew);
+  PEFileTX<T>::m_ptr_pe_header = (TPEHeaderT<T>*)((ulong64)PEFileTX<T>::m_ptr_base +\
+    PEFileTX<T>::m_ptr_dos_header->e_lfanew);
   if (PEFileTX<T>::m_ptr_pe_header == nullptr)
   {
     return 6;

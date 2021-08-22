@@ -11,7 +11,7 @@
 namespace vu
 {
 
-  int vuapi get_format_length_A(const std::string format, ...);
+int vuapi get_format_length_A(const std::string format, ...);
 int vuapi get_format_length_W(const std::wstring format, ...);
 std::string vuapi get_format_string_for_number(std::string type_id);
 

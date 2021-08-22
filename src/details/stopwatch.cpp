@@ -66,7 +66,7 @@ const vu::StopWatch::TDuration StopWatch::total()
 }
 
 /**
- * CScopeStopWatchX
+ * ScopeStopWatchX
  */
 
 ScopeStopWatchX::ScopeStopWatchX() : m_activated(true)

@@ -5,7 +5,7 @@
  */
 
  /**
-  * CSTLThreadT
+  * STLThreadT
   */
 
 enum class eReturn
@@ -16,11 +16,11 @@ enum class eReturn
 };
 
 template <typename type_input>
-class CSTLThreadT
+class STLThreadT
 {
 public:
-  CSTLThreadT(type_input& items, int n_threads = MAX_NTHREADS);
-  virtual ~CSTLThreadT();
+  STLThreadT(type_input& items, int n_threads = MAX_NTHREADS);
+  virtual ~STLThreadT();
 
   virtual void initialize();
   virtual void launch();
@@ -34,7 +34,7 @@ protected:
   virtual void execute(int iteration, int thread_id);
 
 protected:
-  CThreadPool* m_ptr_thread_pool;
+  ThreadPool* m_ptr_thread_pool;
   std::mutex  m_mutex;
   type_input& m_items;
   int m_num_threads;
@@ -43,7 +43,7 @@ protected:
 };
 
 template <class type_input>
-CSTLThreadT<type_input>::CSTLThreadT(type_input& items, int n_threads)
+STLThreadT<type_input>::STLThreadT(type_input& items, int n_threads)
   : m_items(items),  m_num_threads(n_threads), m_num_iterations(0), m_ptr_thread_pool(nullptr)
 {
   if (m_num_threads == MAX_NTHREADS)
@@ -66,11 +66,11 @@ CSTLThreadT<type_input>::CSTLThreadT(type_input& items, int n_threads)
     m_num_iterations += 1; // + 1 for remainder items
   }
 
-  m_ptr_thread_pool = new CThreadPool(m_num_threads);
+  m_ptr_thread_pool = new ThreadPool(m_num_threads);
 }
 
 template <class type_input>
-CSTLThreadT<type_input>::~CSTLThreadT()
+STLThreadT<type_input>::~STLThreadT()
 {
   if (m_ptr_thread_pool != nullptr)
   {
@@ -79,26 +79,26 @@ CSTLThreadT<type_input>::~CSTLThreadT()
 }
 
 template <class type_input>
-int CSTLThreadT<type_input>::threads() const
+int STLThreadT<type_input>::threads() const
 {
   return m_num_threads;
 }
 
 template <class type_input>
-int CSTLThreadT<type_input>::iterations() const
+int STLThreadT<type_input>::iterations() const
 {
   return m_num_iterations;
 }
 
 template <class type_input>
-vu::eReturn CSTLThreadT<type_input>::task(typename type_input::value_type& item, int iteration, int thread_id)
+vu::eReturn STLThreadT<type_input>::task(typename type_input::value_type& item, int iteration, int thread_id)
 {
   assert(NULL && "This method must be overridden");
   return vu::eReturn::Ok;
 }
 
 template <class type_input>
-void CSTLThreadT<type_input>::launch()
+void STLThreadT<type_input>::launch()
 {
   this->initialize();
 
@@ -117,13 +117,13 @@ void CSTLThreadT<type_input>::launch()
 }
 
 template <class type_input>
-void CSTLThreadT<type_input>::initialize()
+void STLThreadT<type_input>::initialize()
 {
   // Override this method to do anything before launching
 }
 
 template <class type_input>
-void CSTLThreadT<type_input>::execute(int iteration, int thread_id)
+void STLThreadT<type_input>::execute(int iteration, int thread_id)
 {
   // std::lock_guard<std::mutex> lg(m_mutex); // TODO: Vic. Recheck. Avoid race condition.
 
