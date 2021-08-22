@@ -12,59 +12,59 @@ namespace vu
 
 CINIFileA::CINIFileA() : CLastError()
 {
-  m_Section  = "";
-  m_FilePath = "";
+  m_section  = "";
+  m_file_path = "";
 }
 
-CINIFileA::CINIFileA(const std::string& FilePath) : CLastError()
+CINIFileA::CINIFileA(const std::string& file_path) : CLastError()
 {
-  m_Section  = "";
-  m_FilePath = FilePath;
+  m_section  = "";
+  m_file_path = file_path;
 }
 
 CINIFileA::~CINIFileA()
 {
 }
 
-void CINIFileA::ValidFilePath()
+void CINIFileA::update_file_path()
 {
-  if (m_FilePath.empty())
+  if (m_file_path.empty())
   {
-    std::string filePath = get_current_file_path_A();
-    std::string fileDir  = extract_file_directory_A(filePath, true);
-    std::string fileName = extract_file_name_A(filePath, false);
-    m_FilePath = fileDir + fileName + ".INI";
+    std::string file_path = get_current_file_path_A();
+    std::string file_dir  = extract_file_directory_A(file_path, true);
+    std::string file_name = extract_file_name_A(file_path, false);
+    m_file_path = file_dir + file_name + ".INI";
   }
 }
 
-void CINIFileA::SetCurrentFilePath(const std::string& FilePath)
+void CINIFileA::set_current_file_path(const std::string& file_path)
 {
-  m_FilePath = FilePath;
+  m_file_path = file_path;
 }
 
-void CINIFileA::SetCurrentSection(const std::string& Section)
+void CINIFileA::set_current_section(const std::string& section)
 {
-  m_Section = Section;
+  m_section = section;
 }
 
 // Long-Read
 
-std::vector<std::string> vuapi CINIFileA::ReadSectionNames(ulong ulMaxSize)
+std::vector<std::string> vuapi CINIFileA::read_section_names(ulong max_size)
 {
   std::vector<std::string> l;
   l.clear();
 
-  std::unique_ptr<char[]> p(new char [ulMaxSize]);
+  std::unique_ptr<char[]> p(new char [max_size]);
   if (p == nullptr)
   {
     return l;
   }
 
-  ZeroMemory(p.get(), ulMaxSize);
+  ZeroMemory(p.get(), max_size);
 
-  this->ValidFilePath();
+  this->update_file_path();
 
-  GetPrivateProfileSectionNamesA(p.get(), ulMaxSize, m_FilePath.c_str());
+  GetPrivateProfileSectionNamesA(p.get(), max_size, m_file_path.c_str());
 
   m_last_error_code = GetLastError();
 
@@ -77,26 +77,26 @@ std::vector<std::string> vuapi CINIFileA::ReadSectionNames(ulong ulMaxSize)
   return l;
 }
 
-std::vector<std::string> vuapi CINIFileA::ReadSection(const std::string& Section, ulong ulMaxSize)
+std::vector<std::string> vuapi CINIFileA::read_section(const std::string& section, ulong max_size)
 {
   std::vector<std::string> l;
   l.clear();
 
-  std::unique_ptr<char[]> p(new char [ulMaxSize]);
+  std::unique_ptr<char[]> p(new char[max_size]);
   if (p == nullptr)
   {
     return l;
   }
 
-  ZeroMemory(p.get(), ulMaxSize);
+  ZeroMemory(p.get(), max_size);
 
-  this->ValidFilePath();
+  this->update_file_path();
 
-  GetPrivateProfileSectionA(Section.c_str(), p.get(), ulMaxSize, m_FilePath.c_str());
+  GetPrivateProfileSectionA(section.c_str(), p.get(), max_size, m_file_path.c_str());
 
   m_last_error_code = GetLastError();
 
-  for (char * s = p.get(); *s; s++)
+  for (char* s = p.get(); *s; s++)
   {
     l.push_back(s); // l.push_back((new std::string(s))->c_str());
     s += lstrlenA(s);
@@ -105,48 +105,48 @@ std::vector<std::string> vuapi CINIFileA::ReadSection(const std::string& Section
   return l;
 }
 
-int vuapi CINIFileA::ReadInteger(const std::string& Section, const std::string& Key, int Default)
+int vuapi CINIFileA::read_integer(const std::string& section, const std::string& key, int default_value)
 {
-  this->ValidFilePath();
-  uint result = GetPrivateProfileIntA(Section.c_str(), Key.c_str(), Default, m_FilePath.c_str());
+  this->update_file_path();
+  uint result = GetPrivateProfileIntA(section.c_str(), key.c_str(), default_value, m_file_path.c_str());
   m_last_error_code = GetLastError();
   return result;
 }
 
-bool vuapi CINIFileA::ReadBool(const std::string& Section, const std::string& Key, bool Default)
+bool vuapi CINIFileA::read_bool(const std::string& section, const std::string& key, bool default_value)
 {
-  this->ValidFilePath();
-  bool result = (GetPrivateProfileIntA(Section.c_str(), Key.c_str(), Default, m_FilePath.c_str()) == 1 ? true : false);
+  this->update_file_path();
+  bool result = GetPrivateProfileIntA(section.c_str(), key.c_str(), default_value, m_file_path.c_str()) == 1 ? true : false;
   m_last_error_code = GetLastError();
   return result;
 }
 
-float vuapi CINIFileA::ReadFloat(const std::string& Section, const std::string& Key, float Default)
+float vuapi CINIFileA::read_float(const std::string& section, const std::string& key, float default_value)
 {
-  const std::string sDefault = number_to_string_A(Default);
-  char lpszResult[MAX_SIZE];
+  const std::string tmp_default = number_to_string_A(default_value);
+  char sz_result[MAX_SIZE];
 
-  ZeroMemory(lpszResult, sizeof(lpszResult));
+  ZeroMemory(sz_result, sizeof(sz_result));
 
-  this->ValidFilePath();
+  this->update_file_path();
 
-  GetPrivateProfileStringA(Section.c_str(), Key.c_str(), sDefault.c_str(), lpszResult, MAX_SIZE, m_FilePath.c_str());
+  GetPrivateProfileStringA(section.c_str(), key.c_str(), tmp_default.c_str(), sz_result, MAX_SIZE, m_file_path.c_str());
 
   m_last_error_code = GetLastError();
 
-  return (float)atof(lpszResult);
+  return (float)atof(sz_result);
 }
 
-std::string vuapi CINIFileA::ReadString(
-  const std::string& Section,
-  const std::string& Key,
-  const std::string& Default
+std::string vuapi CINIFileA::read_string(
+  const std::string& section,
+  const std::string& key,
+  const std::string& default_value
 )
 {
   std::string s;
   s.clear();
 
-  std::unique_ptr<char[]> p(new char [MAX_SIZE]);
+  std::unique_ptr<char[]> p(new char[MAX_SIZE]);
   if (p == nullptr)
   {
     return s;
@@ -154,15 +154,15 @@ std::string vuapi CINIFileA::ReadString(
 
   ZeroMemory(p.get(), MAX_SIZE);
 
-  this->ValidFilePath();
+  this->update_file_path();
 
   ulong result = GetPrivateProfileStringA(
-    Section.c_str(),
-    Key.c_str(),
-    Default.c_str(),
+    section.c_str(),
+    key.c_str(),
+    default_value.c_str(),
     p.get(),
     MAX_SIZE,
-    m_FilePath.c_str()
+    m_file_path.c_str()
   );
 
   if (result == 0)
@@ -176,19 +176,19 @@ std::string vuapi CINIFileA::ReadString(
   return s;
 }
 
-std::unique_ptr<uchar[]> vuapi CINIFileA::ReadStruct(const std::string& Section, const std::string& Key, ulong ulSize)
+std::unique_ptr<uchar[]> vuapi CINIFileA::read_struct(const std::string& section, const std::string& key, ulong size)
 {
-  std::unique_ptr<uchar[]> p(new uchar [ulSize]);
+  std::unique_ptr<uchar[]> p(new uchar[size]);
   if (p == nullptr)
   {
     return nullptr;
   }
 
-  ZeroMemory(p.get(), ulSize);
+  ZeroMemory(p.get(), size);
 
-  this->ValidFilePath();
+  this->update_file_path();
 
-  if (GetPrivateProfileStructA(Section.c_str(), Key.c_str(), (void*)p.get(), ulSize, m_FilePath.c_str()) == 0)
+  if (GetPrivateProfileStructA(section.c_str(), key.c_str(), (void*)p.get(), size, m_file_path.c_str()) == 0)
   {
     m_last_error_code = GetLastError();
     return nullptr;
@@ -199,167 +199,167 @@ std::unique_ptr<uchar[]> vuapi CINIFileA::ReadStruct(const std::string& Section,
 
 // Short-Read
 
-std::vector<std::string> vuapi CINIFileA::ReadSection(ulong ulMaxSize)
+std::vector<std::string> vuapi CINIFileA::read_current_section(ulong max_size)
 {
-  return this->ReadSection(m_Section, ulMaxSize);
+  return this->read_section(m_section, max_size);
 }
 
-int vuapi CINIFileA::ReadInteger(const std::string& Key, int Default)
+int vuapi CINIFileA::read_integer(const std::string& key, int default_value)
 {
-  return this->ReadInteger(m_Section, Key, Default);
+  return this->read_integer(m_section, key, default_value);
 }
 
-bool vuapi CINIFileA::ReadBool(const std::string& Key, bool Default)
+bool vuapi CINIFileA::read_bool(const std::string& key, bool default_value)
 {
-  return this->ReadBool(m_Section, Key, Default);
+  return this->read_bool(m_section, key, default_value);
 }
 
-float vuapi CINIFileA::ReadFloat(const std::string& Key, float Default)
+float vuapi CINIFileA::read_float(const std::string& key, float default_value)
 {
-  return this->ReadFloat(m_Section, Key, Default);
+  return this->read_float(m_section, key, default_value);
 }
 
-std::string vuapi CINIFileA::ReadString(const std::string& Key, const std::string& Default)
+std::string vuapi CINIFileA::read_string(const std::string& key, const std::string& default_value)
 {
-  return this->ReadString(m_Section, Key, Default);
+  return this->read_string(m_section, key, default_value);
 }
 
-std::unique_ptr<uchar[]> vuapi CINIFileA::ReadStruct(const std::string& Key, ulong ulSize)
+std::unique_ptr<uchar[]> vuapi CINIFileA::read_struct(const std::string& key, ulong size)
 {
-  return this->ReadStruct(m_Section, Key, ulSize);
+  return this->read_struct(m_section, key, size);
 }
 
 // Long-Write
 
-bool vuapi CINIFileA::WriteInteger(const std::string& Section, const std::string& Key, int Value)
+bool vuapi CINIFileA::write_integer(const std::string& section, const std::string& key, int value)
 {
-  this->ValidFilePath();
-  const std::string s = number_to_string_A(Value);
-  bool result = (WritePrivateProfileStringA(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
+  this->update_file_path();
+  const std::string s = number_to_string_A(value);
+  bool result = WritePrivateProfileStringA(section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
 
-bool vuapi CINIFileA::WriteBool(const std::string& Section, const std::string& Key, bool Value)
+bool vuapi CINIFileA::write_bool(const std::string& section, const std::string& key, bool value)
 {
-  this->ValidFilePath();
-  const std::string s(Value ? "1" : "0");
-  bool result = (WritePrivateProfileStringA(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
+  this->update_file_path();
+  const std::string s(value ? "1" : "0");
+  bool result = WritePrivateProfileStringA(section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
 
-bool vuapi CINIFileA::WriteFloat(const std::string& Section, const std::string& Key, float Value)
+bool vuapi CINIFileA::write_float(const std::string& section, const std::string& key, float value)
 {
-  this->ValidFilePath();
-  const std::string s = number_to_string_A(Value);
-  bool result = (WritePrivateProfileStringA(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
+  this->update_file_path();
+  const std::string s = number_to_string_A(value);
+  bool result = WritePrivateProfileStringA(section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
 
-bool vuapi CINIFileA::WriteString(const std::string& Section, const std::string& Key, const std::string& Value)
+bool vuapi CINIFileA::write_string(const std::string& section, const std::string& key, const std::string& value)
 {
-  this->ValidFilePath();
-  bool result = (WritePrivateProfileStringA(Section.c_str(), Key.c_str(), Value.c_str(), m_FilePath.c_str()) != 0);
+  this->update_file_path();
+  bool result = WritePrivateProfileStringA(section.c_str(), key.c_str(), value.c_str(), m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
 
-bool vuapi CINIFileA::WriteStruct(const std::string& Section, const std::string& Key, void* pStruct, ulong ulSize)
+bool vuapi CINIFileA::write_struct(const std::string& section, const std::string& key, void* ptr_struct, ulong size)
 {
-  this->ValidFilePath();
-  bool result = (WritePrivateProfileStructA(Section.c_str(), Key.c_str(), pStruct, ulSize, m_FilePath.c_str()) != 0);
+  this->update_file_path();
+  bool result = WritePrivateProfileStructA(section.c_str(), key.c_str(), ptr_struct, size, m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
 
 // Short-Write
 
-bool vuapi CINIFileA::WriteInteger(const std::string& Key, int Value)
+bool vuapi CINIFileA::write_integer(const std::string& key, int value)
 {
-  return this->WriteInteger(m_Section, Key, Value);
+  return this->write_integer(m_section, key, value);
 }
 
-bool vuapi CINIFileA::WriteBool(const std::string& Key, bool Value)
+bool vuapi CINIFileA::write_bool(const std::string& key, bool value)
 {
-  return this->WriteBool(m_Section, Key, Value);
+  return this->write_bool(m_section, key, value);
 }
 
-bool vuapi CINIFileA::WriteFloat(const std::string& Key, float Value)
+bool vuapi CINIFileA::write_float(const std::string& key, float value)
 {
-  return this->WriteFloat(m_Section, Key, Value);
+  return this->write_float(m_section, key, value);
 }
 
-bool vuapi CINIFileA::WriteString(const std::string& Key, const std::string& Value)
+bool vuapi CINIFileA::write_string(const std::string& key, const std::string& value)
 {
-  return this->WriteString(m_Section, Key, Value);
+  return this->write_string(m_section, key, value);
 }
 
-bool vuapi CINIFileA::WriteStruct(const std::string& Key, void* pStruct, ulong ulSize)
+bool vuapi CINIFileA::write_struct(const std::string& key, void* ptr_struct, ulong size)
 {
-  return this->WriteStruct(m_Section, Key, pStruct, ulSize);
+  return this->write_struct(m_section, key, ptr_struct, size);
 }
 
 CINIFileW::CINIFileW() : CLastError()
 {
-  m_Section  = L"";
-  m_FilePath = L"";
+  m_section = L"";
+  m_file_path = L"";
 }
 
-CINIFileW::CINIFileW(const std::wstring& FilePath) : CLastError()
+CINIFileW::CINIFileW(const std::wstring& file_path) : CLastError()
 {
-  m_Section  = L"";
-  m_FilePath = FilePath;
+  m_section = L"";
+  m_file_path = file_path;
 }
 
 CINIFileW::~CINIFileW()
 {
 }
 
-void CINIFileW::ValidFilePath()
+void CINIFileW::update_file_path()
 {
-  if (m_FilePath.empty())
+  if (m_file_path.empty())
   {
-    std::wstring filePath = get_current_file_path_W();
-    std::wstring fileDir = extract_file_directory_W(filePath, true);
-    std::wstring fileName = extract_file_name_W(filePath, false);
-    m_FilePath = fileDir + fileName + L".INI";
+    std::wstring file_path = get_current_file_path_W();
+    std::wstring file_dir = extract_file_directory_W(file_path, true);
+    std::wstring file_name = extract_file_name_W(file_path, false);
+    m_file_path = file_dir + file_name + L".INI";
   }
 }
 
-void CINIFileW::SetCurrentFilePath(const std::wstring& FilePath)
+void CINIFileW::set_current_file_path(const std::wstring& file_path)
 {
-  m_FilePath = FilePath;
+  m_file_path = file_path;
 }
 
-void CINIFileW::SetCurrentSection(const std::wstring& Section)
+void CINIFileW::set_current_section(const std::wstring& section)
 {
-  m_Section = Section;
+  m_section = section;
 }
 
 // Long-Read
 
-std::vector<std::wstring> vuapi CINIFileW::ReadSectionNames(ulong ulMaxSize)
+std::vector<std::wstring> vuapi CINIFileW::read_section_names(ulong max_size)
 {
   std::vector<std::wstring> l;
   l.clear();
 
-  std::unique_ptr<wchar[]> p(new wchar [ulMaxSize]);
+  std::unique_ptr<wchar[]> p(new wchar[max_size]);
   if (p == nullptr)
   {
     return l;
   }
 
-  ZeroMemory(p.get(), 2*ulMaxSize);
+  ZeroMemory(p.get(), 2 * max_size);
 
-  this->ValidFilePath();
+  this->update_file_path();
 
-  GetPrivateProfileSectionNamesW(p.get(), 2*ulMaxSize, m_FilePath.c_str());
+  GetPrivateProfileSectionNamesW(p.get(), 2 * max_size, m_file_path.c_str());
 
   m_last_error_code = GetLastError();
 
-  for (wchar * s = p.get(); *s; s++)
+  for (wchar* s = p.get(); *s; s++)
   {
     l.push_back(s); // l.push_back((new std::wstring(s))->c_str());
     s += lstrlenW(s);
@@ -368,26 +368,26 @@ std::vector<std::wstring> vuapi CINIFileW::ReadSectionNames(ulong ulMaxSize)
   return l;
 }
 
-std::vector<std::wstring> vuapi CINIFileW::ReadSection(const std::wstring& Section, ulong ulMaxSize)
+std::vector<std::wstring> vuapi CINIFileW::read_section(const std::wstring& section, ulong max_size)
 {
   std::vector<std::wstring> l;
   l.clear();
 
-  std::unique_ptr<wchar[]> p(new wchar [ulMaxSize]);
+  std::unique_ptr<wchar[]> p(new wchar[max_size]);
   if (p == nullptr)
   {
     return l;
   }
 
-  ZeroMemory(p.get(), 2*ulMaxSize);
+  ZeroMemory(p.get(), 2 * max_size);
 
-  this->ValidFilePath();
+  this->update_file_path();
 
-  GetPrivateProfileSectionW(Section.c_str(), p.get(), 2*ulMaxSize, m_FilePath.c_str());
+  GetPrivateProfileSectionW(section.c_str(), p.get(), 2 * max_size, m_file_path.c_str());
 
   m_last_error_code = GetLastError();
 
-  for (wchar * s = p.get(); *s; s++)
+  for (wchar* s = p.get(); *s; s++)
   {
     l.push_back(s); // l.push_back((new std::wstring(s))->c_str());
     s += lstrlenW(s);
@@ -396,73 +396,73 @@ std::vector<std::wstring> vuapi CINIFileW::ReadSection(const std::wstring& Secti
   return l;
 }
 
-int vuapi CINIFileW::ReadInteger(const std::wstring& Section, const std::wstring& Key, int Default)
+int vuapi CINIFileW::read_integer(const std::wstring& section, const std::wstring& key, int default_value)
 {
-  this->ValidFilePath();
-  int result = GetPrivateProfileIntW(Section.c_str(), Key.c_str(), Default, m_FilePath.c_str());
+  this->update_file_path();
+  int result = GetPrivateProfileIntW(section.c_str(), key.c_str(), default_value, m_file_path.c_str());
   m_last_error_code = GetLastError();
   return result;
 }
 
-bool vuapi CINIFileW::ReadBool(const std::wstring& Section, const std::wstring& Key, bool Default)
+bool vuapi CINIFileW::read_bool(const std::wstring& section, const std::wstring& key, bool default_value)
 {
-  this->ValidFilePath();
-  bool result = (GetPrivateProfileIntW(Section.c_str(), Key.c_str(), Default, m_FilePath.c_str()) == 1 ? true : false);
+  this->update_file_path();
+  bool result = GetPrivateProfileIntW(section.c_str(), key.c_str(), default_value, m_file_path.c_str()) == 1 ? true : false;
   m_last_error_code = GetLastError();
   return result;
 }
 
-float vuapi CINIFileW::ReadFloat(const std::wstring& Section, const std::wstring& Key, float Default)
+float vuapi CINIFileW::read_float(const std::wstring& section, const std::wstring& key, float default_value)
 {
-  this->ValidFilePath();
+  this->update_file_path();
 
-  const std::wstring sDefault = number_to_string_W(Default);
-  wchar lpwszResult[MAX_SIZE];
+  const std::wstring tmp_default = number_to_string_W(default_value);
+  wchar sz_result[MAX_SIZE];
 
-  ZeroMemory(lpwszResult, sizeof(lpwszResult));
+  ZeroMemory(sz_result, sizeof(sz_result));
 
   GetPrivateProfileStringW(
-    Section.c_str(),
-    Key.c_str(),
-    sDefault.c_str(),
-    lpwszResult,
-    sizeof(lpwszResult),
-    m_FilePath.c_str()
+    section.c_str(),
+    key.c_str(),
+    tmp_default.c_str(),
+    sz_result,
+    sizeof(sz_result),
+    m_file_path.c_str()
   );
 
   m_last_error_code = GetLastError();
 
-  const std::string s = to_string_A(lpwszResult);
+  const std::string s = to_string_A(sz_result);
 
   return (float)atof(s.c_str());
 }
 
-std::wstring vuapi CINIFileW::ReadString(
-  const std::wstring& Section,
-  const std::wstring& Key,
-  const std::wstring& Default
+std::wstring vuapi CINIFileW::read_string(
+  const std::wstring& section,
+  const std::wstring& key,
+  const std::wstring& default_value
 )
 {
   std::wstring s;
   s.clear();
 
-  std::unique_ptr<wchar[]> p(new wchar [MAX_SIZE]);
+  std::unique_ptr<wchar[]> p(new wchar[MAX_SIZE]);
   if (p == nullptr)
   {
     return s;
   }
 
-  ZeroMemory(p.get(), 2*MAX_SIZE);
+  ZeroMemory(p.get(), 2 * MAX_SIZE);
 
-  this->ValidFilePath();
+  this->update_file_path();
 
   ulong result = GetPrivateProfileStringW(
-    Section.c_str(),
-    Key.c_str(),
-    Default.c_str(),
+    section.c_str(),
+    key.c_str(),
+    default_value.c_str(),
     p.get(),
     2 * MAX_SIZE,
-    m_FilePath.c_str()
+    m_file_path.c_str()
   );
   if (result == 0)
   {
@@ -475,23 +475,23 @@ std::wstring vuapi CINIFileW::ReadString(
   return s;
 }
 
-std::unique_ptr<uchar[]> vuapi CINIFileW::ReadStruct(
-  const std::wstring& Section,
-  const std::wstring& Key,
-  ulong ulSize
+std::unique_ptr<uchar[]> vuapi CINIFileW::read_struct(
+  const std::wstring& section,
+  const std::wstring& key,
+  ulong size
 )
 {
-  std::unique_ptr<uchar[]> p(new uchar [ulSize]);
+  std::unique_ptr<uchar[]> p(new uchar[size]);
   if (p == nullptr)
   {
     return nullptr;
   }
 
-  ZeroMemory(p.get(), ulSize);
+  ZeroMemory(p.get(), size);
 
-  this->ValidFilePath();
+  this->update_file_path();
 
-  if (GetPrivateProfileStructW(Section.c_str(), Key.c_str(), (void*)p.get(), ulSize, m_FilePath.c_str()) == 0)
+  if (GetPrivateProfileStructW(section.c_str(), key.c_str(), (void*)p.get(), size, m_file_path.c_str()) == 0)
   {
     m_last_error_code = GetLastError();
     return nullptr;
@@ -502,109 +502,109 @@ std::unique_ptr<uchar[]> vuapi CINIFileW::ReadStruct(
 
 // Short-Read
 
-std::vector<std::wstring> vuapi CINIFileW::ReadSection(ulong ulMaxSize)
+std::vector<std::wstring> vuapi CINIFileW::read_current_section(ulong max_size)
 {
-  return this->ReadSection(m_Section, ulMaxSize);
+  return this->read_section(m_section, max_size);
 }
 
-int vuapi CINIFileW::ReadInteger(const std::wstring& Key, int Default)
+int vuapi CINIFileW::read_integer(const std::wstring& key, int default_value)
 {
-  return this->ReadInteger(m_Section, Key, Default);
+  return this->read_integer(m_section, key, default_value);
 }
 
-bool vuapi CINIFileW::ReadBool(const std::wstring& Key, bool Default)
+bool vuapi CINIFileW::read_bool(const std::wstring& key, bool default_value)
 {
-  return this->ReadBool(m_Section, Key, Default);
+  return this->read_bool(m_section, key, default_value);
 }
 
-float vuapi CINIFileW::ReadFloat(const std::wstring& Key, float Default)
+float vuapi CINIFileW::read_float(const std::wstring& key, float default_value)
 {
-  return this->ReadFloat(m_Section, Key, Default);
+  return this->read_float(m_section, key, default_value);
 }
 
-std::wstring vuapi CINIFileW::ReadString(const std::wstring& Key, const std::wstring& Default)
+std::wstring vuapi CINIFileW::read_string(const std::wstring& key, const std::wstring& default_value)
 {
-  return this->ReadString(m_Section, Key, Default);
+  return this->read_string(m_section, key, default_value);
 }
 
-std::unique_ptr<uchar[]> vuapi CINIFileW::ReadStruct(const std::wstring& Key, ulong ulSize)
+std::unique_ptr<uchar[]> vuapi CINIFileW::read_struct(const std::wstring& key, ulong size)
 {
-  return this->ReadStruct(m_Section, Key, ulSize);
+  return this->read_struct(m_section, key, size);
 }
 
 // Long-Write
 
-bool vuapi CINIFileW::WriteInteger(const std::wstring& Section, const std::wstring& Key, int Value)
+bool vuapi CINIFileW::write_integer(const std::wstring& section, const std::wstring& key, int value)
 {
-  this->ValidFilePath();
-  const std::wstring s = number_to_string_W(Value);
-  bool result = (WritePrivateProfileStringW(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
+  this->update_file_path();
+  const std::wstring s = number_to_string_W(value);
+  bool result = WritePrivateProfileStringW(section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
 
-bool vuapi CINIFileW::WriteBool(const std::wstring& Section, const std::wstring& Key, bool Value)
+bool vuapi CINIFileW::write_bool(const std::wstring& section, const std::wstring& key, bool value)
 {
-  this->ValidFilePath();
-  const std::wstring s(Value ? L"1" : L"0");
-  return (WritePrivateProfileStringW(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
+  this->update_file_path();
+  const std::wstring s(value ? L"1" : L"0");
+  return (WritePrivateProfileStringW(section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0);
 }
 
-bool vuapi CINIFileW::WriteFloat(const std::wstring& Section, const std::wstring& Key, float Value)
+bool vuapi CINIFileW::write_float(const std::wstring& section, const std::wstring& key, float value)
 {
-  this->ValidFilePath();
-  const std::wstring s = number_to_string_W(Value);
-  bool result = (WritePrivateProfileStringW(Section.c_str(), Key.c_str(), s.c_str(), m_FilePath.c_str()) != 0);
+  this->update_file_path();
+  const std::wstring s = number_to_string_W(value);
+  bool result = WritePrivateProfileStringW(section.c_str(), key.c_str(), s.c_str(), m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
 
-bool vuapi CINIFileW::WriteString(const std::wstring& Section, const std::wstring& Key, const std::wstring& Value)
+bool vuapi CINIFileW::write_string(const std::wstring& section, const std::wstring& key, const std::wstring& value)
 {
-  this->ValidFilePath();
-  bool result = (WritePrivateProfileStringW(Section.c_str(), Key.c_str(), Value.c_str(), m_FilePath.c_str()) != 0);
+  this->update_file_path();
+  bool result = WritePrivateProfileStringW(section.c_str(), key.c_str(), value.c_str(), m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
 
-bool vuapi CINIFileW::WriteStruct(
-  const std::wstring& Section,
-  const std::wstring& Key,
-  void* pStruct,
-  ulong ulSize
+bool vuapi CINIFileW::write_struct(
+  const std::wstring& section,
+  const std::wstring& key,
+  void* ptr_struct,
+  ulong size
 )
 {
-  this->ValidFilePath();
-  bool result = (WritePrivateProfileStructW(Section.c_str(), Key.c_str(), pStruct, ulSize, m_FilePath.c_str()) != 0);
+  this->update_file_path();
+  bool result = WritePrivateProfileStructW(section.c_str(), key.c_str(), ptr_struct, size, m_file_path.c_str()) != 0;
   m_last_error_code = GetLastError();
   return result;
 }
 
 // Short-Write
 
-bool vuapi CINIFileW::WriteInteger(const std::wstring& Key, int Value)
+bool vuapi CINIFileW::write_integer(const std::wstring& key, int value)
 {
-  return this->WriteInteger(m_Section.c_str(), Key.c_str(), Value);
+  return this->write_integer(m_section.c_str(), key.c_str(), value);
 }
 
-bool vuapi CINIFileW::WriteBool(const std::wstring& Key, bool Value)
+bool vuapi CINIFileW::write_bool(const std::wstring& key, bool value)
 {
-  return this->WriteBool(m_Section.c_str(), Key.c_str(), Value);
+  return this->write_bool(m_section.c_str(), key.c_str(), value);
 }
 
-bool vuapi CINIFileW::WriteFloat(const std::wstring& Key, float Value)
+bool vuapi CINIFileW::write_float(const std::wstring& key, float value)
 {
-  return this->WriteFloat(m_Section.c_str(), Key.c_str(), Value);
+  return this->write_float(m_section.c_str(), key.c_str(), value);
 }
 
-bool vuapi CINIFileW::WriteString(const std::wstring& Key, const std::wstring& Value)
+bool vuapi CINIFileW::write_string(const std::wstring& key, const std::wstring& value)
 {
-  return this->WriteString(m_Section.c_str(), Key.c_str(), Value);
+  return this->write_string(m_section.c_str(), key.c_str(), value);
 }
 
-bool vuapi CINIFileW::WriteStruct(const std::wstring& Key, void* pStruct, ulong ulSize)
+bool vuapi CINIFileW::write_struct(const std::wstring& key, void* ptr_struct, ulong size)
 {
-  return this->WriteStruct(m_Section.c_str(), Key.c_str(), pStruct, ulSize);
+  return this->write_struct(m_section.c_str(), key.c_str(), ptr_struct, size);
 }
 
 } // namespace vu

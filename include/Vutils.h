@@ -1510,128 +1510,91 @@ public:
   CINIFileA(const std::string& FilePath);
   virtual ~CINIFileA();
 
-  void SetCurrentFilePath(const std::string& FilePath);
-  void SetCurrentSection(const std::string& Section);
+  void set_current_file_path(const std::string& file_path);
+  void set_current_section(const std::string& section);
 
-  std::vector<std::string> vuapi ReadSection(const std::string& Section, ulong ulMaxSize = MAXBYTE);
-  std::vector<std::string> vuapi ReadSection(ulong ulMaxSize = MAXBYTE);
+  std::vector<std::string> vuapi read_section(const std::string& section, ulong max_size = MAXBYTE);
+  std::vector<std::string> vuapi read_current_section(ulong max_size = MAXBYTE);
 
-  std::vector<std::string> vuapi ReadSectionNames(ulong ulMaxSize = MAXBYTE);
+  std::vector<std::string> vuapi read_section_names(ulong max_size = MAXBYTE);
 
-  int vuapi ReadInteger(const std::string& Section, const std::string& Key, int Default);
-  bool vuapi ReadBool(const std::string& Section, const std::string& Key, bool Default);
-  float vuapi ReadFloat(const std::string& Section, const std::string& Key, float Default);
-  std::string vuapi ReadString(
-    const std::string& Section,
-    const std::string& Key,
-    const std::string& Default
-  );
-  std::unique_ptr<uchar[]> vuapi ReadStruct(
-    const std::string& Section,
-    const std::string& Key,
-    ulong ulSize
-  );
+  int vuapi read_integer(const std::string& section, const std::string& key, int default_value);
+  bool vuapi read_bool(const std::string& section, const std::string& key, bool default_value);
+  float vuapi read_float(const std::string& section, const std::string& key, float default_value);
+  std::string vuapi read_string(const std::string& section, const std::string& key, const std::string& default_value);
+  std::unique_ptr<uchar[]> vuapi read_struct(const std::string& section, const std::string& key, ulong size);
 
-  int vuapi ReadInteger(const std::string& Key, int Default);
-  bool vuapi ReadBool(const std::string& Key, bool Default);
-  float vuapi ReadFloat(const std::string& Key, float Default);
-  std::string vuapi ReadString(const std::string& Key, const std::string& Default);
-  std::unique_ptr<uchar[]> vuapi ReadStruct(const std::string& Key, ulong ulSize);
+  int vuapi read_integer(const std::string& key, int default_value);
+  bool vuapi read_bool(const std::string& key, bool default_value);
+  float vuapi read_float(const std::string& key, float default_value);
+  std::string vuapi read_string(const std::string& key, const std::string& default_value);
+  std::unique_ptr<uchar[]> vuapi read_struct(const std::string& key, ulong size);
 
-  bool vuapi WriteInteger(const std::string& Section, const std::string& Key, int Value);
-  bool vuapi WriteBool(const std::string& Section, const std::string& Key, bool Value);
-  bool vuapi WriteFloat(const std::string& Section, const std::string& Key, float Value);
-  bool vuapi WriteString(
-    const std::string& Section,
-    const std::string& Key,
-    const std::string& Value
-  );
-  bool vuapi WriteStruct(
-    const std::string& Section,
-    const std::string& Key,
-    void* pStruct,
-    ulong ulSize
-  );
+  bool vuapi write_integer(const std::string& section, const std::string& key, int value);
+  bool vuapi write_bool(const std::string& section, const std::string& key, bool value);
+  bool vuapi write_float(const std::string& section, const std::string& key, float value);
+  bool vuapi write_string(const std::string& section, const std::string& key, const std::string& Value);
+  bool vuapi write_struct(const std::string& section, const std::string& key, void* ptr_struct, ulong size);
 
-  bool vuapi WriteInteger(const std::string& Key, int Value);
-  bool vuapi WriteBool(const std::string& Key, bool Value);
-  bool vuapi WriteFloat(const std::string& Key, float Value);
-  bool vuapi WriteString(const std::string& Key, const std::string& Value);
-  bool vuapi WriteStruct(const std::string& Key, void* pStruct, ulong ulSize);
+  bool vuapi write_integer(const std::string& key, int value);
+  bool vuapi write_bool(const std::string& key, bool value);
+  bool vuapi write_float(const std::string& key, float value);
+  bool vuapi write_string(const std::string& key, const std::string& value);
+  bool vuapi write_struct(const std::string& key, void* ptr_struct, ulong size);
 
 private:
-  void ValidFilePath();
+  void update_file_path();
 
 private:
-  std::string m_FilePath;
-  std::string m_Section;
+  std::string m_file_path;
+  std::string m_section;
 };
 
 class CINIFileW : public CLastError
 {
 public:
   CINIFileW();
-  CINIFileW(const std::wstring& FilePath);
+  CINIFileW(const std::wstring& file_path);
   virtual ~CINIFileW();
 
-  void SetCurrentFilePath(const std::wstring& FilePath);
-  void SetCurrentSection(const std::wstring& Section);
+  void set_current_file_path(const std::wstring& file_path);
+  void set_current_section(const std::wstring& section);
 
-  std::vector<std::wstring> vuapi ReadSection(
-    const std::wstring& Section,
-    ulong ulMaxSize = MAXBYTE
-  );
-  std::vector<std::wstring> vuapi ReadSection(ulong ulMaxSize = MAXBYTE);
+  std::vector<std::wstring> vuapi read_section(const std::wstring& section, ulong max_size = MAXBYTE);
+  std::vector<std::wstring> vuapi read_current_section(ulong max_size = MAXBYTE);
 
-  std::vector<std::wstring> vuapi ReadSectionNames(ulong ulMaxSize = MAXBYTE);
+  std::vector<std::wstring> vuapi read_section_names(ulong max_size = MAXBYTE);
 
-  int vuapi ReadInteger(const std::wstring& Section, const std::wstring& Key, int Default);
-  bool vuapi ReadBool(const std::wstring& Section, const std::wstring& Key, bool Default);
-  float vuapi ReadFloat(const std::wstring& Section, const std::wstring& Key, float Default);
-  std::wstring vuapi ReadString(
-    const std::wstring& Section,
-    const std::wstring& Key,
-    const std::wstring& Default
-  );
-  std::unique_ptr<uchar[]> vuapi ReadStruct(
-    const std::wstring& Section,
-    const std::wstring& Key,
-    ulong ulSize
-  );
+  int vuapi read_integer(const std::wstring& section, const std::wstring& key, int default_value);
+  bool vuapi read_bool(const std::wstring& section, const std::wstring& key, bool default_value);
+  float vuapi read_float(const std::wstring& section, const std::wstring& key, float default_value);
+  std::wstring vuapi read_string(const std::wstring& section, const std::wstring& key, const std::wstring& default_value);
+  std::unique_ptr<uchar[]> vuapi read_struct(const std::wstring& section, const std::wstring& key, ulong size);
 
-  int vuapi ReadInteger(const std::wstring& Key, int Default);
-  bool vuapi ReadBool(const std::wstring& Key, bool Default);
-  float vuapi ReadFloat(const std::wstring& Key, float Default);
-  std::wstring vuapi ReadString(const std::wstring& Key, const std::wstring& Default);
-  std::unique_ptr<uchar[]> vuapi ReadStruct(const std::wstring& Key, ulong ulSize);
+  int vuapi read_integer(const std::wstring& key, int default_value);
+  bool vuapi read_bool(const std::wstring& key, bool default_value);
+  float vuapi read_float(const std::wstring& key, float default_value);
+  std::wstring vuapi read_string(const std::wstring& key, const std::wstring& default_value);
+  std::unique_ptr<uchar[]> vuapi read_struct(const std::wstring& key, ulong size);
 
-  bool vuapi WriteInteger(const std::wstring& Section, const std::wstring& Key, int Value);
-  bool vuapi WriteBool(const std::wstring& Section, const std::wstring& Key, bool Value);
-  bool vuapi WriteFloat(const std::wstring& Section, const std::wstring& Key, float Value);
-  bool vuapi WriteString(
-    const std::wstring& Section,
-    const std::wstring& Key,
-    const std::wstring& Value
-  );
-  bool vuapi WriteStruct(
-    const std::wstring& Section,
-    const std::wstring& Key,
-    void* pStruct,
-    ulong ulSize
-  );
+  bool vuapi write_integer(const std::wstring& section, const std::wstring& key, int value);
+  bool vuapi write_bool(const std::wstring& section, const std::wstring& key, bool value);
+  bool vuapi write_float(const std::wstring& section, const std::wstring& key, float value);
+  bool vuapi write_string(const std::wstring& section, const std::wstring& key, const std::wstring& value);
+  bool vuapi write_struct(const std::wstring& section, const std::wstring& key, void* ptr_struct, ulong size);
 
-  bool vuapi WriteInteger(const std::wstring& Key, int Value);
-  bool vuapi WriteBool(const std::wstring& Key, bool Value);
-  bool vuapi WriteFloat(const std::wstring& Key, float Value);
-  bool vuapi WriteString(const std::wstring& Key, const std::wstring& Value);
-  bool vuapi WriteStruct(const std::wstring& Key, void* pStruct, ulong ulSize);
+  bool vuapi write_integer(const std::wstring& key, int value);
+  bool vuapi write_bool(const std::wstring& key, bool value);
+  bool vuapi write_float(const std::wstring& key, float value);
+  bool vuapi write_string(const std::wstring& key, const std::wstring& value);
+  bool vuapi write_struct(const std::wstring& key, void* ptr_struct, ulong size);
 
 private:
-  void ValidFilePath();
+  void update_file_path();
 
 private:
-  std::wstring m_FilePath;
-  std::wstring m_Section;
+  std::wstring m_file_path;
+  std::wstring m_section;
 };
 
 /**
@@ -1708,110 +1671,104 @@ public:
   CRegistryX();
   virtual ~CRegistryX();
 
-  HKEY vuapi GetCurrentKeyHandle();
-  eRegReflection vuapi QueryReflectionKey();
-  bool vuapi SetReflectionKey(eRegReflection RegReflection);
-  bool vuapi CloseKey();
+  HKEY vuapi get_current_key_handle();
+  eRegReflection vuapi query_reflection_key();
+  bool vuapi set_reflection_key(eRegReflection RegReflection);
+  bool vuapi close_key();
 
 protected:
-  HKEY m_HKRootKey;
-  HKEY m_HKSubKey;
+  HKEY m_hk_root_key;
+  HKEY m_hk_sub_key;
 };
 
 class CRegistryA : public CRegistryX
 {
 public:
   CRegistryA();
-  CRegistryA(eRegRoot RegRoot);
-  CRegistryA(eRegRoot RegRoot, const std::string& SubKey);
+  CRegistryA(eRegRoot reg_root);
+  CRegistryA(eRegRoot reg_root, const std::string& sub_key);
   virtual ~CRegistryA();
 
-  ulong vuapi GetSizeOfMultiString(const char* lpcszMultiString);
-  ulong vuapi GetDataSize(const std::string& ValueName, ulong ulType);
+  ulong vuapi set_size_of_multi_string(const char* multi_string);
+  ulong vuapi get_data_size(const std::string& value_name, ulong type);
 
-  bool vuapi CreateKey();
-  bool vuapi CreateKey(const std::string& SubKey);
-  bool vuapi KeyExists();
-  bool vuapi KeyExists(const std::string& SubKey);
-  bool vuapi OpenKey(eRegAccess RegAccess = eRegAccess::RA_ALL_ACCESS);
-  bool vuapi OpenKey(const std::string& SubKey, eRegAccess RegAccess = eRegAccess::RA_ALL_ACCESS);
-  bool vuapi DeleteKey();
-  bool vuapi DeleteKey(const std::string& SubKey);
-  bool vuapi DeleteValue(const std::string& Value);
+  bool vuapi create_key();
+  bool vuapi create_key(const std::string& sub_key);
+  bool vuapi key_exists();
+  bool vuapi key_exists(const std::string& sub_key);
+  bool vuapi open_key(eRegAccess reg_access = eRegAccess::RA_ALL_ACCESS);
+  bool vuapi open_key(const std::string& sub_key, eRegAccess reg_access = eRegAccess::RA_ALL_ACCESS);
+  bool vuapi delete_key();
+  bool vuapi delete_key(const std::string& sub_key);
+  bool vuapi delete_value(const std::string& value);
 
-  std::vector<std::string> vuapi EnumKeys();
-  std::vector<std::string> vuapi EnumValues();
+  std::vector<std::string> vuapi enum_keys();
+  std::vector<std::string> vuapi enum_values();
 
-  bool vuapi WriteInteger(const std::string& ValueName, int Value);
-  bool vuapi WriteBool(const std::string& ValueName, bool Value);
-  bool vuapi WriteFloat(const std::string& ValueName, float Value);
-  bool vuapi WriteString(const std::string& ValueName, const std::string& Value);
-  bool vuapi WriteMultiString(const std::string& ValueName, const char* lpValue);
-  bool vuapi WriteMultiString(const std::string& ValueName, const std::vector<std::string>& Value);
-  bool vuapi WriteExpandString(const std::string& ValueName, const std::string& Value);
-  bool vuapi WriteBinary(const std::string& ValueName, void* pData, ulong ulSize);
+  bool vuapi write_integer(const std::string& name, int value);
+  bool vuapi write_bool(const std::string& name, bool value);
+  bool vuapi write_float(const std::string& name, float value);
+  bool vuapi write_string(const std::string& name, const std::string& value);
+  bool vuapi write_multi_string(const std::string& name, const char* ps_value);
+  bool vuapi write_multi_string(const std::string& name, const std::vector<std::string>& value);
+  bool vuapi write_expand_string(const std::string& name, const std::string& value);
+  bool vuapi write_binary(const std::string& name, void* ptr_data, ulong size);
 
-  int vuapi ReadInteger(const std::string& ValueName, int Default);
-  bool vuapi ReadBool(const std::string& ValueName, bool Default);
-  float vuapi ReadFloat(const std::string& ValueName, float Default);
-  std::string vuapi ReadString(const std::string& ValueName, const std::string& Default);
-  std::vector<std::string> vuapi ReadMultiString(
-    const std::string& ValueName,
-    const std::vector<std::string> Default
-  );
-  std::string vuapi ReadExpandString(const std::string& ValueName, const std::string& Default);
-  std::unique_ptr<uchar[]> vuapi ReadBinary(const std::string& ValueName, const void* pDefault);
+  int vuapi read_integer(const std::string& name, int default_value);
+  bool vuapi read_bool(const std::string& name, bool default_value);
+  float vuapi read_float(const std::string& name, float default_value);
+  std::string vuapi read_string(const std::string& name, const std::string& default_value);
+  std::vector<std::string> vuapi read_multi_string(const std::string& name, const std::vector<std::string> default_value);
+  std::string vuapi read_expand_string(const std::string& name, const std::string& default_value);
+  std::unique_ptr<uchar[]> vuapi read_binary(const std::string& name, const void* pdefault_value);
 
 private:
-  std::string m_SubKey;
+  std::string m_sub_key;
 };
 
 class CRegistryW : public CRegistryX
 {
 public:
   CRegistryW();
-  CRegistryW(eRegRoot RegRoot);
-  CRegistryW(eRegRoot RegRoot, const std::wstring& SubKey);
+  CRegistryW(eRegRoot reg_root);
+  CRegistryW(eRegRoot reg_root, const std::wstring& sub_key);
   virtual ~CRegistryW();
 
-  ulong vuapi GetSizeOfMultiString(const wchar* lpcwszMultiString);
-  ulong vuapi GetDataSize(const std::wstring& ValueName, ulong ulType);
+  ulong vuapi set_size_of_multi_string(const wchar* multi_string);
+  ulong vuapi get_data_size(const std::wstring& value_name, ulong type);
 
-  bool vuapi CreateKey();
-  bool vuapi CreateKey(const std::wstring& SubKey);
-  bool vuapi KeyExists();
-  bool vuapi KeyExists(const std::wstring& SubKey);
-  bool vuapi OpenKey(eRegAccess RegAccess = eRegAccess::RA_ALL_ACCESS);
-  bool vuapi OpenKey(const std::wstring& SubKey, eRegAccess RegAccess = eRegAccess::RA_ALL_ACCESS);
-  bool vuapi DeleteKey();
-  bool vuapi DeleteKey(const std::wstring& SubKey);
-  bool vuapi DeleteValue(const std::wstring& Value);
+  bool vuapi create_key();
+  bool vuapi create_key(const std::wstring& sub_key);
+  bool vuapi key_exists();
+  bool vuapi key_exists(const std::wstring& sub_key);
+  bool vuapi open_key(eRegAccess reg_access = eRegAccess::RA_ALL_ACCESS);
+  bool vuapi open_key(const std::wstring& sub_key, eRegAccess reg_access = eRegAccess::RA_ALL_ACCESS);
+  bool vuapi delete_key();
+  bool vuapi delete_key(const std::wstring& sub_key);
+  bool vuapi delete_value(const std::wstring& value);
 
-  std::vector<std::wstring> vuapi EnumKeys();
-  std::vector<std::wstring> vuapi EnumValues();
+  std::vector<std::wstring> vuapi enum_keys();
+  std::vector<std::wstring> vuapi enum_values();
 
-  bool vuapi WriteInteger(const std::wstring& ValueName, int Value);
-  bool vuapi WriteBool(const std::wstring& ValueName, bool Value);
-  bool vuapi WriteFloat(const std::wstring& ValueName, float Value);
-  bool vuapi WriteString(const std::wstring& ValueName, const std::wstring& Value);
-  bool vuapi WriteMultiString(const std::wstring& ValueName, const wchar* Value);
-  bool vuapi WriteMultiString(const std::wstring& ValueName, const std::vector<std::wstring> Value);
-  bool vuapi WriteExpandString(const std::wstring& ValueName, const std::wstring& Value);
-  bool vuapi WriteBinary(const std::wstring& ValueName, void* pData, ulong ulSize);
+  bool vuapi write_integer(const std::wstring& value_name, int value);
+  bool vuapi write_bool(const std::wstring& value_name, bool value);
+  bool vuapi write_float(const std::wstring& value_name, float value);
+  bool vuapi write_string(const std::wstring& value_name, const std::wstring& value);
+  bool vuapi write_multi_string(const std::wstring& value_name, const wchar* ps_value);
+  bool vuapi write_multi_string(const std::wstring& value_name, const std::vector<std::wstring> value);
+  bool vuapi write_expand_string(const std::wstring& value_name, const std::wstring& value);
+  bool vuapi write_binary(const std::wstring& value_name, void* ptr_data, ulong size);
 
-  int vuapi ReadInteger(const std::wstring& ValueName, int Default);
-  bool vuapi ReadBool(const std::wstring& ValueName, bool Default);
-  float vuapi ReadFloat(const std::wstring& ValueName, float Default);
-  std::wstring vuapi ReadString(const std::wstring& ValueName, const std::wstring& Default);
-  std::vector<std::wstring> vuapi ReadMultiString(
-    const std::wstring& ValueName,
-    const std::vector<std::wstring> Default
-  );
-  std::wstring vuapi ReadExpandString(const std::wstring& ValueName, const std::wstring& Default);
-  std::unique_ptr<uchar[]> vuapi ReadBinary(const std::wstring& ValueName, const void* Default);
+  int vuapi read_integer(const std::wstring& value_name, int default_value);
+  bool vuapi read_bool(const std::wstring& value_name, bool default_value);
+  float vuapi read_float(const std::wstring& value_name, float default_value);
+  std::wstring vuapi read_string(const std::wstring& value_name, const std::wstring& default_value);
+  std::vector<std::wstring> vuapi read_multi_string(const std::wstring& value_name, const std::vector<std::wstring> default_value);
+  std::wstring vuapi read_expand_string(const std::wstring& value_name, const std::wstring& default_value);
+  std::unique_ptr<uchar[]> vuapi read_binary(const std::wstring& value_name, const void* default_value);
 
 private:
-  std::wstring m_SubKey;
+  std::wstring m_sub_key;
 };
 
 /**
