@@ -590,14 +590,14 @@ vu::PathA& PathA::finalize()
   return *this;
 }
 
-vu::PathA PathA::extract_file_name(bool with_extension) const
+vu::PathA PathA::extract_name(bool with_extension) const
 {
   PathA tmp(*this);
   tmp.finalize();
   return vu::extract_file_name_A(tmp.as_string(), with_extension);
 }
 
-vu::PathA PathA::extract_file_directory(bool with_slash) const
+vu::PathA PathA::extract_directory(bool with_slash) const
 {
   PathA tmp(*this);
   tmp.finalize();
@@ -731,14 +731,14 @@ vu::PathW& PathW::finalize()
   return *this;
 }
 
-vu::PathW PathW::extract_file_name(bool with_extension) const
+vu::PathW PathW::extract_name(bool with_extension) const
 {
   PathW tmp(*this);
   tmp.finalize();
   return vu::extract_file_name_W(tmp.as_string(), with_extension);
 }
 
-vu::PathW PathW::extract_file_directory(bool with_slash) const
+vu::PathW PathW::extract_directory(bool with_slash) const
 {
   PathW tmp(*this);
   tmp.finalize();

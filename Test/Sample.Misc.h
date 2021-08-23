@@ -50,6 +50,9 @@ DEF_SAMPLE(Misc)
   std::tcout << vu::ends_with(ts("Written in C++ and for C++"), ts("C++")) << std::endl;
   std::tcout << vu::ends_with(ts("Written in C++ and for C++"), ts("Written")) << std::endl;
 
+  std::tcout << vu::contains_string(ts("Written in C++ and for C++"), ts("c++"), false) << std::endl;
+  std::tcout << vu::contains_string(ts("Written in C++ and for C++"), ts("c++"), true)  << std::endl;
+
   std::vector<vu::ulong> pids;
   pids.clear();
 
@@ -141,6 +144,19 @@ DEF_SAMPLE(Misc)
   std::cout << slicer(-10, 10).to_string_A() << std::endl;
 
   std::tcout << vu::undecorate_cpp_symbol(ts("?func1@a@@AAEXH@Z")) << std::endl;
+
+  #if defined(_MSC_VER) || defined(__BCPLUSPLUS__) // LNK
+  std::tstring lnk_file_path = ts("C:\\Users\\Vic\\Desktop\\Tencent Gaming Buddy.lnk");
+  auto ptr_lnk = vu::parse_shortcut_lnk(nullptr, lnk_file_path);
+  if (ptr_lnk != nullptr)
+  {
+    std::tcout << ts("Parsing ") << lnk_file_path << std::endl;
+    std::tcout << vu::tab << ptr_lnk->path << std::endl;
+    std::tcout << vu::tab << ptr_lnk->directory << std::endl;
+    std::tcout << vu::tab << ptr_lnk->argument << std::endl;
+    std::tcout << vu::tab << ptr_lnk->description << std::endl;
+  }
+  #endif // LNK
 
   return vu::VU_OK;
 }

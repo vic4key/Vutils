@@ -241,6 +241,10 @@ bool vuapi starts_with_A(const std::string& text, const std::string& with);
 bool vuapi starts_with_W(const std::wstring& text, const std::wstring& with);
 bool vuapi ends_with_A(const std::string& text, const std::string& with);
 bool vuapi ends_with_W(const std::wstring& text, const std::wstring& with);
+bool vuapi contains_string_A(
+  const std::string& text, const std::string& test, bool ignore_case = false);
+bool vuapi contains_string_W(
+  const std::wstring& text, const std::wstring& test, bool ignore_case = false);
 
 /**
  * Process Working
@@ -394,6 +398,41 @@ eDiskType vuapi get_disk_type_A(const char drive);
 eDiskType vuapi get_disk_type_W(const wchar_t drive);
 #endif // VU_WMI_ENABLED
 
+#if defined(_MSC_VER) || defined(__BCPLUSPLUS__) // LNK
+
+struct sLNKA
+{
+  std::string path;
+  std::string directory;
+  std::string argument;
+  std::string description;
+};
+
+struct sLNKW
+{
+  std::wstring path;
+  std::wstring directory;
+  std::wstring argument;
+  std::wstring description;
+};
+
+#ifdef _UNICODE
+#define sLNK sLNKW
+#else
+#define sLNK sLNKA
+#endif
+
+std::unique_ptr<sLNKA> parse_shortcut_lnk_A(HWND hwnd, const std::wstring& lnk_file_path);
+std::unique_ptr<sLNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_file_path);
+
+#ifdef _UNICODE
+#define parse_shortcut_lnk parse_shortcut_lnk_W
+#else
+#define parse_shortcut_lnk parse_shortcut_lnk_A
+#endif
+
+#endif // LNK
+
 bool vuapi is_directory_exists_A(const std::string& directory);
 bool vuapi is_directory_exists_W(const std::wstring& directory);
 bool vuapi is_file_exists_A(const std::string& file_path);
@@ -451,6 +490,7 @@ std::wstring vuapi undecorate_cpp_symbol_W(
 #define replace_string replace_string_W
 #define starts_with starts_with_W
 #define ends_with ends_with_W
+#define contains_string contains_string_W
 /* Window Working */
 #define decode_wm decode_wm_W
 #define get_font get_font_W
@@ -496,6 +536,7 @@ std::wstring vuapi undecorate_cpp_symbol_W(
 #define replace_string replace_string_A
 #define starts_with starts_with_A
 #define ends_with ends_with_A
+#define contains_string contains_string_A
 /* Window Working */
 #define decode_wm decode_wm_A
 #define get_font get_font_A
@@ -2740,8 +2781,8 @@ public:
   bool exists() const;
   std::string as_string() const;
 
-  PathA extract_file_name(bool with_extension = true) const;
-  PathA extract_file_directory(bool with_slash = true) const;
+  PathA extract_name(bool with_extension = true) const;
+  PathA extract_directory(bool with_slash = true) const;
 
 private:
   ePathSep m_separator;
@@ -2773,8 +2814,8 @@ public:
   bool exists() const;
   std::wstring as_string() const;
 
-  PathW extract_file_name(bool with_extension = true) const;
-  PathW extract_file_directory(bool with_slash = true) const;
+  PathW extract_name(bool with_extension = true) const;
+  PathW extract_directory(bool with_slash = true) const;
 
 private:
   ePathSep m_separator;

@@ -68,8 +68,8 @@ DEF_SAMPLE(DF)
   std::tcout << ts("Exists (Dir)  : ") << file_dir.exists() << std::endl;
   std::tcout << ts("Exists (File) : ") << file_path.exists() << std::endl;
 
-  std::tcout << ts("File Name : ") << file_path.extract_file_name().as_string() << std::endl;
-  std::tcout << ts("File Directory : ") << file_path.extract_file_directory().as_string() << std::endl;
+  std::tcout << ts("File Name : ") << file_path.extract_name().as_string() << std::endl;
+  std::tcout << ts("File Directory : ") << file_path.extract_directory().as_string() << std::endl;
 
   // TODO: Vic. Uncompleted.
 

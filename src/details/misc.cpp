@@ -8,6 +8,12 @@
 #include "lazy.h"
 #include "defs.h"
 
+#if defined(_MSC_VER) || defined(__BCPLUSPLUS__) // LNK
+#include "shobjidl.h"
+#include "objbase.h"
+#include "shlguid.h"
+#endif // LNK
+
 #include VU_3RD_INCL(UND/include/undname.h)
 
 namespace vu
@@ -278,5 +284,119 @@ std::wstring undecorate_cpp_symbol_W(const std::wstring& name, const ushort flag
   auto r = undecorate_cpp_symbol_A(s, flags);
   return to_string_W(r);
 }
+
+/**
+ * refer to
+ *  https://docs.microsoft.com/en-us/windows/win32/shell/links#creating-a-shortcut-and-a-folder-shortcut-to-a-file
+ *  https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getlongpathnamea#remarks
+ */
+
+#if defined(_MSC_VER) || defined(__BCPLUSPLUS__) // LNK
+
+std::unique_ptr<sLNKA> parse_shortcut_lnk_A(HWND hwnd, const std::string& lnk_file_path)
+{
+  std::unique_ptr<sLNKA> result(nullptr);
+
+  auto ptr = parse_shortcut_lnk_W(hwnd, to_string_W(lnk_file_path));
+  if (ptr != nullptr)
+  {
+    result->path = to_string_A(ptr->path);
+    result->directory = to_string_A(ptr->directory);
+    result->description = to_string_A(ptr->description);
+  }
+
+  return result;
+}
+
+std::unique_ptr<sLNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_file_path)
+{
+  std::unique_ptr<sLNKW> result(nullptr);
+
+  CoInitialize(nullptr);
+
+  IShellLinkW* psl = nullptr;
+  HRESULT hres = CoCreateInstance(
+    CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&psl);
+  if (SUCCEEDED(hres))
+  {
+    IPersistFile* ppf = nullptr;
+    hres = psl->QueryInterface(IID_IPersistFile, (void**)&ppf);
+    if (SUCCEEDED(hres))
+    {
+      hres = ppf->Load(lnk_file_path.c_str(), STGM_READ);
+      if (SUCCEEDED(hres))
+      {
+        hres = psl->Resolve(hwnd, 0);
+        if (SUCCEEDED(hres))
+        {
+          result.reset(new sLNKW);
+
+          WIN32_FIND_DATAW wfd = { 0 };
+          WCHAR buffer[MAX_PATH] = { 0 }, tmp[MAX_PATH] = { 0 };
+
+          memset(buffer, 0, sizeof(buffer));
+          hres = psl->GetPath(buffer, ARRAYSIZE(buffer), &wfd, SLGP_SHORTPATH);
+          if (SUCCEEDED(hres))
+          {
+            if (contains_string_W(buffer, L"~"))
+            {
+              memset(tmp, 0, sizeof(tmp));
+              GetLongPathNameW(buffer, tmp, ARRAYSIZE(tmp));
+              result->path.assign(tmp);
+            }
+            else
+            {
+              result->path.assign(buffer);
+            }
+          }
+
+          memset(buffer, 0, sizeof(buffer));
+          hres = psl->GetWorkingDirectory(buffer, ARRAYSIZE(buffer));
+          if (SUCCEEDED(hres))
+          {
+            if (contains_string_W(buffer, L"~"))
+            {
+              memset(tmp, 0, sizeof(tmp));
+              GetLongPathNameW(buffer, tmp, ARRAYSIZE(tmp));
+              result->directory.assign(tmp);
+            }
+            else
+            {
+              result->directory.assign(buffer);
+            }
+            if (result->directory.empty())
+            {
+              result->directory = extract_file_directory_W(result->path);
+            }
+          }
+
+          memset(buffer, 0, sizeof(buffer));
+          hres = psl->GetArguments(buffer, ARRAYSIZE(buffer));
+          if (SUCCEEDED(hres))
+          {
+            result->argument.assign(buffer);
+          }
+
+          memset(buffer, 0, sizeof(buffer));
+          hres = psl->GetDescription(buffer, ARRAYSIZE(buffer));
+          if (SUCCEEDED(hres))
+          {
+            result->description.assign(buffer);
+          }
+        }
+      }
+
+      ppf->Release();
+    }
+
+    psl->Release();
+  }
+
+  CoUninitialize();
+
+  return result;
+}
+
+#endif // LNK
 
 } // namespace vu

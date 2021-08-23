@@ -452,6 +452,30 @@ bool vuapi ends_with_W(const std::wstring& text, const std::wstring& with)
   return ends_with_T<std::wstring>(text, with);
 }
 
+bool vuapi contains_string_A(const std::string& text, const std::string& test, bool ignore_case)
+{
+  if (ignore_case)
+  {
+    const auto v1 = lower_string_A(text);
+    const auto v2 = lower_string_A(test);
+    return v1.find(v2) != std::string::npos;
+  }
+
+  return text.find(test) != std::string::npos;
+}
+
+bool vuapi contains_string_W(const std::wstring& text, const std::wstring& test, bool ignore_case)
+{
+  if (ignore_case)
+  {
+    const auto v1 = lower_string_W(text);
+    const auto v2 = lower_string_W(test);
+    return v1.find(v2) != std::string::npos;
+  }
+
+  return text.find(test) != std::string::npos;
+}
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif // _MSC_VER
