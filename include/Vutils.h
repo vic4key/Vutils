@@ -424,7 +424,7 @@ struct sLNKW
 #define sLNK sLNKA
 #endif
 
-std::unique_ptr<sLNKA> parse_shortcut_lnk_A(HWND hwnd, const std::wstring& lnk_file_path);
+std::unique_ptr<sLNKA> parse_shortcut_lnk_A(HWND hwnd, const std::string& lnk_file_path);
 std::unique_ptr<sLNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_file_path);
 
 #ifdef _UNICODE
@@ -2868,6 +2868,105 @@ private:
 
 #endif // VU_WMI_ENABLED
 
+/**
+ * Picker
+ */
+
+#ifndef _INC_COMMDLG
+#define CC_RGBINIT               0x00000001
+#define CC_FULLOPEN              0x00000002
+#define OFN_PATHMUSTEXIST        0x00000800
+#define OFN_FILEMUSTEXIST        0x00001000
+#if(WINVER >= 0x0400)
+#define OFN_EXPLORER             0x00080000
+#endif /* WINVER >= 0x0400 */
+#define CF_SCREENFONTS           0x00000001
+#define CF_EFFECTS               0x00000100L
+#endif // _INC_COMMDLG
+
+#ifndef SHFOLDERAPI
+#define BIF_RETURNONLYFSDIRS    0x00000001
+#define BIF_EDITBOX             0x00000010
+#define BIF_NEWDIALOGSTYLE      0x00000040
+#define BIF_USENEWUI            (BIF_NEWDIALOGSTYLE | BIF_EDITBOX)
+#endif // SHFOLDERAPI
+
+class PickerX
+{
+public:
+  PickerX(HWND hwnd = nullptr);
+  virtual ~PickerX();
+
+  enum class action_t
+  {
+    open,
+    save,
+  };
+
+  bool choose_rgb_color(COLORREF& color, const ulong flags = CC_RGBINIT | CC_FULLOPEN);
+
+protected:
+  HWND m_hwnd;
+};
+
+static const ulong DEFAULT_CHOOSE_FONT_FLAGS = CF_SCREENFONTS | CF_EFFECTS;
+static const ulong DEFAULT_CHOOSE_DIR_FLAGS = BIF_USENEWUI | BIF_RETURNONLYFSDIRS;
+static const ulong DEFAULT_CHOOSE_FILE_FLAGS = OFN_EXPLORER | OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+static const char  DEFAULT_CHOOSE_FILE_FILTERS_A[] =  "All Files (*.*)\0*.*\0";
+static const wchar DEFAULT_CHOOSE_FILE_FILTERS_W[] = L"All Files (*.*)\0*.*\0";
+
+// PickerA
+
+class PickerA : public PickerX
+{
+public:
+  PickerA(HWND hwnd = nullptr);
+  virtual ~PickerA();
+
+  bool choose_log_font(LOGFONTA& font, const ulong flags = DEFAULT_CHOOSE_FONT_FLAGS);
+
+  bool choose_directory(std::string& directory, const ulong flags = DEFAULT_CHOOSE_DIR_FLAGS);
+
+  bool choose_file(
+    const action_t action,
+    std::string& file_path,
+    const std::string& initial_dir = "",
+    const char* filters = DEFAULT_CHOOSE_FILE_FILTERS_A,
+    const ulong  flags = DEFAULT_CHOOSE_FILE_FLAGS);
+
+  bool choose_files(
+    std::vector<std::string>& file_names,
+    std::string& file_dir,
+    const char* filters = DEFAULT_CHOOSE_FILE_FILTERS_A,
+    const ulong  flags = DEFAULT_CHOOSE_FILE_FLAGS);
+};
+
+// PickerW
+
+class PickerW : public PickerX
+{
+public:
+  PickerW(HWND hwnd = nullptr);
+  virtual ~PickerW();
+
+  bool choose_log_font(LOGFONTW& font, const ulong flags = DEFAULT_CHOOSE_FONT_FLAGS);
+
+  bool choose_directory(std::wstring& directory, const ulong flags = DEFAULT_CHOOSE_DIR_FLAGS);
+
+  bool choose_file(
+    const action_t action,
+    std::wstring& file_path,
+    const std::wstring& initial_dir = L"",
+    const wchar* filters = DEFAULT_CHOOSE_FILE_FILTERS_W,
+    const ulong  flags = DEFAULT_CHOOSE_FILE_FLAGS);
+
+  bool choose_files(
+    std::vector<std::wstring>& file_names,
+    std::wstring& file_dir,
+    const wchar* filters = DEFAULT_CHOOSE_FILE_FILTERS_W,
+    const ulong  flags = DEFAULT_CHOOSE_FILE_FLAGS);
+};
+
 /*---------- The definition of common structure(s) which compatible both ANSI & UNICODE ----------*/
 
 #ifdef _UNICODE
@@ -2895,6 +2994,7 @@ private:
 #define ScopeStopWatch ScopeStopWatchW
 #define WMIProvider WMIProviderW
 #define Fundamental FundamentalW
+#define Picker PickerW
 #else
 #define UIDGlobal GUIDA
 #define INLHooking INLHookingA
@@ -2912,6 +3012,7 @@ private:
 #define ScopeStopWatch ScopeStopWatchA
 #define WMIProvider WMIProviderA
 #define Fundamental FundamentalA
+#define Picker PickerA
 #endif
 
 } // namespace vu

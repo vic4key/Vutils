@@ -11,6 +11,11 @@ G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_SOCKET_ENAB
 #define _CRT_SECURE_NO_WARNINGS
 
 #ifdef _MSC_VER
+// // UNICODE
+// #ifdef UNICODE
+// #undef UNICODE
+// #endif
+// // _UNICODE
 // #ifdef _UNICODE
 // #undef _UNICODE
 // #endif
@@ -42,6 +47,7 @@ G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_SOCKET_ENAB
 #include "Sample.ThreadPool.h"
 #include "Sample.WMI.h"
 #include "Sample.Service.h"
+#include "Sample.Picker.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -64,6 +70,7 @@ int _tmain(int argc, _TCHAR* argv[])
   // VU_SM_ADD_SAMPLE(Misc);
   // VU_SM_ADD_SAMPLE(Math);
   // VU_SM_ADD_SAMPLE(DF);
+  // VU_SM_ADD_SAMPLE(Picker);
   // VU_SM_ADD_SAMPLE(Socket);
   // VU_SM_ADD_SAMPLE(AsyncSocket);
   // VU_SM_ADD_SAMPLE(INLHooking);

@@ -185,6 +185,9 @@
     <ClCompile Include="3rdparty\UND\src\undname.cpp">
       <Filter>Third Party Files\UND</Filter>
     </ClCompile>
+    <ClCompile Include="src\details\picker.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Boob">
