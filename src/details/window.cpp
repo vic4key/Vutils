@@ -439,6 +439,22 @@ sFontW vuapi get_font_W(HWND hwnd)
   return result;
 }
 
+LONG vuapi conv_font_height_to_size(LONG height, HWND hwnd)
+{
+  auto hdc = GetWindowDC(hwnd);
+  LONG result = MulDiv(-height, 72, GetDeviceCaps(hdc, LOGPIXELSY));
+  ReleaseDC(hwnd, hdc);
+  return result;
+}
+
+LONG vuapi conv_font_size_to_height(LONG size, HWND hwnd)
+{
+  auto hdc = GetWindowDC(hwnd);
+  LONG result = -MulDiv(size, GetDeviceCaps(hdc, LOGPIXELSY), 72);
+  ReleaseDC(hwnd, hdc);
+  return result;
+}
+
 /**
  * WDT
  */

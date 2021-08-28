@@ -374,6 +374,8 @@ std::string  vuapi decode_wm_A(const ulong wm);
 std::wstring vuapi decode_wm_W(const ulong wm);
 sFontA vuapi get_font_A(HWND hwnd);
 sFontW vuapi get_font_W(HWND hwnd);
+LONG vuapi conv_font_height_to_size(LONG height, HWND hwnd = nullptr);
+LONG vuapi conv_font_size_to_height(LONG size, HWND hwnd = nullptr);
 
 /**
  * File/Directory Working
