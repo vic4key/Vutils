@@ -6,16 +6,16 @@
 
 #include "Vutils.h"
 
-#ifdef _MSC_VER
 #if defined(_M_X64) || defined(__x86_64__)
 #pragma pack(push, 8)
-#endif
 #endif
 
 #include <shlobj.h>
 
 #include <commdlg.h>
+#ifdef _MSC_VER
 #pragma comment(lib, "comdlg32.lib")
+#endif // _MSC_VER
 
 namespace vu
 {
@@ -301,8 +301,6 @@ bool PickerW::choose_directory(std::wstring& directory, const ulong flags)
 
 } // namespace vu
 
-#ifdef _MSC_VER
 #if defined(_M_X64) || defined(__x86_64__)
 #pragma pack(pop)
-#endif
 #endif
