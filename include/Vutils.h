@@ -2932,13 +2932,13 @@ public:
     std::string& file_path,
     const std::string& initial_dir = "",
     const char* filters = DEFAULT_CHOOSE_FILE_FILTERS_A,
-    const ulong  flags = DEFAULT_CHOOSE_FILE_FLAGS);
+    const ulong flags = DEFAULT_CHOOSE_FILE_FLAGS);
 
   bool choose_files(
     std::vector<std::string>& file_names,
     std::string& file_dir,
     const char* filters = DEFAULT_CHOOSE_FILE_FILTERS_A,
-    const ulong  flags = DEFAULT_CHOOSE_FILE_FLAGS);
+    const ulong flags = DEFAULT_CHOOSE_FILE_FLAGS);
 };
 
 // PickerW
@@ -2958,13 +2958,13 @@ public:
     std::wstring& file_path,
     const std::wstring& initial_dir = L"",
     const wchar* filters = DEFAULT_CHOOSE_FILE_FILTERS_W,
-    const ulong  flags = DEFAULT_CHOOSE_FILE_FLAGS);
+    const ulong flags = DEFAULT_CHOOSE_FILE_FLAGS);
 
   bool choose_files(
     std::vector<std::wstring>& file_names,
     std::wstring& file_dir,
     const wchar* filters = DEFAULT_CHOOSE_FILE_FILTERS_W,
-    const ulong  flags = DEFAULT_CHOOSE_FILE_FLAGS);
+    const ulong flags = DEFAULT_CHOOSE_FILE_FLAGS);
 };
 
 /*---------- The definition of common structure(s) which compatible both ANSI & UNICODE ----------*/
