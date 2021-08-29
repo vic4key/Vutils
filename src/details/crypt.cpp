@@ -8,9 +8,14 @@
 #include "defs.h"
 
 #include VU_3RD_INCL(Others/base64.h)
+#include VU_3RD_INCL(Others/md5.h)
 
 namespace vu
 {
+
+/**
+ * Base 64 Encode/Decode
+ */
 
 uint b64_calc_encode_size(const std::vector<vu::byte>& data)
 {
@@ -83,6 +88,65 @@ bool crypt_b64decode_W(const std::wstring& text, std::vector<vu::byte>& data)
 {
   const auto s = to_string_A(text);
   return crypt_b64decode_A(s, data);
+}
+
+/**
+ * MD5
+ */
+
+std::string crypt_md5_string_A(const std::string& text)
+{
+  return md5(text);
+}
+
+std::wstring crypt_md5_string_W(const std::wstring& text)
+{
+  // const auto result = md5(text.data(), 2*text.length());
+  auto result = to_string_A(text);
+  result = crypt_md5_string_A(result);
+  return to_string_W(result);
+}
+
+std::string crypt_md5_buffer_A(const std::vector<byte>& data)
+{
+  return md5(data.data(), data.size());
+}
+
+std::wstring crypt_md5_buffer_W(const std::vector<byte>& data)
+{
+  const auto result = crypt_md5_buffer_A(data);
+  return to_string_W(result);
+}
+
+std::string crypt_md5_file_A(const std::string& file_path)
+{
+  if (!is_file_exists_A(file_path))
+  {
+    return "";
+  }
+
+  return md5file(file_path.c_str());
+}
+
+std::wstring crypt_md5_file_W(const std::wstring& file_path)
+{
+  if (!is_file_exists_W(file_path))
+  {
+    return L"";
+  }
+
+  FILE* file = nullptr;
+  _wfopen_s(&file, file_path.c_str(), L"rb");
+  if (file == nullptr)
+  {
+    return L"";
+  }
+
+  const auto result = md5file(file);
+
+  fclose(file);
+
+  return to_string_W(result);
 }
 
 } // vu

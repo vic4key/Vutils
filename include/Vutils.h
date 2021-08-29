@@ -479,6 +479,13 @@ bool crypt_b64decode_A(const std::string& text, std::vector<byte>& data);
 bool crypt_b64encode_W(const std::vector<byte>& data, std::wstring& text);
 bool crypt_b64decode_W(const std::wstring& text, std::vector<byte>& data);
 
+std::string  crypt_md5_string_A(const std::string& text);
+std::wstring crypt_md5_string_W(const std::wstring& text);
+std::string  crypt_md5_buffer_A(const std::vector<byte>& data);
+std::wstring crypt_md5_buffer_W(const std::vector<byte>& data);
+std::string  crypt_md5_file_A(const std::string& file_path);
+std::wstring crypt_md5_file_W(const std::wstring& file_path);
+
 /*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
 
 #ifdef _UNICODE
@@ -533,6 +540,9 @@ bool crypt_b64decode_W(const std::wstring& text, std::vector<byte>& data);
 /* Wrapper */
 #define crypt_b64encode crypt_b64encode_W
 #define crypt_b64decode crypt_b64decode_W
+#define crypt_md5_string crypt_md5_string_W
+#define crypt_md5_buffer crypt_md5_buffer_W
+#define crypt_md5_file crypt_md5_file_W
 #else // _UNICODE
 /* Misc Working */
 #define set_privilege set_privilege_A
@@ -584,6 +594,9 @@ bool crypt_b64decode_W(const std::wstring& text, std::vector<byte>& data);
 /* Wrapper */
 #define crypt_b64encode crypt_b64encode_A
 #define crypt_b64decode crypt_b64decode_A
+#define crypt_md5_string crypt_md5_string_A
+#define crypt_md5_buffer crypt_md5_buffer_A
+#define crypt_md5_file crypt_md5_file_A
 #endif
 
 /* -------------------------------------- Public Class(es) -------------------------------------- */

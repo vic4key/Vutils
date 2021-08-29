@@ -93,6 +93,9 @@
     <ClInclude Include="3rdparty\Others\base64.h">
       <Filter>Third Party Files\Others</Filter>
     </ClInclude>
+    <ClInclude Include="3rdparty\Others\md5.h">
+      <Filter>Third Party Files\Others</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Vutils.cpp">
@@ -201,6 +204,9 @@
       <Filter>Source Files\details</Filter>
     </ClCompile>
     <ClCompile Include="3rdparty\Others\base64.cpp">
+      <Filter>Third Party Files\Others</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\Others\md5.cpp">
       <Filter>Third Party Files\Others</Filter>
     </ClCompile>
   </ItemGroup>
