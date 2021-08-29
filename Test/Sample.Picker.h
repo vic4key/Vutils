@@ -15,8 +15,8 @@ DEF_SAMPLE(Picker)
   std::tcout << ts("FONT -> ") << font.lfFaceName << std::endl;
 
 
-  std::tstring file_path = ts("");
-  std::tstring file_dir  = ts("C:\\Windows");
+  std::tstring file_dir  = ts("C:\\Windows\\");
+  std::tstring file_path = ts("example_default_file_name");
   const auto file_filter = ts("All Files (*.*)\0*.*\0Document (.doc)\0*.doc\0Text (.txt)\0*.txt\0");
 
   picker.choose_file(vu::Picker::action_t::open, file_path, file_dir, file_filter);

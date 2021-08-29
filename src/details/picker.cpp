@@ -55,7 +55,6 @@ bool PickerX::choose_rgb_color(COLORREF& color, const ulong flags)
   ofn.hwndOwner = hwnd;\
   ofn.hInstance = nullptr;\
   ofn.lpstrFile = buf;\
-  ofn.lpstrFile[0] = 0;\
   ofn.nMaxFile = ARRAYSIZE(buf);\
   ofn.lpstrFilter = filters;\
   ofn.nFilterIndex = 1;\
@@ -92,9 +91,12 @@ bool PickerA::choose_file(
   const char* filters,
   const ulong flags)
 {
-  file_path.clear();
-
   char sz[KB] = { 0 };
+  if (!file_path.empty())
+  {
+    strcpy_s(sz, file_path.c_str());
+  }
+
   OPENFILENAMEA ofn = { 0 };
   IOPicker_Initialize_OFN(ofn, m_hwnd, sz, file_dir);
   ofn.Flags = flags | (action == action_t::save ? OFN_OVERWRITEPROMPT : 0);
@@ -103,6 +105,7 @@ bool PickerA::choose_file(
   bool result = ret == IDOK;
   if (result)
   {
+    file_path.clear();
     file_path.assign(sz);
   }
 
@@ -210,9 +213,12 @@ bool PickerW::choose_file(
   const wchar* filters,
   const ulong flags)
 {
-  file_path.clear();
-
   wchar sz[KB] = { 0 };
+  if (!file_path.empty())
+  {
+    wcscpy_s(sz, file_path.c_str());
+  }
+
   OPENFILENAMEW ofn = { 0 };
   IOPicker_Initialize_OFN(ofn, m_hwnd, sz, file_dir);
   ofn.Flags = flags | (action == action_t::save ? OFN_OVERWRITEPROMPT : 0);
@@ -221,6 +227,7 @@ bool PickerW::choose_file(
   bool result = ret == IDOK;
   if (result)
   {
+    file_path.clear();
     file_path.assign(sz);
   }
 
