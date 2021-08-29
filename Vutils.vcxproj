@@ -309,6 +309,7 @@
     <ClInclude Include="3rdparty\HDE\include\table32.h" />
     <ClInclude Include="3rdparty\HDE\include\table64.h" />
     <ClInclude Include="3rdparty\MH\include\buffer.h" />
+    <ClInclude Include="3rdparty\Others\base64.h" />
     <ClInclude Include="3rdparty\TP11\include\threadpool11\Pool.h" />
     <ClInclude Include="3rdparty\TP11\include\threadpool11\threadpool11.h" />
     <ClInclude Include="3rdparty\TP11\include\threadpool11\Worker.h" />
@@ -316,6 +317,7 @@
     <ClInclude Include="include\Boob.h" />
     <ClInclude Include="include\Vu.h" />
     <ClInclude Include="include\Vutils.h" />
+    <ClInclude Include="src\details\crypt.h" />
     <ClInclude Include="src\details\defs.h" />
     <ClInclude Include="src\details\strfmt.h" />
     <ClInclude Include="src\details\lazy.h" />
@@ -324,11 +326,13 @@
     <ClCompile Include="3rdparty\HDE\src\hde32.cpp" />
     <ClCompile Include="3rdparty\HDE\src\hde64.cpp" />
     <ClCompile Include="3rdparty\MH\src\buffer.cpp" />
+    <ClCompile Include="3rdparty\Others\base64.cpp" />
     <ClCompile Include="3rdparty\TP11\src\Pool.cpp" />
     <ClCompile Include="3rdparty\TP11\src\Worker.cpp" />
     <ClCompile Include="3rdparty\UND\src\undname.cpp" />
     <ClCompile Include="src\details\asyncsocket.cpp" />
     <ClCompile Include="src\details\apihookiat.cpp" />
+    <ClCompile Include="src\details\crypt.cpp" />
     <ClCompile Include="src\details\picker.cpp" />
     <ClCompile Include="src\details\mbuffer.cpp" />
     <ClCompile Include="src\details\crisec.cpp" />

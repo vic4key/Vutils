@@ -439,6 +439,10 @@ bool vuapi is_directory_exists_A(const std::string& directory);
 bool vuapi is_directory_exists_W(const std::wstring& directory);
 bool vuapi is_file_exists_A(const std::string& file_path);
 bool vuapi is_file_exists_W(const std::wstring& file_path);
+bool vuapi read_file_A(const std::string& file_path, std::vector<byte>& data);
+bool vuapi read_file_W(const std::wstring& file_path, std::vector<byte>& data);
+bool vuapi write_file_A(const std::string& file_path, const std::vector<byte>& data);
+bool vuapi write_file_W(const std::wstring& file_path, const std::vector<byte>& data);
 std::string vuapi get_file_type_A(const std::string& file_path);
 std::wstring vuapi get_file_type_W(const std::wstring& file_path);
 std::string vuapi extract_file_directory_A(const std::string& file_path, bool last_slash = true);
@@ -465,6 +469,15 @@ std::string vuapi undecorate_cpp_symbol_A(
   const std::string& name, const ushort flags = 0);   // UNDNAME_COMPLETE
 std::wstring vuapi undecorate_cpp_symbol_W(
   const std::wstring& name, const ushort flags = 0); // UNDNAME_COMPLETE
+
+/**
+ * Wrapper
+ */
+
+bool crypt_b64encode_A(const std::vector<byte>& data, std::string& text);
+bool crypt_b64decode_A(const std::string& text, std::vector<byte>& data);
+bool crypt_b64encode_W(const std::vector<byte>& data, std::wstring& text);
+bool crypt_b64decode_W(const std::wstring& text, std::vector<byte>& data);
 
 /*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
 
@@ -505,6 +518,8 @@ std::wstring vuapi undecorate_cpp_symbol_W(
 #define is_directory_exists is_directory_exists_W
 #define is_file_exists is_file_exists_W
 #define get_file_type get_file_type_W
+#define read_file read_file_W
+#define write_file write_file_W
 #define extract_file_directory extract_file_directory_W
 #define extract_file_name extract_file_name_W
 #define get_current_file_path get_current_file_path_W
@@ -515,7 +530,10 @@ std::wstring vuapi undecorate_cpp_symbol_W(
 #define join_path join_path_W
 #define normalize_path normalize_path_W
 #define undecorate_cpp_symbol undecorate_cpp_symbol_W
-#else
+/* Wrapper */
+#define crypt_b64encode crypt_b64encode_W
+#define crypt_b64decode crypt_b64decode_W
+#else // _UNICODE
 /* Misc Working */
 #define set_privilege set_privilege_A
 #define get_enviroment get_enviroment_A
@@ -551,6 +569,8 @@ std::wstring vuapi undecorate_cpp_symbol_W(
 #define is_directory_exists is_directory_exists_A
 #define is_file_exists is_file_exists_A
 #define get_file_type get_file_type_A
+#define read_file read_file_A
+#define write_file write_file_A
 #define extract_file_directory extract_file_directory_A
 #define extract_file_name extract_file_name_A
 #define get_current_file_path get_current_file_path_A
@@ -561,6 +581,9 @@ std::wstring vuapi undecorate_cpp_symbol_W(
 #define join_path join_path_A
 #define normalize_path normalize_path_A
 #define undecorate_cpp_symbol undecorate_cpp_symbol_A
+/* Wrapper */
+#define crypt_b64encode crypt_b64encode_A
+#define crypt_b64decode crypt_b64decode_A
 #endif
 
 /* -------------------------------------- Public Class(es) -------------------------------------- */
@@ -2995,7 +3018,7 @@ public:
 #define WMIProvider WMIProviderW
 #define Fundamental FundamentalW
 #define Picker PickerW
-#else
+#else // _UNICODE
 #define UIDGlobal GUIDA
 #define INLHooking INLHookingA
 #define IATHooking IATHookingA
@@ -3013,7 +3036,7 @@ public:
 #define WMIProvider WMIProviderA
 #define Fundamental FundamentalA
 #define Picker PickerA
-#endif
+#endif // _UNICODE
 
 } // namespace vu
 

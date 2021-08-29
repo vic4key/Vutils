@@ -37,6 +37,9 @@
     <Filter Include="Third Party Files\UND">
       <UniqueIdentifier>{70d999d8-5265-4f36-96dc-d37d5c7ac85a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Third Party Files\Others">
+      <UniqueIdentifier>{e5fa43e6-c641-43da-b9ed-9dd215388b20}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Vutils.h">
@@ -83,6 +86,12 @@
     </ClInclude>
     <ClInclude Include="3rdparty\UND\include\undname.h">
       <Filter>Third Party Files\UND</Filter>
+    </ClInclude>
+    <ClInclude Include="src\details\crypt.h">
+      <Filter>Source Files\details</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\Others\base64.h">
+      <Filter>Third Party Files\Others</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -187,6 +196,12 @@
     </ClCompile>
     <ClCompile Include="src\details\picker.cpp">
       <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\crypt.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\Others\base64.cpp">
+      <Filter>Third Party Files\Others</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

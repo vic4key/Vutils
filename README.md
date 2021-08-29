@@ -44,6 +44,7 @@ It helps your programming go easier, faster and simpler.
 	* [In-Memory Dialog](<https://docs.microsoft.com/en-us/cpp/mfc/using-a-dialog-template-in-memory>)
 	* AOB Find Pattern
 	* Font/Color/File/Directory Picker
+	* Cryptography
 	* Miscellaneous
 
 * Functions

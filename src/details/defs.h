@@ -1,7 +1,7 @@
 /**
  * @file   defs.h
  * @author Vic P.
- * @brief  Header for Definations
+ * @brief  Header for Definitions
  */
 
 #pragma once

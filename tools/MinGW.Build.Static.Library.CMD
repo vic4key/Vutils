@@ -82,6 +82,7 @@ G++ -c -std=c++0x %LIBS% -I%VU_INCLUDE% ^
 	%VU_3RD%\TP11\src\Pool.cpp ^
 	%VU_3RD%\TP11\src\Worker.cpp ^
 	%VU_3RD%\UND\src\undname.cpp ^
+	%VU_3RD%\Others\base64.cpp ^
 	%VU_SRC%\%VU_NAME%.cpp ^
 	%VU_SRC_DETAILS_CPP%
 

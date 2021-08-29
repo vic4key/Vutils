@@ -67,6 +67,98 @@ std::wstring vuapi get_file_type_W(const std::wstring& file_path)
   return s;
 }
 
+bool vuapi read_file_A(const std::string& file_path, std::vector<byte>& data)
+{
+  data.clear();
+
+  FILE* file = nullptr;
+  fopen_s(&file, file_path.c_str(), "rb");
+  if (file == nullptr)
+  {
+    return false;
+  }
+
+  fseek(file, 0, SEEK_END);
+  size_t file_size = ftell(file);
+  fseek(file, 0, SEEK_SET);
+
+  data.resize(file_size);
+  size_t read_bytes = fread(&data[0], 1, data.size(), file);
+
+  fclose(file);
+
+  return read_bytes == file_size;
+}
+
+bool vuapi read_file_W(const std::wstring& file_path, std::vector<byte>& data)
+{
+  data.clear();
+
+  FILE* file = nullptr;
+  _wfopen_s(&file, file_path.c_str(), L"rb");
+  if (file == nullptr)
+  {
+    return false;
+  }
+
+  fseek(file, 0, SEEK_END);
+  size_t file_size = ftell(file);
+  fseek(file, 0, SEEK_SET);
+
+  data.resize(file_size);
+  size_t read_bytes = fread(&data[0], 1, data.size(), file);
+
+  fclose(file);
+
+  return read_bytes == file_size;
+}
+
+bool vuapi write_file_A(const std::string& file_path, const std::vector<byte>& data)
+{
+  if (data.empty())
+  {
+    return false;
+  }
+
+  FILE* file = nullptr;
+  fopen_s(&file, file_path.c_str(), "wb");
+  if (file == nullptr)
+  {
+    return false;
+  }
+
+  fseek(file, 0, SEEK_END);
+
+  size_t written_bytes = fwrite(&data[0], 1, data.size(), file);
+
+  fclose(file);
+
+  return written_bytes == data.size();
+}
+
+bool vuapi write_file_W(const std::wstring& file_path, const std::vector<byte>& data)
+{
+  if (data.empty())
+  {
+    return false;
+  }
+
+  FILE* file = nullptr;
+  _wfopen_s(&file, file_path.c_str(), L"wb");
+  if (file == nullptr)
+  {
+    return false;
+  }
+
+  fseek(file, 0, SEEK_END);
+
+  size_t written_bytes = fwrite(&data[0], 1, data.size(), file);
+
+  fclose(file);
+
+  return written_bytes == data.size();
+}
+
 bool vuapi is_file_exists_A(const std::string& file_path)
 {
   bool result = false;
