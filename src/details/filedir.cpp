@@ -67,7 +67,7 @@ std::wstring vuapi get_file_type_W(const std::wstring& file_path)
   return s;
 }
 
-bool vuapi read_file_A(const std::string& file_path, std::vector<byte>& data)
+bool vuapi read_file_binary_A(const std::string& file_path, std::vector<byte>& data)
 {
   data.clear();
 
@@ -90,7 +90,7 @@ bool vuapi read_file_A(const std::string& file_path, std::vector<byte>& data)
   return read_bytes == file_size;
 }
 
-bool vuapi read_file_W(const std::wstring& file_path, std::vector<byte>& data)
+bool vuapi read_file_binary_W(const std::wstring& file_path, std::vector<byte>& data)
 {
   data.clear();
 
@@ -113,7 +113,7 @@ bool vuapi read_file_W(const std::wstring& file_path, std::vector<byte>& data)
   return read_bytes == file_size;
 }
 
-bool vuapi write_file_A(const std::string& file_path, const std::vector<byte>& data)
+bool vuapi write_file_binary_A(const std::string& file_path, const std::vector<byte>& data)
 {
   if (data.empty())
   {
@@ -136,7 +136,7 @@ bool vuapi write_file_A(const std::string& file_path, const std::vector<byte>& d
   return written_bytes == data.size();
 }
 
-bool vuapi write_file_W(const std::wstring& file_path, const std::vector<byte>& data)
+bool vuapi write_file_binary_W(const std::wstring& file_path, const std::vector<byte>& data)
 {
   if (data.empty())
   {

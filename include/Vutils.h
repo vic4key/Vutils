@@ -439,10 +439,10 @@ bool vuapi is_directory_exists_A(const std::string& directory);
 bool vuapi is_directory_exists_W(const std::wstring& directory);
 bool vuapi is_file_exists_A(const std::string& file_path);
 bool vuapi is_file_exists_W(const std::wstring& file_path);
-bool vuapi read_file_A(const std::string& file_path, std::vector<byte>& data);
-bool vuapi read_file_W(const std::wstring& file_path, std::vector<byte>& data);
-bool vuapi write_file_A(const std::string& file_path, const std::vector<byte>& data);
-bool vuapi write_file_W(const std::wstring& file_path, const std::vector<byte>& data);
+bool vuapi read_file_binary_A(const std::string& file_path, std::vector<byte>& data);
+bool vuapi read_file_binary_W(const std::wstring& file_path, std::vector<byte>& data);
+bool vuapi write_file_binary_A(const std::string& file_path, const std::vector<byte>& data);
+bool vuapi write_file_binary_W(const std::wstring& file_path, const std::vector<byte>& data);
 std::string vuapi get_file_type_A(const std::string& file_path);
 std::wstring vuapi get_file_type_W(const std::wstring& file_path);
 std::string vuapi extract_file_directory_A(const std::string& file_path, bool last_slash = true);
@@ -518,8 +518,8 @@ bool crypt_b64decode_W(const std::wstring& text, std::vector<byte>& data);
 #define is_directory_exists is_directory_exists_W
 #define is_file_exists is_file_exists_W
 #define get_file_type get_file_type_W
-#define read_file read_file_W
-#define write_file write_file_W
+#define read_file_binary read_file_binary_W
+#define write_file_binary write_file_binary_W
 #define extract_file_directory extract_file_directory_W
 #define extract_file_name extract_file_name_W
 #define get_current_file_path get_current_file_path_W
@@ -569,8 +569,8 @@ bool crypt_b64decode_W(const std::wstring& text, std::vector<byte>& data);
 #define is_directory_exists is_directory_exists_A
 #define is_file_exists is_file_exists_A
 #define get_file_type get_file_type_A
-#define read_file read_file_A
-#define write_file write_file_A
+#define read_file_binary read_file_binary_A
+#define write_file_binary write_file_binary_A
 #define extract_file_directory extract_file_directory_A
 #define extract_file_name extract_file_name_A
 #define get_current_file_path get_current_file_path_A

@@ -15,12 +15,12 @@ DEF_SAMPLE(Others)
   std::cout << data.data() << std::endl;
 
   data.clear();
-  vu::read_file(ts("Test.exe"), data);
+  vu::read_file_binary(ts("Test.exe"), data);
   vu::crypt_b64encode(data, text);
 
   data.clear();
   vu::crypt_b64decode(text, data);
-  vu::write_file(ts("Test-B64Decoded.exe"), data);
+  vu::write_file_binary(ts("Test-B64Decoded.exe"), data);
 
   return vu::VU_OK;
 }
