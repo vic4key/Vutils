@@ -113,6 +113,8 @@ Belows are IDE minimum version that supported C++ 11
 * [Test\Sample.WMHooking.h](Test/Sample.WMHooking.h)
 * [Test\Sample.INLHooking.h](Test/Sample.INLHooking.h)
 * [Test\Sample.IATHooking.h](Test/Sample.IATHooking.h)
+* [Test\Sample.Picker.h](Test/Sample.Picker.h)
+* [Test\Sample.Others.h](Test/Sample.Others.h)
 * See more examples in the [`Test`](Test/) project
 
 ## Contact
