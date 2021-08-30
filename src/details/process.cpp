@@ -1257,6 +1257,22 @@ const std::string& ProcessA::name() const
   return m_name;
 }
 
+const std::string ProcessA::get_path()
+{
+  std::string result = "";
+
+  if (Initialize_DLL_LAZY() != VU_OK)
+  {
+    return result;
+  }
+
+  char s[MAX_PATH] = { 0 };
+  pfnGetModuleFileNameExA(m_handle, nullptr, s, ARRAYSIZE(s));
+  result.assign(s);
+
+  return result;
+}
+
 bool ProcessA::create(
   const std::string& file_path,
   const std::string& file_dir,
@@ -1424,6 +1440,22 @@ std::ostream& operator<<(std::ostream& os, ProcessW& process)
 const std::wstring& ProcessW::name() const
 {
   return m_name;
+}
+
+const std::wstring ProcessW::get_path()
+{
+  std::wstring result = L"";
+
+  if (Initialize_DLL_LAZY() != VU_OK)
+  {
+    return result;
+  }
+
+  wchar s[MAX_PATH] = { 0 };
+  pfnGetModuleFileNameExW(m_handle, nullptr, s, ARRAYSIZE(s));
+  result.assign(s);
+
+  return result;
 }
 
 bool ProcessW::create(

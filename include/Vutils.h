@@ -2699,6 +2699,7 @@ public:
     PROCESS_INFORMATION* ptr_pi = nullptr);
 
   const std::string& name() const;
+  const std::string get_path();
   const modules& get_modules();
 
   const MODULEENTRY32 get_module_information();
@@ -2751,6 +2752,7 @@ public:
     PROCESS_INFORMATION* ptr_pi = nullptr);
 
   const std::wstring& name() const;
+  const std::wstring get_path();
   const modules& get_modules();
 
   const MODULEENTRY32W get_module_information();
