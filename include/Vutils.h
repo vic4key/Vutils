@@ -237,14 +237,14 @@ std::string vuapi replace_string_A(
   const std::string& text, const std::string& from, const std::string& to);
 std::wstring vuapi replace_string_W(
   const std::wstring& text, const std::wstring& from, const std::wstring& to);
-bool vuapi starts_with_A(const std::string& text, const std::string& with);
-bool vuapi starts_with_W(const std::wstring& text, const std::wstring& with);
-bool vuapi ends_with_A(const std::string& text, const std::string& with);
-bool vuapi ends_with_W(const std::wstring& text, const std::wstring& with);
-bool vuapi contains_string_A(
-  const std::string& text, const std::string& test, bool ignore_case = false);
-bool vuapi contains_string_W(
-  const std::wstring& text, const std::wstring& test, bool ignore_case = false);
+bool vuapi starts_with_A(const std::string& text, const std::string& with, bool ignore_case = false);
+bool vuapi starts_with_W(const std::wstring& text, const std::wstring& with, bool ignore_case = false);
+bool vuapi ends_with_A(const std::string& text, const std::string& with, bool ignore_case = false);
+bool vuapi ends_with_W(const std::wstring& text, const std::wstring& with, bool ignore_case = false);
+bool vuapi contains_string_A(const std::string& text, const std::string& test, bool ignore_case = false);
+bool vuapi contains_string_W(const std::wstring& text, const std::wstring& test, bool ignore_case = false);
+bool vuapi compare_string_A(const std::string& vl, const std::string& vr, bool ignore_case = false);
+bool vuapi compare_string_W(const std::wstring& vl, const std::wstring& vr, bool ignore_case = false);
 
 /**
  * Process Working
@@ -513,6 +513,7 @@ std::wstring crypt_md5_file_W(const std::wstring& file_path);
 #define starts_with starts_with_W
 #define ends_with ends_with_W
 #define contains_string contains_string_W
+#define compare_string compare_string_W
 /* Window Working */
 #define decode_wm decode_wm_W
 #define get_font get_font_W
@@ -567,6 +568,7 @@ std::wstring crypt_md5_file_W(const std::wstring& file_path);
 #define starts_with starts_with_A
 #define ends_with ends_with_A
 #define contains_string contains_string_A
+#define compare_string compare_string_A
 /* Window Working */
 #define decode_wm decode_wm_A
 #define get_font get_font_A

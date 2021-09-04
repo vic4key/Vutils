@@ -425,14 +425,36 @@ std::wstring vuapi replace_string_W(
   return replace_string_T<std::wstring>(text, from, to);
 }
 
-bool vuapi starts_with_A(const std::string& text, const std::string& with)
+template <class std_string_t>
+static bool starts_with_T(const std_string_t& text, const std_string_t& with)
 {
-  return text.length() >= with.length() && memcmp(text.c_str(), with.c_str(), with.length()) == 0;
+  return\
+    text.length() >= with.length() &&
+    memcmp(text.c_str(), with.c_str(), sizeof(typename std_string_t::value_type) * with.length()) == 0;
 }
 
-bool vuapi starts_with_W(const std::wstring& text, const std::wstring& with)
+bool vuapi starts_with_A(const std::string& text, const std::string& with, bool ignore_case)
 {
-  return text.length() >= with.length() && memcmp(text.c_str(), with.c_str(), 2*with.length()) == 0;
+  if (ignore_case)
+  {
+    const auto v1 = lower_string_A(text);
+    const auto v2 = lower_string_A(with);
+    return starts_with_T<std::string>(v1, v2);
+  }
+
+  return starts_with_T<std::string>(text, with);
+}
+
+bool vuapi starts_with_W(const std::wstring& text, const std::wstring& with, bool ignore_case)
+{
+  if (ignore_case)
+  {
+    const auto v1 = lower_string_W(text);
+    const auto v2 = lower_string_W(with);
+    return starts_with_T<std::wstring>(v1, v2);
+  }
+
+  return starts_with_T<std::wstring>(text, with);
 }
 
 template <class std_string_t>
@@ -442,13 +464,27 @@ static bool ends_with_T(const std_string_t& text, const std_string_t& with)
     std::equal(text.cend() - with.length(), text.cend(), with.cbegin());
 }
 
-bool vuapi ends_with_A(const std::string& text, const std::string& with)
+bool vuapi ends_with_A(const std::string& text, const std::string& with, bool ignore_case)
 {
+  if (ignore_case)
+  {
+    const auto v1 = lower_string_A(text);
+    const auto v2 = lower_string_A(with);
+    return ends_with_T<std::string>(v1, v2);
+  }
+
   return ends_with_T<std::string>(text, with);
 }
 
-bool vuapi ends_with_W(const std::wstring& text, const std::wstring& with)
+bool vuapi ends_with_W(const std::wstring& text, const std::wstring& with, bool ignore_case)
 {
+  if (ignore_case)
+  {
+    const auto v1 = lower_string_W(text);
+    const auto v2 = lower_string_W(with);
+    return ends_with_T<std::wstring>(v1, v2);
+  }
+
   return ends_with_T<std::wstring>(text, with);
 }
 
@@ -473,7 +509,31 @@ bool vuapi contains_string_W(const std::wstring& text, const std::wstring& test,
     return v1.find(v2) != std::string::npos;
   }
 
-  return text.find(test) != std::string::npos;
+  return text.find(test) != std::wstring::npos;
+}
+
+bool vuapi compare_string_A(const std::string& vl, const std::string& vr, bool ignore_case)
+{
+  if (ignore_case)
+  {
+    const auto v1 = lower_string_A(vl);
+    const auto v2 = lower_string_A(vr);
+    return v1 == v2;
+  }
+
+  return vl == vr;
+}
+
+bool vuapi compare_string_W(const std::wstring& vl, const std::wstring& vr, bool ignore_case)
+{
+  if (ignore_case)
+  {
+    const auto v1 = lower_string_W(vl);
+    const auto v2 = lower_string_W(vr);
+    return v1 == v2;
+  }
+
+  return vl == vr;
 }
 
 #ifdef _MSC_VER

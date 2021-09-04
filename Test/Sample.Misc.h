@@ -53,6 +53,9 @@ DEF_SAMPLE(Misc)
   std::tcout << vu::contains_string(ts("Written in C++ and for C++"), ts("c++"), false) << std::endl;
   std::tcout << vu::contains_string(ts("Written in C++ and for C++"), ts("c++"), true)  << std::endl;
 
+  std::tcout << vu::compare_string(ts("C++"), ts("c++"), false) << std::endl;
+  std::tcout << vu::compare_string(ts("C++"), ts("c++"), true)  << std::endl;
+
   std::vector<vu::ulong> pids;
   pids.clear();
 
