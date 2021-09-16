@@ -72,26 +72,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(Vutils)include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(Vutils)lib\$(Platform);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(Vutils)lib\$(PlatformToolset)\$(Platform);$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(Vutils)include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(Vutils)lib\$(Platform);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(Vutils)lib\$(PlatformToolset)\$(Platform);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(Vutils)include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(Vutils)lib\$(Platform);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(Vutils)lib\$(PlatformToolset)\$(Platform);$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(Vutils)include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(Vutils)lib\$(Platform);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(Vutils)lib\$(PlatformToolset)\$(Platform);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
