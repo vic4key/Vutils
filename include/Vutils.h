@@ -492,7 +492,7 @@ std::wstring crypt_md5_file_W(const std::wstring& file_path);
 
 // CRC
 //  @refer to https://reveng.sourceforge.io/crc-catalogue/all.htm
-//  @refer to http://www.sunshine2k.de/coding/javascript/crc/crc_js.html
+//  @refer to https://www.sunshine2k.de/coding/javascript/crc/crc_js.html
 //  @refer to https://toolslick.com/programming/hashing/crc-calculator
 //  @refer to https://crccalc.com/
 
