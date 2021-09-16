@@ -474,10 +474,14 @@ std::wstring vuapi undecorate_cpp_symbol_W(
  * Wrapper
  */
 
+// Base64
+
 bool crypt_b64encode_A(const std::vector<byte>& data, std::string& text);
 bool crypt_b64decode_A(const std::string& text, std::vector<byte>& data);
 bool crypt_b64encode_W(const std::vector<byte>& data, std::wstring& text);
 bool crypt_b64decode_W(const std::wstring& text, std::vector<byte>& data);
+
+// MD5
 
 std::string  crypt_md5_string_A(const std::string& text);
 std::wstring crypt_md5_string_W(const std::wstring& text);
@@ -485,6 +489,17 @@ std::string  crypt_md5_buffer_A(const std::vector<byte>& data);
 std::wstring crypt_md5_buffer_W(const std::vector<byte>& data);
 std::string  crypt_md5_file_A(const std::string& file_path);
 std::wstring crypt_md5_file_W(const std::wstring& file_path);
+
+// CRC
+//  @refer to https://reveng.sourceforge.io/crc-catalogue/all.htm
+//  @refer to http://www.sunshine2k.de/coding/javascript/crc/crc_js.html
+//  @refer to https://toolslick.com/programming/hashing/crc-calculator
+//  @refer to https://crccalc.com/
+
+uint8  crypt_crc8 (const std::vector<byte>& data); // alias as CRC-8/SMBUS
+uint16 crypt_crc16(const std::vector<byte>& data); // alias as CRC-16/ARC, CRC-16/LHA, CRC-IBM
+uint32 crypt_crc32(const std::vector<byte>& data); // alias as CRC-32/HDLC, CRC-32/ADCCP, CRC-32/V-42, CRC-32/XZ, PKZIP
+uint64 crypt_crc64(const std::vector<byte>& data); // alias as CRC-64/ECMA-182
 
 /*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
 

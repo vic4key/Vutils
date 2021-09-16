@@ -52,3 +52,17 @@ typedef INT_PTR             IntPtr;
 typedef UINT_PTR            UIntPtr;
 typedef LONG_PTR            LongPtr;
 typedef ULONG_PTR           ULongPtr;
+
+// Enumerates
+
+enum class eXSB
+{
+  LSB,
+  MSB,
+};
+
+enum class eByteOrder
+{
+  LE,
+  BE,
+};

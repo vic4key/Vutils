@@ -96,6 +96,9 @@
     <ClInclude Include="3rdparty\Others\md5.h">
       <Filter>Third Party Files\Others</Filter>
     </ClInclude>
+    <ClInclude Include="3rdparty\Others\crc_t.h">
+      <Filter>Third Party Files\Others</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Vutils.cpp">

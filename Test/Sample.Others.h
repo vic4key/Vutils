@@ -31,5 +31,11 @@ DEF_SAMPLE(Others)
   vu::crypt_b64decode(text, data);
   vu::write_file_binary(ts("Test-B64Decoded.exe"), data);
 
+  data = { 0x41, 0x42, 0x43, 0x44, 0x45 };
+  std::tcout << ts("crc8  -> ") << std::hex << vu::crypt_crc8 (data) << std::endl;
+  std::tcout << ts("crc16 -> ") << std::hex << vu::crypt_crc16(data) << std::endl;
+  std::tcout << ts("crc32 -> ") << std::hex << vu::crypt_crc32(data) << std::endl;
+  std::tcout << ts("crc64 -> ") << std::hex << vu::crypt_crc64(data) << std::endl;
+
   return vu::VU_OK;
 }

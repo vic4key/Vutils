@@ -9,6 +9,18 @@
 
 #include VU_3RD_INCL(Others/base64.h)
 #include VU_3RD_INCL(Others/md5.h)
+#include VU_3RD_INCL(Others/md5.h)
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4333)
+#endif // _MSC_VER
+
+#include VU_3RD_INCL(Others/crc_t.h)
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
 
 namespace vu
 {
@@ -147,6 +159,34 @@ std::wstring crypt_md5_file_W(const std::wstring& file_path)
   fclose(file);
 
   return to_string_W(result);
+}
+
+/**
+ * CRC
+ */
+
+uint8 crypt_crc8(const std::vector<byte>& data)
+{
+  CRC_t<8, 0x07, 0x00, false, false, 0x00> crc;
+  return crc.get_crc(data.data(), data.size());
+}
+
+uint16 crypt_crc16(const std::vector<byte>& data)
+{
+  CRC_t<16, 0x8005, 0x0000, true, true, 0x0000> crc;
+  return crc.get_crc(data.data(), data.size());
+}
+
+uint32 crypt_crc32(const std::vector<byte>& data)
+{
+  CRC_t<32, 0x04C11DB7, 0xFFFFFFFF, true, true, 0xFFFFFFFF> crc;
+  return crc.get_crc(data.data(), data.size());
+}
+
+uint64 crypt_crc64(const std::vector<byte>& data)
+{
+  CRC_t<64, 0x42F0E1EBA9EA3693, 0x0000000000000000, false, false, 0x0000000000000000> crc;
+  return crc.get_crc(data.data(), data.size());
 }
 
 } // vu
