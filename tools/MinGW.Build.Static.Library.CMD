@@ -75,7 +75,7 @@ FOR /f "delims=|" %%i IN ('DIR /b %VU_SRC_DETAILS%\*.cpp') DO (
   SET "VU_SRC_DETAILS_CPP=%VU_SRC_DETAILS%\%%i !VU_SRC_DETAILS_CPP!"
 )
 
-G++ -c -std=c++0x %LIBS% -I%VU_INCLUDE% ^
+G++ -c -std=c++0x -Wa,-mbig-obj %LIBS% -I%VU_INCLUDE% ^
 	%VU_3RD%\MH\src\buffer.cpp ^
 	%VU_3RD%\HDE\src\hde32.cpp ^
 	%VU_3RD%\HDE\src\hde64.cpp ^

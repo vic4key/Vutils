@@ -13,10 +13,11 @@
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable: 4333)
+#pragma warning(disable: 4333 4244)
 #endif // _MSC_VER
 
 #include VU_3RD_INCL(Others/crc_t.h)
+#include VU_3RD_INCL(Others/crc_list.h)
 
 #ifdef _MSC_VER
 #pragma warning(pop)
@@ -164,6 +165,39 @@ std::wstring crypt_md5_file_W(const std::wstring& file_path)
 /**
  * CRC
  */
+
+uint64 crypt_crc(const std::vector<byte>& data,
+  uint8_t bits, uint64 poly, uint64 init, bool ref_in, bool ref_out, uint64 xor_out, uint64 check)
+{
+  static std::vector<AbstractProxy_CRC_t*> g_crc_list;
+  if (g_crc_list.empty())
+  {
+    g_crc_list = get_crc_list();
+  }
+  if (g_crc_list.empty())
+  {
+    throw "crc list empty";
+  }
+
+  uint64 result = 0;
+
+  for (auto& ptr_crc : g_crc_list)
+  {
+    if (ptr_crc->bits    == bits &&
+        ptr_crc->poly    == poly &&
+        ptr_crc->init    == init &&
+        ptr_crc->ref_in  == ref_in &&
+        ptr_crc->ref_out == ref_out &&
+        ptr_crc->xor_out == xor_out &&
+        ptr_crc->check   == check)
+    {
+      result = ptr_crc->get_crc(data.data(), data.size());
+      break;
+    }
+  }
+
+  return result;
+}
 
 uint8 crypt_crc8(const std::vector<byte>& data)
 {

@@ -496,6 +496,9 @@ std::wstring crypt_md5_file_W(const std::wstring& file_path);
 //  @refer to https://toolslick.com/programming/hashing/crc-calculator
 //  @refer to https://crccalc.com/
 
+uint64 crypt_crc(const std::vector<byte>& data,
+  uint8_t bits, uint64 poly, uint64 init, bool ref_in, bool ref_out, uint64 xor_out, uint64 check);
+
 uint8  crypt_crc8 (const std::vector<byte>& data); // alias as CRC-8/SMBUS
 uint16 crypt_crc16(const std::vector<byte>& data); // alias as CRC-16/ARC, CRC-16/LHA, CRC-IBM
 uint32 crypt_crc32(const std::vector<byte>& data); // alias as CRC-32/HDLC, CRC-32/ADCCP, CRC-32/V-42, CRC-32/XZ, PKZIP

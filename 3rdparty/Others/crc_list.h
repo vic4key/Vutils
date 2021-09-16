@@ -305,7 +305,7 @@ std::vector<AbstractProxy_CRC_t *> get_crc_list()
 
 
 
-const std::vector<AbstractProxy_CRC_t *> CRC_List = get_crc_list();
+const std::vector<AbstractProxy_CRC_t *> CRC_List/*= get_crc_list()*/;
 
 
 

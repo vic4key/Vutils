@@ -99,6 +99,9 @@
     <ClInclude Include="3rdparty\Others\crc_t.h">
       <Filter>Third Party Files\Others</Filter>
     </ClInclude>
+    <ClInclude Include="3rdparty\Others\crc_list.h">
+      <Filter>Third Party Files\Others</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Vutils.cpp">
