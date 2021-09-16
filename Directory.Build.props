@@ -1,5 +1,0 @@
-<Project>
-	<ImportGroup Label="PropertySheets">
-		<Import Project="$(Vutils)Vutils.user.props"/>
-	</ImportGroup>
-</Project>
