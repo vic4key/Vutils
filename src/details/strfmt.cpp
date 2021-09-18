@@ -534,7 +534,7 @@ std::string vuapi to_hex_string_A(const byte* ptr, const size_t size)
 
   for (size_t i = 0; i < size; i++)
   {
-    ss << std::hex << ptr[i];
+    ss << std::hex << int(ptr[i]);
   }
 
   return ss.str();
