@@ -7,6 +7,15 @@ SET VU_NAME=Vutils
 ECHO *** %VU_NAME% Getting Started ***
 ECHO.
 
+IF EXIST "%Vutils%" (
+	rem 	SET /p response=[+] Vutils installed. Would you like to update Y/[N] 
+	rem 	SET "conditions=0"
+	rem 	IF [%response%]==[Y] SET conditions=1
+	rem 	IF [%response%]==[y] SET conditions=1
+	ECHO Vutils already installed
+	GOTO L_EXIT
+)
+
 ECHO ---
 ECHO.
 FOR %%I IN ("%~dp0.") DO FOR %%J IN ("%%~dpI.") DO SET VU_DIR=%%~dpnxJ\
@@ -33,5 +42,8 @@ CSCRIPT Others/Import.To.MS.User.Props.JS
 ECHO.
 
 ECHO ---
+
+:L_EXIT
+
 ECHO.
 PAUSE
