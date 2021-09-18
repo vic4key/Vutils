@@ -84,6 +84,11 @@ G++ -c -std=c++0x -Wa,-mbig-obj %LIBS% -I%VU_INCLUDE% ^
 	%VU_3RD%\UND\src\undname.cpp ^
 	%VU_3RD%\Others\base64.cpp ^
 	%VU_3RD%\Others\md5.cpp ^
+	%VU_3RD%\Others\sha1.cpp ^
+	%VU_3RD%\Others\sha2_256.cpp ^
+	%VU_3RD%\Others\sha2_512.cpp ^
+	%VU_3RD%\Others\sha3_256.cpp ^
+	%VU_3RD%\Others\sha3_512.cpp ^
 	%VU_SRC%\%VU_NAME%.cpp ^
 	%VU_SRC_DETAILS_CPP%
 

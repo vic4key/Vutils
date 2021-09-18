@@ -321,6 +321,7 @@
     <ClInclude Include="3rdparty\Others\crc_list.h" />
     <ClInclude Include="3rdparty\Others\crc_t.h" />
     <ClInclude Include="3rdparty\Others\md5.h" />
+    <ClInclude Include="3rdparty\Others\sha.h" />
     <ClInclude Include="3rdparty\TP11\include\threadpool11\Pool.h" />
     <ClInclude Include="3rdparty\TP11\include\threadpool11\threadpool11.h" />
     <ClInclude Include="3rdparty\TP11\include\threadpool11\Worker.h" />
@@ -339,6 +340,11 @@
     <ClCompile Include="3rdparty\MH\src\buffer.cpp" />
     <ClCompile Include="3rdparty\Others\base64.cpp" />
     <ClCompile Include="3rdparty\Others\md5.cpp" />
+    <ClCompile Include="3rdparty\Others\sha1.cpp" />
+    <ClCompile Include="3rdparty\Others\sha2_256.cpp" />
+    <ClCompile Include="3rdparty\Others\sha2_512.cpp" />
+    <ClCompile Include="3rdparty\Others\sha3_256.cpp" />
+    <ClCompile Include="3rdparty\Others\sha3_512.cpp" />
     <ClCompile Include="3rdparty\TP11\src\Pool.cpp" />
     <ClCompile Include="3rdparty\TP11\src\Worker.cpp" />
     <ClCompile Include="3rdparty\UND\src\undname.cpp" />

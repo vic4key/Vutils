@@ -197,6 +197,8 @@ std::wstring vuapi date_time_to_string_W(const time_t t);
 eEncodingType vuapi determine_encoding_type(const void* data, const size_t size);
 std::string vuapi format_bytes_A(long long bytes, eStdByte std = eStdByte::IEC, int digits = 2);
 std::wstring vuapi format_bytes_W(long long bytes, eStdByte std = eStdByte::IEC, int digits = 2);
+std::string vuapi to_hex_string_A(const byte* ptr, const size_t size);
+std::wstring vuapi to_hex_string_W(const byte* ptr, const size_t size);
 
 /**
  * String Working
@@ -476,19 +478,19 @@ std::wstring vuapi undecorate_cpp_symbol_W(
 
 // Base64
 
-bool crypt_b64encode_A(const std::vector<byte>& data, std::string&  text);
-bool crypt_b64encode_W(const std::vector<byte>& data, std::wstring& text);
-bool crypt_b64decode_A(const std::string&  text, std::vector<byte>& data);
-bool crypt_b64decode_W(const std::wstring& text, std::vector<byte>& data);
+bool vuapi crypt_b64encode_A(const std::vector<byte>& data, std::string& text);
+bool vuapi crypt_b64encode_W(const std::vector<byte>& data, std::wstring& text);
+bool vuapi crypt_b64decode_A(const std::string& text, std::vector<byte>& data);
+bool vuapi crypt_b64decode_W(const std::wstring& text, std::vector<byte>& data);
 
 // MD5
 
-std::string  crypt_md5_string_A(const std::string&  text);
-std::wstring crypt_md5_string_W(const std::wstring& text);
-std::string  crypt_md5_buffer_A(const std::vector<byte>& data);
-std::wstring crypt_md5_buffer_W(const std::vector<byte>& data);
-std::string  crypt_md5_file_A(const std::string&  file_path);
-std::wstring crypt_md5_file_W(const std::wstring& file_path);
+std::string  vuapi crypt_md5_buffer_A(const std::vector<byte>& data);
+std::wstring vuapi crypt_md5_buffer_W(const std::vector<byte>& data);
+std::string  vuapi crypt_md5_text_A(const std::string& text);
+std::wstring vuapi crypt_md5_text_W(const std::wstring& text);
+std::string  vuapi crypt_md5_file_A(const std::string& file_path);
+std::wstring vuapi crypt_md5_file_W(const std::wstring& file_path);
 
 // CRC
 //  @refer to https://reveng.sourceforge.io/crc-catalogue/all.htm
@@ -496,23 +498,45 @@ std::wstring crypt_md5_file_W(const std::wstring& file_path);
 //  @refer to https://toolslick.com/programming/hashing/crc-calculator
 //  @refer to https://crccalc.com/
 
-enum class eBits
+enum class eBits : int
 {
-  _8,  // alias as CRC-8/SMBUS
-  _16, // alias as CRC-16/ARC, CRC-16/LHA, CRC-IBM
-  _32, // alias as CRC-32/HDLC, CRC-32/ADCCP, CRC-32/V-42, CRC-32/XZ, PKZIP
-  _64, // alias as CRC-64/ECMA-182
+  _8   = 8,   // CRC-8/SMBUS
+  _16  = 16,  // CRC-16/ARC, CRC-16/LHA, CRC-IBM
+  _32  = 32,  // CRC-32/HDLC, CRC-32/ADCCP, CRC-32/V-42, CRC-32/XZ, PKZIP
+  _64  = 64,  // CRC-64/ECMA-182
+
+  _160 = 160, // SHA-1
+  _256 = 256, // SHA-256
+  _512 = 512, // SHA-512
+
+  Unspecified = -1,
 };
 
-uint64 crypt_crc_text_A(const std::string&  text, const eBits bits);
-uint64 crypt_crc_text_W(const std::wstring& text, const eBits bits);
-uint64 crypt_crc_file_A(const std::string&  file_path, const eBits bits);
-uint64 crypt_crc_file_W(const std::wstring& file_path, const eBits bits);
-uint64 crypt_crc_buffer(const std::vector<byte>& data, const eBits bits);
+uint64 vuapi crypt_crc_text_A(const std::string& text, const eBits bits);
+uint64 vuapi crypt_crc_text_W(const std::wstring& text, const eBits bits);
+uint64 vuapi crypt_crc_file_A(const std::string& file_path, const eBits bits);
+uint64 vuapi crypt_crc_file_W(const std::wstring& file_path, const eBits bits);
+uint64 vuapi crypt_crc_buffer(const std::vector<byte>& data, const eBits bits);
 
 // Note: For reduce library size so only enabled 32/64-bits of parametrised CRC algorithms
-uint64 crypt_crc_buffer(const std::vector<byte>& data,
+uint64 vuapi crypt_crc_buffer(const std::vector<byte>& data,
   uint8_t bits, uint64 poly, uint64 init, bool ref_in, bool ref_out, uint64 xor_out, uint64 check);
+
+// SHA
+
+enum class eSHA
+{
+  _1 = 1,
+  _2 = 2,
+  _3 = 3,
+};
+
+std::string vuapi crypt_sha_text_A(const std::string& text, const eSHA version, const eBits bits);
+std::wstring vuapi crypt_sha_text_W(const std::wstring& text, const eSHA version, const eBits bits);
+std::string vuapi crypt_sha_file_A(const std::string& file_path, const eSHA version, const eBits bits);
+std::wstring vuapi crypt_sha_file_W(const std::wstring& file_path, const eSHA version, const eBits bits);
+void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, const eBits bits,
+  std::vector<byte>& hash);
 
 /*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
 
@@ -529,6 +553,7 @@ uint64 crypt_crc_buffer(const std::vector<byte>& data,
 #define date_time_to_string date_time_to_string_W
 #define format_date_time format_date_time_W
 #define format_bytes format_bytes_W
+#define to_hex_string to_hex_string_W
 /* String Working */
 #define lower_string lower_string_W
 #define upper_string upper_string_W
@@ -569,11 +594,13 @@ uint64 crypt_crc_buffer(const std::vector<byte>& data,
 /* Wrapper */
 #define crypt_b64encode crypt_b64encode_W
 #define crypt_b64decode crypt_b64decode_W
-#define crypt_md5_string crypt_md5_string_W
 #define crypt_md5_buffer crypt_md5_buffer_W
+#define crypt_md5_text crypt_md5_text_W
 #define crypt_md5_file crypt_md5_file_W
 #define crypt_crc_text crypt_crc_text_W
 #define crypt_crc_file crypt_crc_file_W
+#define crypt_sha_text crypt_sha_text_W
+#define crypt_sha_file crypt_sha_file_W
 #else // _UNICODE
 /* Misc Working */
 #define set_privilege set_privilege_A
@@ -587,6 +614,7 @@ uint64 crypt_crc_buffer(const std::vector<byte>& data,
 #define date_time_to_string date_time_to_string_A
 #define format_date_time format_date_time_A
 #define format_bytes format_bytes_A
+#define to_hex_string to_hex_string_A
 /* String Working */
 #define lower_string lower_string_A
 #define upper_string upper_string_A
@@ -623,14 +651,16 @@ uint64 crypt_crc_buffer(const std::vector<byte>& data,
 #define join_path join_path_A
 #define normalize_path normalize_path_A
 #define undecorate_cpp_symbol undecorate_cpp_symbol_A
-/* Wrapper */
+/* Cryptography */
 #define crypt_b64encode crypt_b64encode_A
 #define crypt_b64decode crypt_b64decode_A
-#define crypt_md5_string crypt_md5_string_A
 #define crypt_md5_buffer crypt_md5_buffer_A
+#define crypt_md5_text crypt_md5_text_A
 #define crypt_md5_file crypt_md5_file_A
 #define crypt_crc_text crypt_crc_text_A
 #define crypt_crc_file crypt_crc_file_A
+#define crypt_sha_text crypt_sha_text_A
+#define crypt_sha_file crypt_sha_file_A
 #endif
 
 /* -------------------------------------- Public Class(es) -------------------------------------- */

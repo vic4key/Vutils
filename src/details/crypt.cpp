@@ -10,6 +10,7 @@
 #include VU_3RD_INCL(Others/base64.h)
 #include VU_3RD_INCL(Others/md5.h)
 #include VU_3RD_INCL(Others/md5.h)
+#include VU_3RD_INCL(Others/sha.h)
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -107,16 +108,16 @@ bool crypt_b64decode_W(const std::wstring& text, std::vector<vu::byte>& data)
  * MD5
  */
 
-std::string crypt_md5_string_A(const std::string& text)
+std::string crypt_md5_text_A(const std::string& text)
 {
   return md5(text);
 }
 
-std::wstring crypt_md5_string_W(const std::wstring& text)
+std::wstring crypt_md5_text_W(const std::wstring& text)
 {
   // const auto result = md5(text.data(), 2*text.length());
   auto result = to_string_A(text);
-  result = crypt_md5_string_A(result);
+  result = crypt_md5_text_A(result);
   return to_string_W(result);
 }
 
@@ -270,6 +271,102 @@ uint64 crypt_crc_file_W(const std::wstring& file_path, const eBits bits)
 {
   auto s = to_string_A(file_path);
   return crypt_crc_file_A(s, bits);
+}
+
+/**
+ * SHA
+ */
+
+std::string crypt_sha_text_A(const std::string& text, const eSHA version, const eBits bits)
+{
+  std::vector<byte> data(text.cbegin(), text.cend());
+
+  std::vector<byte> hash;
+  crypt_sha_buffer(data, version, bits, hash);
+
+  std::string result = to_hex_string_A(hash.data(), hash.size());
+  return result;
+}
+
+std::wstring crypt_sha_text_W(const std::wstring& text, const eSHA version, const eBits bits)
+{
+  const auto s = to_string_A(text);
+  auto hash = crypt_sha_text_A(s, version, bits);
+  return to_string_W(hash);
+}
+
+std::string crypt_sha_file_A(const std::string& file_path, const eSHA version, const eBits bits)
+{
+  if (!is_file_exists_A(file_path))
+  {
+    return "";
+  }
+
+  std::vector<vu::byte> data;
+  vu::read_file_binary_A(file_path, data);
+
+  std::vector<byte> hash;
+  crypt_sha_buffer(data, version, bits, hash);
+
+  std::string result = to_hex_string_A(hash.data(), hash.size());
+  return result;
+}
+
+std::wstring crypt_sha_file_W(const std::wstring& file_path, const eSHA version, const eBits bits)
+{
+  const auto s = to_string_A(file_path);
+  auto hash = crypt_sha_file_A(s, version, bits);
+  return to_string_W(hash);
+}
+
+void crypt_sha_buffer(
+  const std::vector<byte>& data,
+  const eSHA version,
+  const eBits bits,
+  std::vector<byte>& hash)
+{
+  bool valid_args = true;
+  valid_args |= (version == eSHA::_1) && (bits == eBits::_160);
+  valid_args |= (version == eSHA::_2 || version == eSHA::_3) && (bits == eBits::_256 || bits == eBits::_512);
+  if (!valid_args)
+  {
+    throw "invalid sha bits";
+  }
+
+  hash.resize(int(bits) / 8); // size in bytes
+  std::fill(hash.begin(), hash.end(), 0x00);
+  auto pstr = reinterpret_cast<char*>(&hash[0]);
+
+  if (version == eSHA::_1)
+  {
+    sha_1::sha1(data.data(), data.size(), pstr);
+  }
+  else if (version == eSHA::_2)
+  {
+    if (bits == eBits::_256)
+    {
+      sha_2_256::sha2(data.data(), data.size(), pstr);
+    }
+    else if (bits == eBits::_512)
+    {
+      sha_2_512::sha2(data.data(), data.size(), pstr);
+    }
+  }
+  else if (version == eSHA::_3)
+  {
+    if (bits == eBits::_256)
+    {
+      sha_3_256::sha3(data.data(), data.size(), pstr);
+    }
+    else if (bits == eBits::_512)
+    {
+      sha_3_512::sha3(data.data(), data.size(), pstr);
+    }
+  }
+  else
+  {
+    throw "invalid sha version";
+  }
 }
 
 } // vu

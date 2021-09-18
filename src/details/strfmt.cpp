@@ -528,6 +528,24 @@ std::wstring vuapi format_bytes_W(long long bytes, eStdByte std, int digits)
   return to_string_W(format_bytes_A(bytes, std, digits));
 }
 
+std::string vuapi to_hex_string_A(const byte* ptr, const size_t size)
+{
+  std::stringstream ss;
+
+  for (size_t i = 0; i < size; i++)
+  {
+    ss << std::hex << ptr[i];
+  }
+
+  return ss.str();
+}
+
+std::wstring vuapi to_hex_string_W(const byte* ptr, const size_t size)
+{
+  auto s = to_hex_string_A(ptr, size);
+  return to_string_W(s);
+}
+
 /**
  * FundamentalA
  */

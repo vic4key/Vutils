@@ -9,9 +9,24 @@ DEF_SAMPLE(Crypt)
 
   std::tcout << ts("Crypt - MD5") << std::endl;
 
-  std::tcout << vu::crypt_md5_string(text) << std::endl;
   std::tcout << vu::crypt_md5_buffer(data) << std::endl;
+  std::tcout << vu::crypt_md5_text(text) << std::endl;
   std::tcout << vu::crypt_md5_file(ts("Test.exe")) << std::endl;
+
+  std::tcout << ts("Crypt - SHA") << std::endl;
+
+  std::tcout << vu::crypt_sha_text(text, vu::eSHA::_1, vu::eBits::_160) << std::endl;
+
+  std::tcout << ts("sha2-256 -> ") << vu::crypt_sha_text(text, vu::eSHA::_2, vu::eBits::_256) << std::endl;
+  std::tcout << ts("sha2-512 -> ") << vu::crypt_sha_text(text, vu::eSHA::_2, vu::eBits::_512) << std::endl;
+
+  std::tcout << ts("sha3-256 -> ") << vu::crypt_sha_text(text, vu::eSHA::_3, vu::eBits::_256) << std::endl;
+  std::tcout << ts("sha3-512 -> ") << vu::crypt_sha_text(text, vu::eSHA::_3, vu::eBits::_512) << std::endl;
+
+  std::tcout << ts("sha2-256-file -> ") << vu::crypt_sha_file(ts("Test.exe"), vu::eSHA::_2, vu::eBits::_256) << std::endl;
+  std::tcout << ts("sha2-512-file -> ") << vu::crypt_sha_file(ts("Test.exe"), vu::eSHA::_2, vu::eBits::_512) << std::endl;
+  std::tcout << ts("sha3-256-file -> ") << vu::crypt_sha_file(ts("Test.exe"), vu::eSHA::_3, vu::eBits::_256) << std::endl;
+  std::tcout << ts("sha3-512-file -> ") << vu::crypt_sha_file(ts("Test.exe"), vu::eSHA::_3, vu::eBits::_512) << std::endl;
 
   std::tcout << ts("Crypt - B64") << std::endl;
 
@@ -33,13 +48,14 @@ DEF_SAMPLE(Crypt)
 
   std::tcout << ts("Crypt - CRC") << std::endl;
 
-  std::tcout << ts("crc file -> ") << std::hex << vu::crypt_crc_file(ts("Test.exe"), vu::eBits::_32) << std::endl;
+  std::tcout << ts("crc-32-file -> ") << std::hex << vu::crypt_crc_file(ts("Test.exe"), vu::eBits::_32) << std::endl;
+  std::tcout << ts("crc-64-file -> ") << std::hex << vu::crypt_crc_file(ts("Test.exe"), vu::eBits::_64) << std::endl;
 
   data = { 0x41, 0x42, 0x43, 0x44, 0x45 };
-  std::tcout << ts("crc8  -> ") << std::hex << vu::crypt_crc_buffer(data, vu::eBits::_8)  << std::endl;
-  std::tcout << ts("crc16 -> ") << std::hex << vu::crypt_crc_buffer(data, vu::eBits::_16) << std::endl;
-  std::tcout << ts("crc32 -> ") << std::hex << vu::crypt_crc_buffer(data, vu::eBits::_32) << std::endl;
-  std::tcout << ts("crc64 -> ") << std::hex << vu::crypt_crc_buffer(data, vu::eBits::_64) << std::endl;
+  std::tcout << ts("crc-8  -> ") << std::hex << vu::crypt_crc_buffer(data, vu::eBits::_8)  << std::endl;
+  std::tcout << ts("crc-16 -> ") << std::hex << vu::crypt_crc_buffer(data, vu::eBits::_16) << std::endl;
+  std::tcout << ts("crc-32 -> ") << std::hex << vu::crypt_crc_buffer(data, vu::eBits::_32) << std::endl;
+  std::tcout << ts("crc-64 -> ") << std::hex << vu::crypt_crc_buffer(data, vu::eBits::_64) << std::endl;
 
   #define crc_rohc  8, 0x07, 0xFF, true, true, 0x00, 0xD0
   std::tcout << ts("crc8 rohc  -> ") << std::hex << vu::crypt_crc_buffer(data, crc_rohc) << std::endl;
