@@ -16,14 +16,14 @@
 #include "sha.h"
 
 #include <cstring>
-#include <cinttypes>
+#include <cstdint>
 #include <iostream>
 #include <fstream>
 #include <streambuf>
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable: 4267)
+#pragma warning(disable: 4267 4293)
 #endif // _MSC_VER
 
 namespace sha_1
@@ -70,7 +70,7 @@ void sha1_iteration(const uint8_t* data, uint32_t h[]) {
 // hash: at least 20 bytes available
 void sha1(const void* data, size_t len, char* hash) {
     uint8_t* data_ = (uint8_t*)data;
-    constexpr size_t block_size = 64;
+    const size_t block_size = 64;
 
     uint32_t h[5] = { 0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0 };
 

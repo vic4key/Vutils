@@ -16,7 +16,7 @@
 #include "sha.h"
 
 #include <cstring>
-#include <cinttypes>
+#include <cstdint>
 #include <iostream>
 #include <fstream>
 #include <streambuf>
@@ -75,7 +75,7 @@ inline void keccak_chi(uint64_t A[]) {
 }
 
 inline void sha3_permutation(uint64_t state[]) {
-    constexpr uint64_t keccak_round_constants[24] = {
+    const uint64_t keccak_round_constants[24] = {
         0x0000000000000001, 0x0000000000008082, 0x800000000000808A,
         0x8000000080008000, 0x000000000000808B, 0x0000000080000001,
         0x8000000080008081, 0x8000000000008009, 0x000000000000008A, 
@@ -137,7 +137,7 @@ void sha3_iteration(const uint8_t* data, uint64_t h[]) {
 // hash: at least 32 bytes available
 void sha3(const void* data, size_t len, char* hash) {
     uint8_t* data_ = (uint8_t*)data;
-    constexpr size_t block_size = 136;
+    const size_t block_size = 136;
 
     uint64_t h[25] = { 0 };
 
