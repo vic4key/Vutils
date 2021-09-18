@@ -1,6 +1,8 @@
 #ifndef SHA_H
 #define SHA_H
 
+#include <cstdlib>
+
 namespace sha_1
 {
   void sha1(const void* data, size_t len, char* hash);
