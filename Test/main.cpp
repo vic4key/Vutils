@@ -90,7 +90,7 @@ int _tmain(int argc, _TCHAR* argv[])
   // VU_SM_ADD_SAMPLE(InputDialog);
   // VU_SM_ADD_SAMPLE(ThreadPool);
   // VU_SM_ADD_SAMPLE(WMIProvider);
-  VU_SM_ADD_SAMPLE(Crypt);
+  // VU_SM_ADD_SAMPLE(Crypt);
 
   VU_SM_RUN();
 

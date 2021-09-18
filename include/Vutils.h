@@ -509,6 +509,8 @@ uint64 crypt_crc_text_W(const std::wstring& text, const eBits bits);
 uint64 crypt_crc_file_A(const std::string&  file_path, const eBits bits);
 uint64 crypt_crc_file_W(const std::wstring& file_path, const eBits bits);
 uint64 crypt_crc_buffer(const std::vector<byte>& data, const eBits bits);
+
+// Note: For reduce library size so only enabled 32/64-bits of parametrised CRC algorithms
 uint64 crypt_crc_buffer(const std::vector<byte>& data,
   uint8_t bits, uint64 poly, uint64 init, bool ref_in, bool ref_out, uint64 xor_out, uint64 check);
 
