@@ -169,7 +169,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_DLL;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
@@ -202,7 +202,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_DLL;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
@@ -237,7 +237,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_DLL;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
@@ -278,7 +278,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;_DLL;%(PreprocessorDefinitions);Vutils_EXPORTS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(ProjectDir)lib\$(PlatformToolset)\$(Platform)\$(ProjectName)-$(Configuration).pdb</ProgramDataBaseFileName>
