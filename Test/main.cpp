@@ -48,7 +48,7 @@ G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_SOCKET_ENAB
 #include "Sample.WMI.h"
 #include "Sample.Service.h"
 #include "Sample.Picker.h"
-#include "Sample.Others.h"
+#include "Sample.Crypt.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -90,7 +90,7 @@ int _tmain(int argc, _TCHAR* argv[])
   // VU_SM_ADD_SAMPLE(InputDialog);
   // VU_SM_ADD_SAMPLE(ThreadPool);
   // VU_SM_ADD_SAMPLE(WMIProvider);
-  // VU_SM_ADD_SAMPLE(Others);
+  VU_SM_ADD_SAMPLE(Crypt);
 
   VU_SM_RUN();
 

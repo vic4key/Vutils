@@ -476,18 +476,18 @@ std::wstring vuapi undecorate_cpp_symbol_W(
 
 // Base64
 
-bool crypt_b64encode_A(const std::vector<byte>& data, std::string& text);
-bool crypt_b64decode_A(const std::string& text, std::vector<byte>& data);
+bool crypt_b64encode_A(const std::vector<byte>& data, std::string&  text);
 bool crypt_b64encode_W(const std::vector<byte>& data, std::wstring& text);
+bool crypt_b64decode_A(const std::string&  text, std::vector<byte>& data);
 bool crypt_b64decode_W(const std::wstring& text, std::vector<byte>& data);
 
 // MD5
 
-std::string  crypt_md5_string_A(const std::string& text);
+std::string  crypt_md5_string_A(const std::string&  text);
 std::wstring crypt_md5_string_W(const std::wstring& text);
 std::string  crypt_md5_buffer_A(const std::vector<byte>& data);
 std::wstring crypt_md5_buffer_W(const std::vector<byte>& data);
-std::string  crypt_md5_file_A(const std::string& file_path);
+std::string  crypt_md5_file_A(const std::string&  file_path);
 std::wstring crypt_md5_file_W(const std::wstring& file_path);
 
 // CRC
@@ -496,13 +496,21 @@ std::wstring crypt_md5_file_W(const std::wstring& file_path);
 //  @refer to https://toolslick.com/programming/hashing/crc-calculator
 //  @refer to https://crccalc.com/
 
-uint64 crypt_crc(const std::vector<byte>& data,
-  uint8_t bits, uint64 poly, uint64 init, bool ref_in, bool ref_out, uint64 xor_out, uint64 check);
+enum class eBits
+{
+  _8,  // alias as CRC-8/SMBUS
+  _16, // alias as CRC-16/ARC, CRC-16/LHA, CRC-IBM
+  _32, // alias as CRC-32/HDLC, CRC-32/ADCCP, CRC-32/V-42, CRC-32/XZ, PKZIP
+  _64, // alias as CRC-64/ECMA-182
+};
 
-uint8  crypt_crc8 (const std::vector<byte>& data); // alias as CRC-8/SMBUS
-uint16 crypt_crc16(const std::vector<byte>& data); // alias as CRC-16/ARC, CRC-16/LHA, CRC-IBM
-uint32 crypt_crc32(const std::vector<byte>& data); // alias as CRC-32/HDLC, CRC-32/ADCCP, CRC-32/V-42, CRC-32/XZ, PKZIP
-uint64 crypt_crc64(const std::vector<byte>& data); // alias as CRC-64/ECMA-182
+uint64 crypt_crc_text_A(const std::string&  text, const eBits bits);
+uint64 crypt_crc_text_W(const std::wstring& text, const eBits bits);
+uint64 crypt_crc_file_A(const std::string&  file_path, const eBits bits);
+uint64 crypt_crc_file_W(const std::wstring& file_path, const eBits bits);
+uint64 crypt_crc_buffer(const std::vector<byte>& data, const eBits bits);
+uint64 crypt_crc_buffer(const std::vector<byte>& data,
+  uint8_t bits, uint64 poly, uint64 init, bool ref_in, bool ref_out, uint64 xor_out, uint64 check);
 
 /*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
 
@@ -562,6 +570,8 @@ uint64 crypt_crc64(const std::vector<byte>& data); // alias as CRC-64/ECMA-182
 #define crypt_md5_string crypt_md5_string_W
 #define crypt_md5_buffer crypt_md5_buffer_W
 #define crypt_md5_file crypt_md5_file_W
+#define crypt_crc_text crypt_crc_text_W
+#define crypt_crc_file crypt_crc_file_W
 #else // _UNICODE
 /* Misc Working */
 #define set_privilege set_privilege_A
@@ -617,6 +627,8 @@ uint64 crypt_crc64(const std::vector<byte>& data); // alias as CRC-64/ECMA-182
 #define crypt_md5_string crypt_md5_string_A
 #define crypt_md5_buffer crypt_md5_buffer_A
 #define crypt_md5_file crypt_md5_file_A
+#define crypt_crc_text crypt_crc_text_A
+#define crypt_crc_file crypt_crc_file_A
 #endif
 
 /* -------------------------------------- Public Class(es) -------------------------------------- */

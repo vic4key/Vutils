@@ -96,7 +96,7 @@
     <ClInclude Include="Sample.Picker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sample.Others.h">
+    <ClInclude Include="Sample.Crypt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -168,7 +168,7 @@
     <ClInclude Include="Sample.Math.h" />
     <ClInclude Include="Sample.Misc.h" />
     <ClInclude Include="Sample.Manager.h" />
-    <ClInclude Include="Sample.Others.h" />
+    <ClInclude Include="Sample.Crypt.h" />
     <ClInclude Include="Sample.PEFile.h" />
     <ClInclude Include="Sample.Picker.h" />
     <ClInclude Include="Sample.Process.h" />

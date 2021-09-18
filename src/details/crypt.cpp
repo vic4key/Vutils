@@ -166,7 +166,7 @@ std::wstring crypt_md5_file_W(const std::wstring& file_path)
  * CRC
  */
 
-uint64 crypt_crc(const std::vector<byte>& data,
+uint64 crypt_crc_buffer(const std::vector<byte>& data,
   uint8_t bits, uint64 poly, uint64 init, bool ref_in, bool ref_out, uint64 xor_out, uint64 check)
 {
   static std::vector<AbstractProxy_CRC_t*> g_crc_list;
@@ -199,28 +199,77 @@ uint64 crypt_crc(const std::vector<byte>& data,
   return result;
 }
 
-uint8 crypt_crc8(const std::vector<byte>& data)
+uint64 crypt_crc_buffer(const std::vector<byte>& data, const eBits bits)
 {
-  CRC_t<8, 0x07, 0x00, false, false, 0x00> crc;
-  return crc.get_crc(data.data(), data.size());
+  switch (bits)
+  {
+  case eBits::_8:
+    {
+      CRC_t<8, 0x07, 0x00, false, false, 0x00> crc;
+      return crc.get_crc(data.data(), data.size());
+    }
+    break;
+
+  case eBits::_16:
+    {
+      CRC_t<16, 0x8005, 0x0000, true, true, 0x0000> crc;
+      return crc.get_crc(data.data(), data.size());
+    }
+    break;
+
+  case eBits::_32:
+    {
+      CRC_t<32, 0x04C11DB7, 0xFFFFFFFF, true, true, 0xFFFFFFFF> crc;
+      return crc.get_crc(data.data(), data.size());
+    }
+    break;
+
+  case eBits::_64:
+    {
+      CRC_t<64, 0x42F0E1EBA9EA3693, 0x0000000000000000, false, false, 0x0000000000000000> crc;
+      return crc.get_crc(data.data(), data.size());
+    }
+    break;
+
+  default:
+    {
+      throw "invalid crc bits";
+    }
+    break;
+  }
+
+  return 0;
 }
 
-uint16 crypt_crc16(const std::vector<byte>& data)
+uint64 crypt_crc_text_A(const std::string& text, const eBits bits)
 {
-  CRC_t<16, 0x8005, 0x0000, true, true, 0x0000> crc;
-  return crc.get_crc(data.data(), data.size());
+  std::vector<byte> data(text.cbegin(), text.cend());
+  return crypt_crc_buffer(data, bits);
 }
 
-uint32 crypt_crc32(const std::vector<byte>& data)
+uint64 crypt_crc_text_W(const std::wstring& text, const eBits bits)
 {
-  CRC_t<32, 0x04C11DB7, 0xFFFFFFFF, true, true, 0xFFFFFFFF> crc;
-  return crc.get_crc(data.data(), data.size());
+  auto s = to_string_A(text);
+  return crypt_crc_text_A(s, bits);
 }
 
-uint64 crypt_crc64(const std::vector<byte>& data)
+uint64 crypt_crc_file_A(const std::string& file_path, const eBits bits)
 {
-  CRC_t<64, 0x42F0E1EBA9EA3693, 0x0000000000000000, false, false, 0x0000000000000000> crc;
-  return crc.get_crc(data.data(), data.size());
+  if (!is_file_exists_A(file_path))
+  {
+    return 0;
+  }
+
+  std::vector<vu::byte> data;
+  vu::read_file_binary_A(file_path, data);
+
+  return crypt_crc_buffer(data, bits);
+}
+
+uint64 crypt_crc_file_W(const std::wstring& file_path, const eBits bits)
+{
+  auto s = to_string_A(file_path);
+  return crypt_crc_file_A(s, bits);
 }
 
 } // vu
