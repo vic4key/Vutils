@@ -1,3 +1,5 @@
+// @refer to http://www.zedwood.com/article/cpp-sha384-function
+
 // sha2_384.h
 
 #include "sha.h"
