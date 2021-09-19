@@ -16,7 +16,7 @@ DEF_SAMPLE(Crypt)
 
   std::tcout << ts("Crypt - SHA") << std::endl;
 
-  std::tcout << vu::crypt_sha_text(text, vu::eSHA::_1, vu::eBits::_160) << std::endl;
+  std::tcout << ts("sha1-160 -> ") << vu::crypt_sha_text(text, vu::eSHA::_1, vu::eBits::_160) << std::endl;
 
   std::tcout << ts("sha2-224 -> ") << vu::crypt_sha_text(text, vu::eSHA::_2, vu::eBits::_224) << std::endl;
   std::tcout << ts("sha2-256 -> ") << vu::crypt_sha_text(text, vu::eSHA::_2, vu::eBits::_256) << std::endl;
