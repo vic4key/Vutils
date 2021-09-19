@@ -508,6 +508,7 @@ enum class eBits : int
   _64  = 64,  // CRC-64/ECMA-182
 
   _160 = 160, // SHA-1   (20 bytes)
+  _224 = 224, // SHA-1   (28 bytes)
   _256 = 256, // SHA-256 (32 bytes)
   _384 = 384, // SHA-384 (48 bytes)
   _512 = 512, // SHA-512 (64 bytes)

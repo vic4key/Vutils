@@ -1,6 +1,6 @@
 // @refer to http://www.zedwood.com/article/cpp-sha384-function
 
-// sha2_384.h
+// sha384.h
 
 #include "sha.h"
 
@@ -78,7 +78,7 @@ protected:
            | ((uint64) *((str) + 0) << 56);   \
 }
 
-// sha2_384.cpp
+// sha384.cpp
 
 const unsigned long long SHA384::sha512_k[80] = //ULL = uint64
 { 0x428a2f98d728ae22ULL, 0x7137449123ef65cdULL,
@@ -220,6 +220,7 @@ void sha2(const void* data, size_t len, char* hash)
 {
   unsigned char digest[SHA384::DIGEST_SIZE];
   memset(digest, 0, SHA384::DIGEST_SIZE);
+
   SHA384 ctx = SHA384();
   ctx.init();
   ctx.update(static_cast<const unsigned char*>(data), static_cast<unsigned int>(len));

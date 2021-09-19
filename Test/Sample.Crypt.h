@@ -18,6 +18,7 @@ DEF_SAMPLE(Crypt)
 
   std::tcout << vu::crypt_sha_text(text, vu::eSHA::_1, vu::eBits::_160) << std::endl;
 
+  std::tcout << ts("sha2-224 -> ") << vu::crypt_sha_text(text, vu::eSHA::_2, vu::eBits::_224) << std::endl;
   std::tcout << ts("sha2-256 -> ") << vu::crypt_sha_text(text, vu::eSHA::_2, vu::eBits::_256) << std::endl;
   std::tcout << ts("sha2-384 -> ") << vu::crypt_sha_text(text, vu::eSHA::_2, vu::eBits::_384) << std::endl;
   std::tcout << ts("sha2-512 -> ") << vu::crypt_sha_text(text, vu::eSHA::_2, vu::eBits::_512) << std::endl;
@@ -25,6 +26,7 @@ DEF_SAMPLE(Crypt)
   std::tcout << ts("sha3-256 -> ") << vu::crypt_sha_text(text, vu::eSHA::_3, vu::eBits::_256) << std::endl;
   std::tcout << ts("sha3-512 -> ") << vu::crypt_sha_text(text, vu::eSHA::_3, vu::eBits::_512) << std::endl;
 
+  std::tcout << ts("sha2-224-file -> ") << vu::crypt_sha_file(file_path, vu::eSHA::_2, vu::eBits::_224) << std::endl;
   std::tcout << ts("sha2-256-file -> ") << vu::crypt_sha_file(file_path, vu::eSHA::_2, vu::eBits::_256) << std::endl;
   std::tcout << ts("sha2-384-file -> ") << vu::crypt_sha_file(file_path, vu::eSHA::_2, vu::eBits::_384) << std::endl;
   std::tcout << ts("sha2-512-file -> ") << vu::crypt_sha_file(file_path, vu::eSHA::_2, vu::eBits::_512) << std::endl;

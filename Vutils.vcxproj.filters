@@ -236,6 +236,9 @@
     <ClCompile Include="3rdparty\Others\sha2_384.cpp">
       <Filter>Third Party Files\Others</Filter>
     </ClCompile>
+    <ClCompile Include="3rdparty\Others\sha2_224.cpp">
+      <Filter>Third Party Files\Others</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Boob">

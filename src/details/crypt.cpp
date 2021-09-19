@@ -343,6 +343,10 @@ void crypt_sha_buffer(
   }
   else if (version == eSHA::_2)
   {
+    if (bits == eBits::_224)
+    {
+      sha_2_224::sha2(data.data(), data.size(), pstr);
+    }
     if (bits == eBits::_256)
     {
       sha_2_256::sha2(data.data(), data.size(), pstr);
