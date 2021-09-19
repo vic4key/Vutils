@@ -8,15 +8,14 @@
 #include "lazy.h"
 
 #include <math.h>
+#include <iomanip>
 
 namespace vu
 {
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable: 4996)
-#pragma warning(disable: 26451)
-#pragma warning(disable: 26812)
+#pragma warning(disable: 4996 4834 26451 26812)
 #endif // _MSC_VER
 
 const std::string  VU_TITLE_BOXA =  "Vutils";
@@ -534,7 +533,7 @@ std::string vuapi to_hex_string_A(const byte* ptr, const size_t size)
 
   for (size_t i = 0; i < size; i++)
   {
-    ss << std::hex << int(ptr[i]);
+    ss << std::hex << std::setfill('0') << std::setw(2) << int(ptr[i]);
   }
 
   return ss.str();
@@ -544,6 +543,42 @@ std::wstring vuapi to_hex_string_W(const byte* ptr, const size_t size)
 {
   auto s = to_hex_string_A(ptr, size);
   return to_string_W(s);
+}
+
+bool vuapi to_hex_bytes_A(const std::string& text, std::vector<byte>& bytes)
+{
+  bytes.clear();
+
+  auto s = trim_string_A(text);
+  s = replace_string_A(s, " ", "");
+
+  const size_t byte_width = 2;
+
+  if (s.size() % byte_width != 0)
+  {
+    throw "invalid hex string";
+  }
+
+  bytes.reserve(s.size() / byte_width);
+
+  for (size_t i = 0; i < s.size(); i += byte_width)
+  {
+    const std::string e = s.substr(i, byte_width);
+    if (!isxdigit(e[0]) || !isxdigit(e[1]))
+    {
+      throw "invalid hex string";
+    }
+    
+    bytes.push_back((byte)strtoul(e.c_str(), nullptr, 16));
+  }
+
+  return true;
+}
+
+bool vuapi to_hex_bytes_W(const std::wstring& text, std::vector<byte>& bytes)
+{
+  const auto s = to_string_A(text);
+  return to_hex_bytes_A(s, bytes);
 }
 
 /**

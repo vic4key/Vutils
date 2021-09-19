@@ -199,6 +199,8 @@ std::string vuapi format_bytes_A(long long bytes, eStdByte std = eStdByte::IEC, 
 std::wstring vuapi format_bytes_W(long long bytes, eStdByte std = eStdByte::IEC, int digits = 2);
 std::string vuapi to_hex_string_A(const byte* ptr, const size_t size);
 std::wstring vuapi to_hex_string_W(const byte* ptr, const size_t size);
+bool vuapi to_hex_bytes_A(const std::string& text, std::vector<byte>& bytes);
+bool vuapi to_hex_bytes_W(const std::wstring& text, std::vector<byte>& bytes);
 
 /**
  * String Working
@@ -554,6 +556,7 @@ void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, c
 #define format_date_time format_date_time_W
 #define format_bytes format_bytes_W
 #define to_hex_string to_hex_string_W
+#define to_hex_bytes to_hex_bytes_W
 /* String Working */
 #define lower_string lower_string_W
 #define upper_string upper_string_W
@@ -615,6 +618,7 @@ void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, c
 #define format_date_time format_date_time_A
 #define format_bytes format_bytes_A
 #define to_hex_string to_hex_string_A
+#define to_hex_bytes to_hex_bytes_A
 /* String Working */
 #define lower_string lower_string_A
 #define upper_string upper_string_A

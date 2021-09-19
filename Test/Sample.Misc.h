@@ -6,10 +6,9 @@
 
 DEF_SAMPLE(Misc)
 {
-  vu::msg_box(vu::get_console_window(), ts("I'm %s. I'm %d years old."), ts("Vic P"), 26);
-  vu::msg_debug(ts("I'm %s. I'm %d years old."), ts("Vic P"), 26);
-
-  std::tcout << vu::format(ts("I'm %s. I'm %d years old. (A)"), ts("Vic P"), 26) << std::endl;
+  // std::tcout << vu::format(ts("I'm %s. I'm %d years old. (A)"), ts("Vic P"), 26) << std::endl;
+  // vu::msg_box(vu::get_console_window(), ts("I'm %s. I'm %d years old."), ts("Vic P"), 26);
+  // vu::msg_debug(ts("I'm %s. I'm %d years old."), ts("Vic P"), 26);
 
   std::tcout << vu::lower_string(ts("I Love You")) << std::endl;
   std::tcout << vu::upper_string(ts("I Love You")) << std::endl;
@@ -18,7 +17,7 @@ DEF_SAMPLE(Misc)
 
   std::tcout << vu::get_last_error() << std::endl;
 
-  std::vector<std::tstring>  l;
+  std::vector<std::tstring> l;
 
   l.clear();
   l = vu::split_string(ts("THIS IS A SPLIT STRING"), ts(" "));
@@ -121,6 +120,20 @@ DEF_SAMPLE(Misc)
   std::tcout << vu::format_bytes(9123456789101, type, digits) << std::endl; // TB/TiB
   std::tcout << vu::format_bytes(9123456789101213, type, digits) << std::endl; // PB/PiB
   std::tcout << vu::format_bytes(9123456789101213145, type, digits) << std::endl; // EB/EiB*/
+
+  std::vector<vu::byte> hex_bytes = {
+    0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
+
+  auto hex_string = vu::to_hex_string(hex_bytes.data(), hex_bytes.size());
+  std::tcout << hex_string << std::endl;
+
+  hex_bytes.clear();
+  vu::to_hex_bytes(hex_string, hex_bytes);
+  for (const auto& e : hex_bytes)
+  {
+    std::tcout << std::hex << std::setfill(ts('0')) << std::setw(2) << int(e);
+  }
+  std::tcout << std::endl;
 
   vu::Buffer data;
   auto result = vu::find_pattern(data, ts("11 ?? 33 ?? 44 ?? 55"));
