@@ -369,7 +369,7 @@ void crypt_sha_buffer(
   {
     if (bits == eBits::_224)
     {
-      throw "sha3-224 is not yet implemented"; // sha_3_224::sha3(data.data(), data.size(), pstr);
+      sha_3_224::sha3(data.data(), data.size(), pstr);
     }
     else if (bits == eBits::_256)
     {
@@ -377,7 +377,7 @@ void crypt_sha_buffer(
     }
     else if (bits == eBits::_384)
     {
-      throw "sha3-384 is not yet implemented"; // sha_3_384::sha2(data.data(), data.size(), pstr);
+      sha_3_384::sha3(data.data(), data.size(), pstr);
     }
     else if (bits == eBits::_512)
     {

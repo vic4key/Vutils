@@ -105,6 +105,9 @@
     <ClInclude Include="3rdparty\Others\sha.h">
       <Filter>Third Party Files\Others</Filter>
     </ClInclude>
+    <ClInclude Include="3rdparty\Others\sha3_impl.h">
+      <Filter>Third Party Files\Others</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Vutils.cpp">
@@ -227,16 +230,16 @@
     <ClCompile Include="3rdparty\Others\sha2_512.cpp">
       <Filter>Third Party Files\Others</Filter>
     </ClCompile>
-    <ClCompile Include="3rdparty\Others\sha3_256.cpp">
-      <Filter>Third Party Files\Others</Filter>
-    </ClCompile>
-    <ClCompile Include="3rdparty\Others\sha3_512.cpp">
-      <Filter>Third Party Files\Others</Filter>
-    </ClCompile>
     <ClCompile Include="3rdparty\Others\sha2_384.cpp">
       <Filter>Third Party Files\Others</Filter>
     </ClCompile>
     <ClCompile Include="3rdparty\Others\sha2_224.cpp">
+      <Filter>Third Party Files\Others</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\Others\sha3_impl.cpp">
+      <Filter>Third Party Files\Others</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\Others\sha3.cpp">
       <Filter>Third Party Files\Others</Filter>
     </ClCompile>
   </ItemGroup>

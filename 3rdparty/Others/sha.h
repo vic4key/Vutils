@@ -34,10 +34,20 @@ namespace sha_2_512
 
 // SHA-3
 
+namespace sha_3_224
+{
+  void sha3(const void* data, size_t len, char* hash);
+} // sha_3_224
+
 namespace sha_3_256
 {
   void sha3(const void* data, size_t len, char* hash);
 } // sha_3_256
+
+namespace sha_3_384
+{
+  void sha3(const void* data, size_t len, char* hash);
+} // sha_3_384
 
 namespace sha_3_512
 {
