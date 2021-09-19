@@ -325,9 +325,14 @@ void crypt_sha_buffer(
   const eBits bits,
   std::vector<byte>& hash)
 {
-  bool valid_args = true;
-  valid_args |= (version == eSHA::_1) && (bits == eBits::_160);
-  valid_args |= (version == eSHA::_2 || version == eSHA::_3) && (bits == eBits::_256 || bits == eBits::_512);
+  bool valid_args = false;
+
+  valid_args |= (version == eSHA::_1) &&
+    (bits == eBits::_160);
+
+  valid_args |= (version == eSHA::_2 || version == eSHA::_3) &&
+    (bits == eBits::_224 || bits == eBits::_384 || bits == eBits::_256 || bits == eBits::_512);
+
   if (!valid_args)
   {
     throw "invalid sha bits";
@@ -347,7 +352,7 @@ void crypt_sha_buffer(
     {
       sha_2_224::sha2(data.data(), data.size(), pstr);
     }
-    if (bits == eBits::_256)
+    else if (bits == eBits::_256)
     {
       sha_2_256::sha2(data.data(), data.size(), pstr);
     }
