@@ -342,6 +342,7 @@
     <ClCompile Include="3rdparty\Others\md5.cpp" />
     <ClCompile Include="3rdparty\Others\sha1.cpp" />
     <ClCompile Include="3rdparty\Others\sha2_256.cpp" />
+    <ClCompile Include="3rdparty\Others\sha2_384.cpp" />
     <ClCompile Include="3rdparty\Others\sha2_512.cpp" />
     <ClCompile Include="3rdparty\Others\sha3_256.cpp" />
     <ClCompile Include="3rdparty\Others\sha3_512.cpp" />

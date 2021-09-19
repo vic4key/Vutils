@@ -13,6 +13,11 @@ namespace sha_2_256
   void sha2(const void* data, size_t len, char* hash);
 } // sha_2_256
 
+namespace sha_2_384
+{
+  void sha2(const void* data, size_t len, char* hash);
+} // sha_2_384
+
 namespace sha_2_512
 {
   void sha2(const void* data, size_t len, char* hash);

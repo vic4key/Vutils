@@ -507,9 +507,10 @@ enum class eBits : int
   _32  = 32,  // CRC-32/HDLC, CRC-32/ADCCP, CRC-32/V-42, CRC-32/XZ, PKZIP
   _64  = 64,  // CRC-64/ECMA-182
 
-  _160 = 160, // SHA-1
-  _256 = 256, // SHA-256
-  _512 = 512, // SHA-512
+  _160 = 160, // SHA-1   (20 bytes)
+  _256 = 256, // SHA-256 (32 bytes)
+  _384 = 384, // SHA-384 (48 bytes)
+  _512 = 512, // SHA-512 (64 bytes)
 
   Unspecified = -1,
 };

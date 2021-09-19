@@ -86,6 +86,7 @@ G++ -c -std=c++0x -Wa,-mbig-obj %LIBS% -I%VU_INCLUDE% ^
 	%VU_3RD%\Others\md5.cpp ^
 	%VU_3RD%\Others\sha1.cpp ^
 	%VU_3RD%\Others\sha2_256.cpp ^
+	%VU_3RD%\Others\sha2_384.cpp ^
 	%VU_3RD%\Others\sha2_512.cpp ^
 	%VU_3RD%\Others\sha3_256.cpp ^
 	%VU_3RD%\Others\sha3_512.cpp ^
