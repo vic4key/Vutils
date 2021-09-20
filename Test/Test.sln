@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30204.135
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 12
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test.vcxproj", "{6E25DA43-AB5B-46A8-8E5C-C68097FD8168}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5A0500D1-2B57-4021-AFF9-C5AA94B5F0BF} = {5A0500D1-2B57-4021-AFF9-C5AA94B5F0BF}
