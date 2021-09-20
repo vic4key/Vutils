@@ -23,26 +23,26 @@ It helps your programming go easier, faster and simpler.
 * Classes
 	* [GUID - Globally/Universally Unique Identifier](<https://en.wikipedia.org/wiki/Universally_unique_identifier>)
 	* [WMI - Windows Management Instrumentation](<https://docs.microsoft.com/en-us/windows/win32/wmisdk/wmi-start-page>)
-	* [Buffer](<https://www.google.com/search?q=buffer+class>)
+	* [Smart Buffer Memory](<https://www.google.com/search?q=buffer+class>)
 	* [Run-time Link Library](<https://docs.microsoft.com/en-us/windows/win32/dlls/using-run-time-dynamic-linking>)
-	* Path
-	* Process
-	* Registry
+	* Object-Oriented Path
+	* Object-Oriented Process
+	* Object-Oriented Registry
 	* [Service Manager](<https://docs.microsoft.com/en-us/windows-hardware/drivers/gettingstarted/what-is-a-driver->)
 	* [Sync/Async Socket](<https://docs.plm.automation.siemens.com/content/pl4x/18.1/T4EA/en_US/Teamcenter_Gateway-Technical_Connectivity_Guide/synchronous_vs_asynchronous.html>)
 	* [Thread Pool](<https://en.wikipedia.org/wiki/Thread_pool>)
-	* [INI File](<https://en.wikipedia.org/wiki/INI_file>)
-	* [PE File Parser](<https://en.wikipedia.org/wiki/Portable_Executable>)
-	* [Stop Watch](<https://www.google.com/search?q=stopwatch+execution+time>)
+	* [Read/Write/Parse INI File](<https://en.wikipedia.org/wiki/INI_file>)
+	* [Parse PE File](<https://en.wikipedia.org/wiki/Portable_Executable>)
+	* [Smart Stop Watch](<https://www.google.com/search?q=stopwatch+execution+time>)
 	* File System
 	* [File Mapping](<https://docs.microsoft.com/en-us/windows/win32/memory/file-mapping>)
 	* [IAT/INL API Hooking](<https://en.wikipedia.org/wiki/Hooking>)
 	* [Windows Message Hooking](<https://docs.microsoft.com/en-us/windows/win32/winmsg/hooks>)
 	* [Critical Section](<https://en.wikipedia.org/wiki/Critical_section>)
-	* [Singleton Template](<https://en.wikipedia.org/wiki/Singleton_pattern>)
+	* [Smart Singleton DP Template](<https://en.wikipedia.org/wiki/Singleton_pattern>)
 	* [Input Dialog](<https://www.google.com/search?q=input+dialog&source=lnms&tbm=isch>)
 	* [In-Memory Dialog](<https://docs.microsoft.com/en-us/cpp/mfc/using-a-dialog-template-in-memory>)
-	* AOB Find Pattern
+	* [AOB Find Pattern](<https://wiki.cheatengine.org/index.php?title=Tutorials:AOBs>)
 	* Font/Color/File/Directory Picker
 	* Cryptography (B64, CRC, MD5, SHA, etc)
 	* Miscellaneous
