@@ -91,7 +91,7 @@ Belows are IDE minimum version that supported C++ 11
 	* For `MS Visual Studio C++` (optional - automatic included to the VS global settings)
 	* For `MinGW`
 		* Include : (optional)
-		* Library : `-lVutils`
+		* Library : `-lVutils` `-lgdi32 -lcomdlg32`
 			* If `SOCKET` enabled, insert option`-DVU_SOCKET_ENABLED -lws2_32`
 			* If `GUID` enabled, insert option `-DVU_GUID_ENABLED -lrpcrt4`
 			* If `WMI` enabled, insert option `-DVU_WMI_ENABLED -lole32 -loleaut32 -lwbemuuid`
