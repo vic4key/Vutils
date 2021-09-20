@@ -74,7 +74,7 @@ void sha1(const void* data, size_t len, char* hash) {
 
     uint32_t h[5] = { 0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0 };
 
-    size_t ml = len * 8;
+    uint64_t ml = len * 8;
 
     for (size_t i = 0; i < len / block_size; ++i)
         sha1_iteration(data_ + i * block_size, h);
@@ -102,10 +102,10 @@ void sha1(const void* data, size_t len, char* hash) {
     }
 
     // append length
-    buffer[len++] = ml >> 56, buffer[len++] = ml >> 48, 
-    buffer[len++] = ml >> 40, buffer[len++] = ml >> 32,
-    buffer[len++] = ml >> 24, buffer[len++] = ml >> 16,
-    buffer[len++] = ml >>  8, buffer[len++] = ml;
+    buffer[len++] = uint8_t(ml >> 56), buffer[len++] = uint8_t(ml >> 48),
+    buffer[len++] = uint8_t(ml >> 40), buffer[len++] = uint8_t(ml >> 32),
+    buffer[len++] = uint8_t(ml >> 24), buffer[len++] = uint8_t(ml >> 16),
+    buffer[len++] = uint8_t(ml >>  8), buffer[len++] = uint8_t(ml);
 
     sha1_iteration(buffer, h);
     
