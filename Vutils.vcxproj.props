@@ -9,6 +9,9 @@
     <Link>
       <AdditionalLibraryDirectories>$(Vutils)lib\$(PlatformToolset)\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(Vutils)lib\$(PlatformToolset)\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>

@@ -38,7 +38,7 @@ ECHO.
 ECHO ---
 ECHO.
 ECHO Add/Update VS Global Settings
-CSCRIPT Others/Import.To.MS.User.Props.JS
+CScript Others/Import.To.MS.User.Props.JS
 ECHO.
 
 ECHO ---

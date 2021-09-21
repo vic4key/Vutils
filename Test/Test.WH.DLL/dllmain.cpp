@@ -10,13 +10,13 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
   {
   case DLL_PROCESS_ATTACH:
     {
-      vu::MsgA("WH::DLL => LOADED");
+      vu::msg_debug_A("WH::DLL => LOADED");
     }
     break;
 
   case DLL_PROCESS_DETACH:
     {
-      vu::MsgA("WH::DLL => UNLOADED");
+      vu::msg_debug_A("WH::DLL => UNLOADED");
     }
     break;
   }

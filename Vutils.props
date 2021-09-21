@@ -9,6 +9,9 @@
     <Link>
       <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)Vutils\lib\$(PlatformToolset)\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)Vutils\lib\$(PlatformToolset)\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>

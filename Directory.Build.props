@@ -1,0 +1,5 @@
+<Project>
+	<ImportGroup Label="PropertySheets">
+		<Import Condition="'$(SolutionFileName)' != 'Vutils.sln'" Project="$(Vutils)Vutils.user.props"/>
+	</ImportGroup>
+</Project>

@@ -44,13 +44,23 @@ if (!FSO.FileExists(Vutils_ABS_PROPS))
 
 // iterate Microsoft.Cpp.X.user.props to include the project to the VS global settings
 
+var Updated_Global_Settings = false
+
 for (var i = 0; i < MSCppUser_PROPS.length; i++)
 {
 	var filePath = MSBuildv40_DIR + MSCppUser_PROPS[i];
 	if (FSO.FileExists(filePath))
 	{
-		AddVutils(filePath);
+		Updated_Global_Settings |= AddVutils(filePath);
 	}
+}
+
+if (!Updated_Global_Settings)
+{
+	WScript.Echo("NOTE:")
+	WScript.Echo("\tUnable to add `Vutils` to VS global settings.")
+	WScript.Echo("\tVS global settings no longer used for VS 2017 and later.")
+	WScript.Echo("\tLet copy `Directory.Build.props` to your solution directory.")
 }
 
 // function add the project to the VS global settings
