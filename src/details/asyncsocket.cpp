@@ -6,6 +6,9 @@
 
 #include "Vutils.h"
 
+#include <vector>
+#include <utility>
+
 namespace vu
 {
 
@@ -273,6 +276,34 @@ IResult vuapi AsyncSocket::do_close(WSANETWORKEVENTS& events, SOCKET& socket)
   if (events.iErrorCode[FD_CLOSE_BIT] != 0)
   {
     return events.iErrorCode[FD_CLOSE_BIT];
+  }
+
+  std::vector<std::pair<SOCKET, HANDLE>> in_used_clients;
+
+  for (int i = 0; i < WSA_MAXIMUM_WAIT_EVENTS; i++)
+  {
+    if (m_sockets[i] == socket)
+    {
+      WSACloseEvent(m_events[i]);
+      m_events[i]  = nullptr;
+      m_sockets[i] = INVALID_SOCKET;
+    }
+
+    if (m_sockets[i] != INVALID_SOCKET)
+    {
+      in_used_clients.emplace_back(std::make_pair(m_sockets[i], m_events[i]));
+    }
+  }
+
+  memset(m_sockets, int(INVALID_SOCKET), sizeof(m_sockets));
+  memset(m_events, int(0), sizeof(m_events));
+
+  m_n_events = 0;
+  for (auto& e : in_used_clients)
+  {
+    m_sockets[m_n_events] = e.first;
+    m_events[m_n_events]  = e.second;
+    m_n_events++;
   }
 
   Socket client(m_server.af(), m_server.type(), m_server.protocol(), false);
