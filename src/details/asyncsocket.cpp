@@ -48,7 +48,7 @@ std::set<SOCKET> vuapi AsyncSocket::get_clients()
   {
     for (auto& socket : m_sockets)
     {
-      if (socket != 0 && socket != INVALID_SOCKET && socket != m_server.get_socket())
+      if (socket != 0 && socket != INVALID_SOCKET && socket != m_server.handle())
       {
         result.insert(socket);
       }
@@ -88,12 +88,12 @@ VUResult vuapi AsyncSocket::listen(const int maxcon)
   this->initialze();
 
   WSAEVENT event = WSACreateEvent();
-  if (WSAEventSelect(m_server.get_socket(), event, FD_ACCEPT | FD_CLOSE) == SOCKET_ERROR)
+  if (WSAEventSelect(m_server.handle(), event, FD_ACCEPT | FD_CLOSE) == SOCKET_ERROR)
   {
     return 2;
   }
 
-  m_sockets[m_n_events] = m_server.get_socket();
+  m_sockets[m_n_events] = m_server.handle();
   m_events[m_n_events]  = event;
   m_n_events++;
 
@@ -230,7 +230,7 @@ IResult vuapi AsyncSocket::do_open(WSANETWORKEVENTS& events, SOCKET& socket)
   m_sockets[m_n_events] = obj.s;
   m_n_events++;
 
-  Socket client(m_server.get_af(), m_server.get_type(), m_server.get_protocol(), false);
+  Socket client(m_server.af(), m_server.type(), m_server.protocol(), false);
   client.attach(obj);
   this->on_open(client);
   client.detach();
@@ -245,7 +245,7 @@ IResult vuapi AsyncSocket::do_recv(WSANETWORKEVENTS& events, SOCKET& socket)
     return events.iErrorCode[FD_READ_BIT];
   }
 
-  Socket client(m_server.get_af(), m_server.get_type(), m_server.get_protocol(), false);
+  Socket client(m_server.af(), m_server.type(), m_server.protocol(), false);
   client.attach(socket);
   this->on_recv(client);
   client.detach();
@@ -260,7 +260,7 @@ IResult vuapi AsyncSocket::do_send(WSANETWORKEVENTS& events, SOCKET& socket)
     return events.iErrorCode[FD_WRITE_BIT];
   }
 
-  Socket client(m_server.get_af(), m_server.get_type(), m_server.get_protocol(), false);
+  Socket client(m_server.af(), m_server.type(), m_server.protocol(), false);
   client.attach(socket);
   this->on_send(client);
   client.detach();
@@ -275,13 +275,15 @@ IResult vuapi AsyncSocket::do_close(WSANETWORKEVENTS& events, SOCKET& socket)
     return events.iErrorCode[FD_CLOSE_BIT];
   }
 
-  Socket client(m_server.get_af(), m_server.get_type(), m_server.get_protocol(), false);
+  Socket client(m_server.af(), m_server.type(), m_server.protocol(), false);
   client.attach(socket);
   this->on_close(client);
   client.detach();
 
-  closesocket(socket);
-  socket = 0;
+  ::closesocket(socket);
+
+  socket = INVALID_SOCKET;
+
   // CompressArrays(m_Events, m_Sockets, &m_nEvents);
 
   return VU_OK;
@@ -323,6 +325,27 @@ void AsyncSocket::on_close(Socket& client)
   {
     fn(client);
   }
+}
+
+IResult vuapi AsyncSocket::send(
+  const SOCKET& client,
+  const char* ptr_data,
+  int size,
+  const Socket::flags_t flags)
+{
+  vu::Socket socket;
+  socket.attach(client);
+  return socket.send(ptr_data, size, flags);
+}
+
+IResult vuapi AsyncSocket::send(
+  const SOCKET& client,
+  const Buffer& data,
+  const Socket::flags_t flags)
+{
+  vu::Socket socket;
+  socket.attach(client);
+  return socket.send(data, flags);
 }
 
 #endif // VU_SOCKET_ENABLED

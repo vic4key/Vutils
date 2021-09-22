@@ -29,7 +29,7 @@ Socket::Socket(
   const type_t type,
   const protocol_t proto,
   bool  wsa
-) : LastError(), m_af(af), m_type(type), m_proto(proto), m_wsa(wsa)
+) : LastError(), m_af(af), m_type(type), m_proto(proto), m_wsa(wsa), m_self(false)
 {
   ZeroMemory(&m_wsa_data, sizeof(m_wsa_data));
   ZeroMemory(&m_sai, sizeof(m_sai));
@@ -42,7 +42,7 @@ Socket::Socket(
     }
   }
 
-  m_socket = socket(m_af, m_type, m_proto);
+  m_socket = ::socket(m_af, m_type, m_proto);
 
   m_sai.sin_family = m_af;
 }
@@ -88,27 +88,27 @@ void vuapi Socket::detach()
   ZeroMemory(&m_sai, sizeof(m_sai));
 }
 
-const WSADATA& vuapi Socket::get_wsa_data() const
+const WSADATA& vuapi Socket::wsa() const
 {
   return m_wsa_data;
 }
 
-const Socket::address_family_t vuapi Socket::get_af() const
+const Socket::address_family_t vuapi Socket::af() const
 {
   return m_af;
 }
 
-const Socket::type_t vuapi Socket::get_type() const
+const Socket::type_t vuapi Socket::type() const
 {
   return m_type;
 }
 
-const Socket::protocol_t vuapi Socket::get_protocol() const
+const Socket::protocol_t vuapi Socket::protocol() const
 {
   return m_proto;
 }
 
-SOCKET& vuapi Socket::get_socket()
+SOCKET& vuapi Socket::handle()
 {
   return m_socket;
 }
@@ -120,7 +120,7 @@ const sockaddr_in vuapi Socket::get_local_sai()
   if (this->available())
   {
     auto size = int(sizeof(result));
-    getsockname(m_socket, (struct sockaddr*)&result, &size);
+    ::getsockname(m_socket, (struct sockaddr*)&result, &size);
   }
 
   return result;
@@ -133,7 +133,7 @@ const sockaddr_in vuapi Socket::get_remote_sai()
   if (this->available())
   {
     auto size = int(sizeof(result));
-    getpeername(m_socket, (struct sockaddr*)&result, &size);
+    ::getpeername(m_socket, (struct sockaddr*)&result, &size);
   }
 
   return result;
@@ -155,7 +155,7 @@ VUResult vuapi Socket::set_option(
     return 2;
   }
 
-  if (setsockopt(m_socket, level, opt, val.c_str(), size) != 0)
+  if (::setsockopt(m_socket, level, opt, val.c_str(), size) != 0)
   {
     m_last_error_code = GetLastError();
     return 3;
@@ -172,7 +172,7 @@ VUResult vuapi Socket::enable_non_blocking(bool state)
   }
 
   ulong non_block = state ? 1 : 0;
-  if (ioctlsocket(m_socket, FIONBIO, &non_block) == SOCKET_ERROR)
+  if (::ioctlsocket(m_socket, FIONBIO, &non_block) == SOCKET_ERROR)
   {
     return 2;
   }
@@ -282,6 +282,8 @@ VUResult vuapi Socket::connect(const std::string& address, ushort port)
     return 2;
   }
 
+  m_self = true;
+
   return VU_OK;
 }
 
@@ -379,7 +381,7 @@ IResult vuapi Socket::send_to(const char* lpData, const int size, const sSocket&
     return SOCKET_ERROR;
   }
 
-  IResult z = sendto(
+  IResult z = ::sendto(
     m_socket,
     lpData,
     size,
@@ -415,7 +417,7 @@ IResult vuapi Socket::recv_from(char* ptr_data, int size, const sSocket& socket)
   }
 
   int n = sizeof(socket.sai);
-  IResult z = recvfrom(m_socket, ptr_data, size, 0, (struct sockaddr *)&socket.sai, &n);
+  IResult z = ::recvfrom(m_socket, ptr_data, size, 0, (struct sockaddr *)&socket.sai, &n);
   if (z == SOCKET_ERROR)
   {
     m_last_error_code = GetLastError();
@@ -464,7 +466,11 @@ VUResult vuapi Socket::close()
     return 1;
   }
 
-  closesocket(m_socket);
+  if (m_self)
+  {
+    ::closesocket(m_socket);
+  }
+
   m_socket = INVALID_SOCKET;
 
   return VU_OK;
@@ -502,7 +508,7 @@ std::string vuapi Socket::get_host_name()
   }
 
   ZeroMemory(h.get(), MAXBYTE);
-  if (gethostname(h.get(), MAXBYTE) == SOCKET_ERROR)
+  if (::gethostname(h.get(), MAXBYTE) == SOCKET_ERROR)
   {
     m_last_error_code = GetLastError();
     return result;
