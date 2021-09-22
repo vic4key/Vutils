@@ -34,8 +34,8 @@ void vuapi AsyncSocket::initialze()
 {
   m_n_events = 0;
 
-  ZeroMemory(m_sockets, sizeof(m_sockets));
-  ZeroMemory(m_events, sizeof(m_events));
+  memset(m_sockets, int(INVALID_SOCKET), sizeof(m_sockets));
+  memset(m_events, int(0), sizeof(m_events));
 
   m_running = false;
 }
@@ -48,7 +48,7 @@ std::set<SOCKET> vuapi AsyncSocket::get_clients()
   {
     for (auto& socket : m_sockets)
     {
-      if (socket != 0 && socket != INVALID_SOCKET && socket != m_server.handle())
+      if (socket != INVALID_SOCKET && socket != m_server.handle())
       {
         result.insert(socket);
       }
@@ -161,8 +161,8 @@ VUResult vuapi AsyncSocket::loop()
 
     idx = i;
 
-    auto& socket = m_sockets[idx];
-    auto& event  = m_events[idx];
+    auto socket = m_sockets[idx];
+    auto event  = m_events[idx];
 
     WSANETWORKEVENTS events = { 0 };
     WSAEnumNetworkEvents(socket, event, &events);
@@ -220,7 +220,7 @@ IResult vuapi AsyncSocket::do_open(WSANETWORKEVENTS& events, SOCKET& socket)
   obj.s = accept(socket, (struct sockaddr*)&obj.sai, &n);
   if (m_n_events > WSA_MAXIMUM_WAIT_EVENTS)
   {
-    closesocket(obj.s);
+    ::closesocket(obj.s);
     return WSAEMFILE; // Too many connections
   }
 
