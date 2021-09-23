@@ -902,8 +902,8 @@ class Socket : public LastError
 {
 public:
   typedef int address_family_t;
-  typedef int type_t;
   typedef int protocol_t;
+  typedef int type_t;
   typedef int flags_t;
   typedef int shutdowns_t;
 
@@ -945,28 +945,28 @@ public:
   VUResult vuapi connect(const sEndPoint& endpoint);
   VUResult vuapi connect(const std::string& address, const ushort port);
 
-  IResult vuapi send(const char* pData, int size, const flags_t flags = MSG_NONE);
+  IResult vuapi send(const char* ptr_data, int size, const flags_t flags = MSG_NONE);
   IResult vuapi send(const Buffer& data, const flags_t flags = MSG_NONE);
 
-  IResult vuapi recv(char* pData, int size, const flags_t flags = MSG_NONE);
+  IResult vuapi recv(char* ptr_data, int size, const flags_t flags = MSG_NONE);
   IResult vuapi recv(Buffer& data, const flags_t flags = MSG_NONE);
   IResult vuapi recv_all(Buffer& data, const flags_t flags = MSG_NONE);
 
-  IResult vuapi send_to(const char* pData, const int size, const sSocket& socket);
+  IResult vuapi send_to(const char* ptr_data, const int size, const sSocket& socket);
   IResult vuapi send_to(const Buffer& data, const sSocket& socket);
 
-  IResult vuapi recv_from(char* pData, int size, const sSocket& socket);
+  IResult vuapi recv_from(char* ptr_data, int size, const sSocket& socket);
   IResult vuapi recv_from(Buffer& data, const sSocket& socket);
   IResult vuapi recv_all_from(Buffer& data, const sSocket& socket);
 
   IResult vuapi close();
 
-  const WSADATA& vuapi get_wsa_data() const;
-  const address_family_t vuapi get_af() const;
-  const type_t vuapi get_type() const;
-  const protocol_t vuapi  get_protocol() const;
+  const WSADATA& vuapi wsa() const;
+  const address_family_t vuapi af() const;
+  const type_t vuapi type() const;
+  const protocol_t vuapi  protocol() const;
 
-  SOCKET& vuapi get_socket();
+  SOCKET& vuapi handle();
   const sockaddr_in vuapi get_local_sai();
   const sockaddr_in vuapi get_remote_sai();
   std::string vuapi get_host_name();
@@ -989,6 +989,7 @@ private:
   protocol_t m_proto;
   sockaddr_in m_sai;
   SOCKET m_socket;
+  bool m_self;
 };
 
 class AsyncSocket
@@ -1022,6 +1023,9 @@ public:
   VUResult vuapi run();
   VUResult vuapi stop();
   IResult  vuapi close();
+
+  IResult vuapi send(const SOCKET& client, const char* ptr_data, int size, const Socket::flags_t flags = MSG_NONE);
+  IResult vuapi send(const SOCKET& client, const Buffer& data, const Socket::flags_t flags = MSG_NONE);
 
   virtual void on(const eFnType type, const fn_prototype_t fn); // must be mapping before call Run(...)
 
