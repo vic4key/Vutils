@@ -1021,6 +1021,7 @@ public:
   VUResult vuapi bind(const std::string& address, const ushort port);
   VUResult vuapi listen(const int maxcon = SOMAXCONN);
   VUResult vuapi run();
+  VUResult vuapi run_in_thread();
   VUResult vuapi stop();
   IResult  vuapi close();
 
@@ -1051,6 +1052,7 @@ protected:
   WSAEVENT m_events[WSA_MAXIMUM_WAIT_EVENTS];
   fn_prototype_t m_functions[eFnType::UNDEFINED];
   std::mutex m_mutex;
+  HANDLE m_thread;
 };
 
 #endif // VU_SOCKET_ENABLED

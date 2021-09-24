@@ -18,7 +18,7 @@ AsyncSocket::AsyncSocket(
   const vu::Socket::address_family_t af,
   const vu::Socket::type_t type,
   const vu::Socket::protocol_t proto)
-  : m_server(af, type, proto)
+  : m_server(af, type, proto), m_thread(INVALID_HANDLE_VALUE)
 {
   this->initialze();
 
@@ -105,6 +105,13 @@ VUResult vuapi AsyncSocket::listen(const int maxcon)
 
 IResult vuapi AsyncSocket::close()
 {
+  this->stop();
+
+  if (m_thread != INVALID_HANDLE_VALUE)
+  {
+    TerminateThread(m_thread, 0); // CloseHandle(m_thread);
+  }
+
   return m_server.close();
 }
 
@@ -114,6 +121,22 @@ VUResult vuapi AsyncSocket::stop()
   m_running = false;
   m_mutex.unlock();
   return VU_OK;
+}
+
+static DWORD WINAPI threading(LPVOID lpParam)
+{
+  auto ptr = reinterpret_cast<vu::AsyncSocket*>(lpParam);
+  assert(ptr != nullptr);
+
+  ptr->run();
+
+  return 0;
+}
+
+VUResult vuapi AsyncSocket::run_in_thread()
+{
+  m_thread = CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(threading), this, 0, nullptr);
+  return m_thread != INVALID_HANDLE_VALUE ? VU_OK : 1;
 }
 
 VUResult vuapi AsyncSocket::run()
