@@ -476,7 +476,7 @@ VUResult vuapi Socket::close()
   return VU_OK;
 }
 
-VUResult vuapi Socket::shutdown(const shutdowns_t flags)
+VUResult vuapi Socket::disconnect(const shutdowns_t flags)
 {
   if (!this->available())
   {

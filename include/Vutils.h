@@ -930,6 +930,12 @@ public:
     bool  wsa = true);
   virtual ~Socket();
 
+  SOCKET& vuapi handle();
+  const WSADATA& vuapi wsa() const;
+  const address_family_t vuapi af() const;
+  const type_t vuapi type() const;
+  const protocol_t vuapi  protocol() const;
+
   bool vuapi available();
 
   void vuapi attach(const SOCKET&  socket);
@@ -944,6 +950,8 @@ public:
 
   VUResult vuapi connect(const sEndPoint& endpoint);
   VUResult vuapi connect(const std::string& address, const ushort port);
+
+  VUResult vuapi disconnect(const shutdowns_t flags = SD_BOTH);
 
   IResult vuapi send(const char* ptr_data, int size, const flags_t flags = MSG_NONE);
   IResult vuapi send(const Buffer& data, const flags_t flags = MSG_NONE);
@@ -961,19 +969,12 @@ public:
 
   IResult vuapi close();
 
-  const WSADATA& vuapi wsa() const;
-  const address_family_t vuapi af() const;
-  const type_t vuapi type() const;
-  const protocol_t vuapi  protocol() const;
-
-  SOCKET& vuapi handle();
   const sockaddr_in vuapi get_local_sai();
   const sockaddr_in vuapi get_remote_sai();
   std::string vuapi get_host_name();
 
   VUResult vuapi set_option(const int level, const int opt, const std::string& val, const int size);
   VUResult vuapi enable_non_blocking(bool state = true);
-  VUResult vuapi shutdown(const shutdowns_t flags);
 
 private:
   bool vuapi valid(const SOCKET& socket);
@@ -1012,8 +1013,6 @@ public:
     const vu::Socket::protocol_t proto = IPPROTO_IP);
   virtual ~AsyncSocket();
 
-  std::set<SOCKET> vuapi get_clients();
-
   bool vuapi available();
   bool vuapi running();
 
@@ -1024,6 +1023,9 @@ public:
   VUResult vuapi run_in_thread();
   VUResult vuapi stop();
   IResult  vuapi close();
+
+  std::set<SOCKET> vuapi get_all_clients();
+  VUResult vuapi disconnect_all_clients(const Socket::shutdowns_t flags = SD_BOTH);
 
   IResult vuapi send(const SOCKET& client, const char* ptr_data, int size, const Socket::flags_t flags = MSG_NONE);
   IResult vuapi send(const SOCKET& client, const Buffer& data, const Socket::flags_t flags = MSG_NONE);

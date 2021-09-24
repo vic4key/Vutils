@@ -43,24 +43,6 @@ void vuapi AsyncSocket::initialze()
   m_running = false;
 }
 
-std::set<SOCKET> vuapi AsyncSocket::get_clients()
-{
-  std::set<SOCKET> result;
-
-  if (m_server.available())
-  {
-    for (auto& socket : m_sockets)
-    {
-      if (socket != INVALID_SOCKET && socket != m_server.handle())
-      {
-        result.insert(socket);
-      }
-    }
-  }
-
-  return result;
-}
-
 bool vuapi AsyncSocket::available()
 {
   return m_server.available();
@@ -123,7 +105,38 @@ VUResult vuapi AsyncSocket::stop()
   return VU_OK;
 }
 
-static DWORD WINAPI threading(LPVOID lpParam)
+std::set<SOCKET> vuapi AsyncSocket::get_all_clients()
+{
+  std::set<SOCKET> result;
+
+  if (m_server.available())
+  {
+    for (auto& socket : m_sockets)
+    {
+      if (socket != INVALID_SOCKET && socket != m_server.handle())
+      {
+        result.insert(socket);
+      }
+    }
+  }
+
+  return result;
+}
+
+VUResult vuapi AsyncSocket::disconnect_all_clients(const Socket::shutdowns_t flags)
+{
+  auto clients = this->get_all_clients();
+  for (const auto& e : clients)
+  {
+    vu::Socket client;
+    client.attach(e);
+    client.disconnect(flags);
+  }
+
+  return VU_OK;
+}
+
+static DWORD WINAPI AsyncSocket_Threading(LPVOID lpParam)
 {
   auto ptr = reinterpret_cast<vu::AsyncSocket*>(lpParam);
   assert(ptr != nullptr);
@@ -135,7 +148,7 @@ static DWORD WINAPI threading(LPVOID lpParam)
 
 VUResult vuapi AsyncSocket::run_in_thread()
 {
-  m_thread = CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(threading), this, 0, nullptr);
+  m_thread = CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(AsyncSocket_Threading), this, 0, nullptr);
   return m_thread != INVALID_HANDLE_VALUE ? VU_OK : 1;
 }
 
