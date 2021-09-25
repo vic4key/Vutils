@@ -1025,14 +1025,25 @@ public:
   bool vuapi available();
   bool vuapi running();
 
+  /**
+   * https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsaeventselect?redirectedfrom=MSDN#return-value
+   * Note: After connected (FD_CONNECT), client will be auto generated first event FD_WRITE.
+   */
   VUResult vuapi connect(const Socket::sEndPoint& endpoint);
   VUResult vuapi connect(const std::string& address, const ushort port);
 
   VUResult vuapi bind(const Socket::sEndPoint& endpoint);
   VUResult vuapi bind(const std::string& address, const ushort port);
+
+  /**
+   * https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsaeventselect?redirectedfrom=MSDN#return-value
+   * Note: After accepted (FD_ACCEPT), server will be auto generated first event FD_WRITE.
+   */
   VUResult vuapi listen(const int maxcon = SOMAXCONN);
+
   VUResult vuapi run();
   VUResult vuapi run_in_thread();
+
   VUResult vuapi stop();
   IResult  vuapi close();
 

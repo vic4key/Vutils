@@ -86,7 +86,7 @@ VUResult vuapi AsyncSocket::listen(const int maxcon)
   this->initialze();
 
   WSAEVENT event = WSACreateEvent();
-  if (WSAEventSelect(m_socket.handle(), event, FD_ACCEPT | FD_CLOSE) == SOCKET_ERROR)
+  if (WSAEventSelect(m_socket.handle(), event, FD_ALL_EVENTS) == SOCKET_ERROR) // ACCEPT | FD_CLOSE
   {
     return 2;
   }
@@ -130,7 +130,7 @@ VUResult vuapi AsyncSocket::connect(const Socket::sEndPoint& endpoint)
   this->initialze();
 
   WSAEVENT event = WSACreateEvent();
-  if (WSAEventSelect(m_socket.handle(), event, FD_CONNECT | FD_CLOSE) == SOCKET_ERROR)
+  if (WSAEventSelect(m_socket.handle(), event, FD_ALL_EVENTS) == SOCKET_ERROR)
   {
     return 2;
   }
@@ -343,7 +343,7 @@ IResult vuapi AsyncSocket::do_open(WSANETWORKEVENTS& events, SOCKET& connection)
   }
 
   WSAEVENT event = WSACreateEvent();
-  WSAEventSelect(obj.s, event, FD_READ | FD_WRITE | FD_CLOSE);
+  WSAEventSelect(obj.s, event, FD_ALL_EVENTS); // FD_READ | FD_WRITE | FD_CLOSE
   m_events[m_n_events] = event;
   m_connections[m_n_events] = obj.s;
   m_n_events++;
