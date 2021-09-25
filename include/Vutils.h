@@ -699,12 +699,12 @@ public:
 
   virtual std::string vuapi get_last_error_message_A()
   {
-    return get_last_error_A(m_last_error_code);
+    return get_last_error_A(this->get_last_error_code());
   }
 
   virtual std::wstring vuapi get_last_error_message_W()
   {
-    return get_last_error_W(m_last_error_code);
+    return get_last_error_W(this->get_last_error_code());
   }
 
 protected:
@@ -993,7 +993,7 @@ private:
   bool m_self;
 };
 
-class AsyncSocket
+class AsyncSocket : public LastError
 {
 public:
   typedef std::function<void(Socket& client)> fn_prototype_t;

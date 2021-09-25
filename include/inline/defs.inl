@@ -33,6 +33,9 @@
 
 #define VU_ALIGN_UP(v, a) (((v) + ((a) - 1)) & ~((a) - 1))
 
+#define VU_CPP_TRY() try {
+#define VU_CPP_CATCH(type) } catch (type)
+
 #ifndef ERROR_INCORRECT_SIZE
 #define ERROR_INCORRECT_SIZE 1462L
 #endif

@@ -18,7 +18,7 @@ AsyncSocket::AsyncSocket(
   const vu::Socket::address_family_t af,
   const vu::Socket::type_t type,
   const vu::Socket::protocol_t proto)
-  : m_socket(af, type, proto), m_thread(INVALID_HANDLE_VALUE)
+  : m_socket(af, type, proto), m_thread(INVALID_HANDLE_VALUE), LastError()
 {
   UNREFERENCED_PARAMETER(m_mode);
 
@@ -73,6 +73,8 @@ VUResult vuapi AsyncSocket::bind(const std::string& address, const ushort port)
     m_mode = eMode::SERVER;
   }
 
+  this->set_last_error_code(m_socket.get_last_error_code());
+
   return result;
 }
 
@@ -88,6 +90,7 @@ VUResult vuapi AsyncSocket::listen(const int maxcon)
   WSAEVENT event = WSACreateEvent();
   if (WSAEventSelect(m_socket.handle(), event, FD_ALL_EVENTS) == SOCKET_ERROR) // ACCEPT | FD_CLOSE
   {
+    m_last_error_code = GetLastError();
     return 2;
   }
 
@@ -95,7 +98,11 @@ VUResult vuapi AsyncSocket::listen(const int maxcon)
   m_events[m_n_events] = event;
   m_n_events++;
 
-  return m_socket.listen(maxcon);
+  auto result = m_socket.listen(maxcon);
+
+  m_last_error_code = GetLastError();
+
+  return result;
 }
 
 IResult vuapi AsyncSocket::close()
@@ -109,7 +116,11 @@ IResult vuapi AsyncSocket::close()
     TerminateThread(m_thread, 0); // CloseHandle(m_thread);
   }
 
-  return m_socket.close();
+  auto result =  m_socket.close();
+
+  m_last_error_code = GetLastError();
+
+  return result;
 }
 
 VUResult vuapi AsyncSocket::stop()
@@ -132,17 +143,21 @@ VUResult vuapi AsyncSocket::connect(const Socket::sEndPoint& endpoint)
   WSAEVENT event = WSACreateEvent();
   if (WSAEventSelect(m_socket.handle(), event, FD_ALL_EVENTS) == SOCKET_ERROR)
   {
+    m_last_error_code = GetLastError();
     return 2;
   }
 
   auto result = m_socket.connect(endpoint);
   if (result == VU_OK)
   {
+    m_last_error_code = ERROR_SUCCESS;
     m_mode = eMode::CLIENT;
     m_connections[m_n_events] = m_socket.handle();
     m_events[m_n_events] = event;
     m_n_events++;
   }
+
+  this->set_last_error_code(m_socket.get_last_error_code());
 
   return result;
 }
@@ -150,7 +165,7 @@ VUResult vuapi AsyncSocket::connect(const Socket::sEndPoint& endpoint)
 VUResult vuapi AsyncSocket::connect(const std::string& address, const ushort port)
 {
   Socket::sEndPoint endpoint(address, port);
-  return m_socket.connect(endpoint);
+  return this->connect(endpoint);
 }
 
 std::set<SOCKET> vuapi AsyncSocket::get_connections()
@@ -204,6 +219,7 @@ static DWORD WINAPI AsyncSocket_Threading(LPVOID lpParam)
 VUResult vuapi AsyncSocket::run_in_thread()
 {
   m_thread = CreateThread(nullptr, 0, LPTHREAD_START_ROUTINE(AsyncSocket_Threading), this, 0, nullptr);
+  m_last_error_code = GetLastError();
   return m_thread != INVALID_HANDLE_VALUE ? VU_OK : 1;
 }
 
