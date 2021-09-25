@@ -1008,11 +1008,19 @@ public:
     UNDEFINED,
   } eFnType;
 
+  typedef enum _MODE : uint
+  {
+    SERVER,
+    CLIENT,
+  } eMode;
+
   AsyncSocket(
     const vu::Socket::address_family_t af = AF_INET,
     const vu::Socket::type_t type = SOCK_STREAM,
     const vu::Socket::protocol_t proto = IPPROTO_IP);
   virtual ~AsyncSocket();
+
+  eMode vuapi mode();
 
   bool vuapi available();
   bool vuapi running();
@@ -1028,35 +1036,36 @@ public:
   VUResult vuapi stop();
   IResult  vuapi close();
 
-  std::set<SOCKET> vuapi get_all_clients();
-  VUResult vuapi disconnect_all_clients(const Socket::shutdowns_t flags = SD_BOTH);
+  std::set<SOCKET> vuapi get_connections();
+  VUResult vuapi disconnect_connections(const Socket::shutdowns_t flags = SD_BOTH);
 
-  IResult vuapi send(const SOCKET& client, const char* ptr_data, int size, const Socket::flags_t flags = MSG_NONE);
-  IResult vuapi send(const SOCKET& client, const Buffer& data, const Socket::flags_t flags = MSG_NONE);
+  IResult vuapi send(const SOCKET& connection, const char* ptr_data, int size, const Socket::flags_t flags = MSG_NONE);
+  IResult vuapi send(const SOCKET& connection, const Buffer& data, const Socket::flags_t flags = MSG_NONE);
 
-  virtual void on(const eFnType type, const fn_prototype_t fn); // must be mapping before call Run(...)
+  virtual void on(const eFnType type, const fn_prototype_t fn); // must be mapping before call run(...)
 
-  virtual void on_connect(Socket& client);
-  virtual void on_open(Socket&  client);
-  virtual void on_close(Socket& client);
-  virtual void on_send(Socket&  client);
-  virtual void on_recv(Socket&  client);
+  virtual void on_connect(Socket& connection);
+  virtual void on_open(Socket&  connection);
+  virtual void on_close(Socket& connection);
+  virtual void on_send(Socket&  connection);
+  virtual void on_recv(Socket&  connection);
 
 protected:
   void vuapi initialze();
   VUResult vuapi loop();
 
-  IResult vuapi do_connect(WSANETWORKEVENTS& events, SOCKET& socket);
-  IResult vuapi do_open(WSANETWORKEVENTS&  events, SOCKET& socket);
-  IResult vuapi do_recv(WSANETWORKEVENTS&  events, SOCKET& socket);
-  IResult vuapi do_send(WSANETWORKEVENTS&  events, SOCKET& socket);
-  IResult vuapi do_close(WSANETWORKEVENTS& events, SOCKET& socket);
+  IResult vuapi do_connect(WSANETWORKEVENTS& events, SOCKET& connection);
+  IResult vuapi do_open(WSANETWORKEVENTS&  events, SOCKET& connection);
+  IResult vuapi do_recv(WSANETWORKEVENTS&  events, SOCKET& connection);
+  IResult vuapi do_send(WSANETWORKEVENTS&  events, SOCKET& connection);
+  IResult vuapi do_close(WSANETWORKEVENTS& events, SOCKET& connection);
 
 protected:
-  vu::Socket m_server;
+  vu::Socket m_socket;
+  eMode m_mode;
   bool m_running;
   DWORD m_n_events;
-  SOCKET m_sockets[WSA_MAXIMUM_WAIT_EVENTS];
+  SOCKET m_connections[WSA_MAXIMUM_WAIT_EVENTS];
   WSAEVENT m_events[WSA_MAXIMUM_WAIT_EVENTS];
   fn_prototype_t m_functions[eFnType::UNDEFINED];
   std::mutex m_mutex;
