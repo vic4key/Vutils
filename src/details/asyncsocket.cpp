@@ -60,7 +60,8 @@ VUResult vuapi AsyncSocket::bind(const Socket::sEndPoint& endpoint)
 
 VUResult vuapi AsyncSocket::bind(const std::string& address, const ushort port)
 {
-  return m_server.bind(address, port);
+  Socket::sEndPoint endpoint(address, port);
+  return m_server.bind(endpoint);
 }
 
 VUResult vuapi AsyncSocket::listen(const int maxcon)
@@ -89,6 +90,8 @@ IResult vuapi AsyncSocket::close()
 {
   this->stop();
 
+  this->disconnect_all_clients();
+
   if (m_thread != INVALID_HANDLE_VALUE)
   {
     TerminateThread(m_thread, 0); // CloseHandle(m_thread);
@@ -103,6 +106,38 @@ VUResult vuapi AsyncSocket::stop()
   m_running = false;
   m_mutex.unlock();
   return VU_OK;
+}
+
+VUResult vuapi AsyncSocket::connect(const Socket::sEndPoint& endpoint)
+{
+  if (!m_server.available())
+  {
+    return 1;
+  }
+
+  // this->initialze();
+
+  WSAEVENT event = WSACreateEvent();
+  if (WSAEventSelect(m_server.handle(), event, FD_ALL_EVENTS) == SOCKET_ERROR) // FD_CONNECT | FD_CLOSE
+  {
+    return 2;
+  }
+
+  auto result = m_server.connect(endpoint);
+  if (result == VU_OK)
+  {
+    m_sockets[m_n_events] = m_server.handle();
+    m_events[m_n_events] = event;
+    m_n_events++;
+  }
+
+  return result;
+}
+
+VUResult vuapi AsyncSocket::connect(const std::string& address, const ushort port)
+{
+  Socket::sEndPoint endpoint(address, port);
+  return m_server.connect(endpoint);
 }
 
 std::set<SOCKET> vuapi AsyncSocket::get_all_clients()
@@ -206,6 +241,15 @@ VUResult vuapi AsyncSocket::loop()
     WSANETWORKEVENTS events = { 0 };
     WSAEnumNetworkEvents(socket, event, &events);
 
+    if (events.lNetworkEvents & FD_CONNECT)
+    {
+      result = this->do_connect(events, socket);
+      if (result != VU_OK)
+      {
+        break;
+      }
+    }
+
     if (events.lNetworkEvents & FD_ACCEPT)
     {
       result = this->do_open(events, socket);
@@ -244,6 +288,21 @@ VUResult vuapi AsyncSocket::loop()
   }
 
   return result;
+}
+
+IResult vuapi AsyncSocket::do_connect(WSANETWORKEVENTS& events, SOCKET& socket)
+{
+  if (events.iErrorCode[FD_CONNECT_BIT] != 0)
+  {
+    return events.iErrorCode[FD_CONNECT_BIT];
+  }
+
+  Socket client(m_server.af(), m_server.type(), m_server.protocol(), false);
+  client.attach(socket);
+  this->on_connect(client);
+  client.detach();
+
+  return VU_OK;
 }
 
 IResult vuapi AsyncSocket::do_open(WSANETWORKEVENTS& events, SOCKET& socket)
@@ -360,6 +419,14 @@ void AsyncSocket::on(const eFnType type, const fn_prototype_t fn)
 {
   assert(!m_running && type < eFnType::UNDEFINED);
   m_functions[type] = fn;
+}
+
+void AsyncSocket::on_connect(Socket& client)
+{
+  if (auto& fn = m_functions[eFnType::CONNECT])
+  {
+    fn(client);
+  }
 }
 
 void AsyncSocket::on_open(Socket& client)

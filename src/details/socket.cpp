@@ -278,8 +278,7 @@ VUResult vuapi Socket::connect(const std::string& address, ushort port)
   if (::connect(m_socket, (const struct sockaddr*)&m_sai, sizeof(m_sai)) == SOCKET_ERROR)
   {
     m_last_error_code = GetLastError();
-    this->close();
-    return 2;
+    return m_last_error_code == WSAEWOULDBLOCK ? VU_OK : 2;
   }
 
   m_self = true;

@@ -1000,6 +1000,7 @@ public:
 
   typedef enum _FN_TYPE : uint
   {
+    CONNECT,
     OPEN,
     CLOSE,
     RECV,
@@ -1015,6 +1016,9 @@ public:
 
   bool vuapi available();
   bool vuapi running();
+
+  VUResult vuapi connect(const Socket::sEndPoint& endpoint);
+  VUResult vuapi connect(const std::string& address, const ushort port);
 
   VUResult vuapi bind(const Socket::sEndPoint& endpoint);
   VUResult vuapi bind(const std::string& address, const ushort port);
@@ -1032,6 +1036,7 @@ public:
 
   virtual void on(const eFnType type, const fn_prototype_t fn); // must be mapping before call Run(...)
 
+  virtual void on_connect(Socket& client);
   virtual void on_open(Socket&  client);
   virtual void on_close(Socket& client);
   virtual void on_send(Socket&  client);
@@ -1041,6 +1046,7 @@ protected:
   void vuapi initialze();
   VUResult vuapi loop();
 
+  IResult vuapi do_connect(WSANETWORKEVENTS& events, SOCKET& socket);
   IResult vuapi do_open(WSANETWORKEVENTS&  events, SOCKET& socket);
   IResult vuapi do_recv(WSANETWORKEVENTS&  events, SOCKET& socket);
   IResult vuapi do_send(WSANETWORKEVENTS&  events, SOCKET& socket);
