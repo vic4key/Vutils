@@ -1,6 +1,6 @@
 #pragma once
 
-// https://github.com/vic4key/Async-Socket-Example-MFC
+// https://github.com/vic4key/async-socket-example
 
 #include "Sample.h"
 
