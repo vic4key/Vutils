@@ -409,17 +409,47 @@ eDiskType vuapi get_disk_type_W(const wchar_t drive);
 struct sLNKA
 {
   std::string path;
-  std::string directory;
   std::string argument;
+  std::string directory;
   std::string description;
+  std::pair<std::string, int> icon;
+  ushort hotkey;
+  int window;
+
+  sLNKA()
+    : path("")
+    , argument("")
+    , directory("")
+    , description("")
+    , hotkey(0x0000)
+    , window(SW_NORMAL)
+  {
+    icon.first = "";
+    icon.second = 0;
+  }
 };
 
 struct sLNKW
 {
   std::wstring path;
-  std::wstring directory;
   std::wstring argument;
+  std::wstring directory;
   std::wstring description;
+  std::pair<std::wstring, int> icon;
+  ushort hotkey;
+  int window;
+
+  sLNKW()
+    : path(L"")
+    , argument(L"")
+    , directory(L"")
+    , description(L"")
+    , hotkey(0x0000)
+    , window(SW_NORMAL)
+  {
+    icon.first = L"";
+    icon.second = 0;
+  }
 };
 
 #ifdef _UNICODE
@@ -431,10 +461,15 @@ struct sLNKW
 std::unique_ptr<sLNKA> parse_shortcut_lnk_A(HWND hwnd, const std::string& lnk_file_path);
 std::unique_ptr<sLNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_file_path);
 
+vu::VUResult create_shortcut_lnk_A(const std::string& lnk_file_path, const sLNKA& lnk);
+vu::VUResult create_shortcut_lnk_W(const std::wstring& lnk_file_path, const sLNKW& lnk);
+
 #ifdef _UNICODE
 #define parse_shortcut_lnk parse_shortcut_lnk_W
+#define create_shortcut_lnk create_shortcut_lnk_W
 #else
 #define parse_shortcut_lnk parse_shortcut_lnk_A
+#define create_shortcut_lnk create_shortcut_lnk_A
 #endif
 
 #endif // LNK
