@@ -336,7 +336,7 @@ std::unique_ptr<sLNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_f
           result.reset(new sLNKW);
 
           WIN32_FIND_DATAW wfd = { 0 };
-          WCHAR buffer[MAX_PATH] = { 0 }, tmp[MAX_PATH] = { 0 };
+          WCHAR buffer[KiB] = { 0 }, tmp[KiB] = { 0 };
 
           memset(buffer, 0, sizeof(buffer));
           hres = psl->GetPath(buffer, ARRAYSIZE(buffer), &wfd, SLGP_SHORTPATH);
