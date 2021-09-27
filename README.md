@@ -95,6 +95,7 @@ Belows are IDE minimum version that supported C++ 11
 
 ## Examples
 
+* [Test\Sample.Misc.h](Test/Sample.Misc.h)
 * [Test\Sample.WMI.h](Test/Sample.WMI.h)
 * [Test\Sample.Crypt.h](Test/Sample.Crypt.h)
 * [Test\Sample.Picker.h](Test/Sample.Picker.h)
@@ -102,7 +103,7 @@ Belows are IDE minimum version that supported C++ 11
 * [Test\Sample.Singleton.h](Test/Sample.Singleton.h)
 * [Test\Sample.StopWatch.h](Test/Sample.StopWatch.h)
 * [Test\Sample.ThreadPool.h](Test/Sample.ThreadPool.h)
-* [Test\Sample.AsyncSocket.h](Test/Sample.AsyncSocket.h)
+* [Test\Sample.AsyncSocket.h](https://github.com/vic4key/async-socket-example)
 * [Test\Sample.WMHooking.h](Test/Sample.WMHooking.h)
 * [Test\Sample.INLHooking.h](Test/Sample.INLHooking.h)
 * [Test\Sample.IATHooking.h](Test/Sample.IATHooking.h)
