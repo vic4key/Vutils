@@ -409,17 +409,47 @@ eDiskType vuapi get_disk_type_W(const wchar_t drive);
 struct sLNKA
 {
   std::string path;
-  std::string directory;
   std::string argument;
+  std::string directory;
   std::string description;
+  std::pair<std::string, int> icon;
+  ushort hotkey;
+  int window;
+
+  sLNKA()
+    : path("")
+    , argument("")
+    , directory("")
+    , description("")
+    , hotkey(0x0000)
+    , window(SW_NORMAL)
+  {
+    icon.first = "";
+    icon.second = 0;
+  }
 };
 
 struct sLNKW
 {
   std::wstring path;
-  std::wstring directory;
   std::wstring argument;
+  std::wstring directory;
   std::wstring description;
+  std::pair<std::wstring, int> icon;
+  ushort hotkey;
+  int window;
+
+  sLNKW()
+    : path(L"")
+    , argument(L"")
+    , directory(L"")
+    , description(L"")
+    , hotkey(0x0000)
+    , window(SW_NORMAL)
+  {
+    icon.first = L"";
+    icon.second = 0;
+  }
 };
 
 #ifdef _UNICODE
@@ -431,10 +461,15 @@ struct sLNKW
 std::unique_ptr<sLNKA> parse_shortcut_lnk_A(HWND hwnd, const std::string& lnk_file_path);
 std::unique_ptr<sLNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_file_path);
 
+vu::VUResult create_shortcut_lnk_A(const std::string& lnk_file_path, const sLNKA& lnk);
+vu::VUResult create_shortcut_lnk_W(const std::wstring& lnk_file_path, const sLNKW& lnk);
+
 #ifdef _UNICODE
 #define parse_shortcut_lnk parse_shortcut_lnk_W
+#define create_shortcut_lnk create_shortcut_lnk_W
 #else
 #define parse_shortcut_lnk parse_shortcut_lnk_A
+#define create_shortcut_lnk create_shortcut_lnk_A
 #endif
 
 #endif // LNK
@@ -699,12 +734,12 @@ public:
 
   virtual std::string vuapi get_last_error_message_A()
   {
-    return get_last_error_A(m_last_error_code);
+    return get_last_error_A(this->get_last_error_code());
   }
 
   virtual std::wstring vuapi get_last_error_message_W()
   {
-    return get_last_error_W(m_last_error_code);
+    return get_last_error_W(this->get_last_error_code());
   }
 
 protected:
@@ -930,6 +965,12 @@ public:
     bool  wsa = true);
   virtual ~Socket();
 
+  SOCKET& vuapi handle();
+  const WSADATA& vuapi wsa() const;
+  const address_family_t vuapi af() const;
+  const type_t vuapi type() const;
+  const protocol_t vuapi  protocol() const;
+
   bool vuapi available();
 
   void vuapi attach(const SOCKET&  socket);
@@ -944,6 +985,8 @@ public:
 
   VUResult vuapi connect(const sEndPoint& endpoint);
   VUResult vuapi connect(const std::string& address, const ushort port);
+
+  VUResult vuapi disconnect(const shutdowns_t flags = SD_BOTH);
 
   IResult vuapi send(const char* ptr_data, int size, const flags_t flags = MSG_NONE);
   IResult vuapi send(const Buffer& data, const flags_t flags = MSG_NONE);
@@ -961,19 +1004,12 @@ public:
 
   IResult vuapi close();
 
-  const WSADATA& vuapi wsa() const;
-  const address_family_t vuapi af() const;
-  const type_t vuapi type() const;
-  const protocol_t vuapi  protocol() const;
-
-  SOCKET& vuapi handle();
   const sockaddr_in vuapi get_local_sai();
   const sockaddr_in vuapi get_remote_sai();
   std::string vuapi get_host_name();
 
   VUResult vuapi set_option(const int level, const int opt, const std::string& val, const int size);
   VUResult vuapi enable_non_blocking(bool state = true);
-  VUResult vuapi shutdown(const shutdowns_t flags);
 
 private:
   bool vuapi valid(const SOCKET& socket);
@@ -992,13 +1028,14 @@ private:
   bool m_self;
 };
 
-class AsyncSocket
+class AsyncSocket : public LastError
 {
 public:
   typedef std::function<void(Socket& client)> fn_prototype_t;
 
   typedef enum _FN_TYPE : uint
   {
+    CONNECT,
     OPEN,
     CLOSE,
     RECV,
@@ -1006,51 +1043,79 @@ public:
     UNDEFINED,
   } eFnType;
 
+  typedef enum _MODE : uint
+  {
+    SERVER,
+    CLIENT,
+  } eMode;
+
   AsyncSocket(
     const vu::Socket::address_family_t af = AF_INET,
     const vu::Socket::type_t type = SOCK_STREAM,
     const vu::Socket::protocol_t proto = IPPROTO_IP);
   virtual ~AsyncSocket();
 
-  std::set<SOCKET> vuapi get_clients();
+  eMode vuapi mode();
 
   bool vuapi available();
   bool vuapi running();
 
+  /**
+   * https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsaeventselect?redirectedfrom=MSDN#return-value
+   * Note: After connected (FD_CONNECT), client will be auto generated first event FD_WRITE.
+   */
+  VUResult vuapi connect(const Socket::sEndPoint& endpoint);
+  VUResult vuapi connect(const std::string& address, const ushort port);
+
   VUResult vuapi bind(const Socket::sEndPoint& endpoint);
   VUResult vuapi bind(const std::string& address, const ushort port);
+
+  /**
+   * https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsaeventselect?redirectedfrom=MSDN#return-value
+   * Note: After accepted (FD_ACCEPT), server will be auto generated first event FD_WRITE.
+   */
   VUResult vuapi listen(const int maxcon = SOMAXCONN);
+
   VUResult vuapi run();
+  VUResult vuapi run_in_thread();
+
   VUResult vuapi stop();
   IResult  vuapi close();
 
-  IResult vuapi send(const SOCKET& client, const char* ptr_data, int size, const Socket::flags_t flags = MSG_NONE);
-  IResult vuapi send(const SOCKET& client, const Buffer& data, const Socket::flags_t flags = MSG_NONE);
+  std::set<SOCKET> vuapi get_connections();
+  VUResult vuapi disconnect_connections(const Socket::shutdowns_t flags = SD_BOTH);
 
-  virtual void on(const eFnType type, const fn_prototype_t fn); // must be mapping before call Run(...)
+  IResult vuapi send(const SOCKET& connection, const char* ptr_data, int size, const Socket::flags_t flags = MSG_NONE);
+  IResult vuapi send(const SOCKET& connection, const Buffer& data, const Socket::flags_t flags = MSG_NONE);
 
-  virtual void on_open(Socket&  client);
-  virtual void on_close(Socket& client);
-  virtual void on_send(Socket&  client);
-  virtual void on_recv(Socket&  client);
+  virtual void on(const eFnType type, const fn_prototype_t fn); // must be mapping before call run(...)
+
+  virtual void on_connect(Socket& connection);
+  virtual void on_open(Socket&  connection);
+  virtual void on_close(Socket& connection);
+  virtual void on_send(Socket&  connection);
+  virtual void on_recv(Socket&  connection);
 
 protected:
   void vuapi initialze();
   VUResult vuapi loop();
 
-  IResult vuapi do_open(WSANETWORKEVENTS&  events, SOCKET& socket);
-  IResult vuapi do_recv(WSANETWORKEVENTS&  events, SOCKET& socket);
-  IResult vuapi do_send(WSANETWORKEVENTS&  events, SOCKET& socket);
-  IResult vuapi do_close(WSANETWORKEVENTS& events, SOCKET& socket);
+  IResult vuapi do_connect(WSANETWORKEVENTS& events, SOCKET& connection);
+  IResult vuapi do_open(WSANETWORKEVENTS&  events, SOCKET& connection);
+  IResult vuapi do_recv(WSANETWORKEVENTS&  events, SOCKET& connection);
+  IResult vuapi do_send(WSANETWORKEVENTS&  events, SOCKET& connection);
+  IResult vuapi do_close(WSANETWORKEVENTS& events, SOCKET& connection);
 
 protected:
-  vu::Socket m_server;
+  vu::Socket m_socket;
+  eMode m_mode;
   bool m_running;
   DWORD m_n_events;
-  SOCKET m_sockets[WSA_MAXIMUM_WAIT_EVENTS];
+  SOCKET m_connections[WSA_MAXIMUM_WAIT_EVENTS];
   WSAEVENT m_events[WSA_MAXIMUM_WAIT_EVENTS];
   fn_prototype_t m_functions[eFnType::UNDEFINED];
   std::mutex m_mutex;
+  HANDLE m_thread;
 };
 
 #endif // VU_SOCKET_ENABLED

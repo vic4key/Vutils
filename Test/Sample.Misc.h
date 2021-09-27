@@ -162,16 +162,36 @@ DEF_SAMPLE(Misc)
   std::tcout << vu::undecorate_cpp_symbol(ts("?func1@a@@AAEXH@Z")) << std::endl;
 
   #if defined(_MSC_VER) || defined(__BCPLUSPLUS__) // LNK
-  std::tstring lnk_file_path = ts("C:\\Users\\Vic\\Desktop\\Tencent Gaming Buddy.lnk");
+
+  #define HOTKEYF_CONTROL 0x02
+  #define HOTKEYF_ALT     0x04
+
+  std::tstring lnk_file_path = ts("C:\\Users\\Vic\\Desktop\\notepad.lnk");
+
+  vu::sLNK lnk;
+  lnk.path = ts("C:\\Windows\\System32\\notepad.exe");
+  lnk.argument = ts("test.txt");
+  lnk.directory = ts("C:\\Users\\Vic\\Desktop");
+  lnk.description = ts("shortcut for notepad.exe");
+  lnk.hotkey = MAKEWORD('A', HOTKEYF_CONTROL + HOTKEYF_ALT);
+  lnk.window = SW_NORMAL;
+  lnk.icon = std::pair<std::tstring, int>(ts("C:\\Windows\\System32\\notepad.exe"), 0);
+  vu::create_shortcut_lnk(lnk_file_path, lnk);
+
   auto ptr_lnk = vu::parse_shortcut_lnk(nullptr, lnk_file_path);
   if (ptr_lnk != nullptr)
   {
     std::tcout << ts("Parsing ") << lnk_file_path << std::endl;
     std::tcout << vu::tab << ptr_lnk->path << std::endl;
-    std::tcout << vu::tab << ptr_lnk->directory << std::endl;
     std::tcout << vu::tab << ptr_lnk->argument << std::endl;
+    std::tcout << vu::tab << ptr_lnk->directory << std::endl;
     std::tcout << vu::tab << ptr_lnk->description << std::endl;
+    std::tcout << vu::tab << ptr_lnk->hotkey << std::endl;
+    std::tcout << vu::tab << ptr_lnk->window << std::endl;
+    std::tcout << vu::tab << ptr_lnk->icon.first << std::endl;
+    std::tcout << vu::tab << ptr_lnk->icon.second << std::endl;
   }
+
   #endif // LNK
 
   return vu::VU_OK;

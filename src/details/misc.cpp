@@ -300,9 +300,13 @@ std::unique_ptr<sLNKA> parse_shortcut_lnk_A(HWND hwnd, const std::string& lnk_fi
   auto ptr = parse_shortcut_lnk_W(hwnd, to_string_W(lnk_file_path));
   if (ptr != nullptr)
   {
+    result.reset(new sLNKA);
     result->path = to_string_A(ptr->path);
+    result->argument = to_string_A(ptr->argument);
     result->directory = to_string_A(ptr->directory);
     result->description = to_string_A(ptr->description);
+    result->hotkey = ptr->hotkey;
+    result->window = ptr->window;
   }
 
   return result;
@@ -351,6 +355,13 @@ std::unique_ptr<sLNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_f
           }
 
           memset(buffer, 0, sizeof(buffer));
+          hres = psl->GetArguments(buffer, ARRAYSIZE(buffer));
+          if (SUCCEEDED(hres))
+          {
+            result->argument.assign(buffer);
+          }
+
+          memset(buffer, 0, sizeof(buffer));
           hres = psl->GetWorkingDirectory(buffer, ARRAYSIZE(buffer));
           if (SUCCEEDED(hres))
           {
@@ -371,17 +382,33 @@ std::unique_ptr<sLNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_f
           }
 
           memset(buffer, 0, sizeof(buffer));
-          hres = psl->GetArguments(buffer, ARRAYSIZE(buffer));
-          if (SUCCEEDED(hres))
-          {
-            result->argument.assign(buffer);
-          }
-
-          memset(buffer, 0, sizeof(buffer));
           hres = psl->GetDescription(buffer, ARRAYSIZE(buffer));
           if (SUCCEEDED(hres))
           {
             result->description.assign(buffer);
+          }
+
+          WORD hotkey = 0;
+          hres = psl->GetHotkey(&hotkey);
+          if (SUCCEEDED(hres))
+          {
+            result->hotkey = hotkey;
+          }
+
+          int icon_index = 0;
+          memset(buffer, 0, sizeof(buffer));
+          psl->GetIconLocation(buffer, ARRAYSIZE(buffer), &icon_index);
+          if (SUCCEEDED(hres))
+          {
+            result->icon.first.assign(buffer);
+            result->icon.second = icon_index;
+          }
+
+          int window = SW_NORMAL;
+          hres = psl->GetShowCmd(&window);
+          if (SUCCEEDED(hres))
+          {
+            result->window = window;
           }
         }
       }
@@ -395,6 +422,73 @@ std::unique_ptr<sLNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_f
   CoUninitialize();
 
   return result;
+}
+
+vu::VUResult create_shortcut_lnk_A(const std::string& lnk_file_path, const sLNKA& lnk)
+{
+  CoInitialize(nullptr);
+
+  IShellLinkA* psl = nullptr;
+  HRESULT hres = CoCreateInstance(
+    CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLinkA, (LPVOID*)&psl);
+  if (SUCCEEDED(hres))
+  {
+    psl->SetPath(lnk.path.c_str());
+    psl->SetArguments(lnk.argument.c_str());
+    psl->SetWorkingDirectory(lnk.directory.c_str());
+    psl->SetHotkey(lnk.hotkey);
+    psl->SetShowCmd(lnk.window);
+    psl->SetDescription(lnk.description.c_str());
+    psl->SetIconLocation(lnk.icon.first.c_str(), lnk.icon.second);
+
+    IPersistFile* ppf = nullptr;
+    hres = psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf);
+    if (SUCCEEDED(hres))
+    {
+      const auto lnk_file_path_tmp = to_string_W(lnk_file_path);
+      ppf->Save(lnk_file_path_tmp.c_str(), TRUE);
+      ppf->Release();
+    }
+
+    psl->Release();
+  }
+
+  CoUninitialize();
+
+  return VU_OK;
+}
+
+vu::VUResult create_shortcut_lnk_W(const std::wstring& lnk_file_path, const sLNKW& lnk)
+{
+  CoInitialize(nullptr);
+
+  IShellLinkW* psl = nullptr;
+  HRESULT hres = CoCreateInstance(
+    CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLinkW, (LPVOID*)&psl);
+  if (SUCCEEDED(hres))
+  {
+    psl->SetPath(lnk.path.c_str());
+    psl->SetArguments(lnk.argument.c_str());
+    psl->SetWorkingDirectory(lnk.directory.c_str());
+    psl->SetHotkey(lnk.hotkey);
+    psl->SetShowCmd(lnk.window);
+    psl->SetDescription(lnk.description.c_str());
+    psl->SetIconLocation(lnk.icon.first.c_str(), lnk.icon.second);
+
+    IPersistFile* ppf = nullptr;
+    hres = psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf);
+    if (SUCCEEDED(hres))
+    {
+      ppf->Save(lnk_file_path.c_str(), TRUE);
+      ppf->Release();
+    }
+
+    psl->Release();
+  }
+
+  CoUninitialize();
+
+  return VU_OK;
 }
 
 #endif // LNK
