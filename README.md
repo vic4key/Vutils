@@ -20,7 +20,7 @@ It helps your programming go easier, faster and simpler.
 
 ## Features
 
-* Classes
+* Features
 	* [GUID - Globally/Universally Unique Identifier](<https://en.wikipedia.org/wiki/Universally_unique_identifier>)
 	* [WMI - Windows Management Instrumentation](<https://docs.microsoft.com/en-us/windows/win32/wmisdk/wmi-start-page>)
 	* [Smart Buffer Memory](<https://www.google.com/search?q=buffer+class>)
@@ -33,6 +33,7 @@ It helps your programming go easier, faster and simpler.
 	* [Thread Pool](<https://en.wikipedia.org/wiki/Thread_pool>)
 	* [Read/Write/Parse INI File](<https://en.wikipedia.org/wiki/INI_file>)
 	* [Parse PE File](<https://en.wikipedia.org/wiki/Portable_Executable>)
+	* [Create/Parse LNK File Shortcut](<https://en.wikipedia.org/wiki/Shortcut_(computing)#Microsoft_Windows>)
 	* [Smart Stop Watch](<https://www.google.com/search?q=stopwatch+execution+time>)
 	* File System
 	* [File Mapping](<https://docs.microsoft.com/en-us/windows/win32/memory/file-mapping>)
@@ -43,21 +44,11 @@ It helps your programming go easier, faster and simpler.
 	* [Input Dialog](<https://www.google.com/search?q=input+dialog&source=lnms&tbm=isch>)
 	* [In-Memory Dialog](<https://docs.microsoft.com/en-us/cpp/mfc/using-a-dialog-template-in-memory>)
 	* [AOB Find Pattern](<https://wiki.cheatengine.org/index.php?title=Tutorials:AOBs>)
+	* [Window Message Decoder](<https://wiki.winehq.org/List_Of_Windows_Messages>)
 	* Font/Color/File/Directory Picker
 	* Cryptography (B64, CRC, MD5, SHA, etc)
-	* Miscellaneous
-
-* Functions
-	* Math
-	* Date/Time
-	* Data Types
-	* Message Box Formatting
-	* Message Debug Formatting
-	* String Formatting/Manipulation
-	* File/Directory Manipulation
-	* Process Manipulation
-	* Window Manipulation
-	* [Window Message Decoder](<https://wiki.winehq.org/List_Of_Windows_Messages>)
+	* File/Directory, Window, Process, Math Manipulation
+	* Shorten Formatting for Date/Time, String, Message Box, Debug Message
 	* Miscellaneous
 
 ## License
