@@ -14,7 +14,6 @@ DEF_SAMPLE(Picker)
   picker.choose_log_font(font);
   std::tcout << ts("FONT -> ") << font.lfFaceName << std::endl;
 
-
   std::tstring file_dir  = ts("C:\\Windows\\");
   std::tstring file_path = ts("example_default_file_name");
   const auto file_filter = ts("All Files (*.*)\0*.*\0Document (.doc)\0*.doc\0Text (.txt)\0*.txt\0");

@@ -3,8 +3,8 @@
 
 /* MinGW build EXE with static library
 G++ main.cpp -std=c++0x -lVutils -lgdi32 -o Test.exe && Test.exe
-G++ main.cpp -std=c++0x -lVutils -DVU_SOCKET_ENABLED -DVU_GUID_ENABLED -DVU_WMI_ENABLED -lws2_32 -lgdi32 -lrpcrt4 -lole32 -loleaut32 -lwbemuuid -lcomdlg32 -o Test.exe && Test.exe
 G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -lgdi32 -o Test.exe && Test.exe
+G++ main.cpp -std=c++0x -lVutils -DVU_SOCKET_ENABLED -DVU_GUID_ENABLED -DVU_WMI_ENABLED -lws2_32 -lgdi32 -lrpcrt4 -lole32 -loleaut32 -lwbemuuid -lcomdlg32 -o Test.exe && Test.exe
 G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_SOCKET_ENABLED -DVU_GUID_ENABLED -DVU_WMI_ENABLED -lws2_32 -lgdi32 -lrpcrt4 -lole32 -loleaut32 -lwbemuuid -lcomdlg32 -o Test.exe && Test.exe
 */
 
@@ -49,6 +49,8 @@ G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_SOCKET_ENAB
 #include "Sample.Service.h"
 #include "Sample.Picker.h"
 #include "Sample.Crypt.h"
+#include "Sample.Window.h"
+#include "Sample.Template.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -91,6 +93,8 @@ int _tmain(int argc, _TCHAR* argv[])
   // VU_SM_ADD_SAMPLE(ThreadPool);
   // VU_SM_ADD_SAMPLE(WMIProvider);
   // VU_SM_ADD_SAMPLE(Crypt);
+  // VU_SM_ADD_SAMPLE(Window);
+  // VU_SM_ADD_SAMPLE(Template);
 
   VU_SM_RUN();
 

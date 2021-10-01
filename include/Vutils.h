@@ -371,6 +371,14 @@ typedef struct _FONT_W
     , weight(0), char_set(ANSI_CHARSET), orientation(0) {}
 } sFontW;
 
+typedef std::vector<MONITORINFOEXA> Monitors_A;
+typedef std::vector<MONITORINFOEXW> Monitors_W;
+#ifdef _UNICODE
+#define Monitors Monitors_W
+#else
+#define Monitors Monitors_A
+#endif
+
 HWND vuapi get_console_window();
 HWND vuapi find_top_window(ulong pid);
 HWND vuapi find_main_window(HWND hwnd);
@@ -380,6 +388,8 @@ sFontA vuapi get_font_A(HWND hwnd);
 sFontW vuapi get_font_W(HWND hwnd);
 LONG vuapi conv_font_height_to_size(LONG height, HWND hwnd = nullptr);
 LONG vuapi conv_font_size_to_height(LONG size, HWND hwnd = nullptr);
+bool get_monitors_A(Monitors_A& monitors);
+bool get_monitors_W(Monitors_W& monitors);
 
 /**
  * File/Directory Working
@@ -610,6 +620,7 @@ void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, c
 /* Window Working */
 #define decode_wm decode_wm_W
 #define get_font get_font_W
+#define get_monitors get_monitors_W
 /* Process Working */
 #define name_to_pid name_to_pid_W
 #define pid_to_name pid_to_name_W
@@ -671,6 +682,7 @@ void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, c
 /* Window Working */
 #define decode_wm decode_wm_A
 #define get_font get_font_A
+#define get_monitors get_monitors_A
 /* Process Working */
 #define name_to_pid name_to_pid_A
 #define pid_to_name pid_to_name_A

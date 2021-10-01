@@ -73,6 +73,50 @@ HWND vuapi find_main_window(HWND hwnd)
   return find_main_window(hwnd_parent);
 }
 
+static BOOL CALLBACK MonitorEnumProc_A(HMONITOR hMonitor, HDC hdc, LPRECT lprcMonitor, LPARAM pData)
+{
+  auto& monitors = *reinterpret_cast<Monitors_A*>(pData);
+
+  MONITORINFOEXA mi;
+  memset(&mi, 0, sizeof(mi));
+  mi.cbSize = sizeof(mi);
+
+  if (GetMonitorInfoA(hMonitor, &mi) != FALSE)
+  {
+    monitors.push_back(mi);
+  }
+
+  return TRUE;
+}
+
+bool get_monitors_A(Monitors_A& monitors)
+{
+  monitors.clear();
+  return EnumDisplayMonitors(nullptr, nullptr, MonitorEnumProc_A, LPARAM(&monitors)) != FALSE;
+}
+
+static BOOL CALLBACK MonitorEnumProc_W(HMONITOR hMonitor, HDC hdc, LPRECT lprcMonitor, LPARAM pData)
+{
+  auto& monitors = *reinterpret_cast<Monitors_W*>(pData);
+
+  MONITORINFOEXW mi;
+  memset(&mi, 0, sizeof(mi));
+  mi.cbSize = sizeof(mi);
+
+  if (GetMonitorInfoW(hMonitor, &mi) != FALSE)
+  {
+    monitors.push_back(mi);
+  }
+
+  return TRUE;
+}
+
+bool get_monitors_W(Monitors_W& monitors)
+{
+  monitors.clear();
+  return EnumDisplayMonitors(nullptr, nullptr, MonitorEnumProc_W, LPARAM(&monitors)) != FALSE;
+}
+
 #define WM_DEF(id, name) { id, (char*) # name}
 
 std::string vuapi decode_wm_A(const ulong wm)
@@ -395,7 +439,7 @@ sFontA vuapi get_font_A(HWND hwnd)
         LOGFONTA lf = { 0 };
         GetObjectA(hf, sizeof(lf), &lf);
         result.name  = lf.lfFaceName;
-        result.size = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(hdc, LOGPIXELSY)); // 72 pixel/inch
+        result.size = conv_font_height_to_size(lf.lfHeight);
         result.italic = lf.lfItalic != FALSE;
         result.under_line = lf.lfUnderline != FALSE;
         result.strike_out = lf.lfStrikeOut != FALSE;
@@ -424,7 +468,7 @@ sFontW vuapi get_font_W(HWND hwnd)
         LOGFONTW lf = { 0 };
         GetObjectW(hf, sizeof(lf), &lf);
         result.name = lf.lfFaceName;
-        result.size = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(hdc, LOGPIXELSY)); // 72 pixel/inch
+        result.size = conv_font_height_to_size(lf.lfHeight);
         result.italic = lf.lfItalic != FALSE;
         result.under_line = lf.lfUnderline != FALSE;
         result.strike_out = lf.lfStrikeOut != FALSE;
