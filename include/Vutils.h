@@ -58,22 +58,27 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 
+#ifdef VU_SOCKET_ENABLED
+
 #ifndef _WINSOCK2API_
 #if defined(_WINDOWS_) || defined(_WINSOCKAPI_)
 #define WINDOWS_OR_WINSOCKAPI
 #endif // _WINDOWS_ || _WINSOCKAPI_
 #endif // _WINSOCK2API_
 
-#include <windows.h>
-#include <winsvc.h>
-
-#ifdef VU_SOCKET_ENABLED
 #ifdef WINDOWS_OR_WINSOCKAPI
 #error Vutils required to include above Windows.h or WinSock.h
 #else  // WINDOWS_OR_WINSOCKAPI
 #include <winsock2.h>
 #endif // WINDOWS_OR_WINSOCKAPI
+
 #endif // VU_SOCKET_ENABLED
+
+#include <windows.h>
+
+#ifndef _WIN_SVC_
+#include <winsvc.h>
+#endif // _WIN_SVC_
 
 #include <set>
 #include <cmath>
