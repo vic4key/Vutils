@@ -77,6 +77,7 @@ FOR /f "delims=|" %%i IN ('DIR /b %VU_SRC_DETAILS%\*.cpp') DO (
 
 G++ -c -std=c++0x -Wa,-mbig-obj %LIBS% -I%VU_INCLUDE% ^
 	%VU_3RD%\MH\src\buffer.cpp ^
+	%VU_3RD%\BI\src\BigInt.cpp ^
 	%VU_3RD%\HDE\src\hde32.cpp ^
 	%VU_3RD%\HDE\src\hde64.cpp ^
 	%VU_3RD%\TP11\src\Pool.cpp ^

@@ -327,6 +327,7 @@
     <ClInclude Include="3rdparty\TP11\include\threadpool11\threadpool11.h" />
     <ClInclude Include="3rdparty\TP11\include\threadpool11\Worker.h" />
     <ClInclude Include="3rdparty\UND\include\undname.h" />
+    <ClInclude Include="include\3rdparty\BI\BigInt.hpp" />
     <ClInclude Include="include\Boob.h" />
     <ClInclude Include="include\Vu.h" />
     <ClInclude Include="include\Vutils.h" />
@@ -336,6 +337,7 @@
     <ClInclude Include="src\details\lazy.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="3rdparty\BI\src\BigInt.cpp" />
     <ClCompile Include="3rdparty\HDE\src\hde32.cpp" />
     <ClCompile Include="3rdparty\HDE\src\hde64.cpp" />
     <ClCompile Include="3rdparty\MH\src\buffer.cpp" />

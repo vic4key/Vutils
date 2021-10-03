@@ -30,6 +30,7 @@
 *.zip
 *.7z
 *.bak
+*.vcs-cache
 /lib
 /obj
 /MD

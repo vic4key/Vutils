@@ -40,6 +40,15 @@
     <Filter Include="Third Party Files\Others">
       <UniqueIdentifier>{e5fa43e6-c641-43da-b9ed-9dd215388b20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Third Party Files\BI">
+      <UniqueIdentifier>{9ed14588-e9b8-4fd8-bf4d-793d8c84ba85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Third Files">
+      <UniqueIdentifier>{3ab95563-7e75-4398-837b-8b03a6c5ed75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Third Files\BI">
+      <UniqueIdentifier>{49aafee3-5932-43cb-a0b0-060ee761835e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Vutils.h">
@@ -107,6 +116,9 @@
     </ClInclude>
     <ClInclude Include="3rdparty\Others\sha3_impl.h">
       <Filter>Third Party Files\Others</Filter>
+    </ClInclude>
+    <ClInclude Include="include\3rdparty\BI\BigInt.hpp">
+      <Filter>Header Files\Third Files\BI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -241,6 +253,9 @@
     </ClCompile>
     <ClCompile Include="3rdparty\Others\sha3.cpp">
       <Filter>Third Party Files\Others</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\BI\src\BigInt.cpp">
+      <Filter>Third Party Files\BI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

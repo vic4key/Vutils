@@ -109,9 +109,13 @@ namespace threadpool11
 {
   class Pool;
   typedef std::function<void()> fn_task_t;
-}
+} // threadpool11
 
 using namespace threadpool11;
+
+// BigInt
+
+#include "3rdparty/BI/BigInt.hpp"
 
 namespace vu
 {
@@ -125,6 +129,10 @@ namespace vu
 const VUResult VU_OK  = 0;
 
 const size_t MAX_SIZE = MAXBYTE;
+
+/* Vutils Third Party */
+
+typedef BigInt BigNumber;
 
 /* ------------------------------------ Public Function(s) -------------------------------------- */
 
