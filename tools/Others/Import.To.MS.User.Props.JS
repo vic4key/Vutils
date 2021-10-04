@@ -2,8 +2,8 @@
  * for VS Global Settings
  */
 
-var XML = new ActiveXObject("MSXML2.DOMDocument");
 var WSH = new ActiveXObject("WScript.Shell");
+var XML = new ActiveXObject("MSXML2.DOMDocument");
 var FSO = new ActiveXObject("Scripting.FileSystemObject");
 
 // get configurations in the current machine
@@ -105,7 +105,7 @@ function AddVutils(filePath)
 	if (existed)
 	{
 		WScript.Echo(TAB + Vutils + " already existed");
-		return false;
+		return true;
 	}
 
 	// backup file before updating
