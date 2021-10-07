@@ -38,7 +38,6 @@
     <ProjectGuid>{6322FF62-00A6-4386-B7EC-6802BB5A22E0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Vutils</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MDd|Win32'" Label="Configuration">
