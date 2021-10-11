@@ -46,7 +46,7 @@ It helps your programming go easier, faster and simpler.
 	* [AOB Find Pattern](<https://wiki.cheatengine.org/index.php?title=Tutorials:AOBs>)
 	* [Window Message Decoder](<https://wiki.winehq.org/List_Of_Windows_Messages>)
 	* Font/Color/File/Directory Picker
-	* Cryptography (B64, CRC, MD5, SHA, etc)
+	* Cryptography (B64, CRC, MD5, SHA, Big Number, etc)
 	* File/Directory, Window, Process, Math Manipulation
 	* Shorten Formatting for Date/Time, String, Message Box, Debug Message
 	* Miscellaneous
