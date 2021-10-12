@@ -135,6 +135,14 @@ DEF_SAMPLE(Misc)
   }
   std::tcout << std::endl;
 
+  std::tstring url_encoded;
+  vu::url_encode(ts("vic.onl/+1 2-3%4"), url_encoded);
+  std::tcout << "URL Encoded : " << url_encoded << std::endl;
+
+  std::tstring url_decoded; // `vic.onl/+1 2-3%4`
+  vu::url_decode(ts("vic.onl%2f%2b1%202-3%254"), url_decoded);
+  std::tcout << "URL Decoded : " << url_decoded << std::endl;
+
   vu::Buffer data;
   auto result = vu::find_pattern(data, ts("11 ?? 33 ?? 44 ?? 55"));
   std::tcout << ts("Result is ") << result.first << ts(" at Offset ") << result.second << std::endl;

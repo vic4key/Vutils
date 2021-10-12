@@ -581,6 +581,68 @@ bool vuapi to_hex_bytes_W(const std::wstring& text, std::vector<byte>& bytes)
   return to_hex_bytes_A(s, bytes);
 }
 
+void vuapi url_encode_A(const std::string& text, std::string& result)
+{
+  auto s = to_string_W(text);
+  std::wstring res = L"";
+  url_encode_W(s, res);
+  result = to_string_A(res);
+}
+
+void vuapi url_encode_W(const std::wstring& text, std::wstring& result)
+{
+  result.clear();
+
+  for (const auto& c : text)
+  {
+    // uncomment this if you want to encode spaces with +
+    // if (c==' ')
+    // {
+    //   result += '+';
+    // }
+    // else
+    if (iswalnum(c) || c == L'-' || c == L'_' || c == L'.' || c == L'~')
+    {
+      result += c;
+    }
+    else
+    {
+      wchar_t s[10] = {0};
+      wprintf_s(s, L"%X", c);
+      result += c < 16 ? L"%0" : L"%";
+      result += s;
+    }
+  }
+}
+
+void vuapi url_decode_A(const std::string& text, std::string& result)
+{
+  auto s = to_string_W(text);
+  std::wstring res = L"";
+  url_decode_W(s, res);
+  result = to_string_A(res);
+}
+
+void vuapi url_decode_W(const std::wstring& text, std::wstring& result)
+{
+  result.clear();
+
+  for (size_t i = 0; i < text.length(); i++)
+  {
+    if (text[i] != L'%')
+    {
+      result += text[i] == L'+' ? L' ' : text[i];
+    }
+    else
+    {
+      int v = 0;
+      swscanf_s(text.substr(i + 1, 2).c_str(), L"%x", &v);
+      result += wchar_t(v);
+      i += 2;
+    }
+  }
+}
+
 /**
  * FundamentalA
  */
