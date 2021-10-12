@@ -5,7 +5,14 @@
 DEF_SAMPLE(Crypt)
 {
   std::tstring text = ts("this is an example");
-  std::vector<vu::byte> data = { 0x41, 0x42, 0x43, 0x44, 0x45 };
+
+  std::vector<vu::byte> data;
+
+  /* 0x41, 0x42, 0x43, 0x44, 0x45 */
+  data.clear();
+  data.push_back(0x41); data.push_back(0x42); data.push_back(0x43);
+  data.push_back(0x44); data.push_back(0x45);
+
   std::tstring file_path = ts("C:\\Windows\\explorer.exe");
 
   std::tcout << ts("Crypt - MD5") << std::endl;
@@ -61,7 +68,11 @@ DEF_SAMPLE(Crypt)
   std::tcout << ts("crc-32-file -> ") << std::hex << vu::crypt_crc_file(file_path, vu::eBits::_32) << std::endl;
   std::tcout << ts("crc-64-file -> ") << std::hex << vu::crypt_crc_file(file_path, vu::eBits::_64) << std::endl;
 
-  data = { 0x41, 0x42, 0x43, 0x44, 0x45 };
+  /* 0x41, 0x42, 0x43, 0x44, 0x45 */
+  data.clear();
+  data.push_back(0x41); data.push_back(0x42); data.push_back(0x43);
+  data.push_back(0x44); data.push_back(0x45);
+
   std::tcout << ts("crc-8  -> ") << std::hex << vu::crypt_crc_buffer(data, vu::eBits::_8)  << std::endl;
   std::tcout << ts("crc-16 -> ") << std::hex << vu::crypt_crc_buffer(data, vu::eBits::_16) << std::endl;
   std::tcout << ts("crc-32 -> ") << std::hex << vu::crypt_crc_buffer(data, vu::eBits::_32) << std::endl;

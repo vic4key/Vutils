@@ -608,7 +608,11 @@ void vuapi url_encode_W(const std::wstring& text, std::wstring& result)
     else
     {
       wchar_t s[10] = {0};
-      wprintf_s(s, L"%X", c);
+      #ifdef __MINGW32__
+      _itow_s(c, s, ARRAYSIZE(s), 16);
+      #else // _MSC_VER
+      _itow_s(c, s, 16);
+      #endif
       result += c < 16 ? L"%0" : L"%";
       result += s;
     }

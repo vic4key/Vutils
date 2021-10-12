@@ -121,8 +121,16 @@ DEF_SAMPLE(Misc)
   std::tcout << vu::format_bytes(9123456789101213, type, digits) << std::endl; // PB/PiB
   std::tcout << vu::format_bytes(9123456789101213145, type, digits) << std::endl; // EB/EiB*/
 
-  std::vector<vu::byte> hex_bytes = {
-    0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF };
+  std::vector<vu::byte> hex_bytes;
+
+  /* 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF */
+  hex_bytes.clear();
+  hex_bytes.push_back(0x00); hex_bytes.push_back(0x11); hex_bytes.push_back(0x22);
+  hex_bytes.push_back(0x33); hex_bytes.push_back(0x44); hex_bytes.push_back(0x55);
+  hex_bytes.push_back(0x66); hex_bytes.push_back(0x77); hex_bytes.push_back(0x88);
+  hex_bytes.push_back(0x99); hex_bytes.push_back(0xAA); hex_bytes.push_back(0xBB);
+  hex_bytes.push_back(0xCC); hex_bytes.push_back(0xDD); hex_bytes.push_back(0xEE);
+  hex_bytes.push_back(0xFF);
 
   auto hex_string = vu::to_hex_string(hex_bytes.data(), hex_bytes.size());
   std::tcout << hex_string << std::endl;
