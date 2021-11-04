@@ -60,3 +60,29 @@
 #define VU_FUNC_INFO __PRETTY_FUNCTION__
 #define VU_FUNC_NAME __FUNCTION__
 #endif
+
+// VA Arguments
+
+template <typename T>
+bool fn_cmp_va_args(T v, size_t count, ...)
+{
+  bool result = false;
+
+  va_list args;
+  va_start(args, count);
+
+  for (int i = 0; i < count; i++)
+  {
+    if (v == va_arg(args, T))
+    {
+      result = true;
+      break;
+    }
+  }
+
+  va_end(args);
+
+  return result;
+}
+
+#define VU_CONTAINS(v, n, ...) vu::fn_cmp_va_args((v), (n), __VA_ARGS__)
