@@ -52,7 +52,7 @@ public:
 
   point_t()
   {
-    for (register int i = 0; i < D; i++)
+    for (int i = 0; i < D; i++)
     {
       m_v[i] = T(0);
     }
@@ -62,7 +62,7 @@ public:
   {
     bool result = true;
 
-    for (register int i = 0; i < D; i++)
+    for (int i = 0; i < D; i++)
     {
       result &= m_v[i] == right.m_v[i];
     }
@@ -77,7 +77,7 @@ public:
 
   point_t& operator=(const point_t& right)
   {
-    for (register int i = 0; i < D; i++)
+    for (int i = 0; i < D; i++)
     {
       m_v[i] = right.m_v[i];
     }
@@ -87,7 +87,7 @@ public:
 
   point_t& operator+=(const point_t& right)
   {
-    for (register int i = 0; i < D; i++)
+    for (int i = 0; i < D; i++)
     {
       m_v[i] += right.m_v[i];
     }
@@ -97,7 +97,7 @@ public:
 
   point_t& operator-=(const point_t& right)
   {
-    for (register int i = 0; i < D; i++)
+    for (int i = 0; i < D; i++)
     {
       m_v[i] -= right.m_v[i];
     }
@@ -107,7 +107,7 @@ public:
 
   point_t& operator*=(const point_t& v)
   {
-    for (register int i = 0; i < D; i++)
+    for (int i = 0; i < D; i++)
     {
       this->m_v[i] *= v.m_v[i];
     }
@@ -117,7 +117,7 @@ public:
 
   point_t& operator/=(const point_t& v)
   {
-    for (register int i = 0; i < D; i++)
+    for (int i = 0; i < D; i++)
     {
       this->m_v[i] /= v.m_v[i];
     }
@@ -193,7 +193,7 @@ public:
   {
     os << "(";
 
-    for (register int i = 0; i < D; i++)
+    for (int i = 0; i < D; i++)
     {
       os << point.m_v[i] << (i < D - 1 ? ", " : "");
     }
@@ -207,7 +207,7 @@ public:
   {
     os << L"(";
 
-    for (register int i = 0; i < D; i++)
+    for (int i = 0; i < D; i++)
     {
       os << point.m_v[i] << (i < D - 1 ? L", " : L"");
     }
@@ -221,7 +221,7 @@ public:
   {
     double result = 0.;
 
-    for (register int i = 0; i < D; i++)
+    for (int i = 0; i < D; i++)
     {
       double v = abs_t(point.m_v[i] - m_v[i]);
       result += v * v;
@@ -242,7 +242,7 @@ public:
 
   point_t& scale(const double ratio)
   {
-    for (register int i = 0; i < D; i++)
+    for (int i = 0; i < D; i++)
     {
       this->m_v[i] = T(this->m_v[i] * ratio);
     }
@@ -398,7 +398,7 @@ public:
   {
     double result = 0.;
 
-    for (register int i = 0; i < D; i++)
+    for (int i = 0; i < D; i++)
     {
       result += this->m_v[i] * this->m_v[i];
     }
@@ -412,7 +412,7 @@ public:
   {
     double result = 0.;
 
-    for (register int i = 0; i < D; i++)
+    for (int i = 0; i < D; i++)
     {
       result += this->m_v[i] * v.m_v[i];
     }
