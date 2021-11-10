@@ -8,7 +8,7 @@ SET VU_NAME=Vutils
 ECHO *** %VU_NAME% static library for MSVC %VU_VSVER% ***
 
 IF NOT EXIST "%VU_VSDEV%" (
-	ECHO VS Platform Toolset %VU_VSVER% %VU_TSVER% not found on your machine.
+	ECHO Visual Studio %VU_VSVER% with Platform Toolset %VU_TSVER% not found on your machine.
 	ECHO Please select an existing version to build the solution.
 	GOTO L_EXIT
 )
