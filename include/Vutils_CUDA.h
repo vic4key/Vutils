@@ -167,9 +167,7 @@ __device__ void current_element_position_2d(dim3& position)
 
 __device__ int current_element_index_2d(int width, int height = NULL)
 {
-  int x = blockIdx.x * blockDim.x + threadIdx.x;
-  int y = blockIdx.y * blockDim.y + threadIdx.y;
-  return y * width + x;
+  return (blockIdx.y * blockDim.y + threadIdx.y) * width + (blockIdx.x * blockDim.x + threadIdx.x);
 }
 
 #endif // __CUDACC__
