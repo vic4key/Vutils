@@ -81,6 +81,16 @@ static __host__ std::string device_name(int id)
   return name;
 }
 
+static __host__ void device_synchronize()
+{
+  cudaDeviceSynchronize();
+}
+
+static __host__ void device_reset()
+{
+  cudaDeviceReset();
+}
+
 template <typename Fn>
 __host__ float calcuate_occupancy(int block_size, Fn fn)
 {
@@ -130,7 +140,7 @@ __host__ std::pair<dim3, dim3> calculate_execution_configuration_2d(int width, i
 namespace device
 {
 
-#ifdef __CUDA_ARCH__
+#ifdef __CUDACC__
 
 __device__ dim3 current_element_position_1d()
 {
@@ -155,7 +165,7 @@ __device__ int current_element_index_2d(int width, int height = NULL)
   return convert_position_to_index_2d(position, width, height);
 }
 
-#endif // __CUDA_ARCH__
+#endif // __CUDACC__
 
 } // namespace device
 
