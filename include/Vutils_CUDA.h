@@ -25,6 +25,7 @@
 #error Vutils CUDA required C++ compiler
 #endif
 
+#include <string>
 #include <utility>
 
 #include <cuda_runtime.h>
@@ -38,15 +39,15 @@ namespace vu
 #endif // VUTILS_H
 
 /**
- * For Both Host And Device
+ * For both Host and Device
  */
 
-__host__ __device__ dim3 convert_index_to_position_2d(int index, int width, int height = NULL)
+static __host__ __device__ dim3 convert_index_to_position_2d(int index, int width, int height = NULL)
 {
   return dim3(index % width, index / width, 1);
 }
 
-__host__ __device__ int convert_position_to_index_2d(const dim3& position, int width, int height = NULL)
+static __host__ __device__ int convert_position_to_index_2d(const dim3& position, int width, int height = NULL)
 {
   return position.y * width + position.x;
 }
@@ -55,8 +56,32 @@ __host__ __device__ int convert_position_to_index_2d(const dim3& position, int w
  * For Host
  */
 
+namespace host
+{
+
+static __host__ int device_count()
+{
+  int count = 0;
+  cudaGetDeviceCount(&count);
+  return count;
+}
+
+static __host__ int device_id()
+{
+  int id = -1;
+  cudaGetDevice(&id);
+  return id;
+}
+
+static __host__ std::string device_name(int id)
+{
+  cudaDeviceProp prop = { 0 };
+  cudaGetDeviceProperties(&prop, id);
+  return prop.name;
+}
+
 template <typename Fn>
-__host__ float host_calcuate_occupancy(int block_size, Fn fn)
+__host__ float calcuate_occupancy(int block_size, Fn fn)
 {
   int max_active_blocks;
   cudaOccupancyMaxActiveBlocksPerMultiprocessor(
@@ -75,19 +100,19 @@ __host__ float host_calcuate_occupancy(int block_size, Fn fn)
 }
 
 template <typename Fn>
-__host__ std::pair<int, int> host_calculate_execution_configuration_1d(int num_elements, Fn fn)
+__host__ std::pair<int, int> calculate_execution_configuration_1d(int num_elements, Fn fn)
 {
   int grid_size = 0;
   int block_size = 0;
   int min_grid_size = 0;
   cudaOccupancyMaxPotentialBlockSize(&min_grid_size, &block_size, static_cast<void*>(fn));
   grid_size = (num_elements + block_size - 1) / block_size;
-  grid_size = std::max(min_grid_size, grid_size);
+  grid_size = max(min_grid_size, grid_size);
   return { grid_size, block_size };
 }
 
 template <typename Fn>
-__host__ std::pair<dim3, dim3> host_calculate_execution_configuration_2d(int width, int height, Fn fn)
+__host__ std::pair<dim3, dim3> calculate_execution_configuration_2d(int width, int height, Fn fn)
 {
   const int num_threads_per_block = 32;
   dim3 block_size(num_threads_per_block, num_threads_per_block, 1);
@@ -95,32 +120,43 @@ __host__ std::pair<dim3, dim3> host_calculate_execution_configuration_2d(int wid
   return { grid_size, block_size };
 }
 
+} // namespace host
+
 /**
  * For Device
  */
 
-__device__ dim3 device_current_element_position_1d()
+namespace device
+{
+
+#ifdef __CUDA_ARCH__
+
+__device__ dim3 current_element_position_1d()
 {
   return dim3(blockIdx.x * blockDim.x + threadIdx.x, 1, 1);
 }
 
-__device__ int device_current_element_index_1d()
+__device__ int current_element_index_1d()
 {
   return blockIdx.x * blockDim.x + threadIdx.x;
 }
 
-__device__ dim3 device_current_element_position_2d()
+__device__ dim3 current_element_position_2d()
 {
   int x = blockIdx.x * blockDim.x + threadIdx.x;
   int y = blockIdx.y * blockDim.y + threadIdx.y;
   return dim3(x, y, 1);
 }
 
-__device__ int device_current_element_index_2d(int width, int height = NULL)
+__device__ int current_element_index_2d(int width, int height = NULL)
 {
-  auto position = device_current_element_position_2d();
+  auto position = current_element_position_2d();
   return convert_position_to_index_2d(position, width, height);
 }
+
+#endif // __CUDA_ARCH__
+
+} // namespace device
 
 } // namespace vu
 
