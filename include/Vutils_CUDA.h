@@ -18,11 +18,11 @@
 /* The Conditions of Vutils */
 
 #if !defined(_WIN32) && !defined(_WIN64)
-#error Vutils required Windows 32-bit/64-bit platform
+#error Vutils CUDA required Windows 32-bit/64-bit platform
 #endif
 
 #ifndef __cplusplus
-#error Vutils required C++ compiler
+#error Vutils CUDA required C++ compiler
 #endif
 
 #include <utility>
@@ -36,6 +36,24 @@ namespace vu
 #include "inline/types.inl"
 #include "inline/spechrs.inl"
 #endif // VUTILS_H
+
+/**
+ * For Both Host And Device
+ */
+
+__host__ __device__ dim3 convert_index_to_position_2d(int index, int width, int height = NULL)
+{
+  return dim3(index % width, index / width, 1);
+}
+
+__host__ __device__ int convert_position_to_index_2d(const dim3& position, int width, int height = NULL)
+{
+  return position.y * width + position.x;
+}
+
+/**
+ * For Host
+ */
 
 template <typename Fn>
 __host__ float host_calcuate_occupancy(int block_size, Fn fn)
@@ -77,36 +95,30 @@ __host__ std::pair<dim3, dim3> host_calculate_execution_configuration_2d(int wid
   return { grid_size, block_size };
 }
 
-__host__ __device__ dim3 convert_index_to_position_2d(int index, int width, int height = NULL)
-{
-  return dim3(index % width, index / width, 1);
-}
+/**
+ * For Device
+ */
 
-__host__ __device__ int convert_position_to_index_2d(const dim3& position, int width, int height = NULL)
-{
-  return position.y * width + position.x;
-}
-
-__device__ dim3 device_get_current_element_position_1d()
+__device__ dim3 device_current_element_position_1d()
 {
   return dim3(blockIdx.x * blockDim.x + threadIdx.x, 1, 1);
 }
 
-__device__ int device_get_current_element_index_1d()
+__device__ int device_current_element_index_1d()
 {
   return blockIdx.x * blockDim.x + threadIdx.x;
 }
 
-__device__ dim3 device_get_current_element_position_2d()
+__device__ dim3 device_current_element_position_2d()
 {
   int x = blockIdx.x * blockDim.x + threadIdx.x;
   int y = blockIdx.y * blockDim.y + threadIdx.y;
   return dim3(x, y, 1);
 }
 
-__device__ int device_get_current_element_index_2d(int width, int height = NULL)
+__device__ int device_current_element_index_2d(int width, int height = NULL)
 {
-  auto position = device_get_current_element_position_2d();
+  auto position = device_current_element_position_2d();
   return convert_position_to_index_2d(position, width, height);
 }
 
