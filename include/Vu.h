@@ -8,6 +8,7 @@
 #define VU_H
 
 #include <Vutils.h>
+
 #if defined(_MSC_VER) || defined(__BCPLUSPLUS__)
 #if defined(_DLL) // MD & MDd
 #ifdef _DEBUG     // MDd
