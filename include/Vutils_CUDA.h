@@ -75,9 +75,10 @@ static __host__ int device_id()
 
 static __host__ std::string device_name(int id)
 {
-  cudaDeviceProp prop = { 0 };
+  static cudaDeviceProp prop = { 0 };
   cudaGetDeviceProperties(&prop, id);
-  return prop.name;
+  std::string name(prop.name);
+  return name;
 }
 
 template <typename Fn>
