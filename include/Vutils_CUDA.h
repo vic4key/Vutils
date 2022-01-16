@@ -129,7 +129,9 @@ __host__ std::pair<int, int> calculate_execution_configuration_1d(int num_elemen
 template <typename Fn>
 __host__ std::pair<dim3, dim3> calculate_execution_configuration_2d(int width, int height, Fn fn)
 {
-  const int num_threads_per_block = 32;
+  int unused = 0;
+  int num_threads_per_block = 0; // block size by the way
+  cudaOccupancyMaxPotentialBlockSize(&unused, &num_threads_per_block, static_cast<void*>(fn));
   dim3 block_size(num_threads_per_block, num_threads_per_block, 1);
   dim3 grid_size(width / num_threads_per_block + 1, height / num_threads_per_block + 1, 1);
   return { grid_size, block_size };
