@@ -42,12 +42,16 @@ namespace vu
  * For both Host and Device
  */
 
-static __host__ __device__ dim3 convert_index_to_position_2d(int index, int width, int height = NULL)
+static __host__ __device__ void convert_index_to_position_2d(
+  dim3& position, int index, int width, int height = NULL)
 {
-  return dim3(index % width, index / width, 1);
+  position.x = index % width;
+  position.y = index / width;
+  position.z = 1;
 }
 
-static __host__ __device__ int convert_position_to_index_2d(const dim3& position, int width, int height = NULL)
+static __host__ __device__ int convert_position_to_index_2d(
+  const dim3& position, int width, int height = NULL)
 {
   return position.y * width + position.x;
 }
@@ -142,9 +146,11 @@ namespace device
 
 #ifdef __CUDACC__
 
-__device__ dim3 current_element_position_1d()
+__device__ void current_element_position_1d(dim3& position)
 {
-  return dim3(blockIdx.x * blockDim.x + threadIdx.x, 1, 1);
+  position.x = blockIdx.x * blockDim.x + threadIdx.x;
+  position.y = 1;
+  position.z = 1;
 }
 
 __device__ int current_element_index_1d()
@@ -152,17 +158,18 @@ __device__ int current_element_index_1d()
   return blockIdx.x * blockDim.x + threadIdx.x;
 }
 
-__device__ dim3 current_element_position_2d()
+__device__ void current_element_position_2d(dim3& position)
 {
-  int x = blockIdx.x * blockDim.x + threadIdx.x;
-  int y = blockIdx.y * blockDim.y + threadIdx.y;
-  return dim3(x, y, 1);
+  position.x = blockIdx.x * blockDim.x + threadIdx.x;
+  position.y = blockIdx.y * blockDim.y + threadIdx.y;
+  position.z = 1;
 }
 
 __device__ int current_element_index_2d(int width, int height = NULL)
 {
-  auto position = current_element_position_2d();
-  return convert_position_to_index_2d(position, width, height);
+  int x = blockIdx.x * blockDim.x + threadIdx.x;
+  int y = blockIdx.y * blockDim.y + threadIdx.y;
+  return y * width + x;
 }
 
 #endif // __CUDACC__
