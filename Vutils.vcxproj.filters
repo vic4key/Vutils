@@ -57,9 +57,6 @@
     <ClInclude Include="include\Vu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Boob.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\details\lazy.h">
       <Filter>Source Files\details</Filter>
     </ClInclude>
@@ -119,6 +116,12 @@
     </ClInclude>
     <ClInclude Include="include\3rdparty\BI\BigInt.hpp">
       <Filter>Header Files\Third Files\BI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vu_CUDA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vutils_CUDA.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -259,9 +262,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="include\Boob">
-      <Filter>Header Files</Filter>
-    </None>
     <None Include="include\Vu">
       <Filter>Header Files</Filter>
     </None>
@@ -291,6 +291,12 @@
     </None>
     <None Include="include\template\stlthread.tpl">
       <Filter>Header Files\Template Files</Filter>
+    </None>
+    <None Include="include\Vu_CUDA">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="include\Vutils_CUDA">
+      <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
 </Project>

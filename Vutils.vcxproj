@@ -327,9 +327,10 @@
     <ClInclude Include="3rdparty\TP11\include\threadpool11\Worker.h" />
     <ClInclude Include="3rdparty\UND\include\undname.h" />
     <ClInclude Include="include\3rdparty\BI\BigInt.hpp" />
-    <ClInclude Include="include\Boob.h" />
     <ClInclude Include="include\Vu.h" />
     <ClInclude Include="include\Vutils.h" />
+    <ClInclude Include="include\Vutils_CUDA.h" />
+    <ClInclude Include="include\Vu_CUDA.h" />
     <ClInclude Include="src\details\crypt.h" />
     <ClInclude Include="src\details\defs.h" />
     <ClInclude Include="src\details\strfmt.h" />
@@ -383,7 +384,6 @@
     <ClCompile Include="src\Vutils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="include\Boob" />
     <None Include="include\inline\com.inl" />
     <None Include="include\inline\defs.inl" />
     <None Include="include\inline\std.inl" />
@@ -394,6 +394,8 @@
     <None Include="include\template\stlthread.tpl" />
     <None Include="include\Vu" />
     <None Include="include\Vutils" />
+    <None Include="include\Vutils_CUDA" />
+    <None Include="include\Vu_CUDA" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
