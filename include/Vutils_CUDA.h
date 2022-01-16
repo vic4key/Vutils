@@ -34,6 +34,7 @@ namespace vu
 {
 
 #ifndef VUTILS_H
+#include "inline/defs.inl"
 #include "inline/types.inl"
 #include "inline/spechrs.inl"
 #endif // VUTILS_H
@@ -129,11 +130,18 @@ __host__ std::pair<int, int> calculate_execution_configuration_1d(int num_elemen
 template <typename Fn>
 __host__ std::pair<dim3, dim3> calculate_execution_configuration_2d(int width, int height, Fn fn)
 {
-  int unused = 0;
-  int num_threads_per_block = 0; // block size by the way
-  cudaOccupancyMaxPotentialBlockSize(&unused, &num_threads_per_block, static_cast<void*>(fn));
+  int min_grid_size = 0;
+  int num_threads_per_block = 0;
+  cudaOccupancyMaxPotentialBlockSize(&min_grid_size, &num_threads_per_block, static_cast<void*>(fn));
+
+  cudaDeviceProp prop = { 0 };
+  cudaGetDeviceProperties(&prop, host::device_id());
+
+  num_threads_per_block = static_cast<int>(sqrt(num_threads_per_block));
+  num_threads_per_block = VU_ALIGN_UP(num_threads_per_block, prop.warpSize);
   dim3 block_size(num_threads_per_block, num_threads_per_block, 1);
   dim3 grid_size(width / num_threads_per_block + 1, height / num_threads_per_block + 1, 1);
+
   return { grid_size, block_size };
 }
 

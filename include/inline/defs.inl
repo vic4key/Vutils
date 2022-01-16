@@ -63,6 +63,8 @@
 
 // VA Arguments
 
+#ifdef _INC_STDARG
+
 template <typename T>
 bool fn_cmp_va_args(T v, size_t count, ...)
 {
@@ -86,3 +88,5 @@ bool fn_cmp_va_args(T v, size_t count, ...)
 }
 
 #define VU_CONTAINS(v, n, ...) vu::fn_cmp_va_args((v), (n), __VA_ARGS__)
+
+#endif // _INC_STDARG
