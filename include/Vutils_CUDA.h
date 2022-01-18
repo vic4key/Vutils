@@ -128,6 +128,12 @@ __host__ std::pair<int, int> calculate_execution_configuration_1d(int num_elemen
 }
 
 template <typename Fn>
+__host__ std::pair<int, int> calculate_execution_configuration_1d(int width, int height, Fn fn)
+{
+  return calculate_execution_configuration_1d(width * height, fn);
+}
+
+template <typename Fn>
 __host__ std::pair<dim3, dim3> calculate_execution_configuration_2d(int width, int height, Fn fn)
 {
   int min_grid_size = 0;
