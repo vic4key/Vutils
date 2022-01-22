@@ -268,22 +268,24 @@ std::string vuapi get_last_error_A(ulong code)
     code = ::GetLastError();
   }
 
-  char* ptr_error_message = nullptr;
+  return std::system_category().message(code);
 
-  FormatMessageA(
-    FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,
-    NULL,
-    code,
-    LANG_USER_DEFAULT,
-    (char*)&ptr_error_message,
-    0,
-    NULL
-  );
-
-  std::string s(ptr_error_message);
-  s = trim_string_A(s);
-
-  return s;
+  // char* ptr_error_message = nullptr;
+  // 
+  // FormatMessageA(
+  //   FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,
+  //   NULL,
+  //   code,
+  //   LANG_USER_DEFAULT,
+  //   (char*)&ptr_error_message,
+  //   0,
+  //   NULL
+  // );
+  // 
+  // std::string s(ptr_error_message);
+  // s = trim_string_A(s);
+  // 
+  // return s;
 }
 
 std::wstring vuapi get_last_error_W(ulong code)
@@ -293,22 +295,26 @@ std::wstring vuapi get_last_error_W(ulong code)
     code = ::GetLastError();
   }
 
-  wchar* ptr_error_message = nullptr;
+  const auto s = get_last_error_A(code);
 
-  FormatMessageW(
-    FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,
-    NULL,
-    code,
-    LANG_USER_DEFAULT,
-    (wchar*)&ptr_error_message,
-    0,
-    NULL
-  );
+  return to_string_W(s);
 
-  std::wstring s(ptr_error_message);
-  s = trim_string_W(s);
-
-  return s;
+  // wchar* ptr_error_message = nullptr;
+  // 
+  // FormatMessageW(
+  //   FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,
+  //   NULL,
+  //   code,
+  //   LANG_USER_DEFAULT,
+  //   (wchar*)&ptr_error_message,
+  //   0,
+  //   NULL
+  // );
+  // 
+  // std::wstring s(ptr_error_message);
+  // s = trim_string_W(s);
+  // 
+  // return s;
 }
 
 std::string vuapi get_format_string_for_number(std::string type_id)
