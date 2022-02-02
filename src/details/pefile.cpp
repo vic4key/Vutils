@@ -708,7 +708,7 @@ eXBit vuapi get_pe_file_bits_W(const std::wstring& file_path)
   auto pDOSHeader = PIMAGE_DOS_HEADER(ptr);
   assert(pDOSHeader != nullptr);
 
-  auto pFileHeader = PIMAGE_FILE_HEADER(ptr + pDOSHeader->e_lfanew);
+  auto pFileHeader = PIMAGE_FILE_HEADER(ptr + pDOSHeader->e_lfanew + sizeof(DWORD)); // PE Offset + sizeof(Signature)
   assert(pFileHeader != nullptr);
 
   const auto Magic = *PWORD(PBYTE(pFileHeader) + sizeof(IMAGE_FILE_HEADER));
