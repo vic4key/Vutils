@@ -545,6 +545,8 @@ std::string vuapi undecorate_cpp_symbol_A(
   const std::string& name, const ushort flags = 0);   // UNDNAME_COMPLETE
 std::wstring vuapi undecorate_cpp_symbol_W(
   const std::wstring& name, const ushort flags = 0); // UNDNAME_COMPLETE
+eXBit vuapi get_pe_file_bits_A(const std::string& file_path);
+eXBit vuapi get_pe_file_bits_W(const std::wstring& file_path);
 
 /**
  * Wrapper
@@ -671,6 +673,7 @@ void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, c
 #define join_path join_path_W
 #define normalize_path normalize_path_W
 #define undecorate_cpp_symbol undecorate_cpp_symbol_W
+#define get_pe_file_bits get_pe_file_bits_W
 /* Wrapper */
 #define crypt_b64encode crypt_b64encode_W
 #define crypt_b64decode crypt_b64decode_W
@@ -735,6 +738,7 @@ void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, c
 #define join_path join_path_A
 #define normalize_path normalize_path_A
 #define undecorate_cpp_symbol undecorate_cpp_symbol_A
+#define get_pe_file_bits get_pe_file_bits_A
 /* Cryptography */
 #define crypt_b64encode crypt_b64encode_A
 #define crypt_b64decode crypt_b64decode_A

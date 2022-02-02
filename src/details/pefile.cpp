@@ -23,6 +23,10 @@ typedef struct _IMAGE_BASE_RELOCATION_ENTRY
 #define COUNT_RELOCATION_ENTRY(ptr)\
   (ptr == nullptr ? 0 : (PIMAGE_BASE_RELOCATION(ptr)->SizeOfBlock - sizeof(IMAGE_BASE_RELOCATION)) / sizeof(IMAGE_BASE_RELOCATION_ENTRY))
 
+/**
+ * PE Classes
+ */
+
 template<typename T>
 PEFileTX<T>::PEFileTX()
 {
@@ -677,6 +681,39 @@ VUResult vuapi PEFileTW<T>::parse()
   PEFileTX<T>::m_initialized = true;
 
   return VU_OK;
+}
+
+/**
+ * PE Functions
+ */
+
+// https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_optional_header32#members
+
+eXBit vuapi get_pe_file_bits_A(const std::string& file_path)
+{
+  auto s = to_string_W(file_path);
+  return get_pe_file_bits_W(s);
+}
+
+eXBit vuapi get_pe_file_bits_W(const std::wstring& file_path)
+{
+  std::vector<byte> data(KiB / 2);
+  if (!read_file_binary_W(file_path, data))
+  {
+    throw "read pe file failed";
+  }
+
+  auto ptr = data.data();
+
+  auto pDOSHeader = PIMAGE_DOS_HEADER(ptr);
+  assert(pDOSHeader != nullptr);
+
+  auto pFileHeader = PIMAGE_FILE_HEADER(ptr + pDOSHeader->e_lfanew);
+  assert(pFileHeader != nullptr);
+
+  const auto Magic = *PWORD(PBYTE(pFileHeader) + sizeof(IMAGE_FILE_HEADER));
+
+  return Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC ? eXBit::x86 : eXBit::x64;
 }
 
 } // namespace vu

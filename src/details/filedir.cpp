@@ -69,8 +69,6 @@ std::wstring vuapi get_file_type_W(const std::wstring& file_path)
 
 bool vuapi read_file_binary_A(const std::string& file_path, std::vector<byte>& data)
 {
-  data.clear();
-
   FILE* file = nullptr;
   fopen_s(&file, file_path.c_str(), "rb");
   if (file == nullptr)
@@ -82,18 +80,22 @@ bool vuapi read_file_binary_A(const std::string& file_path, std::vector<byte>& d
   size_t file_size = ftell(file);
   fseek(file, 0, SEEK_SET);
 
-  data.resize(file_size);
+  if (data.empty() || data.size() > file_size)
+  {
+    data.resize(file_size);
+  }
+
+  std::fill(data.begin(), data.end(), 0);
+
   size_t read_bytes = fread(&data[0], 1, data.size(), file);
 
   fclose(file);
 
-  return read_bytes == file_size;
+  return read_bytes == data.size();
 }
 
 bool vuapi read_file_binary_W(const std::wstring& file_path, std::vector<byte>& data)
 {
-  data.clear();
-
   FILE* file = nullptr;
   _wfopen_s(&file, file_path.c_str(), L"rb");
   if (file == nullptr)
@@ -105,12 +107,18 @@ bool vuapi read_file_binary_W(const std::wstring& file_path, std::vector<byte>& 
   size_t file_size = ftell(file);
   fseek(file, 0, SEEK_SET);
 
-  data.resize(file_size);
+  if (data.empty() || data.size() > file_size)
+  {
+    data.resize(file_size);
+  }
+
+  std::fill(data.begin(), data.end(), 0);
+
   size_t read_bytes = fread(&data[0], 1, data.size(), file);
 
   fclose(file);
 
-  return read_bytes == file_size;
+  return read_bytes == data.size();
 }
 
 bool vuapi write_file_binary_A(const std::string& file_path, const std::vector<byte>& data)
