@@ -57,17 +57,17 @@ Released under the [MIT](LICENSE.md) license
 
 ## Requirements
 
-Vutils requires the C++ Compiler that supported at least C++ 11
+Vutils requires the C++ Compiler that supported at least `C++ 11`
 
-Belows are IDE minimum version that supported C++ 11
+Belows are IDE minimum version that supported `C++ 11`
 
 * MS Visual C++ 2012 or later
-* MinGW 4.6.2 or later
+* MinGW 4.6 or later
 * C++ Builder 10 or later
 
 ## Installation
 
-* Clone/Download the repository [`Vutils`](<https://github.com/vic4key/Vutils.git>) to your machine
+* Clone or Download the repository [`Vutils`](<https://github.com/vic4key/Vutils.git>) to your machine
 * Run the batch file `tools\Getting.Started.CMD`
 
 * Build
@@ -79,9 +79,11 @@ Belows are IDE minimum version that supported C++ 11
 		* \<later\>
 
 * Configuration
-	* For `MS Visual Studio C++` (optional - automatic included to the VS global settings)
+	* For `MS Visual Studio C++`
+		* If you are using `Visual Studio 2012~2015`, you don't need to do anything, it automatic included in the global settings.
+		* If you are using `Visual Studio 2017` or later, you have to copy `Directory.Build.props` file to your solution folder that contains the .sln file.
 	* For `MinGW`
-		* Include : (optional)
+		* Include : *Don't need to do anything, automatic included in the global settings.*
 		* Library : `-lVutils` `-lgdi32 -lcomdlg32`
 			* If `SOCKET` enabled, insert option`-DVU_SOCKET_ENABLED -lws2_32`
 			* If `GUID` enabled, insert option `-DVU_GUID_ENABLED -lrpcrt4`
@@ -89,9 +91,9 @@ Belows are IDE minimum version that supported C++ 11
 	* For `C++ Builder` (later)
 
 * Usage
-	* Insert `#include <vu>` to your project
-	* Let's get started the namespace `vu`
-	* *Note: If building error or conflict, add `#define VU_NO_EX` before `#include <vu>` to disable all extended utilities*
+	* Insert `#include <vu>` to your source code.
+	* Let's get started with `vu`. Eg. `vu::format(...)`, `vu::find_top_window(...)`, `vu::Socket`, `vu::Process`, `vu::Service`, etc.
+	* *Note: If building error or conflict, add `#define VU_NO_EX` above of `#include <vu>` to disable all extended utilities.*
 
 ## Examples
 
