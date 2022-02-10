@@ -85,7 +85,7 @@ The minimum version of the following IDEs are supported `C++ 11`
     * If you are using `Visual Studio 2012~2015`, you don't need to do anything, it automatic included in the global settings.
     * If you are using `Visual Studio 2017` or later, you have to copy `Directory.Build.props` file to your solution folder that contains the `.sln` file.
   * For `MinGW`
-    * Include : *Don't need to do anything, automatic included in the global settings.*
+    * Include : You don't need to do anything, automatic included in the global settings.
     * Library : `-lVutils` `-lgdi32 -lcomdlg32`
       * If `SOCKET` enabled, insert option `-DVU_SOCKET_ENABLED -lws2_32`
       * If `GUID` enabled, insert option `-DVU_GUID_ENABLED -lrpcrt4`
