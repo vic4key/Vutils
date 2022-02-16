@@ -167,6 +167,8 @@ std::pair<bool, size_t> find_pattern_W(const Buffer& buffer, const std::wstring&
 std::pair<bool, size_t> find_pattern_A(const void* ptr, const size_t size, const std::string& pattern);
 std::pair<bool, size_t> find_pattern_W(const void* ptr, const size_t size, const std::wstring& pattern);
 
+#include "template/misc.tpl"
+
 /**
  * Math Working
  */

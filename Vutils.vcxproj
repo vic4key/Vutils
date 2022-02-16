@@ -390,6 +390,7 @@
     <None Include="include\inline\types.inl" />
     <None Include="include\inline\spechrs.inl" />
     <None Include="include\template\math.tpl" />
+    <None Include="include\template\misc.tpl" />
     <None Include="include\template\singleton.tpl" />
     <None Include="include\template\stlthread.tpl" />
     <None Include="include\Vu" />
