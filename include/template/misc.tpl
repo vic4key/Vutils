@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-void print()
+static void print()
 {
   std::cout << std::endl;
 }
@@ -23,7 +23,7 @@ void print(Head&& head, Tail&&... tail)
   print(tail...);
 }
 
-void wprint()
+static void wprint()
 {
   std::cout << std::endl;
 }
