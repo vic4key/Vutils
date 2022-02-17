@@ -89,7 +89,7 @@ static BOOL CALLBACK MonitorEnumProc_A(HMONITOR hMonitor, HDC hdc, LPRECT lprcMo
   return TRUE;
 }
 
-bool get_monitors_A(Monitors_A& monitors)
+bool vuapi get_monitors_A(Monitors_A& monitors)
 {
   monitors.clear();
   return EnumDisplayMonitors(nullptr, nullptr, MonitorEnumProc_A, LPARAM(&monitors)) != FALSE;
@@ -111,7 +111,7 @@ static BOOL CALLBACK MonitorEnumProc_W(HMONITOR hMonitor, HDC hdc, LPRECT lprcMo
   return TRUE;
 }
 
-bool get_monitors_W(Monitors_W& monitors)
+bool vuapi get_monitors_W(Monitors_W& monitors)
 {
   monitors.clear();
   return EnumDisplayMonitors(nullptr, nullptr, MonitorEnumProc_W, LPARAM(&monitors)) != FALSE;
@@ -481,6 +481,14 @@ sFontW vuapi get_font_W(HWND hwnd)
   }
 
   return result;
+}
+
+bool vuapi is_window_full_screen(HWND hwnd)
+{
+  WINDOWPLACEMENT wp = { 0 };
+  wp.length = sizeof(WINDOWPLACEMENT);
+  ::GetWindowPlacement(hwnd, &wp);
+  return wp.showCmd == SW_SHOWMAXIMIZED;
 }
 
 LONG vuapi conv_font_height_to_size(LONG height, HWND hwnd)
