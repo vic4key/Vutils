@@ -249,9 +249,11 @@ std::wstring vuapi upper_string_W(const std::wstring& string);
 std::string vuapi to_string_A(const std::wstring& string);
 std::wstring vuapi to_string_W(const std::string& string);
 std::vector<std::string> vuapi split_string_A(
-  const std::string& string, const std::string& seperate, bool remove_empty = false);
+  const std::string& string, const std::string& separator, bool remove_empty = false);
 std::vector<std::wstring> vuapi split_string_W(
-  const std::wstring& string, const std::wstring& seperate, bool remove_empty = false);
+  const std::wstring& string, const std::wstring& separator, bool remove_empty = false);
+std::string vuapi join_string_A(const std::vector<std::string> parts, const std::string& separator = "");
+std::wstring vuapi join_string_W(const std::vector<std::wstring> parts, const std::wstring& separator = L"");
 std::vector<std::string> vuapi multi_string_to_list_A(const char* ps_multi_string);
 std::vector<std::wstring> vuapi multi_string_to_list_W(const wchar* ps_multi_string);
 std::unique_ptr<char[]> vuapi list_to_multi_string_A(const std::vector<std::string>& strings);
@@ -642,6 +644,7 @@ void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, c
 #define lower_string lower_string_W
 #define upper_string upper_string_W
 #define split_string split_string_W
+#define join_string join_string_W
 #define multi_string_to_list multi_string_to_list_W
 #define list_to_multi_string list_to_multi_string_W
 #define load_rs_string load_rs_string_W
@@ -708,6 +711,7 @@ void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, c
 #define lower_string lower_string_A
 #define upper_string upper_string_A
 #define split_string split_string_A
+#define join_string join_string_A
 #define multi_string_to_list multi_string_to_list_A
 #define load_rs_string load_rs_string_A
 #define trim_string trim_string_A

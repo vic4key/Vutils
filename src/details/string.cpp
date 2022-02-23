@@ -188,7 +188,7 @@ std::wstring vuapi to_string_W(const std::string& string)
 
 template <class std_string_t>
 std::vector<std_string_t> split_string_T(
-  const std_string_t& string, const std_string_t& seperate, bool remove_empty)
+  const std_string_t& string, const std_string_t& separator, bool remove_empty)
 {
   std::vector<std_string_t> l;
   l.clear();
@@ -198,7 +198,7 @@ std::vector<std_string_t> split_string_T(
     return l;
   }
 
-  std_string_t s(string), sep(seperate), sub;
+  std_string_t s(string), sep(separator), sub;
   ulongptr start, end;
 
   start = 0;
@@ -218,15 +218,55 @@ std::vector<std_string_t> split_string_T(
 }
 
 std::vector<std::string> vuapi split_string_A(
-  const std::string& string, const std::string& seperate, bool remove_empty)
+  const std::string& string, const std::string& separator, bool remove_empty)
 {
-  return split_string_T<std::string>(string, seperate, remove_empty);
+  return split_string_T<std::string>(string, separator, remove_empty);
 }
 
 std::vector<std::wstring> vuapi split_string_W(
-  const std::wstring& string, const std::wstring& seperate, bool remove_empty)
+  const std::wstring& string, const std::wstring& separator, bool remove_empty)
 {
-  return split_string_T<std::wstring>(string, seperate, remove_empty);
+  return split_string_T<std::wstring>(string, separator, remove_empty);
+}
+
+template <class std_string_t>
+std_string_t vuapi join_string_T(const std::vector<std_string_t> parts, const std_string_t& separator)
+{
+  if (parts.empty())
+  {
+    return std_string_t();
+  }
+
+  if (parts.size() == 1)
+  {
+    return parts[0];
+  }
+
+  std_string_t result;
+
+  size_t num = parts.size();
+
+  for (size_t i = 0; i < num; i++)
+  {
+    result += parts[i];
+
+    if (i < num - 1)
+    {
+      result += separator;
+    }
+  }
+
+  return result;
+}
+
+std::string vuapi join_string_A(const std::vector<std::string> parts, const std::string& separator)
+{
+  return join_string_T<std::string>(parts, separator);
+}
+
+std::wstring vuapi join_string_W(const std::vector<std::wstring> parts, const std::wstring& separator)
+{
+  return join_string_T<std::wstring>(parts, separator);
 }
 
 std::vector<std::string> vuapi multi_string_to_list_A(const char* ps_multi_string)
