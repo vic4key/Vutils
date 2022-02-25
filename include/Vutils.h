@@ -2962,6 +2962,8 @@ protected:
  * Single Process
  */
 
+#define VU_SINGLE_PROCESS(app) vu::SingleProcess::instance().initialize(STRINGIZE(app))
+
 class SingleProcess : public SingletonT<SingleProcess>
 {
 public:

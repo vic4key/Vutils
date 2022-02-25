@@ -45,6 +45,10 @@
 #define ERROR_INCORRECT_SIZE 1462L
 #endif
 
+#ifndef STRINGIZE
+#define STRINGIZE(s) # s
+#endif // STRINGIZE
+
 // MSVC
 #ifdef _MSC_VER
 #define VU_FUNC_INFO __FUNCSIG__

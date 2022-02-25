@@ -1636,7 +1636,7 @@ void SingleProcess::fn_default(bool running)
   {
     const std::wstring title = extract_file_name_W(get_current_file_path_W());
     const std::wstring text = L"The application is running.\nWould you like to run a new instance?";
-    auto response = MessageBoxW(GetActiveWindow(), text.c_str(), title.c_str(), MB_YESNO | MB_ICONWARNING);
+    auto response = MessageBoxW(GetActiveWindow(), text.c_str(), title.c_str(), MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2);
     if (response == IDNO)
     {
       ExitProcess(0);
