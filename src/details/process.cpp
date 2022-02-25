@@ -1568,6 +1568,82 @@ const MODULEENTRY32W ProcessW::get_module_information()
   return result;
 }
 
+/**
+ * Single Process
+ */
+
+SingleProcess::SingleProcess() : m_name(L""), m_handle(nullptr)
+{
+}
+
+SingleProcess::~SingleProcess()
+{
+  this->finalize();
+}
+
+bool SingleProcess::initialize(const std::string& name, const std::function<void(bool running)> fn)
+{
+  const auto s = to_string_W(name);
+  return this->initialize(s, fn);
+}
+
+bool SingleProcess::initialize(const std::wstring& name, const std::function<void(bool running)> fn)
+{
+  if (!m_name.empty())
+  {
+    throw "single process initialized";
+  }
+
+  m_name = name;
+
+  auto running = this->running();
+
+  if (fn != nullptr)
+  {
+    fn(running);
+  }
+
+  return running;
+}
+
+void SingleProcess::finalize()
+{
+  if (m_handle != nullptr)
+  {
+    CloseHandle(m_handle);
+    m_handle = nullptr;
+    m_name = L"";
+  }
+}
+
+bool SingleProcess::running()
+{
+  auto handle = CreateEventW(nullptr, TRUE, FALSE, m_name.c_str());
+  if (GetLastError() == ERROR_ALREADY_EXISTS)
+  {
+    CloseHandle(handle);
+    return true;
+  }
+
+  m_handle = handle;
+
+  return false;
+}
+
+void SingleProcess::fn_default(bool running)
+{
+  if (running)
+  {
+    const std::wstring title = extract_file_name_W(get_current_file_path_W());
+    const std::wstring text = L"The application is running.\nWould you like to run a new instance?";
+    auto response = MessageBoxW(GetActiveWindow(), text.c_str(), title.c_str(), MB_YESNO | MB_ICONWARNING);
+    if (response == IDNO)
+    {
+      ExitProcess(0);
+    }
+  }
+}
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif // _MSC_VER

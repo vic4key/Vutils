@@ -2958,9 +2958,35 @@ protected:
   modules m_modules;
 };
 
+/**
+ * Single Process
+ */
+
+class SingleProcess : public SingletonT<SingleProcess>
+{
+public:
+  SingleProcess();
+  virtual ~SingleProcess();
+
+  static void fn_default(bool running);
+
+  bool initialize(const std::string&  name, const std::function<void(bool running)> fn = fn_default);
+  bool initialize(const std::wstring& name, const std::function<void(bool running)> fn = fn_default);
+  void finalize();
+  bool running();
+
+private:
+  HANDLE m_handle;
+  std::wstring m_name;
+};
+
 #ifdef Vutils_EXPORTS
 #define threadpool11_EXPORTING
 #endif // Vutils_EXPORTS
+
+/**
+ * Thread Pool
+ */
 
 #define MAX_NTHREADS -1
 
