@@ -829,6 +829,7 @@ ProcessX::ProcessX()
   , m_handle(nullptr)
   , m_wow64(eWow64::WOW64_ERROR)
   , m_bit(eXBit::x86)
+  , m_attached(false)
   , m_last_system_time_UTC(0)
   , m_last_system_time_per_core_UTC(0)
 {
@@ -847,22 +848,34 @@ ProcessX::ProcessX()
 
 ProcessX::~ProcessX()
 {
-  close(m_handle);
+  if (m_attached)
+  {
+    this->detach();
+  }
+  else
+  {
+    this->close(m_handle);
+  }
 }
 
-// ProcessX::ProcessX(ProcessX& right)
-// {
-//   *this = right;
-// }
+ProcessX::ProcessX(ProcessX& right)
+{
+  *this = right;
+}
 
-// ProcessX& ProcessX::operator=(ProcessX& right)
-// {
-//   m_pid = right.m_pid;
-//   m_handle = right.m_handle;
-//   m_wow64 = right.m_wow64;
-//   m_bit = right.m_bit;
-//   return *this;
-// }
+ProcessX& ProcessX::operator=(ProcessX& right)
+{
+  m_pid = right.m_pid;
+  m_handle = right.m_handle;
+  m_wow64 = right.m_wow64;
+  m_bit = right.m_bit;
+  m_attached = right.m_attached;
+  m_last_system_time_UTC = right.m_last_system_time_UTC;
+  m_last_system_time_per_core_UTC = right.m_last_system_time_per_core_UTC;
+  m_threads = right.m_threads;
+  m_memories = right.m_memories;
+  return *this;
+}
 
 bool ProcessX::operator==(ProcessX& right)
 {
@@ -871,6 +884,7 @@ bool ProcessX::operator==(ProcessX& right)
   result &= m_handle == right.m_handle;
   result &= m_wow64 == right.m_wow64;
   result &= m_bit == right.m_bit;
+  // result &= m_attached == right.m_attached;
   return result;
 }
 
@@ -935,12 +949,25 @@ bool ProcessX::attach(const HANDLE hp)
 
   m_pid = pid;
   m_handle = hp;
+  m_attached = true;
 
   SetLastError(ERROR_SUCCESS);
 
   this->parse();
 
   return true;
+}
+
+void ProcessX::detach()
+{
+  m_attached = false;
+  m_pid = INVALID_PID_VALUE;
+  m_handle = INVALID_HANDLE_VALUE;
+  m_wow64 = eWow64::WOW64_ERROR;
+  m_last_system_time_UTC = 0;
+  m_last_system_time_per_core_UTC = 0;
+  m_threads.clear();
+  m_memories.clear();
 }
 
 HANDLE ProcessX::open(const ulong pid)
@@ -1221,17 +1248,17 @@ ProcessA::~ProcessA()
 {
 }
 
-// ProcessA::ProcessA(ProcessA& right)
-// {
-//   *this = right;
-// }
+ProcessA::ProcessA(ProcessA& right)
+{
+  *this = right;
+}
 
-// ProcessA& ProcessA::operator=(ProcessA& right)
-// {
-//   ProcessX::operator=(right);
-//   m_name = right.m_name;
-//   return *this;
-// }
+ProcessA& ProcessA::operator=(ProcessA& right)
+{
+  ProcessX::operator=(right);
+  m_name = right.m_name;
+  return *this;
+}
 
 bool ProcessA::operator==(ProcessA& right)
 {
@@ -1406,17 +1433,17 @@ ProcessW::~ProcessW()
 {
 }
 
-// ProcessW::ProcessW(ProcessW& right)
-// {
-//   *this = right;
-// }
+ProcessW::ProcessW(ProcessW& right)
+{
+  *this = right;
+}
 
-// ProcessW& ProcessW::operator=(ProcessW& right)
-// {
-//   ProcessX::operator=(right);
-//   m_name = right.m_name;
-//   return *this;
-// }
+ProcessW& ProcessW::operator=(ProcessW& right)
+{
+  ProcessX::operator=(right);
+  m_name = right.m_name;
+  return *this;
+}
 
 bool ProcessW::operator==(ProcessW& right)
 {

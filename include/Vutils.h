@@ -2796,8 +2796,8 @@ public:
   // ProcessX(const ulong pid);
   virtual ~ProcessX();
 
-  // ProcessX(ProcessX& right);
-  // ProcessX& operator=(ProcessX& right);
+  ProcessX(ProcessX& right);
+  ProcessX& operator=(ProcessX& right);
   bool operator==(ProcessX& right);
   bool operator!=(ProcessX& right);
 
@@ -2810,6 +2810,8 @@ public:
 
   bool attach(const ulong pid);
   bool attach(const HANDLE hp);
+
+  void detach();
 
   bool read_memory(const ulongptr address, Buffer& buffer);
   bool read_memory(const ulongptr address, void* ptr_data, const size_t size);
@@ -2840,6 +2842,8 @@ protected:
   ulong  m_pid;
   HANDLE m_handle;
   eWow64 m_wow64;
+
+  bool m_attached;
 
   int64_t m_last_system_time_UTC;
   int64_t m_last_system_time_per_core_UTC;
@@ -2877,8 +2881,8 @@ public:
   // ProcessA(const ulong pid);
   virtual ~ProcessA();
 
-  // ProcessA(ProcessA& right);
-  // ProcessA& operator=(ProcessA& right);
+  ProcessA(ProcessA& right);
+  ProcessA& operator=(ProcessA& right);
   bool operator==(ProcessA& right);
   bool operator!=(ProcessA& right);
   friend std::ostream& operator<<(std::ostream& os, ProcessA& process);
@@ -2930,8 +2934,8 @@ public:
   // ProcessW(const ulong pid);
   virtual ~ProcessW();
 
-  // ProcessW(ProcessW& right);
-  // ProcessW& operator=(ProcessW& right);
+  ProcessW(ProcessW& right);
+  ProcessW& operator=(ProcessW& right);
   bool operator==(ProcessW& right);
   bool operator!=(ProcessW& right);
   friend std::ostream& operator<<(std::ostream& os, ProcessW& process);
