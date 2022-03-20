@@ -1,0 +1,42 @@
+name: MSVC
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - 'Test/**'
+      - '**/*.md'
+      - '**/*.txt'
+      - '**/*.sys'
+      - '**/*.dll'
+      - '**/*.exe'
+  pull_request:
+    branches: [ master ]
+env:
+  SOLUTION_FILE_PATH: .
+jobs:
+  build:
+    runs-on: windows-2019
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup VS Build Engine
+      uses: microsoft/setup-msbuild@v1.0.2
+    - name: Setup VS Developer Command Prompt
+      uses: TheMrMilchmann/setup-msvc-dev@v1.0.0
+      with:
+        arch: x64
+        toolset: 14.2
+    - name: Verify VS Build Environment
+      shell: cmd
+      run: |
+        ECHO.
+        msbuild -version
+        ECHO.
+        where cl.exe
+        IF ERRORLEVEL 1 exit ERRORLEVEL
+    - name: Perform Building
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: |
+        CD tools
+        SET VU_CI_BUILD=1
+        VS2019.Build.Static.Library.CMD
