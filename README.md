@@ -4,19 +4,24 @@ Vutils or Vic Utilities is an utility library written in [Modern C++](http://mod
 
 It helps your programming go easier, faster and simpler.
 
+## Status
+
+![](https://github.com/vn-os/Vutils/workflows/MSVC/badge.svg)
+![](https://github.com/vn-os/Vutils/workflows/MINGW/badge.svg)
+
 ## Information
 
 - [x] Windows 32-bit & 64-bit
 - [x] TCHAR - ANSI & UNICODE
-- [x] MinGW
-  - [x] for 32-bit application
-  - [x] for 64-bit application
 - [x] MS Visual Studio
   - [x] for 32-bit application
   - [x] for 64-bit application
-- [x] C++ Builder
+- [x] GNU MinGW
   - [x] for 32-bit application
   - [x] for 64-bit application
+- [ ] RAD C++ Builder
+  - [ ] for 32-bit application
+  - [ ] for 64-bit application
 
 ## Features
 
@@ -62,8 +67,8 @@ Vutils requires the C++ Compiler that supported at least `C++ 11`
 The minimum version of the following IDEs are supported `C++ 11`
 
 * MS Visual C++ 2012 or later
-* MinGW 4.6 or later
-* C++ Builder 10 or later
+* GNU MinGW 4.6 or later
+* RAD C++ Builder 10 or later
 
 ## Installation
 
@@ -75,22 +80,22 @@ The minimum version of the following IDEs are supported `C++ 11`
   
   * For `MS Visual Studio C++`
     * Run the batch file `tools\VS<version>.Build.Static.Library.CMD` that `<version>` is your Visual Studio version
-  * For `MinGW`
+  * For `GNU MinGW`
     * Run the batch file `tools\MinGW.Build.Static.Library.CMD`
-  * For `C++ Builder` (later)
+  * For `RAD C++ Builder` (later)
 
 * Configuration
   
   * For `Visual Studio C++`
     * If you are using `Visual Studio 2012~2015`, you don't need to do anything, it automatic included in the global settings.
     * If you are using `Visual Studio 2017` or later, you have to copy `Directory.Build.props` file to your solution folder that contains the `.sln` file.
-  * For `MinGW`
+  * For `GNU MinGW`
     * Include : You don't need to do anything, automatic included in the global settings.
     * Library : `-lVutils` `-lgdi32 -lcomdlg32`
       * If `SOCKET` enabled, insert option `-DVU_SOCKET_ENABLED -lws2_32`
       * If `GUID` enabled, insert option `-DVU_GUID_ENABLED -lrpcrt4`
       * If `WMI` enabled, insert option `-DVU_WMI_ENABLED -lole32 -loleaut32 -lwbemuuid`
-  * For `C++ Builder` (later)
+  * For `RAD C++ Builder` (later)
 
 * Usage
   

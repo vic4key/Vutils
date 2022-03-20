@@ -13,10 +13,17 @@ IF NOT EXIST "%VU_VSDEV%" (
 	GOTO L_EXIT
 )
 
+IF [%VU_CI_BUILD%]==[1] (
+	SET "confirm=1"
+	GOTO L_CI_BUILD
+)
+
 SET /p response=Are you sure to build solution (Y/[N]) ? 
 SET "confirm=0"
 IF [%response%]==[Y] SET confirm=1
 IF [%response%]==[y] SET confirm=1
+
+:L_CI_BUILD
 
 :: SET VU_VSDEV="path\to\VsDevCmd.bat"
 
@@ -25,15 +32,15 @@ IF [%confirm%]==[1] (
 	CALL "%VU_VSDEV%"
 	CD ..
 	:: 64-bit
-	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MD  /p:Platform=x64 /p:PlatformToolset=%VU_TSVER%
-	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MDd /p:Platform=x64 /p:PlatformToolset=%VU_TSVER%
-	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MT  /p:Platform=x64 /p:PlatformToolset=%VU_TSVER%
-	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MTd /p:Platform=x64 /p:PlatformToolset=%VU_TSVER%
+	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MD  /p:Platform=x64 /p:PlatformToolset=%VU_TSVER% -m
+	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MDd /p:Platform=x64 /p:PlatformToolset=%VU_TSVER% -m
+	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MT  /p:Platform=x64 /p:PlatformToolset=%VU_TSVER% -m
+	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MTd /p:Platform=x64 /p:PlatformToolset=%VU_TSVER% -m
 	:: 32-bit
-	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MD  /p:Platform=x86 /p:PlatformToolset=%VU_TSVER%
-	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MDd /p:Platform=x86 /p:PlatformToolset=%VU_TSVER%
-	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MT  /p:Platform=x86 /p:PlatformToolset=%VU_TSVER%
-	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MTd /p:Platform=x86 /p:PlatformToolset=%VU_TSVER%
+	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MD  /p:Platform=x86 /p:PlatformToolset=%VU_TSVER% -m
+	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MDd /p:Platform=x86 /p:PlatformToolset=%VU_TSVER% -m
+	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MT  /p:Platform=x86 /p:PlatformToolset=%VU_TSVER% -m
+	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MTd /p:Platform=x86 /p:PlatformToolset=%VU_TSVER% -m
 ) ELSE (
   ECHO Canceled
 )
@@ -42,4 +49,6 @@ ECHO.
 
 :L_EXIT
 
-PAUSE
+IF NOT [%VU_CI_BUILD%]==[1] (
+	PAUSE
+)

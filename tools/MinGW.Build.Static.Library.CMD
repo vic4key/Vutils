@@ -4,6 +4,7 @@ SETLOCAL EnableDelayedExpansion
 
 SET VU_NAME=Vutils
 SET VU_DIR=..
+SET VU_CFG=-c -std=c++0x -Wa,-mbig-obj
 SET VU_3RD=%VU_DIR%\3rdparty
 SET VU_LIB=%VU_DIR%\lib
 SET VU_SRC=%VU_DIR%\src
@@ -17,6 +18,12 @@ ECHO.
 IF NOT EXIST %VU_LIB% MKDIR %VU_LIB%
 
 SET LIBs=-DVutils_EXPORTS
+
+IF [%VU_CI_BUILD%]==[1] (
+	SET VU_CFG=%VU_CFG% -v
+	SET "response=1"
+	GOTO L_CI_BUILD
+)
 
 :: for SOCKET
 
@@ -68,6 +75,8 @@ ECHO.
 
 :: Execute
 
+:L_CI_BUILD
+
 ECHO [+] Compiling	-^> OK
 
 SET VU_SRC_DETAILS_CPP=
@@ -75,7 +84,7 @@ FOR /f "delims=|" %%i IN ('DIR /b %VU_SRC_DETAILS%\*.cpp') DO (
   SET "VU_SRC_DETAILS_CPP=%VU_SRC_DETAILS%\%%i !VU_SRC_DETAILS_CPP!"
 )
 
-G++ -c -std=c++0x -Wa,-mbig-obj %LIBS% -I%VU_INCLUDE% ^
+G++ %VU_CFG% %LIBS% -I%VU_INCLUDE% ^
 	%VU_3RD%\MH\src\buffer.cpp ^
 	%VU_3RD%\BI\src\BigInt.cpp ^
 	%VU_3RD%\HDE\src\hde32.cpp ^
@@ -107,4 +116,6 @@ ECHO [+] Building	-^> OK
 
 ECHO.
 
-PAUSE
+IF NOT [%VU_CI_BUILD%]==[1] (
+	PAUSE
+)
