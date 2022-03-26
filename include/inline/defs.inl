@@ -77,7 +77,7 @@ bool fn_cmp_va_args(T v, size_t count, ...)
   va_list args;
   va_start(args, count);
 
-  for (int i = 0; i < count; i++)
+  for (size_t i = 0; i < count; i++)
   {
     if (v == va_arg(args, T))
     {

@@ -415,6 +415,8 @@ HWND vuapi find_top_window(ulong pid);
 HWND vuapi find_main_window(HWND hwnd);
 std::string  vuapi decode_wm_A(const ulong wm);
 std::wstring vuapi decode_wm_W(const ulong wm);
+ulong vuapi decode_wm_A(const std::string& wm);
+ulong vuapi decode_wm_W(const std::wstring& wm);
 sFontA vuapi get_font_A(HWND hwnd);
 sFontW vuapi get_font_W(HWND hwnd);
 bool vuapi is_window_full_screen(HWND hwnd);
