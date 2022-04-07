@@ -84,14 +84,15 @@
 #include <cmath>
 #include <ctime>
 #include <mutex>
+#include <regex>
 #include <string>
 #include <vector>
+#include <thread>
 #include <memory>
+#include <numeric>
 #include <sstream>
 #include <cassert>
 #include <functional>
-#include <thread>
-#include <numeric>
 #include <type_traits>
 
 #ifdef _MSC_VER
@@ -280,6 +281,16 @@ bool vuapi contains_string_A(const std::string& text, const std::string& test, b
 bool vuapi contains_string_W(const std::wstring& text, const std::wstring& test, bool ignore_case = false);
 bool vuapi compare_string_A(const std::string& vl, const std::string& vr, bool ignore_case = false);
 bool vuapi compare_string_W(const std::wstring& vl, const std::wstring& vr, bool ignore_case = false);
+std::string vuapi regex_replace_string_A(
+  const std::string& text,
+  const std::regex& pattern,
+  const std::string& replacement,
+  std::regex_constants::match_flag_type flags = std::regex_constants::match_default);
+std::wstring vuapi regex_replace_string_W(
+  const std::wstring& text,
+  const std::wregex& pattern,
+  const std::wstring& replacement,
+  std::regex_constants::match_flag_type flags = std::regex_constants::match_default);
 
 /**
  * Process Working
@@ -656,6 +667,7 @@ void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, c
 #define ends_with ends_with_W
 #define contains_string contains_string_W
 #define compare_string compare_string_W
+#define regex_replace_string regex_replace_string_W
 /* Window Working */
 #define decode_wm decode_wm_W
 #define get_font get_font_W
@@ -722,6 +734,7 @@ void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, c
 #define ends_with ends_with_A
 #define contains_string contains_string_A
 #define compare_string compare_string_A
+#define regex_replace_string regex_replace_string_A
 /* Window Working */
 #define decode_wm decode_wm_A
 #define get_font get_font_A

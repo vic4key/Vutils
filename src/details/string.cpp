@@ -576,6 +576,38 @@ bool vuapi compare_string_W(const std::wstring& vl, const std::wstring& vr, bool
   return vl == vr;
 }
 
+std::string vuapi regex_replace_string_A(
+  const std::string& text,
+  const std::regex& pattern,
+  const std::string& replacement,
+  std::regex_constants::match_flag_type flags)
+{
+  std::string result = text;
+
+  while (std::regex_search(result, pattern, flags))
+  {
+    result = std::regex_replace(result, pattern, replacement, flags);
+  }
+
+  return result;
+}
+
+std::wstring vuapi regex_replace_string_W(
+  const std::wstring& text,
+  const std::wregex& pattern,
+  const std::wstring& replacement,
+  std::regex_constants::match_flag_type flags)
+{
+  std::wstring result = text;
+
+  while (std::regex_search(result, pattern, flags))
+  {
+    result = std::regex_replace(result, pattern, replacement, flags);
+  }
+
+  return result;
+}
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif // _MSC_VER
