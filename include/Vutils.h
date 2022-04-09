@@ -99,6 +99,10 @@
 #pragma warning(push)
 #endif // _MSC_VER
 
+#ifdef _MSC_VER
+#pragma pack(push)
+#endif // _MSC_VER
+
 /* Vutils Options */
 
 // MSVC
@@ -3294,6 +3298,10 @@ public:
 #endif // _UNICODE
 
 } // namespace vu
+
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif // _MSC_VER
 
 #ifdef _MSC_VER
 #pragma warning(pop)
