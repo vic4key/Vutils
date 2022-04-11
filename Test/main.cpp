@@ -58,6 +58,9 @@ int _tmain(int argc, _TCHAR* argv[])
     << _T("Windows Application")
     << _T(" ")
     << (vu::is_64bits(nullptr) ? _T("64-bit") : _T("32-bit"))
+    #if defined(_DEBUG) || defined(__DEBUG__)
+    << _T(" (Debug)")
+    #endif // _DEBUG
     << std::endl;
 
   #ifdef _UNICODE
