@@ -97,7 +97,7 @@ bool set_privilege_W(const std::wstring& privilege, const bool enable)
   return result;
 }
 
-std::string vuapi get_enviroment_A(const std::string name)
+std::string vuapi get_env_A(const std::string& name)
 {
   std::string s;
   s.clear();
@@ -138,7 +138,7 @@ std::string vuapi get_enviroment_A(const std::string name)
   return s;
 }
 
-std::wstring vuapi get_enviroment_W(const std::wstring name)
+std::wstring vuapi get_env_W(const std::wstring& name)
 {
   std::wstring s;
   s.clear();
@@ -177,6 +177,16 @@ std::wstring vuapi get_enviroment_W(const std::wstring name)
   s.assign(p.get());
 
   return s;
+}
+
+bool vuapi set_env_A(const std::string& name, const std::string& value)
+{
+  return SetEnvironmentVariableA(name.c_str(), value.c_str()) != FALSE;
+}
+
+bool vuapi set_env_W(const std::wstring& name, const std::wstring& value)
+{
+  return SetEnvironmentVariableW(name.c_str(), value.c_str()) != FALSE;
 }
 
 typedef std::vector<std::pair<bool, byte>> TPattern;

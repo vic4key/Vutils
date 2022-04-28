@@ -165,8 +165,10 @@ class Buffer;
 bool vuapi is_administrator();
 bool set_privilege_A(const std::string&  privilege, const bool enable);
 bool set_privilege_W(const std::wstring& privilege, const bool enable);
-std::string vuapi  get_enviroment_A(const std::string  name);
-std::wstring vuapi get_enviroment_W(const std::wstring name);
+std::string vuapi get_env_A(const std::string& name);
+std::wstring vuapi get_env_W(const std::wstring& name);
+bool vuapi set_env_A(const std::string& name, const std::string& value);
+bool vuapi set_env_W(const std::wstring& name, const std::wstring& value);
 std::pair<bool, size_t> find_pattern_A(const Buffer& buffer, const std::string&  pattern);
 std::pair<bool, size_t> find_pattern_W(const Buffer& buffer, const std::wstring& pattern);
 std::pair<bool, size_t> find_pattern_A(const void* ptr, const size_t size, const std::string& pattern);
@@ -643,7 +645,8 @@ void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, c
 #ifdef _UNICODE
 /* Misc Working */
 #define set_privilege set_privilege_W
-#define get_enviroment get_enviroment_W
+#define get_env get_env_W
+#define set_env set_env_W
 #define find_pattern find_pattern_W
 /* String Formatting */
 #define format format_W
@@ -711,7 +714,8 @@ void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, c
 #else // _UNICODE
 /* Misc Working */
 #define set_privilege set_privilege_A
-#define get_enviroment get_enviroment_A
+#define get_env get_env_A
+#define set_env set_env_A
 #define find_pattern find_pattern_A
 /* String Formatting */
 #define format format_A

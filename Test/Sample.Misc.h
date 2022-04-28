@@ -34,8 +34,8 @@ DEF_SAMPLE(Misc)
   std::cout << vu::to_string_A(L"THIS IS A WIDE STRING") << std::endl;
   std::wcout << vu::to_string_W("THIS IS AN ANSI STRING") << std::endl;
 
-  std::tcout << ts("Enviroment `PATH`") << std::endl;
-  std::tstring envValue = vu::get_enviroment(ts("PATH"));
+  std::tcout << ts("Environment `PATH`") << std::endl;
+  std::tstring envValue = vu::get_env(ts("PATH"));
   auto env = vu::split_string(envValue, ts(";"));
   for (auto e : env) {
     std::tcout << '\t' << e << std::endl;
