@@ -326,7 +326,9 @@
     <ClInclude Include="3rdparty\TP11\include\threadpool11\threadpool11.h" />
     <ClInclude Include="3rdparty\TP11\include\threadpool11\Worker.h" />
     <ClInclude Include="3rdparty\UND\include\undname.h" />
+    <ClInclude Include="3rdparty\WHW\WinHttpWrapper.h" />
     <ClInclude Include="include\3rdparty\BI\BigInt.hpp" />
+    <ClInclude Include="include\3rdparty\WHW\Types.h" />
     <ClInclude Include="include\Vu.h" />
     <ClInclude Include="include\Vutils.h" />
     <ClInclude Include="include\Vutils_CUDA.h" />
@@ -353,6 +355,7 @@
     <ClCompile Include="3rdparty\TP11\src\Pool.cpp" />
     <ClCompile Include="3rdparty\TP11\src\Worker.cpp" />
     <ClCompile Include="3rdparty\UND\src\undname.cpp" />
+    <ClCompile Include="3rdparty\WHW\WinHttpWrapper.cpp" />
     <ClCompile Include="src\details\asyncsocket.cpp" />
     <ClCompile Include="src\details\apihookiat.cpp" />
     <ClCompile Include="src\details\crypt.cpp" />
@@ -363,6 +366,7 @@
     <ClCompile Include="src\details\filedir.cpp" />
     <ClCompile Include="src\details\filemap.cpp" />
     <ClCompile Include="src\details\filesys.cpp" />
+    <ClCompile Include="src\details\restclient.cpp" />
     <ClCompile Include="src\details\strfmt.cpp" />
     <ClCompile Include="src\details\guid.cpp" />
     <ClCompile Include="src\details\inifile.cpp" />

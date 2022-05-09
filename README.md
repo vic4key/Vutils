@@ -35,6 +35,7 @@ It helps your programming go easier, faster and simpler.
   * Object-Oriented Registry
   * [Service Manager](<https://docs.microsoft.com/en-us/windows-hardware/drivers/gettingstarted/what-is-a-driver->)
   * [Sync/Async Socket](<https://docs.plm.automation.siemens.com/content/pl4x/18.1/T4EA/en_US/Teamcenter_Gateway-Technical_Connectivity_Guide/synchronous_vs_asynchronous.html>)
+  * [RESTful Client](<https://en.wikipedia.org/wiki/Representational_state_transfer>)
   * [Thread Pool](<https://en.wikipedia.org/wiki/Thread_pool>)
   * [Read/Write/Parse INI File](<https://en.wikipedia.org/wiki/INI_file>)
   * [Parse PE File](<https://en.wikipedia.org/wiki/Portable_Executable>)
@@ -91,7 +92,7 @@ The minimum version of the following IDEs are supported `C++ 11`
     * If you are using `Visual Studio 2017` or later, you have to copy `Directory.Build.props` file to your solution folder that contains the `.sln` file.
   * For `GNU MinGW`
     * Include : You don't need to do anything, automatic included in the global settings.
-    * Library : `-lVutils` `-lgdi32 -lcomdlg32`
+    * Library : `-lVutils` `-lgdi32 -lcomdlg32 -lwinhttp`
       * If `SOCKET` enabled, insert option `-DVU_SOCKET_ENABLED -lws2_32`
       * If `GUID` enabled, insert option `-DVU_GUID_ENABLED -lrpcrt4`
       * If `WMI` enabled, insert option `-DVU_WMI_ENABLED -lole32 -loleaut32 -lwbemuuid`
@@ -114,6 +115,7 @@ The minimum version of the following IDEs are supported `C++ 11`
 * [Test\Sample.StopWatch.h](Test/Sample.StopWatch.h)
 * [Test\Sample.ThreadPool.h](Test/Sample.ThreadPool.h)
 * [Test\Sample.AsyncSocket.h](https://github.com/vic4key/async-socket-example)
+* [Test\Sample.RESTClient.h](Test/Sample.RESTClient.h)
 * [Test\Sample.WMHooking.h](Test/Sample.WMHooking.h)
 * [Test\Sample.INLHooking.h](Test/Sample.INLHooking.h)
 * [Test\Sample.IATHooking.h](Test/Sample.IATHooking.h)

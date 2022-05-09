@@ -406,7 +406,7 @@ static const struct { ulong wm; char* text; } LIST_WIN_MESSAGES[] = \
 
 std::string vuapi decode_wm_A(const ulong wm)
 {
-  std::string result = "";
+  std::string result = "<unknown>";
 
   for (auto e : LIST_WIN_MESSAGES)
   {

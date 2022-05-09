@@ -49,6 +49,12 @@
     <Filter Include="Header Files\Third Files\BI">
       <UniqueIdentifier>{49aafee3-5932-43cb-a0b0-060ee761835e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Third Party Files\WHW">
+      <UniqueIdentifier>{f7cc1e70-01ee-4bd9-acf5-fa8ddfe5616f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Third Files\WHW">
+      <UniqueIdentifier>{86898ad2-6ff1-46a0-9826-ebaab5fd5920}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Vutils.h">
@@ -122,6 +128,12 @@
     </ClInclude>
     <ClInclude Include="include\Vutils_CUDA.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\WHW\WinHttpWrapper.h">
+      <Filter>Third Party Files\WHW</Filter>
+    </ClInclude>
+    <ClInclude Include="include\3rdparty\WHW\Types.h">
+      <Filter>Header Files\Third Files\WHW</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -259,6 +271,12 @@
     </ClCompile>
     <ClCompile Include="3rdparty\BI\src\BigInt.cpp">
       <Filter>Third Party Files\BI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\details\restclient.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\WHW\WinHttpWrapper.cpp">
+      <Filter>Third Party Files\WHW</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

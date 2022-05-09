@@ -105,6 +105,9 @@
     <ClInclude Include="Sample.Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sample.RESTClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

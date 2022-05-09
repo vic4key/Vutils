@@ -92,6 +92,7 @@ G++ %VU_CFG% %LIBS% -I%VU_INCLUDE% ^
 	%VU_3RD%\TP11\src\Pool.cpp ^
 	%VU_3RD%\TP11\src\Worker.cpp ^
 	%VU_3RD%\UND\src\undname.cpp ^
+	%VU_3RD%\WHW\WinHttpWrapper.cpp ^
 	%VU_3RD%\Others\base64.cpp ^
 	%VU_3RD%\Others\md5.cpp ^
 	%VU_3RD%\Others\sha1.cpp ^

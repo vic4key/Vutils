@@ -164,6 +164,7 @@
     <ClInclude Include="Sample.Picker.h" />
     <ClInclude Include="Sample.Process.h" />
     <ClInclude Include="Sample.Registry.h" />
+    <ClInclude Include="Sample.RESTClient.h" />
     <ClInclude Include="Sample.Service.h" />
     <ClInclude Include="Sample.Singleton.h" />
     <ClInclude Include="Sample.Socket.h" />

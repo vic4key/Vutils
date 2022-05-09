@@ -137,6 +137,17 @@ using namespace threadpool11;
 
 #include "3rdparty/BI/BigInt.hpp"
 
+// WinHTTP Wrapper
+
+#include "3rdparty/WHW/Types.h"
+
+namespace WinHttpWrapper
+{
+  class HttpRequest;
+}
+
+using namespace WinHttpWrapper;
+
 namespace vu
 {
 
@@ -441,6 +452,8 @@ LONG vuapi conv_font_height_to_size(LONG height, HWND hwnd = nullptr);
 LONG vuapi conv_font_size_to_height(LONG size, HWND hwnd = nullptr);
 bool vuapi get_monitors_A(Monitors_A& monitors);
 bool vuapi get_monitors_W(Monitors_W& monitors);
+std::string vuapi decode_http_status_A(const ulong code);
+std::wstring vuapi decode_http_status_W(const ulong code);
 
 /**
  * File/Directory Working
@@ -701,7 +714,9 @@ void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, c
 #define normalize_path normalize_path_W
 #define undecorate_cpp_symbol undecorate_cpp_symbol_W
 #define get_pe_file_bits get_pe_file_bits_W
-/* Wrapper */
+/* Network Working */
+#define decode_http_status decode_http_status_W
+/* Cryptography */
 #define crypt_b64encode crypt_b64encode_W
 #define crypt_b64decode crypt_b64decode_W
 #define crypt_md5_buffer crypt_md5_buffer_W
@@ -769,6 +784,8 @@ void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, c
 #define normalize_path normalize_path_A
 #define undecorate_cpp_symbol undecorate_cpp_symbol_A
 #define get_pe_file_bits get_pe_file_bits_A
+/* Network Working */
+#define decode_http_status decode_http_status_A
 /* Cryptography */
 #define crypt_b64encode crypt_b64encode_A
 #define crypt_b64decode crypt_b64decode_A
@@ -3253,6 +3270,76 @@ public:
     const ulong flags = DEFAULT_CHOOSE_FILE_FLAGS);
 };
 
+// RESTClient
+
+enum class scheme_t
+{
+  http,
+  https,
+};
+
+using namespace WinHttpWrapper;
+
+class RESTClientW;
+
+class RESTClientA
+{
+public:
+  RESTClientA(
+    const scheme_t scheme,
+    const std::string& host,
+    const int port,
+    const std::string& user_agent = "Vutils",
+    const std::string& server_user = "",
+    const std::string& server_pass = "",
+    const std::string& proxy_user  = "",
+    const std::string& proxy_pass  = ""
+  );
+
+  virtual ~RESTClientA();
+
+  bool get(const std::string& endpoint, HttpResponse& response,
+    const std::string& header = "");
+  bool del(const std::string& endpoint, HttpResponse& response,
+    const std::string& header = "");
+  bool put(const std::string& endpoint, HttpResponse& response,
+    const std::string& body, const std::string& header = "");
+  bool post(const std::string& endpoint, HttpResponse& response,
+    const std::string& body, const std::string& header = "");
+
+private:
+  RESTClientW* m_ptr_impl;
+};
+
+class RESTClientW
+{
+public:
+  RESTClientW(
+    const scheme_t scheme,
+    const std::wstring& host,
+    const int port,
+    const std::wstring& user_agent  = L"Vutils",
+    const std::wstring& server_user = L"",
+    const std::wstring& server_pass = L"",
+    const std::wstring& proxy_user  = L"",
+    const std::wstring& proxy_pass  = L""
+  );
+
+  virtual ~RESTClientW();
+
+  bool get(const std::wstring& endpoint, HttpResponse& response,
+    const std::wstring& header = L"");
+  bool del(const std::wstring& endpoint, HttpResponse& response,
+    const std::wstring& header = L"");
+  bool put(const std::wstring& endpoint, HttpResponse& response,
+    const std::string& body, const std::wstring& header = L"");
+  bool post(const std::wstring& endpoint, HttpResponse& response,
+    const std::string& body, const std::wstring& header = L"");
+
+private:
+  HttpRequest* m_ptr_impl;
+};
+
 /*---------- The definition of common structure(s) which compatible both ANSI & UNICODE ----------*/
 
 #ifdef _UNICODE
@@ -3281,6 +3368,7 @@ public:
 #define WMIProvider WMIProviderW
 #define Fundamental FundamentalW
 #define Picker PickerW
+#define RESTClient RESTClientW
 #else // _UNICODE
 #define UIDGlobal GUIDA
 #define INLHooking INLHookingA
@@ -3299,6 +3387,7 @@ public:
 #define WMIProvider WMIProviderA
 #define Fundamental FundamentalA
 #define Picker PickerA
+#define RESTClient RESTClientA
 #endif // _UNICODE
 
 } // namespace vu
