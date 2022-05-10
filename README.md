@@ -41,7 +41,7 @@ It helps your programming go easier, faster and simpler.
   * [Parse PE File](<https://en.wikipedia.org/wiki/Portable_Executable>)
   * [Create/Parse LNK File Shortcut](<https://en.wikipedia.org/wiki/Shortcut_(computing)#Microsoft_Windows>)
   * [Smart Stop Watch](<https://www.google.com/search?q=stopwatch+execution+time>)
-  * File System
+  * [File System Helper](<https://en.wikipedia.org/wiki/File_system>)
   * [File Mapping](<https://docs.microsoft.com/en-us/windows/win32/memory/file-mapping>)
   * [IAT/INL API Hooking](<https://en.wikipedia.org/wiki/Hooking>)
   * [Windows Message Hooking](<https://docs.microsoft.com/en-us/windows/win32/winmsg/hooks>)
@@ -86,7 +86,7 @@ The minimum version of the following IDEs are supported `C++ 11`
   * For `RAD C++ Builder` (later)
 
 * Configuration
-  
+
   * For `Visual Studio C++`
     * If you are using `Visual Studio 2012~2015`, you don't need to do anything, it automatic included in the global settings.
     * If you are using `Visual Studio 2017` or later, you have to copy `Directory.Build.props` file to your solution folder that contains the `.sln` file.
