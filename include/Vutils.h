@@ -3282,6 +3282,8 @@ using namespace WinHttpWrapper;
 
 class RESTClientW;
 
+typedef HttpResponse http_response_t;
+
 class RESTClientA
 {
 public:
@@ -3298,13 +3300,13 @@ public:
 
   virtual ~RESTClientA();
 
-  bool get(const std::string& endpoint, HttpResponse& response,
+  bool get(const std::string& endpoint, http_response_t& response,
     const std::string& header = "");
-  bool del(const std::string& endpoint, HttpResponse& response,
+  bool del(const std::string& endpoint, http_response_t& response,
     const std::string& header = "");
-  bool put(const std::string& endpoint, HttpResponse& response,
+  bool put(const std::string& endpoint, http_response_t& response,
     const std::string& body, const std::string& header = "");
-  bool post(const std::string& endpoint, HttpResponse& response,
+  bool post(const std::string& endpoint, http_response_t& response,
     const std::string& body, const std::string& header = "");
 
 private:
@@ -3327,13 +3329,13 @@ public:
 
   virtual ~RESTClientW();
 
-  bool get(const std::wstring& endpoint, HttpResponse& response,
+  bool get(const std::wstring& endpoint, http_response_t& response,
     const std::wstring& header = L"");
-  bool del(const std::wstring& endpoint, HttpResponse& response,
+  bool del(const std::wstring& endpoint, http_response_t& response,
     const std::wstring& header = L"");
-  bool put(const std::wstring& endpoint, HttpResponse& response,
+  bool put(const std::wstring& endpoint, http_response_t& response,
     const std::string& body, const std::wstring& header = L"");
-  bool post(const std::wstring& endpoint, HttpResponse& response,
+  bool post(const std::wstring& endpoint, http_response_t& response,
     const std::string& body, const std::wstring& header = L"");
 
 private:
