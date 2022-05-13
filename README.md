@@ -59,7 +59,7 @@ It helps your programming go easier, faster and simpler.
 
 ## License
 
-Released under the [MIT](LICENSE.md) license
+Released under the [MIT](LICENSE.md) license (and its third parties per se are also released under the MIT license)
 
 ## Requirements
 
