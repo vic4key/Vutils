@@ -121,7 +121,7 @@ bool vuapi is_64bits(ulong pid)
   return process.bit() == arch::x64;
 }
 
-bool vuapi rpm(
+bool vuapi read_memory(
   const HANDLE hp, const void* address, void* buffer, const SIZE_T size, const bool force)
 {
   ulong  protection = 0;
@@ -137,7 +137,7 @@ bool vuapi rpm(
   return num_read_bytes == size;
 }
 
-bool vuapi rpm_ex(
+bool vuapi read_memory_ex(
   const arch bit,
   const HANDLE hp,
   const void* address,
@@ -156,7 +156,7 @@ bool vuapi rpm_ex(
 
   if (offsets.empty())
   {
-    result = rpm(hp, LPVOID(address), buffer, size, force);
+    result = read_memory(hp, LPVOID(address), buffer, size, force);
   }
   else
   {
@@ -164,7 +164,7 @@ bool vuapi rpm_ex(
     {
       bool is_offset = i < n_offsets - 1;
 
-      result &= rpm(
+      result &= read_memory(
         hp,
         LPCVOID(ulonglong(address) + offsets.at(i)),
         is_offset ? LPVOID(&address) : buffer,
@@ -182,7 +182,7 @@ bool vuapi rpm_ex(
   return result;
 }
 
-bool vuapi wpm(
+bool vuapi write_memory(
   const HANDLE hp, const void* address, const void* buffer, const SIZE_T size, const bool force)
 {
 
@@ -199,7 +199,7 @@ bool vuapi wpm(
   return n_written_bytes == size;
 }
 
-bool vuapi wpm_ex(
+bool vuapi write_memory_ex(
   const arch bit,
   const HANDLE hp,
   const void* address,
@@ -218,7 +218,7 @@ bool vuapi wpm_ex(
 
   if (offsets.empty())
   {
-    result = wpm(hp, LPVOID(address), buffer, size, force);
+    result = write_memory(hp, LPVOID(address), buffer, size, force);
   }
   else
   {
@@ -226,7 +226,7 @@ bool vuapi wpm_ex(
     {
       bool is_offset = i < n_offsets - 1;
 
-      result &= rpm(
+      result &= read_memory(
         hp,
         LPCVOID(ulonglong(address) + offsets.at(i)),
         LPVOID(&address),
@@ -706,7 +706,7 @@ VUResult vuapi inject_dll_A(ulong pid, const std::string& dll_file_path, bool wa
     return 6;
   }
 
-  if (!wpm(hp.get(), ptr_block, dll_file_path.c_str(), dll_file_path.length() * sizeof(char)))
+  if (!write_memory(hp.get(), ptr_block, dll_file_path.c_str(), dll_file_path.length() * sizeof(char)))
   {
     return 7;
   }
@@ -791,7 +791,7 @@ VUResult vuapi inject_dll_W(ulong pid, const std::wstring& dll_file_path, bool w
     return 6;
   }
 
-  if (!wpm(hp.get(), ptr_block, dll_file_path.c_str(), dll_file_path.length() * sizeof(wchar_t)))
+  if (!write_memory(hp.get(), ptr_block, dll_file_path.c_str(), dll_file_path.length() * sizeof(wchar_t)))
   {
     return 7;
   }
@@ -1025,7 +1025,7 @@ bool ProcessX::read_memory(const ulongptr address, Buffer& buffer)
     return false;
   }
 
-  return read_memory(address, buffer.get_ptr(), buffer.get_size());
+  return this->read_memory(address, buffer.get_ptr(), buffer.get_size());
 }
 
 bool ProcessX::read_memory(const ulongptr address, void* ptr_data, const size_t size)
@@ -1035,7 +1035,7 @@ bool ProcessX::read_memory(const ulongptr address, void* ptr_data, const size_t 
     return false;
   }
 
-  auto result = rpm(m_handle, LPCVOID(address), ptr_data, size, true);
+  auto result = vu::read_memory(m_handle, LPCVOID(address), ptr_data, size, true);
 
   m_last_error_code = GetLastError();
 
@@ -1044,7 +1044,7 @@ bool ProcessX::read_memory(const ulongptr address, void* ptr_data, const size_t 
 
 bool ProcessX::write_memory(const ulongptr address, const Buffer& buffer)
 {
-  return write_memory(address, buffer.get_ptr(), buffer.get_size());
+  return this->write_memory(address, buffer.get_ptr(), buffer.get_size());
 }
 
 bool ProcessX::write_memory(const ulongptr address, const void* ptr_data, const size_t size)
@@ -1054,7 +1054,7 @@ bool ProcessX::write_memory(const ulongptr address, const void* ptr_data, const 
     return false;
   }
 
-  auto result = wpm(m_handle, LPCVOID(address), ptr_data, size, true);
+  auto result = vu::write_memory(m_handle, LPCVOID(address), ptr_data, size, true);
 
   m_last_error_code = GetLastError();
 

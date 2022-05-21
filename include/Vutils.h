@@ -368,13 +368,13 @@ HMODULE vuapi remote_get_module_handle_A(ulong pid, const std::string& module_na
 HMODULE vuapi remote_get_module_handle_W(ulong pid, const std::wstring& module_name);
 VUResult vuapi inject_dll_A(ulong pid, const std::string& dll_file_path, bool wait_loading = true);
 VUResult vuapi inject_dll_W(ulong pid, const std::wstring& dll_file_path, bool wait_loading = true);
-bool vuapi rpm(
+bool vuapi read_memory(
   const HANDLE hp,
   const void* address,
   void* buffer,
   const SIZE_T size,
   const bool force = false);
-bool vuapi rpm_ex(
+bool vuapi read_memory_ex(
   const arch bit,
   const HANDLE hp,
   const void* address,
@@ -382,12 +382,12 @@ bool vuapi rpm_ex(
   const SIZE_T size,
   const bool force = false,
   const SIZE_T n_offsets = 0, ...);
-bool vuapi wpm(const HANDLE hp,
+bool vuapi write_memory(const HANDLE hp,
   const void* address,
   const void* buffer,
   const SIZE_T size,
   const bool force = false);
-bool vuapi wpm_ex(const arch bit,
+bool vuapi write_memory_ex(const arch bit,
   const HANDLE hp,
   const void* address,
   const void* buffer,

@@ -134,7 +134,7 @@ DEF_SAMPLE(PEFile)
   for (const auto& entry : pe.get_relocation_entries())
   {
     auto value = vu::peX(0);
-    vu::rpm(process.handle(), LPVOID(vu::peX(module.modBaseAddr) + entry.rva), &value, sizeof(value));
+    process.read_memory(vu::peX(module.modBaseAddr) + entry.rva, &value, sizeof(value));
 
     #ifdef _WIN64
     auto fmt = ts("%llX : %llX -> %llX");
