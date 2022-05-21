@@ -6,7 +6,8 @@
 
 // version 1.0.3: Set the text regardless the http status, not just for HTTP OK 200
 
-#pragma once
+#ifndef WinHttpWrapper_H
+#define WinHttpWrapper_H
 
 #include <string>
 #define WIN32_LEAN_AND_MEAN
@@ -27,16 +28,9 @@ namespace WinHttpWrapper
 			const std::wstring& proxy_username = L"",
 			const std::wstring& proxy_password = L"",
 			const std::wstring& server_username = L"",
-			const std::wstring& server_password = L"")
-			: m_Domain(domain)
-			, m_Port(port)
-			, m_Secure(secure)
-			, m_UserAgent(user_agent)
-			, m_ProxyUsername(proxy_username)
-			, m_ProxyPassword(proxy_password)
-			, m_ServerUsername(server_username)
-			, m_ServerPassword(server_password)
-		{}
+			const std::wstring& server_password = L"");
+
+		virtual ~HttpRequest();
 
 		bool Get(const std::wstring& rest_of_path,
 			const std::wstring& requestHeader,
@@ -84,3 +78,5 @@ namespace WinHttpWrapper
 	};
 
 }
+
+#endif // WinHttpWrapper_H

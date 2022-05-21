@@ -17,6 +17,33 @@
 #define WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY 4
 #endif // !WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY
 
+namespace WinHttpWrapper
+{
+
+HttpRequest::HttpRequest(
+  const std::wstring& domain,
+  int port,
+  bool secure,
+  const std::wstring& user_agent,
+  const std::wstring& proxy_username,
+  const std::wstring& proxy_password,
+  const std::wstring& server_username,
+  const std::wstring& server_password)
+  : m_Domain(domain)
+  , m_Port(port)
+  , m_Secure(secure)
+  , m_UserAgent(user_agent)
+  , m_ProxyUsername(proxy_username)
+  , m_ProxyPassword(proxy_password)
+  , m_ServerUsername(server_username)
+  , m_ServerPassword(server_password)
+{
+}
+
+HttpRequest::~HttpRequest()
+{
+}
+
 bool WinHttpWrapper::HttpRequest::Get(
 	const std::wstring& rest_of_path,
 	const std::wstring& requestHeader,
@@ -408,5 +435,7 @@ DWORD WinHttpWrapper::HttpRequest::ChooseAuthScheme(DWORD dwSupportedSchemes)
 	else
 		return 0;
 }
+
+} // WinHttpWrapper
 
 #pragma warning(pop)
