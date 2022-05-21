@@ -1134,7 +1134,7 @@ class AsyncSocket : public LastError
 public:
   typedef std::function<void(Socket& client)> fn_prototype_t;
 
-  enum function_t : uint
+  enum function : uint
   {
     CONNECT,
     OPEN,
@@ -1144,7 +1144,7 @@ public:
     UNDEFINED,
   };
 
-  enum class mode_t : uint
+  enum class side_type : uint
   {
     SERVER,
     CLIENT,
@@ -1156,7 +1156,7 @@ public:
     const vu::Socket::protocol_t proto = IPPROTO_IP);
   virtual ~AsyncSocket();
 
-  mode_t vuapi mode();
+  side_type vuapi side();
 
   bool vuapi available();
   bool vuapi running();
@@ -1189,7 +1189,7 @@ public:
   IResult vuapi send(const SOCKET& connection, const char* ptr_data, int size, const Socket::flags_t flags = MSG_NONE);
   IResult vuapi send(const SOCKET& connection, const Buffer& data, const Socket::flags_t flags = MSG_NONE);
 
-  virtual void on(const function_t type, const fn_prototype_t fn); // must be mapping before call run(...)
+  virtual void on(const function type, const fn_prototype_t fn); // must be mapping before call run(...)
 
   virtual void on_connect(Socket& connection);
   virtual void on_open(Socket&  connection);
@@ -1209,12 +1209,12 @@ protected:
 
 protected:
   vu::Socket m_socket;
-  mode_t m_mode;
+  side_type m_side;
   bool m_running;
   DWORD m_n_events;
   SOCKET m_connections[WSA_MAXIMUM_WAIT_EVENTS];
   WSAEVENT m_events[WSA_MAXIMUM_WAIT_EVENTS];
-  fn_prototype_t m_functions[function_t::UNDEFINED];
+  fn_prototype_t m_functions[function::UNDEFINED];
   std::mutex m_mutex;
   HANDLE m_thread;
 };
@@ -1229,7 +1229,7 @@ protected:
  * @brief Hook/Unhook a function in a module by name.
  * @define The prefix of redirection function must be  : Hfn
  * @define The prefix of real function pointer must be : pfn
- * @param[in] O The CINLHook instance.
+ * @param[in] O The INLHooking instance.
  * @param[in] M The module name.
  * @param[in] F The function name.
  * @return  true if the function succeeds. Otherwise false.
@@ -3207,7 +3207,7 @@ public:
   PickerX(HWND hwnd = nullptr);
   virtual ~PickerX();
 
-  enum class action
+  enum class action_type
   {
     open,
     save,
@@ -3238,7 +3238,7 @@ public:
   bool choose_directory(std::string& directory, const ulong flags = DEFAULT_CHOOSE_DIR_FLAGS);
 
   bool choose_file(
-    const action action,
+    const action_type action,
     std::string& file_path,
     const std::string& initial_dir = "",
     const char* filters = DEFAULT_CHOOSE_FILE_FILTERS_A,
@@ -3264,7 +3264,7 @@ public:
   bool choose_directory(std::wstring& directory, const ulong flags = DEFAULT_CHOOSE_DIR_FLAGS);
 
   bool choose_file(
-    const action action,
+    const action_type action,
     std::wstring& file_path,
     const std::wstring& initial_dir = L"",
     const wchar* filters = DEFAULT_CHOOSE_FILE_FILTERS_W,
@@ -3279,7 +3279,7 @@ public:
 
 // RESTClient
 
-enum class scheme_t
+enum class scheme_type
 {
   http,
   https,
@@ -3295,7 +3295,7 @@ class RESTClientA
 {
 public:
   RESTClientA(
-    const scheme_t scheme,
+    const scheme_type scheme,
     const std::string& host,
     const int port,
     const std::string& user_agent = "Vutils",
@@ -3324,7 +3324,7 @@ class RESTClientW
 {
 public:
   RESTClientW(
-    const scheme_t scheme,
+    const scheme_type scheme,
     const std::wstring& host,
     const int port,
     const std::wstring& user_agent  = L"Vutils",

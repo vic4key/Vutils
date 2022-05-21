@@ -13,7 +13,7 @@ namespace vu
 {
 
 RESTClientA::RESTClientA(
-  const scheme_t scheme,
+  const scheme_type scheme,
   const std::string& host,
   const int port,
   const std::string& user_agent,
@@ -64,7 +64,7 @@ bool RESTClientA::post(
 }
 
 RESTClientW::RESTClientW(
-  const scheme_t scheme,
+  const scheme_type scheme,
   const std::wstring& host,
   const int port,
   const std::wstring& user_agent,
@@ -76,7 +76,7 @@ RESTClientW::RESTClientW(
   m_ptr_impl = new HttpRequest(
     host,
     port,
-    scheme == scheme_t::https,
+    scheme == scheme_type::https,
     user_agent,
     proxy_user,
     proxy_pass,

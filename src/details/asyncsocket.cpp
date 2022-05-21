@@ -20,11 +20,11 @@ AsyncSocket::AsyncSocket(
   const vu::Socket::protocol_t proto)
   : m_socket(af, type, proto), m_thread(INVALID_HANDLE_VALUE), LastError()
 {
-  UNREFERENCED_PARAMETER(m_mode);
+  UNREFERENCED_PARAMETER(m_side);
 
   this->initialze();
 
-  for (uint i = 0; i < function_t::UNDEFINED; i++)
+  for (uint i = 0; i < function::UNDEFINED; i++)
   {
     m_functions[i] = nullptr;
   }
@@ -45,9 +45,9 @@ void vuapi AsyncSocket::initialze()
   m_running = false;
 }
 
-AsyncSocket::mode_t vuapi AsyncSocket::mode()
+AsyncSocket::side_type vuapi AsyncSocket::side()
 {
-  return m_mode;
+  return m_side;
 }
 
 bool vuapi AsyncSocket::available()
@@ -70,7 +70,7 @@ VUResult vuapi AsyncSocket::bind(const std::string& address, const ushort port)
   auto result = m_socket.bind(address, port);
   if (result == VU_OK)
   {
-    m_mode = mode_t::SERVER;
+    m_side = side_type::SERVER;
   }
 
   this->set_last_error_code(m_socket.get_last_error_code());
@@ -151,7 +151,7 @@ VUResult vuapi AsyncSocket::connect(const Socket::sEndPoint& endpoint)
   if (result == VU_OK)
   {
     m_last_error_code = ERROR_SUCCESS;
-    m_mode = mode_t::CLIENT;
+    m_side = side_type::CLIENT;
     m_connections[m_n_events] = m_socket.handle();
     m_events[m_n_events] = event;
     m_n_events++;
@@ -181,7 +181,7 @@ std::set<SOCKET> vuapi AsyncSocket::get_connections()
         continue;
       }
 
-      if (m_mode == mode_t::SERVER && socket == m_socket.handle())
+      if (m_side == side_type::SERVER && socket == m_socket.handle())
       {
         continue;
       }
@@ -451,15 +451,15 @@ IResult vuapi AsyncSocket::do_close(WSANETWORKEVENTS& events, SOCKET& connection
   return VU_OK;
 }
 
-void AsyncSocket::on(const function_t type, const fn_prototype_t fn)
+void AsyncSocket::on(const function type, const fn_prototype_t fn)
 {
-  assert(!m_running && type < function_t::UNDEFINED);
+  assert(!m_running && type < function::UNDEFINED);
   m_functions[type] = fn;
 }
 
 void AsyncSocket::on_connect(Socket& connection)
 {
-  if (auto& fn = m_functions[function_t::CONNECT])
+  if (auto& fn = m_functions[function::CONNECT])
   {
     fn(connection);
   }
@@ -467,7 +467,7 @@ void AsyncSocket::on_connect(Socket& connection)
 
 void AsyncSocket::on_open(Socket& connection)
 {
-  if (auto& fn = m_functions[function_t::OPEN])
+  if (auto& fn = m_functions[function::OPEN])
   {
     fn(connection);
   }
@@ -475,7 +475,7 @@ void AsyncSocket::on_open(Socket& connection)
 
 void AsyncSocket::on_send(Socket& connection)
 {
-  if (auto& fn = m_functions[function_t::SEND])
+  if (auto& fn = m_functions[function::SEND])
   {
     fn(connection);
   }
@@ -483,7 +483,7 @@ void AsyncSocket::on_send(Socket& connection)
 
 void AsyncSocket::on_recv(Socket& connection)
 {
-  if (auto& fn = m_functions[function_t::RECV])
+  if (auto& fn = m_functions[function::RECV])
   {
     fn(connection);
   }
@@ -491,7 +491,7 @@ void AsyncSocket::on_recv(Socket& connection)
 
 void AsyncSocket::on_close(Socket& connection)
 {
-  if (auto& fn = m_functions[function_t::CLOSE])
+  if (auto& fn = m_functions[function::CLOSE])
   {
     fn(connection);
   }
