@@ -21,7 +21,7 @@ namespace vu
  * IATElement
  */
 
-struct sIATElement
+struct IATElement
 {
   std::string target;
   std::string module;
@@ -29,16 +29,16 @@ struct sIATElement
   const void* original;
   const void* replacement;
 
-  sIATElement() : target(""), module(""), function(""), original(nullptr), replacement(nullptr) {}
+  IATElement() : target(""), module(""), function(""), original(nullptr), replacement(nullptr) {}
 
-  sIATElement(
+  IATElement(
     const std::string& t,
     const std::string& m,
     const std::string& f,
     const void* o = 0,
     const void* r = 0) : target(t), module(m), function(f), original(o), replacement(r) {}
 
-  const sIATElement& operator=(const sIATElement& right)
+  const IATElement& operator=(const IATElement& right)
   {
     target = right.target;
     module = right.module;
@@ -48,7 +48,7 @@ struct sIATElement
     return *this;
   }
 
-  bool operator==(const sIATElement& right) const
+  bool operator==(const IATElement& right) const
   {
     return\
       upper_string_A(target) == upper_string_A(right.target) &&
@@ -56,7 +56,7 @@ struct sIATElement
       upper_string_A(function) == upper_string_A(right.function);
   }
 
-  bool operator!=(const sIATElement& right) const
+  bool operator!=(const IATElement& right) const
   {
     return !(*this == right);
   }
@@ -79,10 +79,10 @@ IATHookingA::IATElements::iterator IATHookingA::find(
   const std::string& module,
   const std::string& function)
 {
-  return std::find(m_iat_elements.begin(), m_iat_elements.end(), sIATElement(target, module, function));
+  return std::find(m_iat_elements.begin(), m_iat_elements.end(), IATElement(target, module, function));
 }
 
-IATHookingA::IATElements::iterator IATHookingA::find(const sIATElement& element)
+IATHookingA::IATElements::iterator IATHookingA::find(const IATElement& element)
 {
   return this->find(element.target, element.module, element.function);
 }
@@ -107,7 +107,7 @@ VUResult IATHookingA::install(
     return 1;
   }
 
-  auto element = sIATElement(target, module, function, nullptr, replacement);
+  auto element = IATElement(target, module, function, nullptr, replacement);
 
   if (this->perform(iat_action::IAT_INSTALL, element) != VU_OK)
   {
@@ -153,7 +153,7 @@ VUResult IATHookingA::uninstall(
   return VU_OK;
 }
 
-VUResult IATHookingA::perform(const iat_action action, sIATElement& element)
+VUResult IATHookingA::perform(const iat_action action, IATElement& element)
 {
   if (element.target.empty() || element.module.empty() || element.function.empty())
   {
@@ -165,7 +165,7 @@ VUResult IATHookingA::perform(const iat_action action, sIATElement& element)
   {
     // msg_debug_A("[%p] [%p] %s!%s\n", ptr_iat->u1.Function, ptr_int->u1.Function, m.c_str(), f.c_str());
   
-    if (element == sIATElement(element.target, m, f))
+    if (element == IATElement(element.target, m, f))
     {
       const void* address = 0;
 

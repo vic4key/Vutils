@@ -39,11 +39,11 @@ namespace vu
 bool vuapi GetAssembleInstruction(
   const HDE::tagHDE& hde,
   const ulong offset,
-  std::vector<sMemoryInstruction>& instructions
+  std::vector<MemoryInstruction>& instructions
 )
 {
   ulong pos_disp = 0;
-  sMemoryInstruction mi = {0};
+  MemoryInstruction mi = {0};
   bool result = false, found_relative = false;;
 
   // http://wiki.osdev.org/X86-64_Instruction_Encoding
@@ -177,7 +177,7 @@ bool vuapi INLHookingX::attach(void* ptr_function, void* ptr_hook_function, void
     RIP + 6 | ?? ?? ?? ?? ?? ?? ?? ?? | XXXXXXXXXXXXXXXX
   */
 
-  sRedirect O2N = {0}, T2O = {0};
+  RedirectInstruction O2N = {0}, T2O = {0};
 
   ulong trampoline_size = 0;
   bool found_trampoline_size = true;

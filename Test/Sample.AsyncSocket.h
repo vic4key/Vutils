@@ -6,7 +6,7 @@
 
 #if defined(VU_SOCKET_ENABLED)
 
-void example_binding(const vu::Socket::sEndPoint& endpoint)
+void example_binding(const vu::Socket::Endpoint& endpoint)
 {
   vu::AsyncSocket server;
 
@@ -41,7 +41,7 @@ void example_binding(const vu::Socket::sEndPoint& endpoint)
   server.close();
 }
 
-void example_inheritance(const vu::Socket::sEndPoint& endpoint)
+void example_inheritance(const vu::Socket::Endpoint& endpoint)
 {
   class CAsyncSocketServer : public vu::AsyncSocket
   {

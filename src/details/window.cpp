@@ -446,9 +446,9 @@ ulong vuapi decode_wm_W(const std::wstring& wm)
   return decode_wm_A(to_string_A(wm));
 }
 
-sFontA vuapi get_font_A(HWND hwnd)
+FontA vuapi get_font_A(HWND hwnd)
 {
-  sFontA result;
+  FontA result;
 
   if (IsWindow(hwnd))
   {
@@ -475,9 +475,9 @@ sFontA vuapi get_font_A(HWND hwnd)
   return result;
 }
 
-sFontW vuapi get_font_W(HWND hwnd)
+FontW vuapi get_font_W(HWND hwnd)
 {
-  sFontW result;
+  FontW result;
 
   if (IsWindow(hwnd))
   {

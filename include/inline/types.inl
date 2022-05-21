@@ -61,13 +61,13 @@ typedef ULONG_PTR           ULongPtr;
 
 // Enumerates
 
-enum class eXSB
+enum class significant_bit
 {
   LSB,
   MSB,
 };
 
-enum class eByteOrder
+enum class byte_order
 {
   LE,
   BE,

@@ -303,14 +303,14 @@ std::wstring undecorate_cpp_symbol_W(const std::wstring& name, const ushort flag
 
 #if defined(_MSC_VER) || defined(__BCPLUSPLUS__) // LNK
 
-std::unique_ptr<sLNKA> parse_shortcut_lnk_A(HWND hwnd, const std::string& lnk_file_path)
+std::unique_ptr<LNKA> parse_shortcut_lnk_A(HWND hwnd, const std::string& lnk_file_path)
 {
-  std::unique_ptr<sLNKA> result(nullptr);
+  std::unique_ptr<LNKA> result(nullptr);
 
   auto ptr = parse_shortcut_lnk_W(hwnd, to_string_W(lnk_file_path));
   if (ptr != nullptr)
   {
-    result.reset(new sLNKA);
+    result.reset(new LNKA);
     result->path = to_string_A(ptr->path);
     result->argument = to_string_A(ptr->argument);
     result->directory = to_string_A(ptr->directory);
@@ -322,9 +322,9 @@ std::unique_ptr<sLNKA> parse_shortcut_lnk_A(HWND hwnd, const std::string& lnk_fi
   return result;
 }
 
-std::unique_ptr<sLNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_file_path)
+std::unique_ptr<LNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_file_path)
 {
-  std::unique_ptr<sLNKW> result(nullptr);
+  std::unique_ptr<LNKW> result(nullptr);
 
   CoInitialize(nullptr);
 
@@ -343,7 +343,7 @@ std::unique_ptr<sLNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_f
         hres = psl->Resolve(hwnd, 0);
         if (SUCCEEDED(hres))
         {
-          result.reset(new sLNKW);
+          result.reset(new LNKW);
 
           WIN32_FIND_DATAW wfd = { 0 };
           WCHAR buffer[KiB] = { 0 }, tmp[KiB] = { 0 };
@@ -434,7 +434,7 @@ std::unique_ptr<sLNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_f
   return result;
 }
 
-vu::VUResult create_shortcut_lnk_A(const std::string& lnk_file_path, const sLNKA& lnk)
+vu::VUResult create_shortcut_lnk_A(const std::string& lnk_file_path, const LNKA& lnk)
 {
   CoInitialize(nullptr);
 
@@ -468,7 +468,7 @@ vu::VUResult create_shortcut_lnk_A(const std::string& lnk_file_path, const sLNKA
   return VU_OK;
 }
 
-vu::VUResult create_shortcut_lnk_W(const std::wstring& lnk_file_path, const sLNKW& lnk)
+vu::VUResult create_shortcut_lnk_W(const std::wstring& lnk_file_path, const LNKW& lnk)
 {
   CoInitialize(nullptr);
 

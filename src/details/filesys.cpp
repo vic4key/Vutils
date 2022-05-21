@@ -244,7 +244,7 @@ Buffer FileSystemA::quick_read_as_buffer(const std::string& file_path)
   return fs.read_as_buffer();
 }
 
-bool FileSystemA::iterate(const std::string& path, const std::string& pattern, const std::function<bool(const sFSObjectA& fso)> fn_callback)
+bool FileSystemA::iterate(const std::string& path, const std::string& pattern, const std::function<bool(const FSObjectA& fso)> fn_callback)
 {
   auto the_path = vu::trim_string_A(path);
   if (the_path.empty())
@@ -267,7 +267,7 @@ bool FileSystemA::iterate(const std::string& path, const std::string& pattern, c
     return false;
   }
 
-  sFSObjectA file_object;
+  FSObjectA file_object;
   file_object.directory = the_path;
 
   LARGE_INTEGER file_size = { 0 };
@@ -369,7 +369,7 @@ Buffer FileSystemW::quick_read_as_buffer(const std::wstring& file_path)
   return fs.read_as_buffer();
 }
 
-bool FileSystemW::iterate(const std::wstring& path, const std::wstring& pattern, const std::function<bool(const sFSObjectW& FSObject)> fn_callback)
+bool FileSystemW::iterate(const std::wstring& path, const std::wstring& pattern, const std::function<bool(const FSObjectW& FSObject)> fn_callback)
 {
   auto the_path = vu::trim_string_W(path);
   if (the_path.empty())
@@ -392,7 +392,7 @@ bool FileSystemW::iterate(const std::wstring& path, const std::wstring& pattern,
     return false;
   }
 
-  sFSObjectW file_object;
+  FSObjectW file_object;
   file_object.directory = the_path;
 
   LARGE_INTEGER file_size = { 0 };

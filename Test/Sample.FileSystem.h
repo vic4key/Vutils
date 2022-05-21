@@ -18,7 +18,7 @@ DEF_SAMPLE(FileSystem)
     std::tcout << _T("D = ") << D << std::endl;
   }
 
-  vu::FileSystem::iterate(_T("C:\\Intel\\Logs"), _T("*.*"), [](const vu::sFSObject& fso) -> bool
+  vu::FileSystem::iterate(_T("C:\\Intel\\Logs"), _T("*.*"), [](const vu::FSObject& fso) -> bool
   {
     std::tcout << fso.directory << _T(" | ") << fso.name << _T(" | ") << fso.size << std::endl;
     return true;

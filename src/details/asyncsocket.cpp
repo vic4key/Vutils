@@ -60,7 +60,7 @@ bool vuapi AsyncSocket::running()
   return m_running;
 }
 
-VUResult vuapi AsyncSocket::bind(const Socket::sEndPoint& endpoint)
+VUResult vuapi AsyncSocket::bind(const Socket::Endpoint& endpoint)
 {
   return this->bind(endpoint.host, endpoint.port);
 }
@@ -131,7 +131,7 @@ VUResult vuapi AsyncSocket::stop()
   return VU_OK;
 }
 
-VUResult vuapi AsyncSocket::connect(const Socket::sEndPoint& endpoint)
+VUResult vuapi AsyncSocket::connect(const Socket::Endpoint& endpoint)
 {
   if (!m_socket.available())
   {
@@ -164,7 +164,7 @@ VUResult vuapi AsyncSocket::connect(const Socket::sEndPoint& endpoint)
 
 VUResult vuapi AsyncSocket::connect(const std::string& address, const ushort port)
 {
-  Socket::sEndPoint endpoint(address, port);
+  Socket::Endpoint endpoint(address, port);
   return this->connect(endpoint);
 }
 
@@ -348,7 +348,7 @@ IResult vuapi AsyncSocket::do_open(WSANETWORKEVENTS& events, SOCKET& connection)
     return events.iErrorCode[FD_ACCEPT_BIT];
   }
 
-  Socket::sSocket obj = { 0 };
+  Socket::Handle obj = { 0 };
   int n = static_cast<int>(sizeof(obj.sai));
 
   obj.s = accept(connection, (struct sockaddr*)&obj.sai, &n);

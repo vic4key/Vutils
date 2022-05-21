@@ -347,11 +347,11 @@ enum processor_architecture
   PA_UNKNOWN = PROCESSOR_ARCHITECTURE_UNKNOWN,
 };
 
-typedef struct _BLOCK
+struct MemoryBlock
 {
-  void*  Address;
-  SIZE_T Size;
-} TBlock;
+  void*  address;
+  SIZE_T size;
+};
 
 processor_architecture get_processor_architecture();
 bool vuapi is_64bits(HANDLE hp = INVALID_HANDLE_VALUE);
@@ -398,7 +398,7 @@ const bool force = false, const SIZE_T n_offsets = 0, ...);
  * Window Working
  */
 
-typedef struct _FONT_A
+struct FontA
 {
   std::string name;
   int  size;
@@ -408,13 +408,13 @@ typedef struct _FONT_A
   int  weight;
   int  char_set;
   int  orientation;
-  _FONT_A()
+  FontA()
     : name(""), size(-1)
     , italic(false), under_line(false), strike_out(false)
     , weight(0), char_set(ANSI_CHARSET), orientation(0) {}
-} sFontA;
+};
 
-typedef struct _FONT_W
+struct FontW
 {
   std::wstring name;
   int  size;
@@ -424,11 +424,17 @@ typedef struct _FONT_W
   int  weight;
   int  char_set;
   int  orientation;
-  _FONT_W()
+  FontW()
     : name(L""), size(-1)
     , italic(false), under_line(false), strike_out(false)
     , weight(0), char_set(ANSI_CHARSET), orientation(0) {}
-} sFontW;
+};
+
+// #ifdef _UNICODE
+// #define Font FontW
+// #else
+// #define Font FontA
+// #endif
 
 typedef std::vector<MONITORINFOEXA> Monitors_A;
 typedef std::vector<MONITORINFOEXW> Monitors_W;
@@ -445,8 +451,8 @@ std::string  vuapi decode_wm_A(const ulong wm);
 std::wstring vuapi decode_wm_W(const ulong wm);
 ulong vuapi decode_wm_A(const std::string& wm);
 ulong vuapi decode_wm_W(const std::wstring& wm);
-sFontA vuapi get_font_A(HWND hwnd);
-sFontW vuapi get_font_W(HWND hwnd);
+FontA vuapi get_font_A(HWND hwnd);
+FontW vuapi get_font_W(HWND hwnd);
 bool vuapi is_window_full_screen(HWND hwnd);
 LONG vuapi conv_font_height_to_size(LONG height, HWND hwnd = nullptr);
 LONG vuapi conv_font_size_to_height(LONG size, HWND hwnd = nullptr);
@@ -480,7 +486,7 @@ disk_type vuapi get_disk_type_W(const wchar_t drive);
 
 #if defined(_MSC_VER) || defined(__BCPLUSPLUS__) // LNK
 
-struct sLNKA
+struct LNKA
 {
   std::string path;
   std::string argument;
@@ -490,7 +496,7 @@ struct sLNKA
   ushort hotkey;
   int window;
 
-  sLNKA()
+  LNKA()
     : path("")
     , argument("")
     , directory("")
@@ -503,7 +509,7 @@ struct sLNKA
   }
 };
 
-struct sLNKW
+struct LNKW
 {
   std::wstring path;
   std::wstring argument;
@@ -513,7 +519,7 @@ struct sLNKW
   ushort hotkey;
   int window;
 
-  sLNKW()
+  LNKW()
     : path(L"")
     , argument(L"")
     , directory(L"")
@@ -527,16 +533,16 @@ struct sLNKW
 };
 
 #ifdef _UNICODE
-#define sLNK sLNKW
+#define LNK LNKW
 #else
-#define sLNK sLNKA
+#define LNK LNKA
 #endif
 
-std::unique_ptr<sLNKA> parse_shortcut_lnk_A(HWND hwnd, const std::string& lnk_file_path);
-std::unique_ptr<sLNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_file_path);
+std::unique_ptr<LNKA> parse_shortcut_lnk_A(HWND hwnd, const std::string& lnk_file_path);
+std::unique_ptr<LNKW> parse_shortcut_lnk_W(HWND hwnd, const std::wstring& lnk_file_path);
 
-vu::VUResult create_shortcut_lnk_A(const std::string& lnk_file_path, const sLNKA& lnk);
-vu::VUResult create_shortcut_lnk_W(const std::wstring& lnk_file_path, const sLNKW& lnk);
+vu::VUResult create_shortcut_lnk_A(const std::string& lnk_file_path, const LNKA& lnk);
+vu::VUResult create_shortcut_lnk_W(const std::wstring& lnk_file_path, const LNKW& lnk);
 
 #ifdef _UNICODE
 #define parse_shortcut_lnk parse_shortcut_lnk_W
@@ -1043,19 +1049,19 @@ public:
   typedef int flags_t;
   typedef int shutdowns_t;
 
-  struct sSocket
+  struct Handle
   {
     SOCKET s;
     sockaddr_in sai;
     char ip[15];
   };
 
-  struct sEndPoint
+  struct Endpoint
   {
     std::string host;
     ushort port;
 
-    sEndPoint(const std::string& host, const ushort port) : host(host), port(port) {}
+    Endpoint(const std::string& host, const ushort port) : host(host), port(port) {}
   };
 
 public:
@@ -1075,16 +1081,16 @@ public:
   bool vuapi available();
 
   void vuapi attach(const SOCKET&  socket);
-  void vuapi attach(const sSocket& socket);
+  void vuapi attach(const Handle& socket);
   void vuapi detach();
 
-  VUResult vuapi bind(const sEndPoint& endpoint);
+  VUResult vuapi bind(const Endpoint& endpoint);
   VUResult vuapi bind(const std::string& address, const ushort port);
 
   VUResult vuapi listen(const int maxcon = SOMAXCONN);
-  VUResult vuapi accept(sSocket& socket);
+  VUResult vuapi accept(Handle& socket);
 
-  VUResult vuapi connect(const sEndPoint& endpoint);
+  VUResult vuapi connect(const Endpoint& endpoint);
   VUResult vuapi connect(const std::string& address, const ushort port);
 
   VUResult vuapi disconnect(const shutdowns_t flags = SD_BOTH);
@@ -1096,12 +1102,12 @@ public:
   IResult vuapi recv(Buffer& data, const flags_t flags = MSG_NONE);
   IResult vuapi recv_all(Buffer& data, const flags_t flags = MSG_NONE);
 
-  IResult vuapi send_to(const char* ptr_data, const int size, const sSocket& socket);
-  IResult vuapi send_to(const Buffer& data, const sSocket& socket);
+  IResult vuapi send_to(const char* ptr_data, const int size, const Handle& socket);
+  IResult vuapi send_to(const Buffer& data, const Handle& socket);
 
-  IResult vuapi recv_from(char* ptr_data, int size, const sSocket& socket);
-  IResult vuapi recv_from(Buffer& data, const sSocket& socket);
-  IResult vuapi recv_all_from(Buffer& data, const sSocket& socket);
+  IResult vuapi recv_from(char* ptr_data, int size, const Handle& socket);
+  IResult vuapi recv_from(Buffer& data, const Handle& socket);
+  IResult vuapi recv_all_from(Buffer& data, const Handle& socket);
 
   IResult vuapi close();
 
@@ -1114,7 +1120,7 @@ public:
 
 private:
   bool vuapi valid(const SOCKET& socket);
-  bool vuapi parse(const sSocket& socket);
+  bool vuapi parse(const Handle& socket);
   bool vuapi is_host_name(const std::string& s);
   std::string vuapi get_host_address(const std::string& name);
 
@@ -1165,10 +1171,10 @@ public:
    * https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsaeventselect?redirectedfrom=MSDN#return-value
    * Note: After connected (FD_CONNECT), client will be auto generated first event FD_WRITE.
    */
-  VUResult vuapi connect(const Socket::sEndPoint& endpoint);
+  VUResult vuapi connect(const Socket::Endpoint& endpoint);
   VUResult vuapi connect(const std::string& address, const ushort port);
 
-  VUResult vuapi bind(const Socket::sEndPoint& endpoint);
+  VUResult vuapi bind(const Socket::Endpoint& endpoint);
   VUResult vuapi bind(const std::string& address, const ushort port);
 
   /**
@@ -1246,7 +1252,7 @@ enum class memory_address_type
   MAT_64   = 4,
 };
 
-typedef struct _MEMORY_INSTRUCTION
+struct MemoryInstruction
 {
   ulong offset;   // Offset of the current instruction.
   ulong position; // Position of the memory address in the current instruction.
@@ -1265,20 +1271,20 @@ typedef struct _MEMORY_INSTRUCTION
     ulong   A32;
     ulong64 A64;
   } man;
-} sMemoryInstruction;
+};
 
 class INLHookingX
 {
 protected:
-  typedef struct _REDIRECT
+  struct RedirectInstruction
   {
     ushort   jmp;
     ulong    unknown;
     ulongptr address;
-  } sRedirect;
+  };
 
   bool m_hooked;
-  std::vector<sMemoryInstruction> m_memory_instructions;
+  std::vector<MemoryInstruction> m_memory_instructions;
 
   static const ulong JMP_OPCODE_SIZE = 6;
 
@@ -1347,7 +1353,7 @@ public:
   vu::IATHooking::instance().uninstall(\
     _T( # O ), _T( # M ), _T( # F ))
 
-struct sIATElement;
+struct IATElement;
 
 class IATHookingA : public SingletonT<IATHookingA>
 {
@@ -1391,12 +1397,12 @@ private:
     IAT_UNINSTALL,
   };
 
-  typedef std::vector<sIATElement> IATElements;
+  typedef std::vector<IATElement> IATElements;
 
   IATElements m_iat_elements;
 
 private:
-  IATElements::iterator find(const sIATElement& element);
+  IATElements::iterator find(const IATElement& element);
 
   IATElements::iterator find(
     const std::string& target,
@@ -1408,7 +1414,7 @@ private:
     const std::string& module,
     const std::string& function);
 
-  VUResult perform(const iat_action action, sIATElement& element);
+  VUResult perform(const iat_action action, IATElement& element);
 };
 
 class IATHookingW : public SingletonT<IATHookingW>
@@ -1537,21 +1543,27 @@ enum fs_position_at
   PA_END = FILE_END,
 };
 
-typedef struct _FS_OBJECT_A
+struct FSObjectA
 {
   std::string directory;
   std::string name;
   int64 size;
   ulong attributes;
-} sFSObjectA;
+};
 
-typedef struct _FS_OBJECT_W
+struct FSObjectW
 {
   std::wstring directory;
   std::wstring name;
   int64 size;
   ulong attributes;
-} sFSObjectW;
+};
+
+#ifdef _UNICODE
+#define FSObject FSObjectW
+#else
+#define FSObject FSObjectA
+#endif
 
 class FileSystemX : public LastError
 {
@@ -1609,7 +1621,7 @@ public:
   static bool iterate(
     const std::string& path,
     const std::string& pattern,
-    const std::function<bool(const sFSObjectA& fso)> fn_callback);
+    const std::function<bool(const FSObjectA& fso)> fn_callback);
 };
 
 class FileSystemW : public FileSystemX
@@ -1638,7 +1650,7 @@ public:
   static bool vuapi iterate(
     const std::wstring& path,
     const std::wstring& pattern,
-    const std::function<bool(const sFSObjectW& fso)> fn_callback);
+    const std::function<bool(const FSObjectW& fso)> fn_callback);
 };
 
 /**
@@ -2313,17 +2325,17 @@ typedef pe32 peX;
 typedef pe64 peX;
 #endif // _M_IX86
 
-typedef IMAGE_DOS_HEADER TDOSHeader, *PDOSHeader;
-typedef IMAGE_FILE_HEADER TFileHeader, *PFileHeader;
-typedef _IMAGE_SECTION_HEADER TSectionHeader, *PSectionHeader;
-typedef IMAGE_IMPORT_BY_NAME TImportByName, *PImportByName;
-typedef IMAGE_IMPORT_DESCRIPTOR TImportDescriptor, *PImportDescriptor;
-typedef IMAGE_DATA_DIRECTORY TDataDirectory, *PDataDirectory;
+typedef IMAGE_DOS_HEADER DOSHeader, *PDOSHeader;
+typedef IMAGE_FILE_HEADER FileHeader, *PFileHeader;
+typedef _IMAGE_SECTION_HEADER SectionHeader, *PSectionHeader;
+typedef IMAGE_IMPORT_BY_NAME ImportByName, *PImportByName;
+typedef IMAGE_IMPORT_DESCRIPTOR ImportDescriptor, *PImportDescriptor;
+typedef IMAGE_DATA_DIRECTORY DataDirectory, *PDataDirectory;
 
 // IMAGE_OPTIONAL_HEADER
 
 template <typename T>
-struct TOptHeaderT
+struct OPTHeaderT
 {
   ushort  Magic;
   uchar   MajorLinkerVersion;
@@ -2360,28 +2372,28 @@ struct TOptHeaderT
   {
     struct
     {
-      TDataDirectory Export;        // IMAGE_DIRECTORY_ENTRY_EXPORT
-      TDataDirectory Import;        // IMAGE_DIRECTORY_ENTRY_IMPORT
-      TDataDirectory Resource;      // IMAGE_DIRECTORY_ENTRY_RESOURCE
-      TDataDirectory Exception;     // IMAGE_DIRECTORY_ENTRY_EXCEPTION
-      TDataDirectory Security;      // IMAGE_DIRECTORY_ENTRY_SECURITY
-      TDataDirectory Relocation;    // IMAGE_DIRECTORY_ENTRY_BASERELOC
-      TDataDirectory Debug;         // IMAGE_DIRECTORY_ENTRY_DEBUG
-      TDataDirectory Architecture;  // IMAGE_DIRECTORY_ENTRY_ARCHITECTURE
-      TDataDirectory Global;        // IMAGE_DIRECTORY_ENTRY_GLOBALPTR
-      TDataDirectory TLS;           // IMAGE_DIRECTORY_ENTRY_TLS
-      TDataDirectory Config;        // IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG
-      TDataDirectory Bound;         // IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT
-      TDataDirectory IAT;           // IMAGE_DIRECTORY_ENTRY_IAT
-      TDataDirectory Delay;         // IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT
-      TDataDirectory CLR;           // IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR
-      TDataDirectory Reversed;      // Reversed
+      DataDirectory Export;        // IMAGE_DIRECTORY_ENTRY_EXPORT
+      DataDirectory Import;        // IMAGE_DIRECTORY_ENTRY_IMPORT
+      DataDirectory Resource;      // IMAGE_DIRECTORY_ENTRY_RESOURCE
+      DataDirectory Exception;     // IMAGE_DIRECTORY_ENTRY_EXCEPTION
+      DataDirectory Security;      // IMAGE_DIRECTORY_ENTRY_SECURITY
+      DataDirectory Relocation;    // IMAGE_DIRECTORY_ENTRY_BASERELOC
+      DataDirectory Debug;         // IMAGE_DIRECTORY_ENTRY_DEBUG
+      DataDirectory Architecture;  // IMAGE_DIRECTORY_ENTRY_ARCHITECTURE
+      DataDirectory Global;        // IMAGE_DIRECTORY_ENTRY_GLOBALPTR
+      DataDirectory TLS;           // IMAGE_DIRECTORY_ENTRY_TLS
+      DataDirectory Config;        // IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG
+      DataDirectory Bound;         // IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT
+      DataDirectory IAT;           // IMAGE_DIRECTORY_ENTRY_IAT
+      DataDirectory Delay;         // IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT
+      DataDirectory CLR;           // IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR
+      DataDirectory Reversed;      // Reversed
     };
-    TDataDirectory DataDirectory[MAX_IDD];
+    DataDirectory DataDirectory[MAX_IDD];
   };
 };
 
-template<> struct TOptHeaderT<pe64>
+template<> struct OPTHeaderT<pe64>
 {
   ushort  Magic;
   uchar   MajorLinkerVersion;
@@ -2418,54 +2430,54 @@ template<> struct TOptHeaderT<pe64>
   {
     struct
     {
-      TDataDirectory Export;        // IMAGE_DIRECTORY_ENTRY_EXPORT
-      TDataDirectory Import;        // IMAGE_DIRECTORY_ENTRY_IMPORT
-      TDataDirectory Resource;      // IMAGE_DIRECTORY_ENTRY_RESOURCE
-      TDataDirectory Exception;     // IMAGE_DIRECTORY_ENTRY_EXCEPTION
-      TDataDirectory Security;      // IMAGE_DIRECTORY_ENTRY_SECURITY
-      TDataDirectory Relocation;    // IMAGE_DIRECTORY_ENTRY_BASERELOC
-      TDataDirectory Debug;         // IMAGE_DIRECTORY_ENTRY_DEBUG
-      TDataDirectory Architecture;  // IMAGE_DIRECTORY_ENTRY_ARCHITECTURE
-      TDataDirectory Global;        // IMAGE_DIRECTORY_ENTRY_GLOBALPTR
-      TDataDirectory TLS;           // IMAGE_DIRECTORY_ENTRY_TLS
-      TDataDirectory Config;        // IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG
-      TDataDirectory Bound;         // IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT
-      TDataDirectory IAT;           // IMAGE_DIRECTORY_ENTRY_IAT
-      TDataDirectory Delay;         // IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT
-      TDataDirectory CLR;           // IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR
-      TDataDirectory Reversed;      // Reversed
+      DataDirectory Export;        // IMAGE_DIRECTORY_ENTRY_EXPORT
+      DataDirectory Import;        // IMAGE_DIRECTORY_ENTRY_IMPORT
+      DataDirectory Resource;      // IMAGE_DIRECTORY_ENTRY_RESOURCE
+      DataDirectory Exception;     // IMAGE_DIRECTORY_ENTRY_EXCEPTION
+      DataDirectory Security;      // IMAGE_DIRECTORY_ENTRY_SECURITY
+      DataDirectory Relocation;    // IMAGE_DIRECTORY_ENTRY_BASERELOC
+      DataDirectory Debug;         // IMAGE_DIRECTORY_ENTRY_DEBUG
+      DataDirectory Architecture;  // IMAGE_DIRECTORY_ENTRY_ARCHITECTURE
+      DataDirectory Global;        // IMAGE_DIRECTORY_ENTRY_GLOBALPTR
+      DataDirectory TLS;           // IMAGE_DIRECTORY_ENTRY_TLS
+      DataDirectory Config;        // IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG
+      DataDirectory Bound;         // IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT
+      DataDirectory IAT;           // IMAGE_DIRECTORY_ENTRY_IAT
+      DataDirectory Delay;         // IMAGE_DIRECTORY_ENTRY_DELAY_IMPORT
+      DataDirectory CLR;           // IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR
+      DataDirectory Reversed;      // Reversed
     };
-    TDataDirectory DataDirectory[MAX_IDD];
+    DataDirectory DataDirectory[MAX_IDD];
   };
 };
 
-typedef TOptHeaderT<ulong32> TOptHeader32, *POptHeader32;
-typedef TOptHeaderT<ulong64> TOptHeader64, *POptHeader64;
+typedef OPTHeaderT<ulong32> OPTHeader32, *POptHeader32;
+typedef OPTHeaderT<ulong64> OPTHeader64, *POptHeader64;
 
 // IMAGE_NT_HEADERS
 
 template <typename T>
-struct TNTHeaderT
+struct NTHeaderT
 {
   ulong Signature;
-  TFileHeader FileHeader;
-  TOptHeaderT<T> OptHeader;
+  FileHeader FileHeader;
+  OPTHeaderT<T> OptHeader;
 };
 
-typedef TNTHeaderT<ulong32> TNTHeader32,  *PNTHeader32;
-typedef TNTHeaderT<ulong64> TNTHeader64, *PNTHeader64;
+typedef NTHeaderT<ulong32> NTHeader32, *PNTHeader32;
+typedef NTHeaderT<ulong64> NTHeader64, *PNTHeader64;
 
 // PE_HEADER
 
-#define TPEHeaderT TNTHeaderT
+#define TPEHeaderT NTHeaderT
 
-typedef TNTHeader32 TPEHeader32, *PPEHeader32;
-typedef TNTHeader64 TPEHeader64, *PPEHeader64;
+typedef NTHeader32 PEHeader32, *PPEHeader32;
+typedef NTHeader64 PEHeader64, *PPEHeader64;
 
 // IMAGE_THUNK_DATA
 
 template <typename T>
-struct TThunkDataT
+struct ThunkDataT
 {
   union
   {
@@ -2476,31 +2488,31 @@ struct TThunkDataT
   } u1;
 };
 
-typedef TThunkDataT<ulong32>  TThunkData32, *PThunkData32;
-typedef TThunkDataT<ulong64>  TThunkData64, *PThunkData64;
+typedef ThunkDataT<ulong32> ThunkData32;
+typedef ThunkDataT<ulong64> ThunkData64;
 
 /* The common types (32-bit & 64-bit)  */
 
 #ifdef _WIN64
-typedef TNTHeader64   TNTHeader,  *PNTHeader;
-typedef TOptHeader64  TOptHeader, *POptHeader;
-typedef TThunkData64  TThunkData, *PThunkData;
-typedef TPEHeader64   TPEHeader,  *PPEHeader;
+typedef NTHeader64   NTHeader,  *PNTHeader;
+typedef OPTHeader64  OPTHeader, *POPTHeader;
+typedef PEHeader64   PEHeader,  *PPEHeader;
+typedef ThunkData64  ThunkData, *PThunkData;
 #else // _WIN32
-typedef TNTHeader32   TNTHeader,  *PNTHeader;
-typedef TOptHeader32  TOptHeader, *POptHeader;
-typedef TThunkData32  TThunkData, *PThunkData;
-typedef TPEHeader32   TPEHeader,  *PPEHeader;
+typedef NTHeader32   NTHeader,  *PNTHeader;
+typedef OPTHeader32  OPTHeader, *POPTHeader;
+typedef ThunkData32  ThunkData, *PThunkData;
+typedef PEHeader32   PEHeader,  *PPEHeader;
 #endif
 
-struct sExIID
+struct ImportDescriptorEx
 {
   ulong iid_id;
   std::string name;
   PImportDescriptor ptr_iid;
 };
 
-struct sImportModule
+struct ImportModule
 {
   ulong iid_id;
   std::string name;
@@ -2508,7 +2520,7 @@ struct sImportModule
 };
 
 template<typename T>
-struct sImportFunctionT
+struct ImportFunctionT
 {
   ulong iid_id;
   std::string name;
@@ -2517,11 +2529,11 @@ struct sImportFunctionT
   T rva;
 };
 
-typedef sImportFunctionT<ulong32> sImportFunction32T;
-typedef sImportFunctionT<ulong64> sImportFunction64T;
+typedef ImportFunctionT<ulong32> ImportFunction32T;
+typedef ImportFunctionT<ulong64> ImportFunction64T;
 
 template<typename T>
-struct sRelocationEntryT
+struct RelocationEntryT
 {
   int type;
   // T Offset;
@@ -2552,44 +2564,44 @@ public:
   const std::vector<PSectionHeader>& vuapi get_setion_headers(bool in_cache = true);
 
   const std::vector<PImportDescriptor>& vuapi get_import_descriptors(bool in_cache = true);
-  const std::vector<sImportModule> vuapi get_import_modules(bool in_cache = true);
-  const std::vector<sImportFunctionT<T>> vuapi get_import_functions(bool in_cache = true); // Did not include import by index
+  const std::vector<ImportModule> vuapi get_import_modules(bool in_cache = true);
+  const std::vector<ImportFunctionT<T>> vuapi get_import_functions(bool in_cache = true); // Did not include import by index
 
-  const sImportModule* vuapi find_ptr_import_module(
+  const ImportModule* vuapi find_ptr_import_module(
     const std::string& module_name, bool in_cache = true);
 
-  const sImportFunctionT<T>* vuapi find_ptr_import_function(
+  const ImportFunctionT<T>* vuapi find_ptr_import_function(
     const std::string& function_name, bool in_cache = true);
-  const sImportFunctionT<T>* vuapi find_ptr_import_function(
+  const ImportFunctionT<T>* vuapi find_ptr_import_function(
     const ushort function_hint, bool in_cache = true);
-  const sImportFunctionT<T>* vuapi find_ptr_import_function(
-    const sImportFunctionT<T>& import_function,
+  const ImportFunctionT<T>* vuapi find_ptr_import_function(
+    const ImportFunctionT<T>& import_function,
     const find_by method,
     bool in_cache = true);
 
-  const std::vector<sRelocationEntryT<T>> vuapi get_relocation_entries(bool in_cache = true);
+  const std::vector<RelocationEntryT<T>> vuapi get_relocation_entries(bool in_cache = true);
 
 protected:
   bool m_initialized;
 
   void* m_ptr_base;
 
-  TDOSHeader* m_ptr_dos_header;
+  DOSHeader* m_ptr_dos_header;
   TPEHeaderT<T>* m_ptr_pe_header;
 
 private:
   T m_ordinal_flag;
 
-  std::vector<sExIID> m_ex_iids;
+  std::vector<ImportDescriptorEx> m_ex_iids;
 
   std::vector<PSectionHeader> m_section_headers;
   std::vector<PImportDescriptor> m_import_descriptors;
-  std::vector<sImportModule> m_import_modules;
-  std::vector<sImportFunctionT<T>> m_import_functions;
-  std::vector<sRelocationEntryT<T>> m_relocation_entries;
+  std::vector<ImportModule> m_import_modules;
+  std::vector<ImportFunctionT<T>> m_import_functions;
+  std::vector<RelocationEntryT<T>> m_relocation_entries;
 
 protected:
-  const std::vector<sExIID>& vuapi get_ex_iids(bool in_cache = true);
+  const std::vector<ImportDescriptorEx>& vuapi get_ex_iids(bool in_cache = true);
 };
 
 template <typename T>

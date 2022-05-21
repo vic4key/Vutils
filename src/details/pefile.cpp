@@ -86,7 +86,7 @@ const std::vector<PSectionHeader>& vuapi PEFileTX<T>::get_setion_headers(bool in
 
   m_section_headers.clear();
 
-  auto ptr_section_header = (PSectionHeader)((ulong64)m_ptr_pe_header + sizeof(vu::TNTHeaderT<T>));
+  auto ptr_section_header = (PSectionHeader)((ulong64)m_ptr_pe_header + sizeof(vu::NTHeaderT<T>));
   if (ptr_section_header == nullptr)
   {
     return m_section_headers;
@@ -119,7 +119,7 @@ const std::vector<PSectionHeader>& vuapi PEFileTX<T>::get_setion_headers(bool in
 // };
 
 template<typename T>
-const std::vector<sRelocationEntryT<T>> vuapi PEFileTX<T>::get_relocation_entries(bool in_cache)
+const std::vector<RelocationEntryT<T>> vuapi PEFileTX<T>::get_relocation_entries(bool in_cache)
 {
   if (!m_initialized)
   {
@@ -151,7 +151,7 @@ const std::vector<sRelocationEntryT<T>> vuapi PEFileTX<T>::get_relocation_entrie
         PIMAGE_BASE_RELOCATION_ENTRY(ptr + idx * sizeof(IMAGE_BASE_RELOCATION_ENTRY));
       assert(ptr_entry);
 
-      sRelocationEntryT<T> entry = { 0 };
+      RelocationEntryT<T> entry = { 0 };
       entry.rva = ptr_base_relocation->VirtualAddress + ptr_entry->offset;
       auto offset = this->rva_to_offset(entry.rva);
       // entry.offset = this->rva_to_offset(entry.rva);
@@ -168,7 +168,7 @@ const std::vector<sRelocationEntryT<T>> vuapi PEFileTX<T>::get_relocation_entrie
 }
 
 template<typename T>
-const std::vector<sExIID>& vuapi PEFileTX<T>::get_ex_iids(bool in_cache)
+const std::vector<ImportDescriptorEx>& vuapi PEFileTX<T>::get_ex_iids(bool in_cache)
 {
   if (!m_initialized)
   {
@@ -198,7 +198,7 @@ const std::vector<sExIID>& vuapi PEFileTX<T>::get_ex_iids(bool in_cache)
 
   for (int i = 0; ptr_iid->FirstThunk != 0; i++, ptr_iid++)
   {
-    sExIID ex_iid;
+    ImportDescriptorEx ex_iid;
     ex_iid.iid_id = i;
     ex_iid.name = (char*)((ulong64)m_ptr_base + this->rva_to_offset(ptr_iid->Name));;
     ex_iid.ptr_iid = ptr_iid;
@@ -235,7 +235,7 @@ const std::vector<PImportDescriptor>& vuapi PEFileTX<T>::get_import_descriptors(
 }
 
 template<typename T>
-const std::vector<sImportModule> vuapi PEFileTX<T>::get_import_modules(bool in_cache)
+const std::vector<ImportModule> vuapi PEFileTX<T>::get_import_modules(bool in_cache)
 {
   if (!m_initialized)
   {
@@ -253,7 +253,7 @@ const std::vector<sImportModule> vuapi PEFileTX<T>::get_import_modules(bool in_c
 
   for (const auto& e: m_ex_iids)
   {
-    sImportModule mi;
+    ImportModule mi;
     mi.iid_id = e.iid_id;
     mi.name = e.name;
     // mi.number_of_functions = 0;
@@ -265,7 +265,7 @@ const std::vector<sImportModule> vuapi PEFileTX<T>::get_import_modules(bool in_c
 }
 
 template<typename T>
-const std::vector<sImportFunctionT<T>> vuapi PEFileTX<T>::get_import_functions(bool in_cache)
+const std::vector<ImportFunctionT<T>> vuapi PEFileTX<T>::get_import_functions(bool in_cache)
 {
   if (!m_initialized)
   {
@@ -281,12 +281,12 @@ const std::vector<sImportFunctionT<T>> vuapi PEFileTX<T>::get_import_functions(b
 
   m_import_functions.clear();
 
-  TThunkDataT<T>* ptr_thunk_data = nullptr;
-  sImportFunctionT<T> funcInfo;
+  ThunkDataT<T>* ptr_thunk_data = nullptr;
+  ImportFunctionT<T> funcInfo;
   for (const auto& e: m_ex_iids)
   {
     T offset = this->rva_to_offset(e.ptr_iid->FirstThunk);
-    if (offset == -1 || (ptr_thunk_data = (TThunkDataT<T>*)((ulong64)m_ptr_base + offset)) == nullptr)
+    if (offset == -1 || (ptr_thunk_data = (ThunkDataT<T>*)((ulong64)m_ptr_base + offset)) == nullptr)
     {
       continue;
     }
@@ -324,7 +324,7 @@ const std::vector<sImportFunctionT<T>> vuapi PEFileTX<T>::get_import_functions(b
 }
 
 template<typename T>
-const sImportModule* vuapi PEFileTX<T>::find_ptr_import_module(
+const ImportModule* vuapi PEFileTX<T>::find_ptr_import_module(
   const std::string& module_name, bool in_cache)
 {
   if (!m_initialized)
@@ -334,7 +334,7 @@ const sImportModule* vuapi PEFileTX<T>::find_ptr_import_module(
 
   this->get_import_modules(in_cache);
 
-  const sImportModule* result = nullptr;
+  const ImportModule* result = nullptr;
 
   auto s1 = upper_string_A(module_name);
 
@@ -352,8 +352,8 @@ const sImportModule* vuapi PEFileTX<T>::find_ptr_import_module(
 }
 
 template<typename T>
-const sImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
-  const sImportFunctionT<T>& import_function,
+const ImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
+  const ImportFunctionT<T>& import_function,
   const find_by method,
   bool in_cache
 )
@@ -363,7 +363,7 @@ const sImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
     assert(0);
   }
 
-  const sImportFunctionT<T>* result = nullptr;
+  const ImportFunctionT<T>* result = nullptr;
 
   this->get_import_functions(in_cache);
 
@@ -399,21 +399,21 @@ const sImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
 }
 
 template<typename T>
-const sImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
+const ImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
   const std::string& function_name,
   bool in_cache)
 {
-  sImportFunctionT<T> o = {0};
+  ImportFunctionT<T> o = {0};
   o.name = function_name;
   return this->find_ptr_import_function(o, find_by::NAME);
 }
 
 template<typename T>
-const sImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
+const ImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
   const ushort function_hint,
   bool in_cache)
 {
-  sImportFunctionT<T> o = {0};
+  ImportFunctionT<T> o = {0};
   o.hint = function_hint;
   return this->find_ptr_import_function(o, find_by::HINT);
 }

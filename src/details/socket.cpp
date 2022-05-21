@@ -71,12 +71,12 @@ bool vuapi Socket::available()
 
 void vuapi Socket::attach(const SOCKET& socket)
 {
-  sSocket obj = { 0 };
+  Handle obj = { 0 };
   obj.s = socket;
   this->attach(obj);
 }
 
-void vuapi Socket::attach(const sSocket& socket)
+void vuapi Socket::attach(const Handle& socket)
 {
   m_socket = socket.s;
   m_sai = socket.sai;
@@ -180,7 +180,7 @@ VUResult vuapi Socket::enable_non_blocking(bool state)
   return VU_OK;
 }
 
-VUResult vuapi Socket::bind(const sEndPoint& endpoint)
+VUResult vuapi Socket::bind(const Endpoint& endpoint)
 {
   return this->bind(endpoint.host, endpoint.port);
 }
@@ -224,7 +224,7 @@ VUResult vuapi Socket::listen(const int maxcon)
   return (result == SOCKET_ERROR ? 2 : VU_OK);
 }
 
-VUResult vuapi Socket::accept(sSocket& socket)
+VUResult vuapi Socket::accept(Handle& socket)
 {
   if (!this->available())
   {
@@ -249,7 +249,7 @@ VUResult vuapi Socket::accept(sSocket& socket)
   return VU_OK;
 }
 
-VUResult vuapi Socket::connect(const sEndPoint& endpoint)
+VUResult vuapi Socket::connect(const Endpoint& endpoint)
 {
   return this->connect(endpoint.host, endpoint.port);
 }
@@ -368,12 +368,12 @@ IResult vuapi Socket::recv_all(Buffer& buffer, const flags_t flags)
   return IResult(buffer.get_size());
 }
 
-IResult vuapi Socket::send_to(const Buffer& buffer, const sSocket& socket)
+IResult vuapi Socket::send_to(const Buffer& buffer, const Handle& socket)
 {
   return this->send_to((const char*)buffer.get_ptr(), int(buffer.get_size()), socket);
 }
 
-IResult vuapi Socket::send_to(const char* lpData, const int size, const sSocket& socket)
+IResult vuapi Socket::send_to(const char* lpData, const int size, const Handle& socket)
 {
   if (!this->available())
   {
@@ -397,7 +397,7 @@ IResult vuapi Socket::send_to(const char* lpData, const int size, const sSocket&
   return z;
 }
 
-IResult vuapi Socket::recv_from(Buffer& buffer, const sSocket& socket)
+IResult vuapi Socket::recv_from(Buffer& buffer, const Handle& socket)
 {
   auto z = this->recv_from((char*)buffer.get_ptr(), int(buffer.get_size()), socket);
   if (z != SOCKET_ERROR)
@@ -408,7 +408,7 @@ IResult vuapi Socket::recv_from(Buffer& buffer, const sSocket& socket)
   return z;
 }
 
-IResult vuapi Socket::recv_from(char* ptr_data, int size, const sSocket& socket)
+IResult vuapi Socket::recv_from(char* ptr_data, int size, const Handle& socket)
 {
   if (!this->available())
   {
@@ -429,7 +429,7 @@ IResult vuapi Socket::recv_from(char* ptr_data, int size, const sSocket& socket)
   return z;
 }
 
-IResult vuapi Socket::recv_all_from(Buffer& buffer, const sSocket& socket)
+IResult vuapi Socket::recv_all_from(Buffer& buffer, const Handle& socket)
 {
   Buffer block;
 
@@ -585,7 +585,7 @@ bool vuapi Socket::is_host_name(const std::string& s)
   return result;
 }
 
-bool vuapi Socket::parse(const sSocket& socket)
+bool vuapi Socket::parse(const Handle& socket)
 {
   if (sprintf(
     (char*)socket.ip,

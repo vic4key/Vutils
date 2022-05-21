@@ -51,14 +51,14 @@ DEF_SAMPLE(ThreadPool)
       return std::accumulate(m_results.cbegin(), m_results.cend(), 0);
     }
 
-    virtual vu::eReturn task(int& item, int iteration, int threadid)
+    virtual vu::return_type task(int& item, int iteration, int threadid)
     {
       std::this_thread::sleep_for(std::chrono::seconds(1));
       std::cout << VU_FUNC_NAME << std::endl;
 
       m_results[iteration] += item;
 
-      return vu::eReturn::Ok;
+      return vu::return_type::Ok;
     }
 
   private:

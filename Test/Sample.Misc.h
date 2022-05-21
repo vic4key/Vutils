@@ -90,7 +90,7 @@ DEF_SAMPLE(Misc)
     L"UTF-32 Little Endian BOM", L"UTF-32 Big Endian BOM"
   };
 
-  vu::FileSystem::iterate(ts("path\\to\\example"), ts("*.txt"), [](const vu::sFSObject& fso) -> bool
+  vu::FileSystem::iterate(ts("path\\to\\example"), ts("*.txt"), [](const vu::FSObject& fso) -> bool
   {
     auto file_path = fso.directory + fso.name;
     auto data = vu::FileSystem::quick_read_as_buffer(file_path);
@@ -184,7 +184,7 @@ DEF_SAMPLE(Misc)
 
   std::tstring lnk_file_path = ts("C:\\Users\\Vic\\Desktop\\notepad.lnk");
 
-  vu::sLNK lnk;
+  vu::LNK lnk;
   lnk.path = ts("C:\\Windows\\System32\\notepad.exe");
   lnk.argument = ts("test.txt");
   lnk.directory = ts("C:\\Users\\Vic\\Desktop");

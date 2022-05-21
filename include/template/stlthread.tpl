@@ -8,7 +8,7 @@
   * STLThreadT
   */
 
-enum class eReturn
+enum class return_type
 {
   Ok,
   Break,
@@ -25,7 +25,7 @@ public:
   virtual void initialize();
   virtual void launch();
 
-  virtual eReturn task(typename type_input::value_type& item, int iteration, int thread_id);
+  virtual return_type task(typename type_input::value_type& item, int iteration, int thread_id);
 
   int threads() const;
   int iterations() const;
@@ -91,10 +91,10 @@ int STLThreadT<type_input>::iterations() const
 }
 
 template <class type_input>
-vu::eReturn STLThreadT<type_input>::task(typename type_input::value_type& item, int iteration, int thread_id)
+vu::return_type STLThreadT<type_input>::task(typename type_input::value_type& item, int iteration, int thread_id)
 {
   assert(NULL && "This method must be overridden");
-  return vu::eReturn::Ok;
+  return vu::return_type::Ok;
 }
 
 template <class type_input>
@@ -149,11 +149,11 @@ void STLThreadT<type_input>::execute(int iteration, int thread_id)
   for (auto it = it_start; it != it_stop; ++it)
   {
     auto ret = this->task(*it, iteration, thread_id);
-    if (ret == vu::eReturn::Break)
+    if (ret == vu::return_type::Break)
     {
       break;
     }
-    else if (ret == vu::eReturn::Continue)
+    else if (ret == vu::return_type::Continue)
     {
       continue;
     }
