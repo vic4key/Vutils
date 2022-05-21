@@ -31,18 +31,18 @@ typedef const unsigned short * RPC_CWSTR;
 #endif
 #endif
 
-const sGUID& sGUID::operator=(const sGUID &right) const
+const Guid& Guid::operator=(const Guid &right) const
 {
   memcpy((void*)this, (const void*)&right, sizeof(*this));
   return *this;
 }
 
-bool sGUID::operator == (const sGUID &right) const
+bool Guid::operator == (const Guid &right) const
 {
   return (memcmp(this, &right, sizeof(*this)) == 0);
 }
 
-bool sGUID::operator != (const sGUID &right) const
+bool Guid::operator != (const Guid &right) const
 {
   return !(*this == right);
 }
@@ -65,12 +65,12 @@ bool GUIDX::create()
   return ((m_status = UuidCreate(CAST_GUID(&m_guid, NONE))) == RPC_S_OK);
 }
 
-const sGUID& GUIDX::GUID() const
+const Guid& GUIDX::GUID() const
 {
   return m_guid;
 }
 
-void GUIDX::GUID(const sGUID& guid)
+void GUIDX::GUID(const Guid& guid)
 {
   m_guid = guid;
 }
@@ -101,7 +101,7 @@ std::string GUIDA::as_string() const
   return GUIDA::to_string(m_guid);
 }
 
-const std::string GUIDA::to_string(const sGUID& guid)
+const std::string GUIDA::to_string(const Guid& guid)
 {
   std::string result("");
 
@@ -123,9 +123,9 @@ const std::string GUIDA::to_string(const sGUID& guid)
   return result;
 }
 
-const sGUID GUIDA::to_guid(const std::string& guid)
+const Guid GUIDA::to_guid(const std::string& guid)
 {
-  sGUID result = {0};
+  Guid result = {0};
 
   auto rpcUUID = RPC_CSTR(guid.c_str());
   UuidFromStringA(rpcUUID, CAST_GUID(&result, NONE));
@@ -143,7 +143,7 @@ std::wstring GUIDW::as_string() const
   return GUIDW::to_string(m_guid);
 }
 
-const std::wstring GUIDW::to_string(const sGUID& guid)
+const std::wstring GUIDW::to_string(const Guid& guid)
 {
   std::wstring result(L"");
 
@@ -165,9 +165,9 @@ const std::wstring GUIDW::to_string(const sGUID& guid)
   return result;
 }
 
-const sGUID GUIDW::to_guid(const std::wstring& guid)
+const Guid GUIDW::to_guid(const std::wstring& guid)
 {
-  sGUID result = {0};
+  Guid result = {0};
 
   auto rpcUUID = RPC_WSTR(guid.c_str());
   UuidFromStringW(rpcUUID, CAST_GUID(&result, NONE));

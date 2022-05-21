@@ -871,16 +871,16 @@ protected:
 
 #ifdef VU_GUID_ENABLED
 
-struct sGUID
+struct Guid
 {
   unsigned long  data1;
   unsigned short data2;
   unsigned short data3;
   unsigned char  data4[8];
 
-  const sGUID& operator = (const sGUID &right) const;
-  bool operator == (const sGUID &right) const;
-  bool operator != (const sGUID &right) const;
+  const Guid& operator = (const Guid &right) const;
+  bool operator == (const Guid &right) const;
+  bool operator != (const Guid &right) const;
 };
 
 class GUIDX
@@ -895,11 +895,11 @@ public:
 
   bool create();
 
-  const sGUID& GUID() const;
-  void  GUID(const sGUID& guid);
+  const Guid& GUID() const;
+  void  GUID(const Guid& guid);
 
 protected:
-  sGUID m_guid;
+  Guid m_guid;
   VUResult m_status;
 };
 
@@ -912,8 +912,8 @@ public:
   void parse(const std::string& guid);
   std::string as_string() const;
 
-  static const std::string to_string(const sGUID& guid);
-  static const sGUID to_guid(const std::string& guid);
+  static const std::string to_string(const Guid& guid);
+  static const Guid to_guid(const std::string& guid);
 };
 
 class GUIDW : public GUIDX
@@ -925,8 +925,8 @@ public:
   void parse(const std::wstring& guid);
   std::wstring as_string() const;
 
-  static const std::wstring to_string(const sGUID& guid);
-  static const sGUID to_guid(const std::wstring& guid);
+  static const std::wstring to_string(const Guid& guid);
+  static const Guid to_guid(const std::wstring& guid);
 };
 
 #endif // VU_GUID_ENABLED
