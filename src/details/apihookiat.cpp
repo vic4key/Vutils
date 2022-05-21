@@ -109,7 +109,7 @@ VUResult IATHookingA::install(
 
   auto element = sIATElement(target, module, function, nullptr, replacement);
 
-  if (this->perform(IATAction::IAT_INSTALL, element) != VU_OK)
+  if (this->perform(iat_action::IAT_INSTALL, element) != VU_OK)
   {
     return 2;
   }
@@ -138,7 +138,7 @@ VUResult IATHookingA::uninstall(
 
   auto element = *it;
 
-  if (this->perform(IATAction::IAT_UNINSTALL, element) != VU_OK)
+  if (this->perform(iat_action::IAT_UNINSTALL, element) != VU_OK)
   {
     return 2;
   }
@@ -153,7 +153,7 @@ VUResult IATHookingA::uninstall(
   return VU_OK;
 }
 
-VUResult IATHookingA::perform(const IATAction action, sIATElement& element)
+VUResult IATHookingA::perform(const iat_action action, sIATElement& element)
 {
   if (element.target.empty() || element.module.empty() || element.function.empty())
   {
@@ -169,12 +169,12 @@ VUResult IATHookingA::perform(const IATAction action, sIATElement& element)
     {
       const void* address = 0;
 
-      if (action == IATAction::IAT_INSTALL)
+      if (action == iat_action::IAT_INSTALL)
       {
         element.original = reinterpret_cast<const void*>(ptr_iat->u1.Function);
         address = element.replacement;
       }
-      else if (action == IATAction::IAT_UNINSTALL)
+      else if (action == iat_action::IAT_UNINSTALL)
       {
         element.replacement = reinterpret_cast<const void*>(ptr_iat->u1.Function);
         address = element.original;

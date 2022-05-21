@@ -314,7 +314,7 @@ bool Buffer::save_to_file(const std::string& file_path)
 
   bool result = true;
 
-  FileSystemA file(file_path, eFSModeFlags::FM_CREATEALWAY);
+  FileSystemA file(file_path, fs_mode::FM_CREATEALWAY);
   result &= file.write(m_ptr, ulong(m_size));
   result &= file.close();
 

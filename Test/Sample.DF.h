@@ -31,11 +31,11 @@ DEF_SAMPLE(DF)
   std::tcout << vu::join_path(ts("C:\\path\\to"), ts("\\file.exe")) << std::endl;
   std::tcout << vu::join_path(ts("C:\\path\\to"), ts("file.exe")) << std::endl;
 
-  std::tcout << vu::normalize_path(ts("C:/path/to/file.exe"), vu::ePathSep::POSIX) << std::endl;
-  std::tcout << vu::normalize_path(ts("C:\\path\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
-  std::tcout << vu::normalize_path(ts("C:\\path\\\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
-  std::tcout << vu::normalize_path(ts("C:\\path\\\\to\\file.exe"), vu::ePathSep::POSIX) << std::endl;
-  std::tcout << vu::normalize_path(ts("C:\\\\path\\to/file.exe"), vu::ePathSep::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:/path/to/file.exe"), vu::path_separator::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:\\path\\to\\file.exe"), vu::path_separator::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:\\path\\\\to\\file.exe"), vu::path_separator::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:\\path\\\\to\\file.exe"), vu::path_separator::POSIX) << std::endl;
+  std::tcout << vu::normalize_path(ts("C:\\\\path\\to/file.exe"), vu::path_separator::POSIX) << std::endl;
 
   std::tcout << vu::normalize_path(ts("C:/path/to/file.exe")) << std::endl;
   std::tcout << vu::normalize_path(ts("C:\\path\\to\\file.exe")) << std::endl;

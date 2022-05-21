@@ -38,7 +38,7 @@ bool vuapi FileSystemX::ready()
   return this->valid(m_handle);
 }
 
-bool vuapi FileSystemX::read(ulong offset, void* ptr_buffer, ulong size, eMoveMethodFlags flags)
+bool vuapi FileSystemX::read(ulong offset, void* ptr_buffer, ulong size, fs_position_at flags)
 {
   if (!this->seek(offset, flags))
   {
@@ -67,7 +67,7 @@ bool vuapi FileSystemX::read(void* ptr_buffer, ulong size)
   return true;
 }
 
-bool vuapi FileSystemX::write(ulong offset, const void* ptr_buffer, ulong size, eMoveMethodFlags flags)
+bool vuapi FileSystemX::write(ulong offset, const void* ptr_buffer, ulong size, fs_position_at flags)
 {
   if (!this->seek(offset, flags)) return false;
 
@@ -93,7 +93,7 @@ bool vuapi FileSystemX::write(const void* ptr_buffer, ulong size)
   return true;
 }
 
-bool vuapi FileSystemX::seek(ulong offset, eMoveMethodFlags flags)
+bool vuapi FileSystemX::seek(ulong offset, fs_position_at flags)
 {
   if (!this->valid(m_handle))
   {
@@ -170,7 +170,7 @@ const Buffer vuapi FileSystemX::read_as_buffer()
 
   buffer.resize(size);
 
-  this->read(0, buffer.get_ptr(), size, eMoveMethodFlags::MM_BEGIN);
+  this->read(0, buffer.get_ptr(), size, fs_position_at::PA_BEGIN);
 
   return buffer;
 }
@@ -181,7 +181,7 @@ FileSystemA::FileSystemA() : FileSystemX()
 {
 }
 
-FileSystemA::FileSystemA(const std::string& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags, eFSShareFlags fs_flags, eFSAttributeFlags fa_flags) : FileSystemX()
+FileSystemA::FileSystemA(const std::string& file_path, fs_mode fm_flags, fs_generic fg_flags, fs_share fs_flags, fs_attribute fa_flags) : FileSystemX()
 {
   this->initialize(file_path, fm_flags, fg_flags, fs_flags, fa_flags);
 }
@@ -190,7 +190,7 @@ FileSystemA::~FileSystemA()
 {
 }
 
-bool vuapi FileSystemA::initialize(const std::string& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags, eFSShareFlags fs_flags, eFSAttributeFlags fa_flags)
+bool vuapi FileSystemA::initialize(const std::string& file_path, fs_mode fm_flags, fs_generic fg_flags, fs_share fs_flags, fs_attribute fa_flags)
 {
   m_handle = CreateFileA(file_path.c_str(), fg_flags, fs_flags, NULL, fm_flags, fa_flags, NULL);
   if (!this->valid(m_handle))
@@ -210,13 +210,13 @@ const std::string vuapi FileSystemA::read_as_string(bool remove_bom)
   auto p = (char*)buffer.get_ptr();
 
   auto encoding = determine_encoding_type(buffer.get_ptr(), buffer.get_size());
-  if (encoding == eEncodingType::ET_UNKNOWN)
+  if (encoding == encoding_type::ET_UNKNOWN)
   {
     assert(0);
     return result;
   }
 
-  if (remove_bom && encoding == eEncodingType::ET_UTF8_BOM)
+  if (remove_bom && encoding == encoding_type::ET_UTF8_BOM)
   {
     p += 3; /* remove BOM */
   }
@@ -228,7 +228,7 @@ const std::string vuapi FileSystemA::read_as_string(bool remove_bom)
 
 const std::string vuapi FileSystemA::quick_read_as_string(const std::string& file_path, bool remove_bom)
 {
-  FileSystemA file(file_path, vu::eFSModeFlags::FM_OPENEXISTING, eFSGenericFlags::FG_READ, eFSShareFlags::FS_READ);
+  FileSystemA file(file_path, vu::fs_mode::FM_OPENEXISTING, fs_generic::FG_READ, fs_share::FS_READ);
   auto result = file.read_as_string(remove_bom);
   return result;
 }
@@ -240,7 +240,7 @@ Buffer FileSystemA::quick_read_as_buffer(const std::string& file_path)
     return Buffer();
   }
 
-  FileSystemA fs(file_path, eFSModeFlags::FM_OPENEXISTING, eFSGenericFlags::FG_READ, eFSShareFlags::FS_READ);
+  FileSystemA fs(file_path, fs_mode::FM_OPENEXISTING, fs_generic::FG_READ, fs_share::FS_READ);
   return fs.read_as_buffer();
 }
 
@@ -306,7 +306,7 @@ FileSystemW::FileSystemW() : FileSystemX()
 {
 }
 
-FileSystemW::FileSystemW(const std::wstring& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags, eFSShareFlags fs_flags, eFSAttributeFlags fa_flags) : FileSystemX()
+FileSystemW::FileSystemW(const std::wstring& file_path, fs_mode fm_flags, fs_generic fg_flags, fs_share fs_flags, fs_attribute fa_flags) : FileSystemX()
 {
   this->initialize(file_path, fm_flags, fg_flags, fs_flags, fa_flags);
 }
@@ -315,7 +315,7 @@ FileSystemW::~FileSystemW()
 {
 }
 
-bool vuapi FileSystemW::initialize(const std::wstring& file_path, eFSModeFlags fm_flags, eFSGenericFlags fg_flags, eFSShareFlags fs_flags, eFSAttributeFlags fa_flags)
+bool vuapi FileSystemW::initialize(const std::wstring& file_path, fs_mode fm_flags, fs_generic fg_flags, fs_share fs_flags, fs_attribute fa_flags)
 {
   m_handle = CreateFileW(file_path.c_str(), fg_flags, fs_flags, NULL, fm_flags, fa_flags, NULL);
   if (!this->valid(m_handle))
@@ -335,13 +335,13 @@ const std::wstring vuapi FileSystemW::read_as_string(bool remove_bom)
   auto p = (wchar*)buffer.get_ptr();
 
   auto encoding = determine_encoding_type(buffer.get_ptr(), buffer.get_size());
-  if (encoding == eEncodingType::ET_UNKNOWN)
+  if (encoding == encoding_type::ET_UNKNOWN)
   {
     assert(0);
     return result;
   }
 
-  if (remove_bom && (encoding == eEncodingType::ET_UTF16_LE_BOM || encoding == eEncodingType::ET_UTF16_BE_BOM))
+  if (remove_bom && (encoding == encoding_type::ET_UTF16_LE_BOM || encoding == encoding_type::ET_UTF16_BE_BOM))
   {
     p = (wchar*)((char*)buffer.get_ptr() + 2); /* remove BOM */
   }
@@ -353,7 +353,7 @@ const std::wstring vuapi FileSystemW::read_as_string(bool remove_bom)
 
 const std::wstring vuapi FileSystemW::quick_read_as_string(const std::wstring& file_path, bool remove_bom)
 {
-  FileSystemW file(file_path, vu::eFSModeFlags::FM_OPENEXISTING, eFSGenericFlags::FG_READ, eFSShareFlags::FS_READ);
+  FileSystemW file(file_path, vu::fs_mode::FM_OPENEXISTING, fs_generic::FG_READ, fs_share::FS_READ);
   auto result = file.read_as_string(remove_bom);
   return result;
 }
@@ -365,7 +365,7 @@ Buffer FileSystemW::quick_read_as_buffer(const std::wstring& file_path)
     return Buffer();
   }
 
-  FileSystemW fs(file_path, eFSModeFlags::FM_OPENEXISTING, eFSGenericFlags::FG_READ, eFSShareFlags::FS_READ);
+  FileSystemW fs(file_path, fs_mode::FM_OPENEXISTING, fs_generic::FG_READ, fs_share::FS_READ);
   return fs.read_as_buffer();
 }
 

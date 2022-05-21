@@ -29,11 +29,11 @@ DEF_SAMPLE(WMIProvider)
 
   // Get Type of Disks
 
-  std::map<vu::eDiskType, std::tstring> types;
-  types[vu::eDiskType::Unspecified] = ts("Unspecified");
-  types[vu::eDiskType::HDD] = ts("HDD");
-  types[vu::eDiskType::SSD] = ts("SSD");
-  types[vu::eDiskType::SCM] = ts("SCM");
+  std::map<vu::disk_type, std::tstring> types;
+  types[vu::disk_type::Unspecified] = ts("Unspecified");
+  types[vu::disk_type::HDD] = ts("HDD");
+  types[vu::disk_type::SSD] = ts("SSD");
+  types[vu::disk_type::SCM] = ts("SCM");
   
   std::tstring drives = ts("CDEFG?");
 

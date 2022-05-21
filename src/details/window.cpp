@@ -568,7 +568,7 @@ const WCHAR NullChar = L'\0';
 
 WDTControl::WDTControl(
   const std::wstring& caption,
-  const WDTControl::eControlClass type,
+  const WDTControl::control_class_name type,
   const WORD  id,
   const short x,
   const short y,

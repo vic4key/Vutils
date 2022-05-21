@@ -486,7 +486,7 @@ void vuapi hex_dump(const void* data, int size)
   printf("  %s\n", buffer);
 }
 
-std::string vuapi format_bytes_A(long long bytes, eStdByte std, int digits)
+std::string vuapi format_bytes_A(long long bytes, data_unit_type dut, int digits)
 {
   std::string result = "";
 
@@ -499,7 +499,7 @@ std::string vuapi format_bytes_A(long long bytes, eStdByte std, int digits)
   // So log(9{18}, 1000-1024) ~ 6-7 array index.
   static const char* SIUnits[]  = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
   static const char* IECUnits[] = { "B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB" };
-  static const auto  Units = std == eStdByte::IEC ? IECUnits : SIUnits;
+  static const auto  Units = dut == data_unit_type::IEC ? IECUnits : SIUnits;
 
   const auto log2l = [](long double v) -> long double
   {
@@ -516,21 +516,21 @@ std::string vuapi format_bytes_A(long long bytes, eStdByte std, int digits)
 
   if (bytes > 0)
   {
-    idx = (int)logn(static_cast<long double>(bytes), static_cast<long double>(std));
+    idx = (int)logn(static_cast<long double>(bytes), static_cast<long double>(dut));
 
     std::string fmt = "%0.";
     fmt += std::to_string(digits);
     fmt += "f %s";
 
-    result = format_A(fmt, float(bytes / powl(static_cast<long double>(std), idx)), Units[idx]);
+    result = format_A(fmt, float(bytes / powl(static_cast<long double>(dut), idx)), Units[idx]);
   }
 
   return result;
 }
 
-std::wstring vuapi format_bytes_W(long long bytes, eStdByte std, int digits)
+std::wstring vuapi format_bytes_W(long long bytes, data_unit_type dut, int digits)
 {
-  return to_string_W(format_bytes_A(bytes, std, digits));
+  return to_string_W(format_bytes_A(bytes, dut, digits));
 }
 
 std::string vuapi to_hex_string_A(const byte* ptr, const size_t size)

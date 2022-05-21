@@ -386,19 +386,19 @@ std::wstring vuapi get_contain_directory_W(bool last_slash)
 
 #if defined(VU_WMI_ENABLED)
 
-eDiskType get_disk_type_A(const char drive)
+disk_type get_disk_type_A(const char drive)
 {
   return get_disk_type_W(wchar_t(drive));
 }
 
-eDiskType get_disk_type_W(const wchar_t drive)
+disk_type get_disk_type_W(const wchar_t drive)
 {
   if (std::iswalpha(drive) == 0)
   {
-    return eDiskType::Unspecified;
+    return disk_type::Unspecified;
   }
 
-  static std::map<int, eDiskType> types;
+  static std::map<int, disk_type> types;
   static std::map<std::wstring, int> partitions;
 
   // Once generate maps for Partition Names and Disk IDs and Partition Names
@@ -473,7 +473,7 @@ eDiskType get_disk_type_W(const wchar_t drive)
         std::wstring id = device_id.bstrVal;
         if (fnIsNumber(id))
         {
-          types[std::stoi(id)] = static_cast<eDiskType>(media_type.uintVal);
+          types[std::stoi(id)] = static_cast<disk_type>(media_type.uintVal);
         }
 
         return true;
@@ -484,7 +484,7 @@ eDiskType get_disk_type_W(const wchar_t drive)
 
   // Find the Disk Type of a Partition
 
-  eDiskType result = eDiskType::Unspecified;
+  disk_type result = disk_type::Unspecified;
 
   std::wstring s = L"";
   s += std::towupper(drive);
@@ -538,26 +538,26 @@ std_string_t join_path_T(const std_string_t& left, const std_string_t& right, co
 }
 
 std::string vuapi join_path_A(
-  const std::string& left, const std::string& right, const ePathSep separator)
+  const std::string& left, const std::string& right, const path_separator separator)
 {
-  const auto Sep = separator == ePathSep::WIN ? '\\' : '/';
+  const auto Sep = separator == path_separator::WIN ? '\\' : '/';
   return join_path_T<std::string, char>(left, right, Sep);
 }
 
 std::wstring vuapi join_path_W(
-  const std::wstring& left, const std::wstring& right, const ePathSep separator)
+  const std::wstring& left, const std::wstring& right, const path_separator separator)
 {
-  const auto sep = separator == ePathSep::WIN ? L'\\' : L'/';
+  const auto sep = separator == path_separator::WIN ? L'\\' : L'/';
   return join_path_T<std::wstring, wchar_t>(left, right, sep);
 }
 
-std::string normalize_path_A(const std::string& path, const ePathSep separator)
+std::string normalize_path_A(const std::string& path, const path_separator separator)
 {
   auto result = path;
 
   const std::string SEP_WIN = "\\";
   const std::string SEP_POSIX = "/";
-  const std::string sep = separator == ePathSep::WIN ? SEP_WIN : SEP_POSIX;
+  const std::string sep = separator == path_separator::WIN ? SEP_WIN : SEP_POSIX;
 
   result = replace_string_A(result, SEP_WIN + SEP_WIN, sep);
   result = replace_string_A(result, SEP_WIN, sep);
@@ -566,13 +566,13 @@ std::string normalize_path_A(const std::string& path, const ePathSep separator)
   return result;
 }
 
-std::wstring normalize_path_W(const std::wstring& path, const ePathSep separator)
+std::wstring normalize_path_W(const std::wstring& path, const path_separator separator)
 {
   auto result = path;
 
   const std::wstring SEP_WIN = L"\\";
   const std::wstring SEP_POSIX = L"/";
-  const std::wstring sep = separator == ePathSep::WIN ? SEP_WIN : SEP_POSIX;
+  const std::wstring sep = separator == path_separator::WIN ? SEP_WIN : SEP_POSIX;
 
   result = replace_string_W(result, SEP_WIN + SEP_WIN, sep);
   result = replace_string_W(result, SEP_WIN, sep);
@@ -585,11 +585,11 @@ std::wstring normalize_path_W(const std::wstring& path, const ePathSep separator
  * PathA
  */
 
-PathA::PathA(const ePathSep separator) : m_path(""), m_separator(separator)
+PathA::PathA(const path_separator separator) : m_path(""), m_separator(separator)
 {
 }
 
-PathA::PathA(const std::string& path, const ePathSep separator) : m_path(path), m_separator(separator)
+PathA::PathA(const std::string& path, const path_separator separator) : m_path(path), m_separator(separator)
 {
 }
 
@@ -647,11 +647,11 @@ bool PathA::operator==(const PathA& right)
 
   if (result)
   {
-    if (m_separator == ePathSep::WIN)
+    if (m_separator == path_separator::WIN)
     {
       result &= lower_string_A(m_path) == lower_string_A(right.m_path);
     }
-    else if (m_separator == ePathSep::POSIX)
+    else if (m_separator == path_separator::POSIX)
     {
       result &= m_path == right.m_path;
     }
@@ -665,7 +665,7 @@ bool PathA::operator!=(const PathA& right)
   return !(*this == right);
 }
 
-vu::PathA& PathA::trim(const eTrimType type)
+vu::PathA& PathA::trim(const trim_type type)
 {
   m_path = trim_string_A(m_path, type);
   return *this;
@@ -726,11 +726,11 @@ std::ostream& operator<<(std::ostream& os, PathA& Path)
  * PathW
  */
 
-PathW::PathW(const ePathSep Separator) : m_path(L""), m_separator(Separator)
+PathW::PathW(const path_separator Separator) : m_path(L""), m_separator(Separator)
 {
 }
 
-PathW::PathW(const std::wstring& path, const ePathSep separator) : m_path(path), m_separator(separator)
+PathW::PathW(const std::wstring& path, const path_separator separator) : m_path(path), m_separator(separator)
 {
 }
 
@@ -788,11 +788,11 @@ bool PathW::operator==(const PathW& right)
 
   if (result)
   {
-    if (m_separator == ePathSep::WIN)
+    if (m_separator == path_separator::WIN)
     {
       result &= lower_string_W(m_path) == lower_string_W(right.m_path);
     }
-    else if (m_separator == ePathSep::POSIX)
+    else if (m_separator == path_separator::POSIX)
     {
       result &= m_path == right.m_path;
     }
@@ -806,7 +806,7 @@ bool PathW::operator!=(const PathW& right)
   return !(*this == right);
 }
 
-vu::PathW& PathW::trim(const eTrimType type)
+vu::PathW& PathW::trim(const trim_type type)
 {
   m_path = trim_string_W(m_path, type);
   return *this;

@@ -202,7 +202,7 @@ void vuapi hex_dump(const void* data, int size);
  * String Formatting
  */
 
-typedef enum class _ENCODING_TYPE : int
+enum class encoding_type : int
 {
   ET_UNKNOWN      = -1,
   ET_UTF8         = 0, // "ANSI/UTF-8", "ANSI/UTF-8"
@@ -213,13 +213,13 @@ typedef enum class _ENCODING_TYPE : int
   ET_UTF16_BE_BOM = 5, // "Unicode BE BOM", "UTF-16 Big Endian BOM"
   ET_UTF32_LE_BOM = 6, // "UTF-32 LE BOM", "UTF-32 Little Endian BOM"
   ET_UTF32_BE_BOM = 7, // "UTF-32 BE BOM", "UTF-32 Big Endian BOM"
-} eEncodingType;
+};
 
-typedef enum class _STD_BYTES : int
+enum class data_unit_type : int
 {
   SI  = 1000, // 1 KB  = 1000 bytes
   IEC = 1024, // 1 KiB = 1024 bytes
-} eStdByte;
+};
 
 std::string vuapi format_A(const std::string format, ...);
 std::wstring vuapi format_W(const std::wstring format, ...);
@@ -237,9 +237,9 @@ std::string vuapi format_date_time_A(const time_t t, const std::string format);
 std::wstring vuapi format_date_time_W(const time_t t, const std::wstring format);
 std::string vuapi date_time_to_string_A(const time_t t);
 std::wstring vuapi date_time_to_string_W(const time_t t);
-eEncodingType vuapi determine_encoding_type(const void* data, const size_t size);
-std::string vuapi format_bytes_A(long long bytes, eStdByte std = eStdByte::IEC, int digits = 2);
-std::wstring vuapi format_bytes_W(long long bytes, eStdByte std = eStdByte::IEC, int digits = 2);
+encoding_type vuapi determine_encoding_type(const void* data, const size_t size);
+std::string vuapi format_bytes_A(long long bytes, data_unit_type dut = data_unit_type::IEC, int digits = 2);
+std::wstring vuapi format_bytes_W(long long bytes, data_unit_type dut = data_unit_type::IEC, int digits = 2);
 std::string vuapi to_hex_string_A(const byte* ptr, const size_t size);
 std::wstring vuapi to_hex_string_W(const byte* ptr, const size_t size);
 bool vuapi to_hex_bytes_A(const std::string& text, std::vector<byte>& bytes);
@@ -253,12 +253,12 @@ void vuapi url_decode_W(const std::wstring& text, std::wstring& result);
  * String Working
  */
 
-typedef enum class _TRIM_STRING
+enum class trim_type
 {
   TS_LEFT  = 0,
   TS_RIGHT = 1,
   TS_BOTH  = 2,
-} eTrimType;
+};
 
 std::string vuapi lower_string_A(const std::string& string);
 std::wstring vuapi lower_string_W(const std::wstring& string);
@@ -280,11 +280,11 @@ std::string vuapi load_rs_string_A(const uint id, const std::string& module_name
 std::wstring vuapi load_rs_string_W(const uint id, const std::wstring& module_name = L"");
 std::string vuapi trim_string_A(
   const std::string& string,
-  const eTrimType& type = eTrimType::TS_BOTH,
+  const trim_type& type = trim_type::TS_BOTH,
   const std::string& chars = " \t\n\r\f\v");
 std::wstring vuapi trim_string_W(
   const std::wstring& string,
-  const eTrimType& type = eTrimType::TS_BOTH,
+  const trim_type& type = trim_type::TS_BOTH,
   const std::wstring& chars = L" \t\n\r\f\v");
 std::string vuapi replace_string_A(
   const std::string& text, const std::string& from, const std::string& to);
@@ -313,24 +313,24 @@ std::wstring vuapi regex_replace_string_W(
  * Process Working
  */
 
-typedef enum _XBit
+enum arch
 {
   x86 = 4,
   x64 = 8,
-} eXBit;
+};
 
-typedef enum _WOW64
+enum class wow_64
 {
   WOW64_ERROR = -1,
   WOW64_NO    = 0,
   WOW64_YES   = 1,
-} eWow64;
+};
 
 #ifndef PROCESSOR_ARCHITECTURE_NEUTRAL
 #define PROCESSOR_ARCHITECTURE_NEUTRAL 11
 #endif
 
-typedef enum _PROCESSOR_ARCHITECTURE
+enum processor_architecture
 {
   PA_X86     = PROCESSOR_ARCHITECTURE_INTEL,
   PA_MIPS    = PROCESSOR_ARCHITECTURE_MIPS,
@@ -345,7 +345,7 @@ typedef enum _PROCESSOR_ARCHITECTURE
   PA_WOW64   = PROCESSOR_ARCHITECTURE_IA32_ON_WIN64,
   PA_NEUTRAL = PROCESSOR_ARCHITECTURE_NEUTRAL,
   PA_UNKNOWN = PROCESSOR_ARCHITECTURE_UNKNOWN,
-} eProcessorArchitecture;
+};
 
 typedef struct _BLOCK
 {
@@ -353,11 +353,11 @@ typedef struct _BLOCK
   SIZE_T Size;
 } TBlock;
 
-eProcessorArchitecture get_processor_architecture();
+processor_architecture get_processor_architecture();
 bool vuapi is_64bits(HANDLE hp = INVALID_HANDLE_VALUE);
 bool vuapi is_64bits(ulong pid = INVALID_PID_VALUE);
-eWow64 vuapi is_wow64(HANDLE hp = INVALID_HANDLE_VALUE);
-eWow64 vuapi is_wow64(ulong pid = INVALID_PID_VALUE); /* -1: error, 0: false, 1: true */
+wow_64 vuapi is_wow64(HANDLE hp = INVALID_HANDLE_VALUE);
+wow_64 vuapi is_wow64(ulong pid = INVALID_PID_VALUE); /* -1: error, 0: false, 1: true */
 ulong vuapi get_parent_pid(ulong child_pid);
 ulong vuapi get_main_thread_id(ulong pid);
 std::vector<ulong> vuapi name_to_pid_A(const std::string& name);
@@ -375,7 +375,7 @@ bool vuapi rpm(
   const SIZE_T size,
   const bool force = false);
 bool vuapi rpm_ex(
-  const eXBit bit,
+  const arch bit,
   const HANDLE hp,
   const void* address,
   void* buffer,
@@ -387,7 +387,7 @@ bool vuapi wpm(const HANDLE hp,
   const void* buffer,
   const SIZE_T size,
   const bool force = false);
-bool vuapi wpm_ex(const eXBit bit,
+bool vuapi wpm_ex(const arch bit,
   const HANDLE hp,
   const void* address,
   const void* buffer,
@@ -459,23 +459,23 @@ std::wstring vuapi decode_http_status_W(const ulong code);
  * File/Directory Working
  */
 
-enum class ePathSep
+enum class path_separator
 {
   WIN,
   POSIX,
 };
 
-typedef enum class _DISK_TYPE : int
+enum class disk_type : int
 {
   Unspecified = 0,
   HDD = 3,
   SSD = 4,
   SCM = 5,
-} eDiskType;
+};
 
 #if defined(VU_WMI_ENABLED)
-eDiskType vuapi get_disk_type_A(const char drive);
-eDiskType vuapi get_disk_type_W(const wchar_t drive);
+disk_type vuapi get_disk_type_A(const char drive);
+disk_type vuapi get_disk_type_W(const wchar_t drive);
 #endif // VU_WMI_ENABLED
 
 #if defined(_MSC_VER) || defined(__BCPLUSPLUS__) // LNK
@@ -571,19 +571,19 @@ std::wstring vuapi get_contain_directory_W(bool last_slash = true);
 std::string vuapi get_file_name_from_handle_A(HANDLE hf);
 std::wstring vuapi get_file_name_from_handle_W(HANDLE hf);
 std::string vuapi join_path_A(
-  const std::string& left, const std::string& right, const ePathSep separator = ePathSep::WIN);
+  const std::string& left, const std::string& right, const path_separator separator = path_separator::WIN);
 std::wstring vuapi join_path_W(
-  const std::wstring& left, const std::wstring& right, const ePathSep separator = ePathSep::WIN);
+  const std::wstring& left, const std::wstring& right, const path_separator separator = path_separator::WIN);
 std::string vuapi normalize_path_A(
-  const std::string& path, const ePathSep separator = ePathSep::WIN);
+  const std::string& path, const path_separator separator = path_separator::WIN);
 std::wstring vuapi normalize_path_W(
-  const std::wstring& path, const ePathSep separator = ePathSep::WIN);
+  const std::wstring& path, const path_separator separator = path_separator::WIN);
 std::string vuapi undecorate_cpp_symbol_A(
   const std::string& name, const ushort flags = 0);   // UNDNAME_COMPLETE
 std::wstring vuapi undecorate_cpp_symbol_W(
   const std::wstring& name, const ushort flags = 0); // UNDNAME_COMPLETE
-eXBit vuapi get_pe_file_bits_A(const std::string& file_path);
-eXBit vuapi get_pe_file_bits_W(const std::wstring& file_path);
+arch vuapi get_pe_file_bits_A(const std::string& file_path);
+arch vuapi get_pe_file_bits_W(const std::wstring& file_path);
 
 /**
  * Wrapper
@@ -611,7 +611,7 @@ std::wstring vuapi crypt_md5_file_W(const std::wstring& file_path);
 //  @refer to https://toolslick.com/programming/hashing/crc-calculator
 //  @refer to https://crccalc.com/
 
-enum class eBits : int
+enum class crypt_bits : int
 {
   _8   = 8,   // CRC-8/SMBUS
   _16  = 16,  // CRC-16/ARC, CRC-16/LHA, CRC-IBM
@@ -627,30 +627,37 @@ enum class eBits : int
   Unspecified = -1,
 };
 
-uint64 vuapi crypt_crc_text_A(const std::string& text, const eBits bits);
-uint64 vuapi crypt_crc_text_W(const std::wstring& text, const eBits bits);
-uint64 vuapi crypt_crc_file_A(const std::string& file_path, const eBits bits);
-uint64 vuapi crypt_crc_file_W(const std::wstring& file_path, const eBits bits);
-uint64 vuapi crypt_crc_buffer(const std::vector<byte>& data, const eBits bits);
+uint64 vuapi crypt_crc_text_A(const std::string& text, const crypt_bits bits);
+uint64 vuapi crypt_crc_text_W(const std::wstring& text, const crypt_bits bits);
+uint64 vuapi crypt_crc_file_A(const std::string& file_path, const crypt_bits bits);
+uint64 vuapi crypt_crc_file_W(const std::wstring& file_path, const crypt_bits bits);
+uint64 vuapi crypt_crc_buffer(const std::vector<byte>& data, const crypt_bits bits);
 
-// Note: For reduce library size so only enabled 32/64-bits of parametrised CRC algorithms
+// Note: For reduce library size so only enabled 32/64-bits of parametrized CRC algorithms
 uint64 vuapi crypt_crc_buffer(const std::vector<byte>& data,
   uint8_t bits, uint64 poly, uint64 init, bool ref_in, bool ref_out, uint64 xor_out, uint64 check);
 
 // SHA
 
-enum class eSHA
+enum class sha_version
 {
   _1 = 1,
   _2 = 2,
   _3 = 3,
 };
 
-std::string vuapi crypt_sha_text_A(const std::string& text, const eSHA version, const eBits bits);
-std::wstring vuapi crypt_sha_text_W(const std::wstring& text, const eSHA version, const eBits bits);
-std::string vuapi crypt_sha_file_A(const std::string& file_path, const eSHA version, const eBits bits);
-std::wstring vuapi crypt_sha_file_W(const std::wstring& file_path, const eSHA version, const eBits bits);
-void vuapi crypt_sha_buffer(const std::vector<byte>& data, const eSHA version, const eBits bits,
+std::string vuapi crypt_sha_text_A(
+  const std::string& text, const sha_version version, const crypt_bits bits);
+std::wstring vuapi crypt_sha_text_W(
+  const std::wstring& text, const sha_version version, const crypt_bits bits);
+std::string vuapi crypt_sha_file_A(
+  const std::string& file_path, const sha_version version, const crypt_bits bits);
+std::wstring vuapi crypt_sha_file_W(
+  const std::wstring& file_path, const sha_version version, const crypt_bits bits);
+void vuapi crypt_sha_buffer(
+  const std::vector<byte>& data,
+  const sha_version version,
+  const crypt_bits bits,
   std::vector<byte>& hash);
 
 /*----------- The definition of common function(s) which compatible both ANSI & UNICODE ----------*/
@@ -1127,7 +1134,7 @@ class AsyncSocket : public LastError
 public:
   typedef std::function<void(Socket& client)> fn_prototype_t;
 
-  typedef enum _FN_TYPE : uint
+  enum function_t : uint
   {
     CONNECT,
     OPEN,
@@ -1135,13 +1142,13 @@ public:
     RECV,
     SEND,
     UNDEFINED,
-  } eFnType;
+  };
 
-  typedef enum _MODE : uint
+  enum class mode_t : uint
   {
     SERVER,
     CLIENT,
-  } eMode;
+  };
 
   AsyncSocket(
     const vu::Socket::address_family_t af = AF_INET,
@@ -1149,7 +1156,7 @@ public:
     const vu::Socket::protocol_t proto = IPPROTO_IP);
   virtual ~AsyncSocket();
 
-  eMode vuapi mode();
+  mode_t vuapi mode();
 
   bool vuapi available();
   bool vuapi running();
@@ -1182,7 +1189,7 @@ public:
   IResult vuapi send(const SOCKET& connection, const char* ptr_data, int size, const Socket::flags_t flags = MSG_NONE);
   IResult vuapi send(const SOCKET& connection, const Buffer& data, const Socket::flags_t flags = MSG_NONE);
 
-  virtual void on(const eFnType type, const fn_prototype_t fn); // must be mapping before call run(...)
+  virtual void on(const function_t type, const fn_prototype_t fn); // must be mapping before call run(...)
 
   virtual void on_connect(Socket& connection);
   virtual void on_open(Socket&  connection);
@@ -1202,12 +1209,12 @@ protected:
 
 protected:
   vu::Socket m_socket;
-  eMode m_mode;
+  mode_t m_mode;
   bool m_running;
   DWORD m_n_events;
   SOCKET m_connections[WSA_MAXIMUM_WAIT_EVENTS];
   WSAEVENT m_events[WSA_MAXIMUM_WAIT_EVENTS];
-  fn_prototype_t m_functions[eFnType::UNDEFINED];
+  fn_prototype_t m_functions[function_t::UNDEFINED];
   std::mutex m_mutex;
   HANDLE m_thread;
 };
@@ -1230,20 +1237,20 @@ protected:
 #define VU_API_INL_OVERRIDE(O, M, F) O.install(_T( # M ), _T( # F ), (void*)&Hfn ## F, (void**)&pfn ## F)
 #define VU_API_INL_RESTORE(O, M, F) O.uninstall(_T( # M ), _T( # F ), (void**)&pfn ## F)
 
-typedef enum class _MEMORY_ADDRESS_TYPE
+enum class memory_address_type
 {
   MAT_NONE = 0,
   MAT_8    = 1,
   MAT_16   = 2,
   MAT_32   = 3,
   MAT_64   = 4,
-} eMemoryAddressType;
+};
 
 typedef struct _MEMORY_INSTRUCTION
 {
   ulong offset;   // Offset of the current instruction.
   ulong position; // Position of the memory address in the current instruction.
-  eMemoryAddressType memory_address_type;
+  memory_address_type mat;
   union           // Memory Instruction value.
   {
     uchar   A8;
@@ -1378,7 +1385,7 @@ public:
     PIMAGE_THUNK_DATA& ptr_int)> fn);
 
 private:
-  enum IATAction
+  enum iat_action
   {
     IAT_INSTALL,
     IAT_UNINSTALL,
@@ -1401,7 +1408,7 @@ private:
     const std::string& module,
     const std::string& function);
 
-  VUResult perform(const IATAction action, sIATElement& element);
+  VUResult perform(const iat_action action, sIATElement& element);
 };
 
 class IATHookingW : public SingletonT<IATHookingW>
@@ -1476,16 +1483,16 @@ private:
  * File System
  */
 
-typedef enum _FS_MODE_FLAGS
+enum fs_mode
 {
   FM_CREATENEW = 1,    // CREATE_NEW         = 1,
   FM_CREATEALWAY,      // CREATE_ALWAYS      = 2,
   FM_OPENEXISTING,     // OPEN_EXISTING      = 3,
   FM_OPENALWAYS,       // OPEN_ALWAYS        = 4,
   FM_TRUNCATEEXISTING, // TRUNCATE_EXISTING  = 5,
-} eFSModeFlags;
+};
 
-typedef enum _FS_ATTRIBUTE_FLAGS
+enum fs_attribute
 {
   FA_UNKNOWN          = 0x00000000,
   FA_READONLY         = 0x00000001,   // FILE_ATTRIBUTE_READONLY             = $00000001;
@@ -1502,33 +1509,33 @@ typedef enum _FS_ATTRIBUTE_FLAGS
   FA_OFFLINE          = 0x00001000,   // FILE_ATTRIBUTE_OFFLINE              = $00001000;
   FANOTCONTENTINDEXED = 0x00002000,   // FILE_ATTRIBUTE_NOT_CONTENT_INDEXED  = $00002000;
   FAENCRYPTED         = 0x00004000,   // FILE_ATTRIBUTE_ENCRYPTED            = $00004000;
-} eFSAttributeFlags;
+};
 
-typedef enum _FS_SHARE_FLAGS
+enum fs_share
 {
   FS_NONE      = 0x00000000,
   FS_READ      = 0x00000001,
   FS_WRITE     = 0x00000002,
   FS_DELETE    = 0x00000004,
-  FS_READWRITE = FS_READ | FS_WRITE,
-  FS_ALLACCESS = FS_READ | FS_WRITE | FS_DELETE,
-} eFSShareFlags;
+  FS_READWRITE = fs_share::FS_READ | FS_WRITE,
+  FS_ALLACCESS = fs_share::FS_READ | FS_WRITE | FS_DELETE,
+};
 
-typedef enum _FS_GENERIC_FLAGS
+enum fs_generic
 {
-  FG_ALL       = GENERIC_ALL,
-  FG_EXECUTE   = GENERIC_EXECUTE,
-  FG_WRITE     = GENERIC_WRITE,
-  FG_READ      = GENERIC_READ,
+  FG_ALL = GENERIC_ALL,
+  FG_EXECUTE = GENERIC_EXECUTE,
+  FG_WRITE = GENERIC_WRITE,
+  FG_READ = GENERIC_READ,
   FG_READWRITE = GENERIC_READ | GENERIC_WRITE,
-} eFSGenericFlags;
+};
 
-typedef enum _MOVE_METHOD_FLAGS
+enum fs_position_at
 {
-  MM_BEGIN   = FILE_BEGIN,
-  MM_CURRENT = FILE_CURRENT,
-  MM_END     = FILE_END,
-} eMoveMethodFlags;
+  PA_BEGIN = FILE_BEGIN,
+  PA_CURRENT = FILE_CURRENT,
+  PA_END = FILE_END,
+};
 
 typedef struct _FS_OBJECT_A
 {
@@ -1559,13 +1566,13 @@ public:
   virtual const Buffer vuapi read_as_buffer();
   virtual bool vuapi read(void* ptr_buffer, ulong size);
   virtual bool vuapi read(
-    ulong offset, void* ptr_buffer, ulong size, eMoveMethodFlags flags = MM_BEGIN);
+    ulong offset, void* ptr_buffer, ulong size, fs_position_at flags = fs_position_at::PA_BEGIN);
 
   virtual bool vuapi write(const void* ptr_buffer, ulong size);
   virtual bool vuapi write(
-    ulong offset, const void* ptr_buffer, ulong size, eMoveMethodFlags flags = MM_BEGIN);
+    ulong offset, const void* ptr_buffer, ulong size, fs_position_at flags = fs_position_at::PA_BEGIN);
 
-  virtual bool vuapi seek(ulong offset, eMoveMethodFlags flags);
+  virtual bool vuapi seek(ulong offset, fs_position_at flags);
   virtual bool vuapi io_control(
     ulong code, void* ptr_send_buffer, ulong send_size, void* ptr_recv_buffer, ulong recv_size);
 
@@ -1578,22 +1585,22 @@ private:
   ulong m_read_size, m_wrote_size;
 };
 
-class FileSystemA: public FileSystemX
+class FileSystemA : public FileSystemX
 {
 public:
   FileSystemA();
   FileSystemA(
     const std::string& file_path,
-    eFSModeFlags fm_flags,
-    eFSGenericFlags fg_flags = FG_READWRITE,
-    eFSShareFlags fs_flags = FS_ALLACCESS, eFSAttributeFlags fa_flags = FA_NORMAL);
+    fs_mode fm_flags,
+    fs_generic fg_flags = fs_generic::FG_READWRITE,
+    fs_share fs_flags = fs_share::FS_ALLACCESS, fs_attribute fa_flags = fs_attribute::FA_NORMAL);
   virtual ~FileSystemA();
 
   bool vuapi initialize(const std::string& file_path,
-    eFSModeFlags fm_flags,
-    eFSGenericFlags fg_flags = FG_READWRITE,
-    eFSShareFlags fs_flags = FS_ALLACCESS,
-    eFSAttributeFlags fa_flags = FA_NORMAL);
+    fs_mode fm_flags,
+    fs_generic fg_flags = fs_generic::FG_READWRITE,
+    fs_share fs_flags = fs_share::FS_ALLACCESS,
+    fs_attribute fa_flags = fs_attribute::FA_NORMAL);
   const std::string vuapi read_as_string(bool remove_bom = true);
 
   static const std::string vuapi quick_read_as_string(
@@ -1605,24 +1612,24 @@ public:
     const std::function<bool(const sFSObjectA& fso)> fn_callback);
 };
 
-class FileSystemW: public FileSystemX
+class FileSystemW : public FileSystemX
 {
 public:
   FileSystemW();
   FileSystemW(
     const std::wstring& file_path,
-    eFSModeFlags fm_flags,
-    eFSGenericFlags fg_flags = FG_READWRITE,
-    eFSShareFlags fs_flags = FS_ALLACCESS,
-    eFSAttributeFlags fa_flags = FA_NORMAL);
+    fs_mode fm_flags,
+    fs_generic fg_flags = fs_generic::FG_READWRITE,
+    fs_share fs_flags = fs_share::FS_ALLACCESS,
+    fs_attribute fa_flags = fs_attribute::FA_NORMAL);
   virtual ~FileSystemW();
 
   bool vuapi initialize(
     const std::wstring& file_path,
-    eFSModeFlags fm_flags,
-    eFSGenericFlags fg_flags = FG_READWRITE,
-    eFSShareFlags fs_flags = FS_ALLACCESS,
-    eFSAttributeFlags fa_flags = FA_NORMAL);
+    fs_mode fm_flags,
+    fs_generic fg_flags = fs_generic::FG_READWRITE,
+    fs_share fs_flags = fs_share::FS_ALLACCESS,
+    fs_attribute fa_flags = fs_attribute::FA_NORMAL);
   const std::wstring vuapi read_as_string(bool remove_bom = true);
 
   static const std::wstring vuapi quick_read_as_string(
@@ -1759,19 +1766,7 @@ protected:
  * File Mapping
  */
 
-typedef enum _DESIRED_ACCESS
-{
-  DA_UNKNOWN = -1,
-  DA_ALL_ACCESS = FILE_MAP_ALL_ACCESS,
-  DA_READ = FILE_MAP_READ,
-  DA_WRITE = FILE_MAP_WRITE,
-  DA_COPY = FILE_MAP_COPY,
-  DA_EXECUTE = FILE_MAP_EXECUTE,
-  // DA_LARGE_PAGES = FILE_MAP_LARGE_PAGES,
-  // DA_TARGETS_INVALID = FILE_MAP_TARGETS_INVALID,
-} eFMDesiredAccess;
-
-typedef enum _PAGE_PROTECTION
+enum page_protection
 {
   PP_EXECUTE_READ = PAGE_EXECUTE_READ,
   PP_EXECUTE_READ_WRITE = PAGE_EXECUTE_READWRITE,
@@ -1786,16 +1781,28 @@ typedef enum _PAGE_PROTECTION
   PP_SEC_NO_CACHE = SEC_NOCACHE,
   PP_SEC_RESERVE = SEC_RESERVE,
   PP_SEC_WRITE_COMBINE = SEC_WRITECOMBINE,
-} ePageProtection;
+};
 
 class FileMappingX : public LastError
 {
 public:
+  enum desired_access
+  {
+    DA_UNKNOWN = -1,
+    DA_ALL_ACCESS = FILE_MAP_ALL_ACCESS,
+    DA_READ = FILE_MAP_READ,
+    DA_WRITE = FILE_MAP_WRITE,
+    DA_COPY = FILE_MAP_COPY,
+    DA_EXECUTE = FILE_MAP_EXECUTE,
+    // DA_LARGE_PAGES = FILE_MAP_LARGE_PAGES,
+    // DA_TARGETS_INVALID = FILE_MAP_TARGETS_INVALID,
+  };
+
   FileMappingX();
   virtual ~FileMappingX();
 
   void* vuapi view(
-    eFMDesiredAccess fmDesiredAccess = eFMDesiredAccess::DA_ALL_ACCESS,
+    desired_access the_desired_access = desired_access::DA_ALL_ACCESS,
     ulong max_file_offset_low = 0,
     ulong max_file_offset_high = 0,
     ulong number_of_bytes_to_map = 0 // The mapping extends from the specified offset to the end.
@@ -1827,11 +1834,11 @@ public:
     const std::string& file_path,
     ulong max_size_low  = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
     ulong max_size_high = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
-    eFSGenericFlags fg_flags = eFSGenericFlags::FG_ALL,
-    eFSShareFlags fs_flags = eFSShareFlags::FS_ALLACCESS,
-    eFSModeFlags fm_flags = eFSModeFlags::FM_OPENEXISTING,
-    eFSAttributeFlags fa_flags = eFSAttributeFlags::FA_NORMAL,
-    ePageProtection pp_flags = ePageProtection::PP_EXECUTE_READ_WRITE
+    fs_generic fg_flags = fs_generic::FG_ALL,
+    fs_share fs_flags = fs_share::FS_ALLACCESS,
+    fs_mode fm_flags = fs_mode::FM_OPENEXISTING,
+    fs_attribute fa_flags = fs_attribute::FA_NORMAL,
+    page_protection pp_flags = page_protection::PP_EXECUTE_READ_WRITE
   );
 
   /**
@@ -1842,7 +1849,7 @@ public:
     const std::string& mapping_name,
     ulong max_size_low, // The mapping size for file mapping object.
     ulong max_size_high = 0,
-    ePageProtection pp_flags = ePageProtection::PP_EXECUTE_READ_WRITE
+    page_protection pp_flags = page_protection::PP_EXECUTE_READ_WRITE
   );
 
   /**
@@ -1852,7 +1859,7 @@ public:
    */
   VUResult vuapi open(
     const std::string& mapping_name,
-    eFMDesiredAccess desired_access = eFMDesiredAccess::DA_ALL_ACCESS,
+    desired_access desired_access = desired_access::DA_ALL_ACCESS,
     bool inherit_handle = false
   );
 };
@@ -1871,11 +1878,11 @@ public:
     const std::wstring& file_path,
     ulong max_size_low = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
     ulong max_size_high = 0, // The file to map, Hi & Low = 0 is mapping whole file as default.
-    eFSGenericFlags fg_flags = eFSGenericFlags::FG_ALL,
-    eFSShareFlags fs_flags = eFSShareFlags::FS_ALLACCESS,
-    eFSModeFlags fm_flags = eFSModeFlags::FM_OPENEXISTING,
-    eFSAttributeFlags fa_flags = eFSAttributeFlags::FA_NORMAL,
-    ePageProtection pp_flags = ePageProtection::PP_EXECUTE_READ_WRITE
+    fs_generic fg_flags = fs_generic::FG_ALL,
+    fs_share fs_flags = fs_share::FS_ALLACCESS,
+    fs_mode fm_flags = fs_mode::FM_OPENEXISTING,
+    fs_attribute fa_flags = fs_attribute::FA_NORMAL,
+    page_protection pp_flags = page_protection::PP_EXECUTE_READ_WRITE
   );
 
   /**
@@ -1886,7 +1893,7 @@ public:
     const std::wstring& mapping_name,
     ulong max_size_low, // The mapping size for file mapping object.
     ulong max_size_high = 0,
-    ePageProtection pp_flags = ePageProtection::PP_EXECUTE_READ_WRITE
+    page_protection pp_flags = page_protection::PP_EXECUTE_READ_WRITE
   );
 
   /**
@@ -1896,7 +1903,7 @@ public:
    */
   VUResult vuapi open(
     const std::wstring& mapping_name,
-    eFMDesiredAccess desired_access = eFMDesiredAccess::DA_ALL_ACCESS,
+    desired_access desired_access = desired_access::DA_ALL_ACCESS,
     bool inherit_handle = false
   );
 };
@@ -2026,7 +2033,7 @@ private:
 // #define HKEY_DYN_DATA                     (( HKEY ) (ULONG_PTR)((LONG)0x80000006) )
 // #define HKEY_CURRENT_USER_LOCAL_SETTINGS  (( HKEY ) (ULONG_PTR)((LONG)0x80000007) )
 
-typedef enum class _HKEY : ulongptr
+enum class registry_key : ulongptr
 {
   HKCR = ulongptr(0x80000000),
   HKCU = ulongptr(0x80000001),
@@ -2034,7 +2041,7 @@ typedef enum class _HKEY : ulongptr
   HKU  = ulongptr(0x80000003),
   HKPD = ulongptr(0x80000004),
   HKCF = ulongptr(0x80000005),
-} eRegRoot;
+};
 
 #ifndef KEY_WOW64_64KEY
 #define KEY_WOW64_64KEY 0x0100
@@ -2048,7 +2055,7 @@ typedef enum class _HKEY : ulongptr
 #define KEY_WOW64_RES 0x0300
 #endif
 
-typedef enum class _REG_ACCESS
+enum class registry_access
 {
   RA_UNKNOWN            = -1,
   RA_QUERY_VALUE        = KEY_QUERY_VALUE,
@@ -2064,16 +2071,16 @@ typedef enum class _REG_ACCESS
   RA_WRITE              = KEY_WRITE,
   RA_EXECUTE            = KEY_EXECUTE,
   RA_ALL_ACCESS         = KEY_ALL_ACCESS,
-} eRegAccess;
+};
 
-typedef enum class _REG_REFLECTION
+enum class registry_reflection
 {
   RR_ERROR    = -1,
   RR_DISABLED = 0,
   RR_ENABLED  = 1,
   RR_DISABLE  = 2,
   RR_ENABLE   = 3,
-} eRegReflection;
+};
 
 class RegistryX : public LastError
 {
@@ -2082,8 +2089,8 @@ public:
   virtual ~RegistryX();
 
   HKEY vuapi get_current_key_handle();
-  eRegReflection vuapi query_reflection_key();
-  bool vuapi set_reflection_key(eRegReflection reg_reflection);
+  registry_reflection vuapi query_reflection_key();
+  bool vuapi set_reflection_key(registry_reflection reg_reflection);
   bool vuapi close_key();
 
 protected:
@@ -2095,8 +2102,8 @@ class RegistryA : public RegistryX
 {
 public:
   RegistryA();
-  RegistryA(eRegRoot reg_root);
-  RegistryA(eRegRoot reg_root, const std::string& sub_key);
+  RegistryA(registry_key reg_root);
+  RegistryA(registry_key reg_root, const std::string& sub_key);
   virtual ~RegistryA();
 
   ulong vuapi set_size_of_multi_string(const char* multi_string);
@@ -2106,8 +2113,8 @@ public:
   bool vuapi create_key(const std::string& sub_key);
   bool vuapi key_exists();
   bool vuapi key_exists(const std::string& sub_key);
-  bool vuapi open_key(eRegAccess reg_access = eRegAccess::RA_ALL_ACCESS);
-  bool vuapi open_key(const std::string& sub_key, eRegAccess reg_access = eRegAccess::RA_ALL_ACCESS);
+  bool vuapi open_key(registry_access reg_access = registry_access::RA_ALL_ACCESS);
+  bool vuapi open_key(const std::string& sub_key, registry_access reg_access = registry_access::RA_ALL_ACCESS);
   bool vuapi delete_key();
   bool vuapi delete_key(const std::string& sub_key);
   bool vuapi delete_value(const std::string& value);
@@ -2144,8 +2151,8 @@ class RegistryW : public RegistryX
 {
 public:
   RegistryW();
-  RegistryW(eRegRoot reg_root);
-  RegistryW(eRegRoot reg_root, const std::wstring& sub_key);
+  RegistryW(registry_key reg_root);
+  RegistryW(registry_key reg_root, const std::wstring& sub_key);
   virtual ~RegistryW();
 
   ulong vuapi set_size_of_multi_string(const wchar* multi_string);
@@ -2155,8 +2162,8 @@ public:
   bool vuapi create_key(const std::wstring& sub_key);
   bool vuapi key_exists();
   bool vuapi key_exists(const std::wstring& sub_key);
-  bool vuapi open_key(eRegAccess reg_access = eRegAccess::RA_ALL_ACCESS);
-  bool vuapi open_key(const std::wstring& sub_key, eRegAccess reg_access = eRegAccess::RA_ALL_ACCESS);
+  bool vuapi open_key(registry_access reg_access = registry_access::RA_ALL_ACCESS);
+  bool vuapi open_key(const std::wstring& sub_key, registry_access reg_access = registry_access::RA_ALL_ACCESS);
   bool vuapi delete_key();
   bool vuapi delete_key(const std::wstring& sub_key);
   bool vuapi delete_value(const std::wstring& value);
@@ -2513,12 +2520,6 @@ struct sImportFunctionT
 typedef sImportFunctionT<ulong32> sImportFunction32T;
 typedef sImportFunctionT<ulong64> sImportFunction64T;
 
-typedef enum class _IMPORTED_FUNCTION_FIND_BY
-{
-  IFFM_HINT,
-  IFFM_NAME,
-} eImportedFunctionFindMethod;
-
 template<typename T>
 struct sRelocationEntryT
 {
@@ -2533,6 +2534,12 @@ template <typename T>
 class PEFileTX
 {
 public:
+  enum class find_by
+  {
+    HINT,
+    NAME,
+  };
+
   PEFileTX();
   virtual ~PEFileTX();
 
@@ -2557,7 +2564,7 @@ public:
     const ushort function_hint, bool in_cache = true);
   const sImportFunctionT<T>* vuapi find_ptr_import_function(
     const sImportFunctionT<T>& import_function,
-    const eImportedFunctionFindMethod method,
+    const find_by method,
     bool in_cache = true);
 
   const std::vector<sRelocationEntryT<T>> vuapi get_relocation_entries(bool in_cache = true);
@@ -2676,7 +2683,7 @@ private:
 class WDTControl
 {
 public:
-  enum eControlClass : WORD
+  enum control_class_name : WORD
   {
     CT_BUTTON     = 0x0080,
     CT_EDIT       = 0x0081,
@@ -2689,7 +2696,7 @@ public:
 
   WDTControl(
     const std::wstring& caption,
-    const eControlClass type,
+    const control_class_name type,
     const WORD  id,
     const short x,
     const short y,
@@ -2843,8 +2850,8 @@ public:
 
   const ulong  pid() const;
   const HANDLE handle() const;
-  const eWow64 wow64() const;
-  const eXBit  bit() const;
+  const wow_64 wow64() const;
+  const arch  bit() const;
 
   bool ready();
 
@@ -2878,10 +2885,10 @@ private:
   double get_cpu_percent_usage();
 
 protected:
-  eXBit  m_bit;
+  arch  m_bit;
   ulong  m_pid;
   HANDLE m_handle;
-  eWow64 m_wow64;
+  wow_64 m_wow64;
 
   bool m_attached;
 
@@ -3064,8 +3071,8 @@ private:
 class PathA
 {
 public:
-  PathA(const ePathSep separator = ePathSep::WIN);
-  PathA(const std::string& path, const ePathSep separator = ePathSep::WIN);
+  PathA(const path_separator separator = path_separator::WIN);
+  PathA(const std::string& path, const path_separator separator = path_separator::WIN);
   PathA(const PathA& right);
   virtual ~PathA();
 
@@ -3079,7 +3086,7 @@ public:
   bool operator!=(const PathA& right);
   friend std::ostream& operator<<(std::ostream& os, PathA& path);
 
-  PathA& trim(const eTrimType type = eTrimType::TS_BOTH);
+  PathA& trim(const trim_type type = trim_type::TS_BOTH);
   PathA& normalize();
   PathA& join(const std::string& path);
   PathA& finalize();
@@ -3090,15 +3097,15 @@ public:
   PathA extract_directory(bool with_slash = true) const;
 
 private:
-  ePathSep m_separator;
+  path_separator m_separator;
   std::string m_path;
 };
 
 class PathW
 {
 public:
-  PathW(const ePathSep separator = ePathSep::WIN);
-  PathW(const std::wstring& path, const ePathSep separator = ePathSep::WIN);
+  PathW(const path_separator separator = path_separator::WIN);
+  PathW(const std::wstring& path, const path_separator separator = path_separator::WIN);
   PathW(const PathW& right);
   virtual ~PathW();
 
@@ -3112,7 +3119,7 @@ public:
   bool operator!=(const PathW& right);
   friend std::wostream& operator<<(std::wostream& os, PathW& path);
 
-  PathW& trim(const eTrimType type = eTrimType::TS_BOTH);
+  PathW& trim(const trim_type type = trim_type::TS_BOTH);
   PathW& normalize();
   PathW& join(const std::wstring& path);
   PathW& finalize();
@@ -3123,7 +3130,7 @@ public:
   PathW extract_directory(bool with_slash = true) const;
 
 private:
-  ePathSep m_separator;
+  path_separator m_separator;
   std::wstring m_path;
 };
 
@@ -3200,7 +3207,7 @@ public:
   PickerX(HWND hwnd = nullptr);
   virtual ~PickerX();
 
-  enum class action_t
+  enum class action
   {
     open,
     save,
@@ -3231,7 +3238,7 @@ public:
   bool choose_directory(std::string& directory, const ulong flags = DEFAULT_CHOOSE_DIR_FLAGS);
 
   bool choose_file(
-    const action_t action,
+    const action action,
     std::string& file_path,
     const std::string& initial_dir = "",
     const char* filters = DEFAULT_CHOOSE_FILE_FILTERS_A,
@@ -3257,7 +3264,7 @@ public:
   bool choose_directory(std::wstring& directory, const ulong flags = DEFAULT_CHOOSE_DIR_FLAGS);
 
   bool choose_file(
-    const action_t action,
+    const action action,
     std::wstring& file_path,
     const std::wstring& initial_dir = L"",
     const wchar* filters = DEFAULT_CHOOSE_FILE_FILTERS_W,

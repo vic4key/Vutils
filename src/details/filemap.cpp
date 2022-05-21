@@ -31,7 +31,7 @@ bool FileMappingX::valid(HANDLE handle)
 }
 
 void* vuapi FileMappingX::view(
-  eFMDesiredAccess desired_access,
+  desired_access the_desired_access,
   ulong max_file_offset_low,
   ulong max_file_offset_high,
   ulong number_of_bytes_to_map
@@ -44,7 +44,7 @@ void* vuapi FileMappingX::view(
 
   m_ptr_data = MapViewOfFile(
     m_map_handle,
-    desired_access,
+    the_desired_access,
     max_file_offset_high,
     max_file_offset_low,
     number_of_bytes_to_map
@@ -106,11 +106,11 @@ VUResult vuapi FileMappingA::create_within_file(
   const std::string& file_path,
   ulong max_size_low,
   ulong max_size_high,
-  eFSGenericFlags fg_flags,
-  eFSShareFlags fs_flags,
-  eFSModeFlags fm_flags,
-  eFSAttributeFlags fa_flags,
-  ePageProtection pp_flags
+  fs_generic fg_flags,
+  fs_share fs_flags,
+  fs_mode fm_flags,
+  fs_attribute fa_flags,
+  page_protection pp_flags
 )
 {
   if (file_path.empty())
@@ -140,7 +140,7 @@ VUResult vuapi FileMappingA::create_named_shared_memory(
   const std::string& mapping_name,
   ulong max_size_low,
   ulong max_size_high,
-  ePageProtection pp_flags
+  page_protection pp_flags
 )
 {
   if (!this->valid(m_file_handle) && mapping_name.empty())
@@ -169,7 +169,7 @@ VUResult vuapi FileMappingA::create_named_shared_memory(
 
 VUResult vuapi FileMappingA::open(
   const std::string& mapping_name,
-  eFMDesiredAccess desired_access,
+  desired_access desired_access,
   bool inherit_handle
 )
 {
@@ -206,11 +206,11 @@ VUResult vuapi FileMappingW::create_within_file(
   const std::wstring& file_path,
   ulong max_size_low,
   ulong max_size_high,
-  eFSGenericFlags fg_flags,
-  eFSShareFlags fs_flags,
-  eFSModeFlags fm_flags,
-  eFSAttributeFlags fa_flags,
-  ePageProtection pp_flags
+  fs_generic fg_flags,
+  fs_share fs_flags,
+  fs_mode fm_flags,
+  fs_attribute fa_flags,
+  page_protection pp_flags
 )
 {
   if (file_path.empty())
@@ -240,7 +240,7 @@ VUResult vuapi FileMappingW::create_named_shared_memory(
   const std::wstring& mapping_name,
   ulong max_size_low,
   ulong max_size_high,
-  ePageProtection pp_flags
+  page_protection pp_flags
 )
 {
   if (!this->valid(m_file_handle) && mapping_name.empty())
@@ -269,7 +269,7 @@ VUResult vuapi FileMappingW::create_named_shared_memory(
 
 VUResult vuapi FileMappingW::open(
   const std::wstring& mapping_name,
-  eFMDesiredAccess desired_access,
+  desired_access desired_access,
   bool inherit_handle
 )
 {

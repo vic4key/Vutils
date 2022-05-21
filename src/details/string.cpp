@@ -27,16 +27,16 @@ namespace vu
 #define UCHAR_MAX     255  // maximum unsigned char value
 #endif
 
-eEncodingType vuapi determine_encoding_type(const void* data, const size_t size)
+encoding_type vuapi determine_encoding_type(const void* data, const size_t size)
 {
-  if (data == nullptr || size == 0) return eEncodingType::ET_UNKNOWN;
+  if (data == nullptr || size == 0) return encoding_type::ET_UNKNOWN;
 
   auto p = (uchar*)data;
 
   if (size == 1)
   {
     /* UTF-8 */
-    if (p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) return eEncodingType::ET_UTF8_BOM;
+    if (p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) return encoding_type::ET_UTF8_BOM;
   }
 
   signal(SIGSEGV, [](int signal)
@@ -49,57 +49,57 @@ eEncodingType vuapi determine_encoding_type(const void* data, const size_t size)
     /* UTF-8 BOM */
     if (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)
     {
-      return eEncodingType::ET_UTF8_BOM;
+      return encoding_type::ET_UTF8_BOM;
     }
 
     /* UTF-32 LE BOM */
     if (p[0] == 0xFF && p[1] == 0xFE && p[2] == 0x00 && p[3] == 0x00)
     {
-      return eEncodingType::ET_UTF32_LE_BOM;
+      return encoding_type::ET_UTF32_LE_BOM;
     }
 
     /* UTF-32 BE BOM */
     if (p[0] == 0x00 && p[1] == 0x00 && p[2] == 0xFE && p[3] == 0xFF)
     {
-      return eEncodingType::ET_UTF32_BE_BOM;
+      return encoding_type::ET_UTF32_BE_BOM;
     }
 
     /* UTF-16 LE BOM */
     if (p[0] == 0xFF && p[1] == 0xFE)
     {
-      return eEncodingType::ET_UTF16_LE_BOM;
+      return encoding_type::ET_UTF16_LE_BOM;
     }
 
     /* UTF-16 BE BOM */
     if (p[0] == 0xFE && p[1] == 0xFF)
     {
-      return eEncodingType::ET_UTF16_BE_BOM;
+      return encoding_type::ET_UTF16_BE_BOM;
     }
 
     /* UTF-16 LE */
     if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && p[1] == 0x00)
     {
-      return eEncodingType::ET_UTF16_LE;
+      return encoding_type::ET_UTF16_LE;
     }
 
     /* UTF-16 BE */
     if ((p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX) && p[0] == 0x00)
     {
-      return eEncodingType::ET_UTF16_BE;
+      return encoding_type::ET_UTF16_BE;
     }
 
     /* UTF-8 */
     if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && (p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX))
     {
-      return eEncodingType::ET_UTF8;
+      return encoding_type::ET_UTF8;
     }
   }
   catch (int)
   {
-    return eEncodingType::ET_UNKNOWN;
+    return encoding_type::ET_UNKNOWN;
   }
 
-  return eEncodingType::ET_UNKNOWN;
+  return encoding_type::ET_UNKNOWN;
 }
 
 /* ------------------------------------------------ String Working ------------------------------------------------- */
@@ -395,26 +395,26 @@ std::wstring vuapi load_rs_string_W(const uint id, const std::wstring& module_na
 
 template <class std_string_t>
 std_string_t TrimStringT(
-  const std_string_t& String,
-  const eTrimType& TrimType,
-  const std_string_t& TrimChars
+  const std_string_t& std_string,
+  const trim_type& trim,
+  const std_string_t& trim_chars
 )
 {
-  std_string_t s = String;
+  std_string_t s = std_string;
 
-  switch (TrimType)
+  switch (trim)
   {
-  case eTrimType::TS_LEFT:
-    s.erase(0, s.find_first_not_of(TrimChars));
+  case trim_type::TS_LEFT:
+    s.erase(0, s.find_first_not_of(trim_chars));
     break;
 
-  case eTrimType::TS_RIGHT:
-    s.erase(s.find_last_not_of(TrimChars) + 1);
+  case trim_type::TS_RIGHT:
+    s.erase(s.find_last_not_of(trim_chars) + 1);
     break;
 
-  case eTrimType::TS_BOTH:
-    s.erase(0, s.find_first_not_of(TrimChars));
-    s.erase(s.find_last_not_of(TrimChars) + 1);
+  case trim_type::TS_BOTH:
+    s.erase(0, s.find_first_not_of(trim_chars));
+    s.erase(s.find_last_not_of(trim_chars) + 1);
     break;
 
   default:
@@ -425,13 +425,13 @@ std_string_t TrimStringT(
 }
 
 std::string vuapi trim_string_A(
-  const std::string& string, const eTrimType& type, const std::string& chars)
+  const std::string& string, const trim_type& type, const std::string& chars)
 {
   return TrimStringT<std::string>(string, type, chars);
 }
 
 std::wstring vuapi trim_string_W(
-  const std::wstring& string, const eTrimType& type, const std::wstring& chars)
+  const std::wstring& string, const trim_type& type, const std::wstring& chars)
 {
   return TrimStringT<std::wstring>(string, type, chars);
 }

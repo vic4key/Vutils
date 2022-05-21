@@ -23,7 +23,7 @@ namespace vu
 #pragma warning(disable: 6335)
 #endif // _MSC_VER
 
-eProcessorArchitecture get_processor_architecture()
+processor_architecture get_processor_architecture()
 {
   typedef void (WINAPI *PfnGetNativeSystemInfo)(LPSYSTEM_INFO lpSystemInfo);
 
@@ -34,15 +34,15 @@ eProcessorArchitecture get_processor_architecture()
 
   if (!pfnGetNativeSystemInfo)
   {
-    return eProcessorArchitecture::PA_UNKNOWN;
+    return processor_architecture::PA_UNKNOWN;
   }
 
   _SYSTEM_INFO si = {0};
   pfnGetNativeSystemInfo(&si);
-  return static_cast<eProcessorArchitecture>(si.wProcessorArchitecture);
+  return static_cast<processor_architecture>(si.wProcessorArchitecture);
 }
 
-eWow64 vuapi is_wow64(ulong pid)
+wow_64 vuapi is_wow64(ulong pid)
 {
   HANDLE hp = nullptr;
 
@@ -67,7 +67,7 @@ eWow64 vuapi is_wow64(ulong pid)
   return result;
 }
 
-eWow64 vuapi is_wow64(HANDLE hp)
+wow_64 vuapi is_wow64(HANDLE hp)
 {
   if (hp == nullptr || hp == INVALID_HANDLE_VALUE)
   {
@@ -81,16 +81,16 @@ eWow64 vuapi is_wow64(HANDLE hp)
   );
   if (pfnIsWow64Process == nullptr)
   {
-    return eWow64::WOW64_ERROR;
+    return wow_64::WOW64_ERROR;
   }
 
   BOOL wow64 = false;
   if (!pfnIsWow64Process(hp, &wow64))
   {
-    return eWow64::WOW64_ERROR;
+    return wow_64::WOW64_ERROR;
   }
 
-  return (wow64 ? eWow64::WOW64_YES : eWow64::WOW64_NO);
+  return (wow64 ? wow_64::WOW64_YES : wow_64::WOW64_NO);
 }
 
 bool vuapi is_64bits(HANDLE hp)
@@ -104,7 +104,7 @@ bool vuapi is_64bits(HANDLE hp)
   process.attach(hp);
   assert(process.ready());
 
-  return process.bit() == eXBit::x64;
+  return process.bit() == arch::x64;
 }
 
 bool vuapi is_64bits(ulong pid)
@@ -118,7 +118,7 @@ bool vuapi is_64bits(ulong pid)
   process.attach(pid);
   assert(process.ready());
 
-  return process.bit() == eXBit::x64;
+  return process.bit() == arch::x64;
 }
 
 bool vuapi rpm(
@@ -138,7 +138,7 @@ bool vuapi rpm(
 }
 
 bool vuapi rpm_ex(
-  const eXBit bit,
+  const arch bit,
   const HANDLE hp,
   const void* address,
   void* buffer,
@@ -200,7 +200,7 @@ bool vuapi wpm(
 }
 
 bool vuapi wpm_ex(
-  const eXBit bit,
+  const arch bit,
   const HANDLE hp,
   const void* address,
   const void* buffer,
@@ -559,9 +559,9 @@ HMODULE vuapi remote_get_module_handle_A(ulong pid, const std::string& module_na
 
   bool is_32bit_process = false;
 
-  if (get_processor_architecture() == eProcessorArchitecture::PA_X64)   // 64-bit arch
+  if (get_processor_architecture() == processor_architecture::PA_X64)   // 64-bit arch
   {
-    if (is_wow64(pid))   // 32-bit process
+    if (is_wow64(pid) != wow_64::WOW64_NO)   // 32-bit process
     {
       is_32bit_process = true;
     }
@@ -609,9 +609,9 @@ HMODULE vuapi remote_get_module_handle_W(const ulong pid, const std::wstring& mo
 
   bool is_32bit_process = false;
 
-  if (get_processor_architecture() == eProcessorArchitecture::PA_X64)   // 64-bit arch
+  if (get_processor_architecture() == processor_architecture::PA_X64)   // 64-bit arch
   {
-    if (is_wow64(pid))   // 32-bit process
+    if (is_wow64(pid) != wow_64::WOW64_NO)   // 32-bit process
     {
       is_32bit_process = true;
     }
@@ -827,8 +827,8 @@ VUResult vuapi inject_dll_W(ulong pid, const std::wstring& dll_file_path, bool w
 ProcessX::ProcessX()
   : m_pid(INVALID_PID_VALUE)
   , m_handle(nullptr)
-  , m_wow64(eWow64::WOW64_ERROR)
-  , m_bit(eXBit::x86)
+  , m_wow64(wow_64::WOW64_ERROR)
+  , m_bit(arch::x86)
   , m_attached(false)
   , m_last_system_time_UTC(0)
   , m_last_system_time_per_core_UTC(0)
@@ -903,12 +903,12 @@ const HANDLE ProcessX::handle() const
   return m_handle;
 }
 
-const vu::eWow64 ProcessX::wow64() const
+const vu::wow_64 ProcessX::wow64() const
 {
   return m_wow64;
 }
 
-const vu::eXBit ProcessX::bit() const
+const vu::arch ProcessX::bit() const
 {
   return m_bit;
 }
@@ -963,7 +963,7 @@ void ProcessX::detach()
   m_attached = false;
   m_pid = INVALID_PID_VALUE;
   m_handle = INVALID_HANDLE_VALUE;
-  m_wow64 = eWow64::WOW64_ERROR;
+  m_wow64 = wow_64::WOW64_ERROR;
   m_last_system_time_UTC = 0;
   m_last_system_time_per_core_UTC = 0;
   m_threads.clear();
@@ -1008,13 +1008,13 @@ void ProcessX::parse()
 {
   m_wow64 = vu::is_wow64(m_handle);
 
-  if (get_processor_architecture() == vu::PA_X64)
+  if (get_processor_architecture() == vu::processor_architecture::PA_X64)
   {
-    m_bit = m_wow64 == eWow64::WOW64_YES ? eXBit::x86 : eXBit::x64;
+    m_bit = m_wow64 == wow_64::WOW64_YES ? arch::x86 : arch::x64;
   }
   else
   {
-    m_bit = eXBit::x86;
+    m_bit = arch::x86;
   }
 }
 

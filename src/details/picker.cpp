@@ -85,7 +85,7 @@ bool PickerA::choose_log_font(LOGFONTA& font, const ulong flags)
 }
 
 bool PickerA::choose_file(
-  const action_t action,
+  const action action,
   std::string& file_path,
   const std::string& file_dir,
   const char* filters,
@@ -99,9 +99,9 @@ bool PickerA::choose_file(
 
   OPENFILENAMEA ofn = { 0 };
   IOPicker_Initialize_OFN(ofn, m_hwnd, sz, file_dir);
-  ofn.Flags = flags | (action == action_t::save ? OFN_OVERWRITEPROMPT : 0);
+  ofn.Flags = flags | (action == action::save ? OFN_OVERWRITEPROMPT : 0);
 
-  BOOL ret = action == action_t::open ? GetOpenFileNameA(&ofn) : GetSaveFileNameA(&ofn);
+  BOOL ret = action == action::open ? GetOpenFileNameA(&ofn) : GetSaveFileNameA(&ofn);
   bool result = ret == IDOK;
   if (result)
   {
@@ -207,7 +207,7 @@ bool PickerW::choose_log_font(LOGFONTW& font, const ulong flags)
 }
 
 bool PickerW::choose_file(
-  const action_t action,
+  const action action,
   std::wstring& file_path,
   const std::wstring& file_dir,
   const wchar* filters,
@@ -221,9 +221,9 @@ bool PickerW::choose_file(
 
   OPENFILENAMEW ofn = { 0 };
   IOPicker_Initialize_OFN(ofn, m_hwnd, sz, file_dir);
-  ofn.Flags = flags | (action == action_t::save ? OFN_OVERWRITEPROMPT : 0);
+  ofn.Flags = flags | (action == action::save ? OFN_OVERWRITEPROMPT : 0);
 
-  BOOL ret = action == action_t::open ? GetOpenFileNameW(&ofn) : GetSaveFileNameW(&ofn);
+  BOOL ret = action == action::open ? GetOpenFileNameW(&ofn) : GetSaveFileNameW(&ofn);
   bool result = ret == IDOK;
   if (result)
   {

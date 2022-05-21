@@ -200,32 +200,32 @@ uint64 crypt_crc_buffer(const std::vector<byte>& data,
   return result;
 }
 
-uint64 crypt_crc_buffer(const std::vector<byte>& data, const eBits bits)
+uint64 crypt_crc_buffer(const std::vector<byte>& data, const crypt_bits bits)
 {
   switch (bits)
   {
-  case eBits::_8:
+  case crypt_bits::_8:
     {
       CRC_t<8, 0x07, 0x00, false, false, 0x00> crc;
       return crc.get_crc(data.data(), data.size());
     }
     break;
 
-  case eBits::_16:
+  case crypt_bits::_16:
     {
       CRC_t<16, 0x8005, 0x0000, true, true, 0x0000> crc;
       return crc.get_crc(data.data(), data.size());
     }
     break;
 
-  case eBits::_32:
+  case crypt_bits::_32:
     {
       CRC_t<32, 0x04C11DB7, 0xFFFFFFFF, true, true, 0xFFFFFFFF> crc;
       return crc.get_crc(data.data(), data.size());
     }
     break;
 
-  case eBits::_64:
+  case crypt_bits::_64:
     {
       CRC_t<64, 0x42F0E1EBA9EA3693, 0x0000000000000000, false, false, 0x0000000000000000> crc;
       return crc.get_crc(data.data(), data.size());
@@ -242,19 +242,19 @@ uint64 crypt_crc_buffer(const std::vector<byte>& data, const eBits bits)
   return 0;
 }
 
-uint64 crypt_crc_text_A(const std::string& text, const eBits bits)
+uint64 crypt_crc_text_A(const std::string& text, const crypt_bits bits)
 {
   std::vector<byte> data(text.cbegin(), text.cend());
   return crypt_crc_buffer(data, bits);
 }
 
-uint64 crypt_crc_text_W(const std::wstring& text, const eBits bits)
+uint64 crypt_crc_text_W(const std::wstring& text, const crypt_bits bits)
 {
   auto s = to_string_A(text);
   return crypt_crc_text_A(s, bits);
 }
 
-uint64 crypt_crc_file_A(const std::string& file_path, const eBits bits)
+uint64 crypt_crc_file_A(const std::string& file_path, const crypt_bits bits)
 {
   if (!is_file_exists_A(file_path))
   {
@@ -267,7 +267,7 @@ uint64 crypt_crc_file_A(const std::string& file_path, const eBits bits)
   return crypt_crc_buffer(data, bits);
 }
 
-uint64 crypt_crc_file_W(const std::wstring& file_path, const eBits bits)
+uint64 crypt_crc_file_W(const std::wstring& file_path, const crypt_bits bits)
 {
   auto s = to_string_A(file_path);
   return crypt_crc_file_A(s, bits);
@@ -277,7 +277,7 @@ uint64 crypt_crc_file_W(const std::wstring& file_path, const eBits bits)
  * SHA
  */
 
-std::string crypt_sha_text_A(const std::string& text, const eSHA version, const eBits bits)
+std::string crypt_sha_text_A(const std::string& text, const sha_version version, const crypt_bits bits)
 {
   std::vector<byte> data(text.cbegin(), text.cend());
 
@@ -288,14 +288,14 @@ std::string crypt_sha_text_A(const std::string& text, const eSHA version, const 
   return result;
 }
 
-std::wstring crypt_sha_text_W(const std::wstring& text, const eSHA version, const eBits bits)
+std::wstring crypt_sha_text_W(const std::wstring& text, const sha_version version, const crypt_bits bits)
 {
   const auto s = to_string_A(text);
   auto hash = crypt_sha_text_A(s, version, bits);
   return to_string_W(hash);
 }
 
-std::string crypt_sha_file_A(const std::string& file_path, const eSHA version, const eBits bits)
+std::string crypt_sha_file_A(const std::string& file_path, const sha_version version, const crypt_bits bits)
 {
   if (!is_file_exists_A(file_path))
   {
@@ -312,7 +312,7 @@ std::string crypt_sha_file_A(const std::string& file_path, const eSHA version, c
   return result;
 }
 
-std::wstring crypt_sha_file_W(const std::wstring& file_path, const eSHA version, const eBits bits)
+std::wstring crypt_sha_file_W(const std::wstring& file_path, const sha_version version, const crypt_bits bits)
 {
   const auto s = to_string_A(file_path);
   auto hash = crypt_sha_file_A(s, version, bits);
@@ -321,17 +321,17 @@ std::wstring crypt_sha_file_W(const std::wstring& file_path, const eSHA version,
 
 void crypt_sha_buffer(
   const std::vector<byte>& data,
-  const eSHA version,
-  const eBits bits,
+  const sha_version version,
+  const crypt_bits bits,
   std::vector<byte>& hash)
 {
   bool valid_args = false;
 
-  valid_args |= (version == eSHA::_1) &&
-    (bits == eBits::_160);
+  valid_args |= (version == sha_version::_1) &&
+    (bits == crypt_bits::_160);
 
-  valid_args |= (version == eSHA::_2 || version == eSHA::_3) &&
-    (bits == eBits::_224 || bits == eBits::_384 || bits == eBits::_256 || bits == eBits::_512);
+  valid_args |= (version == sha_version::_2 || version == sha_version::_3) &&
+    (bits == crypt_bits::_224 || bits == crypt_bits::_384 || bits == crypt_bits::_256 || bits == crypt_bits::_512);
 
   if (!valid_args)
   {
@@ -342,44 +342,44 @@ void crypt_sha_buffer(
   std::fill(hash.begin(), hash.end(), 0x00);
   auto pstr = reinterpret_cast<char*>(&hash[0]);
 
-  if (version == eSHA::_1)
+  if (version == sha_version::_1)
   {
     sha_1::sha1(data.data(), data.size(), pstr);
   }
-  else if (version == eSHA::_2)
+  else if (version == sha_version::_2)
   {
-    if (bits == eBits::_224)
+    if (bits == crypt_bits::_224)
     {
       sha_2_224::sha2(data.data(), data.size(), pstr);
     }
-    else if (bits == eBits::_256)
+    else if (bits == crypt_bits::_256)
     {
       sha_2_256::sha2(data.data(), data.size(), pstr);
     }
-    else if (bits == eBits::_384)
+    else if (bits == crypt_bits::_384)
     {
       sha_2_384::sha2(data.data(), data.size(), pstr);
     }
-    else if (bits == eBits::_512)
+    else if (bits == crypt_bits::_512)
     {
       sha_2_512::sha2(data.data(), data.size(), pstr);
     }
   }
-  else if (version == eSHA::_3)
+  else if (version == sha_version::_3)
   {
-    if (bits == eBits::_224)
+    if (bits == crypt_bits::_224)
     {
       sha_3_224::sha3(data.data(), data.size(), pstr);
     }
-    else if (bits == eBits::_256)
+    else if (bits == crypt_bits::_256)
     {
       sha_3_256::sha3(data.data(), data.size(), pstr);
     }
-    else if (bits == eBits::_384)
+    else if (bits == crypt_bits::_384)
     {
       sha_3_384::sha3(data.data(), data.size(), pstr);
     }
-    else if (bits == eBits::_512)
+    else if (bits == crypt_bits::_512)
     {
       sha_3_512::sha3(data.data(), data.size(), pstr);
     }

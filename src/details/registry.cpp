@@ -25,31 +25,31 @@ HKEY vuapi RegistryX::get_current_key_handle()
   return m_hk_sub_key;
 }
 
-eRegReflection vuapi RegistryX::query_reflection_key()
+registry_reflection vuapi RegistryX::query_reflection_key()
 {
   BOOL reflected_disabled = FALSE;
 
   if (Initialize_DLL_MISC() != VU_OK)
   {
-    return eRegReflection::RR_ERROR;
+    return registry_reflection::RR_ERROR;
   }
 
   if (pfnRegQueryReflectionKey(m_hk_sub_key, &reflected_disabled) != ERROR_SUCCESS)
   {
-    return eRegReflection::RR_ERROR;
+    return registry_reflection::RR_ERROR;
   }
 
   if (reflected_disabled == TRUE)
   {
-    return eRegReflection::RR_DISABLED;
+    return registry_reflection::RR_DISABLED;
   }
   else
   {
-    return eRegReflection::RR_ENABLED;
+    return registry_reflection::RR_ENABLED;
   }
 }
 
-bool vuapi RegistryX::set_reflection_key(eRegReflection reg_reflection)
+bool vuapi RegistryX::set_reflection_key(registry_reflection reg_reflection)
 {
   bool result = false;
 
@@ -60,10 +60,10 @@ bool vuapi RegistryX::set_reflection_key(eRegReflection reg_reflection)
 
   switch (reg_reflection)
   {
-  case eRegReflection::RR_DISABLE:
+  case registry_reflection::RR_DISABLE:
     result = (pfnRegDisableReflectionKey(m_hk_sub_key) == ERROR_SUCCESS);
     break;
-  case eRegReflection::RR_ENABLE:
+  case registry_reflection::RR_ENABLE:
     result = (pfnRegEnableReflectionKey(m_hk_sub_key) == ERROR_SUCCESS);
     break;
   default:
@@ -85,12 +85,12 @@ RegistryA::RegistryA() : RegistryX()
   m_sub_key.clear();
 }
 
-RegistryA::RegistryA(eRegRoot reg_root) : RegistryX()
+RegistryA::RegistryA(registry_key reg_root) : RegistryX()
 {
   m_hk_root_key = (HKEY)reg_root;
 }
 
-RegistryA::RegistryA(eRegRoot RegRoot, const std::string& sub_key)
+RegistryA::RegistryA(registry_key RegRoot, const std::string& sub_key)
 {
   m_hk_root_key = (HKEY)RegRoot;
   m_sub_key = sub_key;
@@ -150,12 +150,12 @@ bool vuapi RegistryA::key_exists(const std::string& sub_key)
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi RegistryA::open_key(eRegAccess reg_access)
+bool vuapi RegistryA::open_key(registry_access reg_access)
 {
   return this->open_key(m_sub_key, reg_access);
 }
 
-bool vuapi RegistryA::open_key(const std::string& sub_key, eRegAccess reg_access)
+bool vuapi RegistryA::open_key(const std::string& sub_key, registry_access reg_access)
 {
   m_last_error_code = RegOpenKeyExA(
     m_hk_root_key, sub_key.c_str(), 0, (REGSAM)reg_access, &m_hk_sub_key);
@@ -660,12 +660,12 @@ RegistryW::RegistryW() : RegistryX()
   m_sub_key.clear();
 }
 
-RegistryW::RegistryW(eRegRoot RegRoot) : RegistryX()
+RegistryW::RegistryW(registry_key RegRoot) : RegistryX()
 {
   m_hk_root_key = (HKEY)RegRoot;
 }
 
-RegistryW::RegistryW(eRegRoot RegRoot, const std::wstring& sub_key) : RegistryX()
+RegistryW::RegistryW(registry_key RegRoot, const std::wstring& sub_key) : RegistryX()
 {
   m_hk_root_key = (HKEY)RegRoot;
   m_sub_key = sub_key;
@@ -725,12 +725,12 @@ bool vuapi RegistryW::key_exists(const std::wstring& sub_key)
   return (m_last_error_code == ERROR_SUCCESS);
 }
 
-bool vuapi RegistryW::open_key(eRegAccess reg_access)
+bool vuapi RegistryW::open_key(registry_access reg_access)
 {
   return this->open_key(m_sub_key, reg_access);
 }
 
-bool vuapi RegistryW::open_key(const std::wstring& sub_key, eRegAccess reg_access)
+bool vuapi RegistryW::open_key(const std::wstring& sub_key, registry_access reg_access)
 {
   m_last_error_code = RegOpenKeyExW(
     m_hk_root_key, sub_key.c_str(), 0, (REGSAM)reg_access, &m_hk_sub_key);

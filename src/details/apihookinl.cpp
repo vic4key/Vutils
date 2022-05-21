@@ -115,7 +115,7 @@ bool vuapi GetAssembleInstruction(
 
       mi.position = pos_disp;
       mi.mao.A32 = hde.disp.disp32;
-      mi.memory_address_type = eMemoryAddressType::MAT_32; // [RIP/EIP1,2 + disp32]
+      mi.mat = memory_address_type::MAT_32; // [RIP/EIP1,2 + disp32]
       found_relative = true;
       #endif
     }

@@ -354,7 +354,7 @@ const sImportModule* vuapi PEFileTX<T>::find_ptr_import_module(
 template<typename T>
 const sImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
   const sImportFunctionT<T>& import_function,
-  const eImportedFunctionFindMethod method,
+  const find_by method,
   bool in_cache
 )
 {
@@ -369,7 +369,7 @@ const sImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
 
   switch (method)
   {
-  case eImportedFunctionFindMethod::IFFM_HINT:
+  case find_by::HINT:
     for (const auto& e: m_import_functions)
     {
       if (e.hint == import_function.hint)
@@ -380,7 +380,7 @@ const sImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
     }
     break;
 
-  case eImportedFunctionFindMethod::IFFM_NAME:
+  case find_by::NAME:
     for (const auto& e: m_import_functions)
     {
       if (e.name == import_function.name)
@@ -405,7 +405,7 @@ const sImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
 {
   sImportFunctionT<T> o = {0};
   o.name = function_name;
-  return this->find_ptr_import_function(o, eImportedFunctionFindMethod::IFFM_NAME);
+  return this->find_ptr_import_function(o, find_by::NAME);
 }
 
 template<typename T>
@@ -415,7 +415,7 @@ const sImportFunctionT<T>* vuapi PEFileTX<T>::find_ptr_import_function(
 {
   sImportFunctionT<T> o = {0};
   o.hint = function_hint;
-  return this->find_ptr_import_function(o, eImportedFunctionFindMethod::IFFM_HINT);
+  return this->find_ptr_import_function(o, find_by::HINT);
 }
 
 template<typename T>
@@ -541,16 +541,16 @@ VUResult vuapi PEFileTA<T>::parse()
 
   if (m_file_map.create_within_file(
     m_file_path, 0, 0,
-    eFSGenericFlags::FG_READ,
-    eFSShareFlags::FS_READ,
-    eFSModeFlags::FM_OPENALWAYS,
-    eFSAttributeFlags::FA_NORMAL,
-    ePageProtection::PP_READ_ONLY) != vu::VU_OK)
+    fs_generic::FG_READ,
+    fs_share::FS_READ,
+    fs_mode::FM_OPENALWAYS,
+    fs_attribute::FA_NORMAL,
+    page_protection::PP_READ_ONLY) != vu::VU_OK)
   {
     return 3;
   }
 
-  PEFileTX<T>::m_ptr_base = m_file_map.view(eFMDesiredAccess::DA_READ);
+  PEFileTX<T>::m_ptr_base = m_file_map.view(FileMapping::desired_access::DA_READ);
   if (PEFileTX<T>::m_ptr_base == nullptr)
   {
     return 4;
@@ -631,16 +631,16 @@ VUResult vuapi PEFileTW<T>::parse()
   }
 
   if (m_file_map.create_within_file(m_file_path, 0, 0,
-    eFSGenericFlags::FG_READ,
-    eFSShareFlags::FS_READ,
-    eFSModeFlags::FM_OPENALWAYS,
-    eFSAttributeFlags::FA_NORMAL,
-    ePageProtection::PP_READ_ONLY) != vu::VU_OK)
+    fs_generic::FG_READ,
+    fs_share::FS_READ,
+    fs_mode::FM_OPENALWAYS,
+    fs_attribute::FA_NORMAL,
+    page_protection::PP_READ_ONLY) != vu::VU_OK)
   {
     return 3;
   }
 
-  PEFileTX<T>::m_ptr_base = m_file_map.view(eFMDesiredAccess::DA_READ);
+  PEFileTX<T>::m_ptr_base = m_file_map.view(FileMapping::desired_access::DA_READ);
   if (PEFileTX<T>::m_ptr_base == nullptr)
   {
     return 4;
@@ -689,13 +689,13 @@ VUResult vuapi PEFileTW<T>::parse()
 
 // https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-image_optional_header32#members
 
-eXBit vuapi get_pe_file_bits_A(const std::string& file_path)
+arch vuapi get_pe_file_bits_A(const std::string& file_path)
 {
   auto s = to_string_W(file_path);
   return get_pe_file_bits_W(s);
 }
 
-eXBit vuapi get_pe_file_bits_W(const std::wstring& file_path)
+arch vuapi get_pe_file_bits_W(const std::wstring& file_path)
 {
   std::vector<byte> data(KiB / 2);
   if (!read_file_binary_W(file_path, data))
@@ -713,7 +713,7 @@ eXBit vuapi get_pe_file_bits_W(const std::wstring& file_path)
 
   const auto Magic = *PWORD(PBYTE(pFileHeader) + sizeof(IMAGE_FILE_HEADER));
 
-  return Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC ? eXBit::x86 : eXBit::x64;
+  return Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC ? arch::x86 : arch::x64;
 }
 
 } // namespace vu

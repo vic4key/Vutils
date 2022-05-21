@@ -18,10 +18,10 @@ DEF_SAMPLE(Picker)
   std::tstring file_path = ts("example_default_file_name");
   const auto file_filter = ts("All Files (*.*)\0*.*\0Document (.doc)\0*.doc\0Text (.txt)\0*.txt\0");
 
-  picker.choose_file(vu::Picker::action_t::open, file_path, file_dir, file_filter);
+  picker.choose_file(vu::Picker::action::open, file_path, file_dir, file_filter);
   std::tcout << ts("PATH -> ") << file_path << std::endl;
 
-  picker.choose_file(vu::Picker::action_t::save, file_path, file_dir, file_filter);
+  picker.choose_file(vu::Picker::action::save, file_path, file_dir, file_filter);
   std::tcout << ts("PATH -> ") << file_path << std::endl;
   
   std::vector<std::tstring> file_names;
