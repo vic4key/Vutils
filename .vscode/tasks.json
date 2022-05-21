@@ -1,0 +1,25 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+    {
+      "type": "shell",
+      "label": "MinGW Build Active File",
+      "command": "G++.exe ${file} -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_SOCKET_ENABLED -DVU_GUID_ENABLED -DVU_WMI_ENABLED -lws2_32 -lgdi32 -lrpcrt4 -lole32 -loleaut32 -lwbemuuid -lcomdlg32 -lwinhttp",
+      "args": [
+        "-g",
+        "-o",
+        "${fileDirname}\\${fileBasenameNoExtension}.exe"
+      ],
+      "options": {
+        "cwd": "${fileDirname}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
