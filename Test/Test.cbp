@@ -32,7 +32,7 @@
 			<Add option="-Wall" />
 			<Add option="-std=c++11" />
 			<Add option="-fexceptions" />
-			<Add option="-DVU_SOCKET_ENABLED" />
+			<Add option="-DVU_INET_ENABLED" />
 			<Add option="-DVU_GUID_ENABLED" />
 			<Add option="-DVU_WMI_ENABLED" />
 		</Compiler>

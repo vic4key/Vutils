@@ -92,10 +92,10 @@ The minimum version of the following IDEs are supported `C++ 11`
     * If you are using `Visual Studio 2017` or later, you have to copy `Directory.Build.props` file to your solution folder that contains the `.sln` file.
   * For `GNU MinGW`
     * Include : You don't need to do anything, automatic included in the global settings.
-    * Library : `-lVutils` `-lgdi32 -lcomdlg32 -lwinhttp`
-      * If `SOCKET` enabled, insert option `-DVU_SOCKET_ENABLED -lws2_32`
+    * Library : `-lVutils` `-lgdi32 -lole32 -lcomdlg32`
+      * If `SOCKET` enabled, insert option `-DVU_INET_ENABLED -lws2_32 -lwinhttp`
       * If `GUID` enabled, insert option `-DVU_GUID_ENABLED -lrpcrt4`
-      * If `WMI` enabled, insert option `-DVU_WMI_ENABLED -lole32 -loleaut32 -lwbemuuid`
+      * If `WMI` enabled, insert option `-DVU_WMI_ENABLED -loleaut32 -lwbemuuid`
   * For `RAD C++ Builder` (later)
 
 * Usage

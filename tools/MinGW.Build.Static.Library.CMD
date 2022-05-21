@@ -25,18 +25,18 @@ IF [%VU_CI_BUILD%]==[1] (
 	GOTO L_CI_BUILD
 )
 
-:: for SOCKET
+:: for INET
 
-SET /p response=[+] Enable SOCKET (Y/[N]) ? 
+SET /p response=[+] Enable INET (Y/[N]) ? 
 SET "conditions=0"
 IF [%response%]==[Y] SET conditions=1
 IF [%response%]==[y] SET conditions=1
 
 IF [%conditions%]==[1] (
-	ECHO     Socket -^> ENABLED
-	SET LIBs=%LIBs% -DVU_SOCKET_ENABLED -lws2_32
+	ECHO     INET -^> ENABLED
+	SET LIBs=%LIBs% -DVU_INET_ENABLED -lws2_32 -lwinhttp
 ) else (
-	ECHO     Socket -^> DISABLED
+	ECHO     INET -^> DISABLED
 )
 
 ECHO.

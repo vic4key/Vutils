@@ -4,6 +4,8 @@
 
 DEF_SAMPLE(RESTClient)
 {
+  #if defined(VU_INET_ENABLED)
+
   std::tstring header;
   header.append(ts("Accept: */*\r\n"));
   header.append(ts("Accept-Encoding: *\r\n"));
@@ -39,6 +41,8 @@ DEF_SAMPLE(RESTClient)
   rest_client.del(ts("/api/v1/customers/5"), response, header);
   std::cout << vu::decode_http_status_A(response.status) << std::endl;
   std::cout << response.text << std::endl;
+
+  #endif // VU_INET_ENABLED
 
   return vu::VU_OK;
 }

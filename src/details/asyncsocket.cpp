@@ -12,7 +12,7 @@
 namespace vu
 {
 
-#ifdef VU_SOCKET_ENABLED
+#ifdef VU_INET_ENABLED
 
 AsyncSocket::AsyncSocket(
   const vu::Socket::address_family_t af,
@@ -518,6 +518,6 @@ IResult vuapi AsyncSocket::send(
   return socket.send(data, flags);
 }
 
-#endif // VU_SOCKET_ENABLED
+#endif // VU_INET_ENABLED
 
 } // namespace vu

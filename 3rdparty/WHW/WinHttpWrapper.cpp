@@ -7,6 +7,9 @@
 // version 1.0.3: Set the text regardless the http status, not just for HTTP OK 200
 
 #include "WinHttpWrapper.h"
+
+#ifdef VU_INET_ENABLED
+
 #include <winhttp.h>
 #pragma comment(lib, "Winhttp.lib")
 
@@ -439,3 +442,5 @@ DWORD WinHttpWrapper::HttpRequest::ChooseAuthScheme(DWORD dwSupportedSchemes)
 } // WinHttpWrapper
 
 #pragma warning(pop)
+
+#endif // VU_INET_ENABLED

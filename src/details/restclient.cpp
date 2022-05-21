@@ -12,6 +12,8 @@
 namespace vu
 {
 
+#ifdef VU_INET_ENABLED
+
 RESTClientA::RESTClientA(
   const scheme_type scheme,
   const std::string& host,
@@ -211,5 +213,7 @@ std::wstring vuapi decode_http_status_W(const ulong code)
 {
   return to_string_W(decode_http_status_A(code));
 }
+
+#endif // VU_INET_ENABLED
 
 } // namespace vu

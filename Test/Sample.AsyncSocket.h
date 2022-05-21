@@ -4,7 +4,7 @@
 
 #include "Sample.h"
 
-#if defined(VU_SOCKET_ENABLED)
+#if defined(VU_INET_ENABLED)
 
 void example_binding(const vu::Socket::Endpoint& endpoint)
 {
@@ -80,15 +80,15 @@ void example_inheritance(const vu::Socket::Endpoint& endpoint)
   server.close();
 }
 
-#endif // VU_SOCKET_ENABLED
+#endif // VU_INET_ENABLED
 
 DEF_SAMPLE(AsyncSocket)
 {
-  #if defined(VU_SOCKET_ENABLED)
+  #if defined(VU_INET_ENABLED)
   // const vu::Socket::sEndPoint endpoint("127.0.0.1", 1609);
   // example_binding(endpoint);
   // example_inheritance(endpoint);
-  #endif // VU_SOCKET_ENABLED
+  #endif // VU_INET_ENABLED
 
   return vu::VU_OK;
 }

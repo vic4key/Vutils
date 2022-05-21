@@ -38,14 +38,14 @@
 // VU_NO_EX - To disable all extended utilities
 
 // Default are enabled for MSVC and C++ Builder. For MinGW, see detail at README.md or INSTALL.md.
-// VU_SOCKET_ENABLED  - The Socket
+// VU_INET_ENABLED    - The Network Communications (Socket, HTTP, HTTP, etc) a.k.a INET
 // VU_GUID_ENABLED    - The Globally/Universally Unique Identifier a.k.a GUID
 // VU_WMI_ENABLED     - The Windows Management Instrumentation a.k.a WMI
 
 #ifndef VU_NO_EX
 
 #if defined(_MSC_VER) || defined(__BCPLUSPLUS__)
-#define VU_SOCKET_ENABLED
+#define VU_INET_ENABLED
 #define VU_GUID_ENABLED
 #define VU_WMI_ENABLED
 #endif
@@ -58,7 +58,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 
-#ifdef VU_SOCKET_ENABLED
+#ifdef VU_INET_ENABLED
 
 #ifndef _WINSOCK2API_
 #if defined(_WINDOWS_) || defined(_WINSOCKAPI_)
@@ -72,7 +72,7 @@
 #include <winsock2.h>
 #endif // WINDOWS_OR_WINSOCKAPI
 
-#endif // VU_SOCKET_ENABLED
+#endif // VU_INET_ENABLED
 
 #include <windows.h>
 
@@ -1034,7 +1034,7 @@ private:
  * Socket
  */
 
-#ifdef VU_SOCKET_ENABLED
+#ifdef VU_INET_ENABLED
 
 #ifndef MSG_NONE
 #define MSG_NONE 0
@@ -1225,7 +1225,7 @@ protected:
   HANDLE m_thread;
 };
 
-#endif // VU_SOCKET_ENABLED
+#endif // VU_INET_ENABLED
 
 /**
  * API Hooking - Inline
@@ -3289,7 +3289,11 @@ public:
     const ulong flags = DEFAULT_CHOOSE_FILE_FLAGS);
 };
 
-// RESTClient
+/**
+ * RESTClient
+ */
+
+#if defined(VU_INET_ENABLED)
 
 enum class scheme_type
 {
@@ -3302,6 +3306,8 @@ using namespace WinHttpWrapper;
 class RESTClientW;
 
 typedef HttpResponse http_response_t;
+
+// RESTClientA
 
 class RESTClientA
 {
@@ -3332,6 +3338,8 @@ private:
   RESTClientW* m_ptr_impl;
 };
 
+// RESTClientW
+
 class RESTClientW
 {
 public:
@@ -3361,13 +3369,7 @@ private:
   HttpRequest* m_ptr_impl;
 };
 
-/*---------- The definition of common structure(s) which compatible both ANSI & UNICODE ----------*/
-
-#ifdef _UNICODE
-#define sFSObject sFSObjectW
-#else
-#define sFSObject sFSObjectA
-#endif
+#endif // VU_INET_ENABLED
 
 /*------------ The definition of common Class(es) which compatible both ANSI & UNICODE -----------*/
 

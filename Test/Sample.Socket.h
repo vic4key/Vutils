@@ -4,7 +4,7 @@
 
 DEF_SAMPLE(Socket)
 {
-  #if defined(VU_SOCKET_ENABLED)
+  #if defined(VU_INET_ENABLED)
 
   std::string req;
   req.append("GET /5MB.zip HTTP/1.1\r\n");
@@ -101,7 +101,7 @@ DEF_SAMPLE(Socket)
 
   std::tcout << ts("Socket -> Close -> Success") << std::endl;
 
-  #endif // VU_SOCKET_ENABLED
+  #endif // VU_INET_ENABLED
 
   return vu::VU_OK;
 }

@@ -6,11 +6,11 @@
 
 #include "Vutils.h"
 
-#ifdef VU_SOCKET_ENABLED
+#ifdef VU_INET_ENABLED
 #if defined(_MSC_VER) || defined(__BCPLUSPLUS__)
 #pragma comment(lib, "ws2_32.lib")
 #endif
-#endif // VU_SOCKET_ENABLED
+#endif // VU_INET_ENABLED
 
 namespace vu
 {
@@ -20,7 +20,7 @@ namespace vu
 #pragma warning(disable: 4996)
 #endif // _MSC_VER
 
-#ifdef VU_SOCKET_ENABLED
+#ifdef VU_INET_ENABLED
 
 const size_t VU_DEF_BLOCK_SIZE = KiB;
 
@@ -598,7 +598,7 @@ bool vuapi Socket::parse(const Handle& socket)
   else return true;
 }
 
-#endif // VU_SOCKET_ENABLED
+#endif // VU_INET_ENABLED
 
 #ifdef _MSC_VER
 #pragma warning(pop)

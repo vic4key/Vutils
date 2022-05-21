@@ -9,6 +9,12 @@
 #ifndef WinHttpWrapper_H
 #define WinHttpWrapper_H
 
+#if defined(_MSC_VER) || defined(__BCPLUSPLUS__)
+#define VU_INET_ENABLED
+#endif
+
+#ifdef VU_INET_ENABLED
+
 #include <string>
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -78,5 +84,7 @@ namespace WinHttpWrapper
 	};
 
 }
+
+#endif // VU_INET_ENABLED
 
 #endif // WinHttpWrapper_H
