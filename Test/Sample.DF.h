@@ -71,27 +71,30 @@ DEF_SAMPLE(DF)
   std::tcout << ts("File Name : ") << file_path.extract_name().as_string() << std::endl;
   std::tcout << ts("File Directory : ") << file_path.extract_directory().as_string() << std::endl;
 
+  auto path = ts("C:\\");
+  std::tcout << vu::check_path_permissions(path, GENERIC_READ) << std::endl;
+  std::tcout << vu::check_path_permissions(path, GENERIC_READ | GENERIC_WRITE) << std::endl;
+  std::tcout << vu::check_path_permissions(path, GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE) << std::endl;
+
   // TODO: Vic. Uncompleted.
 
-  // #ifdef _WIN64
-  // #define EXE_NAME ts("x64dbg.exe")
-  // #else  // _WIN32
-  // #define EXE_NAME ts("x32dbg.exe")
-  // #endif // _WIN64
-  // 
-  // auto PIDs = vu::name_to_pid(EXE_NAME);
-  // if (PIDs.empty())
-  // {
-  //   return 1;
-  // }
-  // 
-  // vu::ulong PID = *PIDs.begin();
-  // 
-  // std::cout << std::hex << vu::remote_get_module_handle_A(PID, "kernel32.dll") << std::endl;
-  // std::tcout << vu::last_error().c_str() << std::endl;
-  // 
-  // std::wcout << std::hex << vu::remote_get_module_handle_W(PID, L"kernel32.dll") << std::endl;
-  // std::tcout << vu::last_error().c_str() << std::endl;
+  #ifdef _WIN64
+  #define EXE_NAME ts("x64dbg.exe")
+  #else  // _WIN32
+  #define EXE_NAME ts("x32dbg.exe")
+  #endif // _WIN64
+  
+  auto PIDs = vu::name_to_pid(EXE_NAME);
+  if (!PIDs.empty())
+  {
+    vu::ulong PID = *PIDs.begin();
+
+    std::cout << std::hex << vu::remote_get_module_handle_A(PID, "kernel32.dll") << std::endl;
+    std::tcout << vu::get_last_error() << std::endl;
+
+    std::wcout << std::hex << vu::remote_get_module_handle_W(PID, L"kernel32.dll") << std::endl;
+    std::tcout << vu::get_last_error() << std::endl;
+  }
 
   return vu::VU_OK;
 }

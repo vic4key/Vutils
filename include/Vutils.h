@@ -590,6 +590,8 @@ std::wstring vuapi undecorate_cpp_symbol_W(
   const std::wstring& name, const ushort flags = 0); // UNDNAME_COMPLETE
 arch vuapi get_pe_file_bits_A(const std::string& file_path);
 arch vuapi get_pe_file_bits_W(const std::wstring& file_path);
+bool check_path_permissions_A(const std::string& path, ulong generic_access_rights);
+bool check_path_permissions_W(const std::wstring& path, ulong generic_access_rights);
 
 /**
  * Wrapper
@@ -727,6 +729,7 @@ void vuapi crypt_sha_buffer(
 #define normalize_path normalize_path_W
 #define undecorate_cpp_symbol undecorate_cpp_symbol_W
 #define get_pe_file_bits get_pe_file_bits_W
+#define check_path_permissions check_path_permissions_W
 /* Network Working */
 #define decode_http_status decode_http_status_W
 /* Cryptography */
@@ -797,6 +800,7 @@ void vuapi crypt_sha_buffer(
 #define normalize_path normalize_path_A
 #define undecorate_cpp_symbol undecorate_cpp_symbol_A
 #define get_pe_file_bits get_pe_file_bits_A
+#define check_path_permissions check_path_permissions_A
 /* Network Working */
 #define decode_http_status decode_http_status_A
 /* Cryptography */

@@ -863,4 +863,65 @@ std::wostream& operator<<(std::wostream& os, PathW& Path)
   return os;
 }
 
+// @refer to https://blog.aaronballman.com/2011/08/how-to-check-access-rights/
+
+bool check_path_permissions_W(const std::wstring& path, ulong generic_access_rights)
+{
+  bool  result = false;
+
+  DWORD length = 0;
+  const SECURITY_INFORMATION req_info =\
+    OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION;
+  BOOL ret = GetFileSecurityW(path.c_str(), req_info, nullptr, 0, &length);
+  if (ret == FALSE && ::GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+  {
+    auto ptr_security_descriptor = PSECURITY_DESCRIPTOR(::malloc(length));
+    if (GetFileSecurityW(path.c_str(), req_info, ptr_security_descriptor, length, &length))
+    {
+      HANDLE token = nullptr;
+      DWORD  desired_access =\
+        TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_DUPLICATE | STANDARD_RIGHTS_READ;
+      if (OpenProcessToken(::GetCurrentProcess(), desired_access, &token))
+      {
+        HANDLE impersonated_token = NULL;
+        if (::DuplicateToken(token, SecurityImpersonation, &impersonated_token))
+        {
+          BOOL access_status = FALSE;
+          PRIVILEGE_SET privileges = { 0 };
+          DWORD grantedAccess = 0, privilegesLength = sizeof(privileges);
+          GENERIC_MAPPING mapping = { 0xFFFFFFFF };
+          mapping.GenericAll = FILE_ALL_ACCESS;
+          mapping.GenericRead = FILE_GENERIC_READ;
+          mapping.GenericWrite = FILE_GENERIC_WRITE;
+          mapping.GenericExecute = FILE_GENERIC_EXECUTE;
+          ::MapGenericMask(&generic_access_rights, &mapping);
+          if (::AccessCheck(
+            ptr_security_descriptor,
+            impersonated_token,
+            generic_access_rights,
+            &mapping,
+            &privileges,
+            &privilegesLength,
+            &grantedAccess,
+            &access_status))
+          {
+            result = access_status != FALSE;
+          }
+          CloseHandle(impersonated_token);
+        }
+        CloseHandle(token);
+      }
+    }
+    free(ptr_security_descriptor);
+  }
+
+  return result;
+}
+
+bool check_path_permissions_A(const std::string& path, ulong generic_access_rights)
+{
+  const auto s = to_string_W(path);
+  return check_path_permissions_W(s, generic_access_rights);
+}
+
 } // namespace vu
