@@ -212,9 +212,10 @@ const TPattern to_pattern(const std::string& buffer)
   return result;
 }
 
-std::pair<bool, size_t> find_pattern_A(const Buffer& buffer, const std::string& pattern)
+std::vector<size_t> find_pattern_A(
+  const Buffer& buffer, const std::string& pattern, const bool first_match_only)
 {
-  std::pair<bool, size_t> result(false, 0);
+  std::vector<size_t> result;
 
   if (buffer.get_ptr() == nullptr || pattern.empty())
   {
@@ -224,19 +225,20 @@ std::pair<bool, size_t> find_pattern_A(const Buffer& buffer, const std::string& 
   const auto pointer = static_cast<const byte*>(buffer.get_ptr());
   const size_t size = buffer.get_size();
 
-  return find_pattern_A(pointer, size, pattern);
+  return find_pattern_A(pointer, size, pattern, first_match_only);
 }
 
-std::pair<bool, size_t> find_pattern_W(const Buffer& buffer, const std::wstring& pattern)
+std::vector<size_t> find_pattern_W(
+  const Buffer& buffer, const std::wstring& pattern, const bool first_match_only)
 {
   const auto s = to_string_A(pattern);
-  return find_pattern_A(buffer, s);
+  return find_pattern_A(buffer, s, first_match_only);
 }
 
-std::pair<bool, size_t> find_pattern_A(
-  const void* ptr, const size_t size, const std::string& pattern)
+std::vector<size_t> find_pattern_A(
+  const void* ptr, const size_t size, const std::string& pattern, const bool first_match_only)
 {
-  std::pair<bool, size_t> result(false, 0);
+  std::vector<size_t> result;
 
   if (ptr == nullptr || size == 0 || pattern.empty())
   {
@@ -265,19 +267,23 @@ std::pair<bool, size_t> find_pattern_A(
 
     if (j == patternn.size())
     {
-      result = std::make_pair(true, i);
-      break;
+      result.push_back(i);
+
+      if (first_match_only)
+      {
+        break;
+      }
     }
   }
 
   return result;
 }
 
-std::pair<bool, size_t> find_pattern_W(
-  const void* ptr, const size_t size, const std::wstring& pattern)
+std::vector<size_t> find_pattern_W(
+  const void* ptr, const size_t size, const std::wstring& pattern, const bool first_match_only)
 {
   const auto s = to_string_A(pattern);
-  return find_pattern_A(ptr, size, s);
+  return find_pattern_A(ptr, size, s, first_match_only);
 }
 
 std::string undecorate_cpp_symbol_A(const std::string& name, const ushort flags)

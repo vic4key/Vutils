@@ -180,10 +180,14 @@ std::string vuapi get_env_A(const std::string& name);
 std::wstring vuapi get_env_W(const std::wstring& name);
 bool vuapi set_env_A(const std::string& name, const std::string& value);
 bool vuapi set_env_W(const std::wstring& name, const std::wstring& value);
-std::pair<bool, size_t> find_pattern_A(const Buffer& buffer, const std::string&  pattern);
-std::pair<bool, size_t> find_pattern_W(const Buffer& buffer, const std::wstring& pattern);
-std::pair<bool, size_t> find_pattern_A(const void* ptr, const size_t size, const std::string& pattern);
-std::pair<bool, size_t> find_pattern_W(const void* ptr, const size_t size, const std::wstring& pattern);
+std::vector<size_t> find_pattern_A(
+  const Buffer& buffer, const std::string&  pattern, const bool first_match_only);
+std::vector<size_t> find_pattern_W(
+  const Buffer& buffer, const std::wstring& pattern, const bool first_match_only);
+std::vector<size_t> find_pattern_A(
+  const void* ptr, const size_t size, const std::string& pattern, const bool first_match_only);
+std::vector<size_t> find_pattern_W(
+  const void* ptr, const size_t size, const std::wstring& pattern, const bool first_match_only);
 
 #include "template/misc.tpl"
 
