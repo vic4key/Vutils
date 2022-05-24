@@ -19,27 +19,27 @@ DEF_SAMPLE(RESTClient)
 
   // get all
   rest_client.get(ts("/api/v1/customers"), response, header);
-  std::cout << vu::decode_http_status_A(response.status) << std::endl;
+  std::cout << vu::decode_const_http_status_A(response.status) << std::endl;
   std::cout << response.text << std::endl;
 
   // create one
   rest_client.post(ts("/api/v1/customers"), response, R"({"name":"name 5","phone":"phone 5"})", header);
-  std::cout << vu::decode_http_status_A(response.status) << std::endl;
+  std::cout << vu::decode_const_http_status_A(response.status) << std::endl;
   std::cout << response.text << std::endl;
 
   // get one
   rest_client.get(ts("/api/v1/customers/5"), response, header);
-  std::cout << vu::decode_http_status_A(response.status) << std::endl;
+  std::cout << vu::decode_const_http_status_A(response.status) << std::endl;
   std::cout << response.text << std::endl;
 
   // update one
   rest_client.put(ts("/api/v1/customers/5"), response, R"({"name":"name 5-x","phone":"phone 5-x"})", header);
-  std::cout << vu::decode_http_status_A(response.status) << std::endl;
+  std::cout << vu::decode_const_http_status_A(response.status) << std::endl;
   std::cout << response.text << std::endl;
 
   // delete one
   rest_client.del(ts("/api/v1/customers/5"), response, header);
-  std::cout << vu::decode_http_status_A(response.status) << std::endl;
+  std::cout << vu::decode_const_http_status_A(response.status) << std::endl;
   std::cout << response.text << std::endl;
 
   #endif // VU_INET_ENABLED

@@ -50,11 +50,11 @@ It helps your programming go easier, faster and simpler.
   * [Input Dialog](<https://www.google.com/search?q=input+dialog&source=lnms&tbm=isch>)
   * [In-Memory Dialog](<https://docs.microsoft.com/en-us/cpp/mfc/using-a-dialog-template-in-memory>)
   * [AOB Find Pattern](<https://wiki.cheatengine.org/index.php?title=Tutorials:AOBs>)
-  * [Window Message Decoder](<https://wiki.winehq.org/List_Of_Windows_Messages>)
   * Font/Color/File/Directory Picker
   * Cryptography (B64, CRC, MD5, SHA, Big Number, etc)
   * File/Directory, Window, Process, Math Manipulation
   * Shorten Formatting for Date/Time, String, Message Box, Debug Message
+  * Decode Constants like Window Message, HTTP Status, etc
   * Miscellaneous
 
 ## License

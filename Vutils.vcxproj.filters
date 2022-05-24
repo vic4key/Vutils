@@ -278,6 +278,9 @@
     <ClCompile Include="3rdparty\WHW\WinHttpWrapper.cpp">
       <Filter>Third Party Files\WHW</Filter>
     </ClCompile>
+    <ClCompile Include="src\details\deconsts.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Vu">

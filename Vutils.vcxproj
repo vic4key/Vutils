@@ -359,6 +359,7 @@
     <ClCompile Include="src\details\asyncsocket.cpp" />
     <ClCompile Include="src\details\apihookiat.cpp" />
     <ClCompile Include="src\details\crypt.cpp" />
+    <ClCompile Include="src\details\deconsts.cpp" />
     <ClCompile Include="src\details\picker.cpp" />
     <ClCompile Include="src\details\mbuffer.cpp" />
     <ClCompile Include="src\details\crisec.cpp" />

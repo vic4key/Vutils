@@ -447,10 +447,6 @@ typedef std::vector<MONITORINFOEXW> Monitors_W;
 HWND vuapi get_console_window();
 HWND vuapi find_top_window(ulong pid);
 HWND vuapi find_main_window(HWND hwnd);
-std::string  vuapi decode_wm_A(const ulong wm);
-std::wstring vuapi decode_wm_W(const ulong wm);
-ulong vuapi decode_wm_A(const std::string& wm);
-ulong vuapi decode_wm_W(const std::wstring& wm);
 FontA vuapi get_font_A(HWND hwnd);
 FontW vuapi get_font_W(HWND hwnd);
 bool vuapi is_window_full_screen(HWND hwnd);
@@ -458,8 +454,42 @@ LONG vuapi conv_font_height_to_size(LONG height, HWND hwnd = nullptr);
 LONG vuapi conv_font_size_to_height(LONG size, HWND hwnd = nullptr);
 bool vuapi get_monitors_A(Monitors_A& monitors);
 bool vuapi get_monitors_W(Monitors_W& monitors);
-std::string vuapi decode_http_status_A(const ulong code);
-std::wstring vuapi decode_http_status_W(const ulong code);
+
+/**
+ * Decode Constants
+ */
+
+// Window Message
+std::string  vuapi decode_const_window_message_A(const ulong id);
+std::wstring vuapi decode_const_window_message_W(const ulong id);
+ulong vuapi decode_const_window_message_A(const std::string& str);
+ulong vuapi decode_const_window_message_W(const std::wstring& str);
+
+// Process Page Protection
+std::string vuapi decode_const_process_page_protection_A(const ulong id);
+std::wstring vuapi decode_const_process_page_protection_W(const ulong id);
+ulong vuapi decode_const_process_page_protection_A(const std::string& str);
+ulong vuapi decode_const_process_page_protection_W(const std::wstring& str);
+
+// Process Mamory State
+std::string vuapi decode_const_process_memory_state_A(const ulong id);
+std::wstring vuapi decode_const_process_memory_state_W(const ulong id);
+ulong vuapi decode_const_process_memory_state_A(const std::string& str);
+ulong vuapi decode_const_process_memory_state_W(const std::wstring& str);
+
+// HTTP Status
+std::string vuapi decode_const_http_status_A(const ulong code);
+std::wstring vuapi decode_const_http_status_W(const ulong code);
+
+#ifdef _UNICODE
+#define decode_const_window_message decode_const_window_message_W
+#define decode_const_process_page_protection decode_const_process_page_protection_W
+#define decode_const_http_status decode_const_http_status_W
+#else
+#define decode_const_window_message decode_const_window_message_A
+#define decode_const_process_page_protection decode_const_process_page_protection_A
+#define decode_const_http_status decode_const_http_status_A
+#endif
 
 /**
  * File/Directory Working
@@ -704,7 +734,6 @@ void vuapi crypt_sha_buffer(
 #define compare_string compare_string_W
 #define regex_replace_string regex_replace_string_W
 /* Window Working */
-#define decode_wm decode_wm_W
 #define get_font get_font_W
 #define get_monitors get_monitors_W
 /* Process Working */
@@ -775,7 +804,6 @@ void vuapi crypt_sha_buffer(
 #define compare_string compare_string_A
 #define regex_replace_string regex_replace_string_A
 /* Window Working */
-#define decode_wm decode_wm_A
 #define get_font get_font_A
 #define get_monitors get_monitors_A
 /* Process Working */
