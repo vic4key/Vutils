@@ -152,30 +152,28 @@ bool vuapi read_memory_ex(
   for (size_t i = 0; i < n_offsets; i++) offsets.push_back(va_arg(args, vu::ulong));
   va_end(args);
 
-  bool result = true;
-
   if (offsets.empty())
   {
-    result = read_memory(hp, LPVOID(address), buffer, size, force);
+    return read_memory(hp, address, buffer, size, force);
   }
-  else
+
+  bool result = true;
+
+  LPVOID ptr = LPVOID(address);
+  LPVOID val = nullptr;
+  SIZE_T num = 0;
+
+  for (int i = -1; i < int(n_offsets); i++)
   {
-    for (size_t i = 0; i < n_offsets; i++)
+    ptr = i == -1 ? ptr : LPVOID(ulonglong(ptr) + offsets[i]);
+    val = i == n_offsets - 1 ? buffer : LPVOID(&ptr);
+    num = i == n_offsets - 1 ? size : bit;
+
+    result &= read_memory(hp, ptr, val, num, force);
+
+    if (!result)
     {
-      bool is_offset = i < n_offsets - 1;
-
-      result &= read_memory(
-        hp,
-        LPCVOID(ulonglong(address) + offsets.at(i)),
-        is_offset ? LPVOID(&address) : buffer,
-        is_offset ? bit : size,
-        force
-      );
-
-      if (!result)
-      {
-        break;
-      }
+      break;
     }
   }
 
@@ -214,30 +212,35 @@ bool vuapi write_memory_ex(
   for (size_t i = 0; i < n_offsets; i++) offsets.push_back(va_arg(args, ulong));
   va_end(args);
 
-  bool result = true;
-
   if (offsets.empty())
   {
-    result = write_memory(hp, LPVOID(address), buffer, size, force);
+    return write_memory(hp, LPVOID(address), buffer, size, force);
   }
-  else
+
+  bool result = true;
+
+  LPVOID ptr = LPVOID(address);
+  LPVOID val = nullptr;
+  SIZE_T num = 0;
+
+  for (int i = -1; i < int(n_offsets); i++)
   {
-    for (size_t i = 0; i < n_offsets; i++)
+    ptr = i == -1 ? ptr : LPVOID(ulonglong(ptr) + offsets[i]);
+    val = i == n_offsets - 1 ? LPVOID(buffer) : LPVOID(&ptr);
+    num = i == n_offsets - 1 ? size : bit;
+
+    if (i == n_offsets - 1)
     {
-      bool is_offset = i < n_offsets - 1;
+      result &= write_memory(hp, ptr, val, num, force);
+    }
+    else
+    {
+      result &= read_memory(hp, ptr, val, num, force);
+    }
 
-      result &= read_memory(
-        hp,
-        LPCVOID(ulonglong(address) + offsets.at(i)),
-        LPVOID(&address),
-        is_offset ? bit : size,
-        force
-      );
-
-      if (!result)
-      {
-        break;
-      }
+    if (!result)
+    {
+      break;
     }
   }
 
