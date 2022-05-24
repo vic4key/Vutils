@@ -26,6 +26,11 @@
 #pragma warning(disable: 4267 4244 4293)
 #endif // _MSC_VER
 
+#ifdef __MINGW32__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wshift-count-overflow"
+#endif // __MINGW32__
+
 namespace sha_2_256
 {
 
@@ -135,6 +140,10 @@ void sha2(const void* data, size_t len, char* hash) {
 }
 
 } // sha_2_256
+
+#ifdef __MINGW32__
+#pragma GCC diagnostic pop
+#endif // __MINGW32__
 
 #ifdef _MSC_VER
 #pragma warning(pop)
