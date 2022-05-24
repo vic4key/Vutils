@@ -2802,11 +2802,15 @@ public:
   const WORD IDC_LABEL;
   const WORD IDC_INPUT;
 
-  InputDialog(const std::wstring& label, const HWND hwnd_parent = nullptr, bool number_only = false);
+  InputDialog(
+    const std::wstring& label,
+    const HWND hwnd_parent = nullptr,
+    bool number_only = false,
+    const std::wstring& placeholder = L"");
   virtual ~InputDialog();
 
+  void placeholder(const std::wstring& pl);
   void label(const std::wstring& label);
-  const std::wstring& label() const;
   FundamentalW& input();
 
   INT_PTR do_modal();
@@ -2814,6 +2818,7 @@ public:
   static LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
 private:
+  std::wstring m_placeholder;
   std::wstring m_label;
   FundamentalW m_input;
   bool m_number_only;

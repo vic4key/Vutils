@@ -399,10 +399,12 @@ INT_PTR WDTDialog::do_modal(DLGPROC pfn_dlg_proc, WDTDialog* ptr_parent)
  * InputDialog
  */
 
-InputDialog::InputDialog(const std::wstring& label, HWND hwnd_parent, bool number_only)
+InputDialog::InputDialog(
+  const std::wstring& label, HWND hwnd_parent, bool number_only, const std::wstring& placeholder)
   : IDC_LABEL(0x1001)
   , IDC_INPUT(0x1002)
   , m_label(label)
+  , m_placeholder(placeholder)
   , m_number_only(number_only)
   , vu::WDTDialog(L"Input Dialog"
   , DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -447,14 +449,14 @@ InputDialog::~InputDialog()
 {
 }
 
+void InputDialog::placeholder(const std::wstring& pl)
+{
+  m_placeholder = pl;
+}
+
 void InputDialog::label(const std::wstring& label)
 {
   m_label = label;
-}
-
-const std::wstring& InputDialog::label() const
-{
-  return m_label;
 }
 
 vu::FundamentalW& InputDialog::input()
@@ -481,7 +483,8 @@ LRESULT CALLBACK InputDialog::DlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
     if (ptr_self != nullptr)
     {
-      SetWindowTextW(GetDlgItem(hwnd, ptr_self->IDC_LABEL), ptr_self->label().c_str());
+      SetWindowTextW(GetDlgItem(hwnd, ptr_self->IDC_LABEL), ptr_self->m_label.c_str());
+      SetWindowTextW(GetDlgItem(hwnd, ptr_self->IDC_INPUT), ptr_self->m_placeholder.c_str());
     }
 
     RECT rc = { 0 };
