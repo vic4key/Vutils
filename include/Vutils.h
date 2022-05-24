@@ -2904,10 +2904,10 @@ public:
 
   void detach();
 
-  bool read_memory(const ulongptr address, Buffer& buffer);
-  bool read_memory(const ulongptr address, void* ptr_data, const size_t size);
-  bool write_memory(const ulongptr address, const Buffer& buffer);
-  bool write_memory(const ulongptr address, const void* ptr_data, const size_t size);
+  bool read_memory(const ulongptr address, Buffer& buffer, const bool force = false);
+  bool read_memory(const ulongptr address, void* ptr_data, const size_t size, const bool force = false);
+  bool write_memory(const ulongptr address, const Buffer& buffer, const bool force = false);
+  bool write_memory(const ulongptr address, const void* ptr_data, const size_t size, const bool force = false);
 
   PROCESS_CPU_COUNTERS get_cpu_information(const double interval = 1.); // 1 second
   PROCESS_MEMORY_COUNTERS get_memory_information();

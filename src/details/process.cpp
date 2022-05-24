@@ -1018,43 +1018,43 @@ void ProcessX::parse()
   }
 }
 
-bool ProcessX::read_memory(const ulongptr address, Buffer& buffer)
+bool ProcessX::read_memory(const ulongptr address, Buffer& buffer, const bool force)
 {
   if (address == 0 || buffer.get_size() == 0)
   {
     return false;
   }
 
-  return this->read_memory(address, buffer.get_ptr(), buffer.get_size());
+  return this->read_memory(address, buffer.get_ptr(), buffer.get_size(), force);
 }
 
-bool ProcessX::read_memory(const ulongptr address, void* ptr_data, const size_t size)
+bool ProcessX::read_memory(const ulongptr address, void* ptr_data, const size_t size, const bool force)
 {
   if (address == 0 || ptr_data == 0 || size == 0)
   {
     return false;
   }
 
-  auto result = vu::read_memory(m_handle, LPCVOID(address), ptr_data, size, true);
+  auto result = vu::read_memory(m_handle, LPCVOID(address), ptr_data, size, force);
 
   m_last_error_code = GetLastError();
 
   return result;
 }
 
-bool ProcessX::write_memory(const ulongptr address, const Buffer& buffer)
+bool ProcessX::write_memory(const ulongptr address, const Buffer& buffer, const bool force)
 {
-  return this->write_memory(address, buffer.get_ptr(), buffer.get_size());
+  return this->write_memory(address, buffer.get_ptr(), buffer.get_size(), force);
 }
 
-bool ProcessX::write_memory(const ulongptr address, const void* ptr_data, const size_t size)
+bool ProcessX::write_memory(const ulongptr address, const void* ptr_data, const size_t size, const bool force)
 {
   if (address == 0 || ptr_data == 0 || size == 0)
   {
     return false;
   }
 
-  auto result = vu::write_memory(m_handle, LPCVOID(address), ptr_data, size, true);
+  auto result = vu::write_memory(m_handle, LPCVOID(address), ptr_data, size, force);
 
   m_last_error_code = GetLastError();
 
