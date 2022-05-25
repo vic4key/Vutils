@@ -148,6 +148,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Sample.AOBScanning.h" />
     <ClInclude Include="Sample.INLHooking.h" />
     <ClInclude Include="Sample.AsyncSocket.h" />
     <ClInclude Include="Sample.DF.h" />

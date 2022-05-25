@@ -55,6 +55,7 @@ G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_INET_ENABLE
 #include "Sample.Window.h"
 #include "Sample.Template.h"
 #include "Sample.RESTClient.h"
+#include "Sample.AOBScanning.h"
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -103,6 +104,7 @@ int _tmain(int argc, _TCHAR* argv[])
   // VU_SM_ADD_SAMPLE(Window);
   // VU_SM_ADD_SAMPLE(Template);
   // VU_SM_ADD_SAMPLE(RESTClient);
+  // VU_SM_ADD_SAMPLE(AOBScanning);
 
   VU_SM_RUN();
 

@@ -2886,6 +2886,10 @@ typedef struct _MODULEINFO_PTR {
 #define MEM_ALL_TYPE  (MEM_IMAGE | MEM_MAPPED | MEM_PRIVATE)
 #define PAGE_ALL_PROTECTION -1
 
+#define DEF_SM_STATE      MEM_COMMIT
+#define DEF_SM_PAGE       MEM_IMAGE
+#define DEF_SM_PROTECTION PAGE_ALL_PROTECTION & ~(PAGE_NOACCESS | PAGE_GUARD | PAGE_NOCACHE | PAGE_WRITECOMBINE)
+
 class ProcessX : public LastError
 {
 public:
@@ -3001,6 +3005,14 @@ public:
 
   const MODULEENTRY32 get_module_information();
 
+  bool scan_memory(
+    std::vector<size_t>& addresses,
+    const std::string& pattern,
+    const std::string& module_name = "",
+    const ulong state = DEF_SM_STATE,
+    const ulong type = DEF_SM_PAGE,
+    const ulong protection = DEF_SM_PROTECTION);
+
 protected:
   virtual void parse();
 
@@ -3053,6 +3065,14 @@ public:
   const modules& get_modules();
 
   const MODULEENTRY32W get_module_information();
+
+  bool scan_memory(
+    std::vector<size_t>& addresses,
+    const std::wstring& pattern,
+    const std::wstring& module_name = L"",
+    const ulong state = DEF_SM_STATE,
+    const ulong type = DEF_SM_PAGE,
+    const ulong protection = DEF_SM_PROTECTION);
 
 protected:
   virtual void parse();

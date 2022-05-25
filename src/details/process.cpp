@@ -1237,6 +1237,64 @@ const ProcessX::memories& ProcessX::get_memories(
   return m_memories;
 }
 
+bool process_scan_memory(
+  std::vector<size_t>& addresses,
+  ProcessX& process,
+  const std::wstring& pattern,
+  const std::pair<byte*, ulong>& module,
+  const ulong state = DEF_SM_STATE,
+  const ulong type = DEF_SM_PAGE,
+  const ulong protection = DEF_SM_PROTECTION)
+{
+  addresses.clear();
+
+  if (!process.ready() || pattern.empty())
+  {
+    return false;
+  }
+
+  for (auto& mem : process.get_memories(state, type, protection))
+  {
+    if (module.first != nullptr && module.second != 0)
+    {
+      if (mem.BaseAddress < module.first || mem.BaseAddress > module.first + module.second)
+      {
+        continue;
+      }
+    }
+
+    void*  ptr = mem.BaseAddress;
+    size_t num = mem.RegionSize;
+
+    Buffer remote_copied_mem_block;
+    if (process.pid() != GetCurrentProcessId())
+    {
+      remote_copied_mem_block.resize(mem.RegionSize);
+      bool ret = process.read_memory(ulongptr(mem.BaseAddress), remote_copied_mem_block);
+      if (!ret)
+      {
+        continue;
+      }
+
+      ptr = remote_copied_mem_block.get_ptr();
+      num = remote_copied_mem_block.get_size();
+    }
+
+    auto offsets = find_pattern_W(ptr, num, pattern, false);
+    if (!offsets.empty())
+    {
+      for (auto& offset : offsets) offset += ulongptr(mem.BaseAddress);
+      addresses.insert(addresses.end(), offsets.begin(), offsets.end());
+    }
+  }
+
+  return true;
+}
+
+/**
+ * ProcessA
+ */
+
 ProcessA::ProcessA() : ProcessX() , m_name("")
 {
 }
@@ -1414,6 +1472,34 @@ const MODULEENTRY32 ProcessA::get_module_information()
   }
 
   return result;
+}
+
+bool ProcessA::scan_memory(
+  std::vector<size_t>& addresses,
+  const std::string& pattern,
+  const std::string& module_name,
+  const ulong state,
+  const ulong type,
+  const ulong protection)
+{
+  std::pair<byte*, ulong> module(nullptr, 0);
+
+  if (!module_name.empty())
+  {
+    auto modules = this->get_modules();
+    auto it = std::find_if(modules.begin(), modules.end(), [&](MODULEENTRY32& me)
+    {
+      return compare_string_A(me.szModule, module_name, true);
+    });
+
+    if (it != modules.end())
+    {
+      module.first = it->modBaseAddr;
+      module.second = it->modBaseSize;
+    }
+  }
+
+  return process_scan_memory(addresses, *this, to_string_W(pattern), module, state, type, protection);
 }
 
 #pragma pop_macro("MODULEENTRY32")
@@ -1596,6 +1682,34 @@ const MODULEENTRY32W ProcessW::get_module_information()
   }
 
   return result;
+}
+
+bool ProcessW::scan_memory(
+  std::vector<size_t>& addresses,
+  const std::wstring& pattern,
+  const std::wstring& module_name,
+  const ulong state,
+  const ulong type,
+  const ulong protection)
+{
+  std::pair<byte*, ulong> module(nullptr, 0);
+
+  if (!module_name.empty())
+  {
+    auto modules = this->get_modules();
+    auto it = std::find_if(modules.begin(), modules.end(), [&](MODULEENTRY32W& me)
+    {
+      return compare_string_W(me.szModule, module_name, true);
+    });
+
+    if (it != modules.end())
+    {
+      module.first = it->modBaseAddr;
+      module.second = it->modBaseSize;
+    }
+  }
+
+  return process_scan_memory(addresses, *this, pattern, module, state, type, protection);
 }
 
 /**

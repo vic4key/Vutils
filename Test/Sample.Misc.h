@@ -151,22 +151,6 @@ DEF_SAMPLE(Misc)
   vu::url_decode(ts("vic.onl%2f%2b1%202-3%254"), url_decoded);
   std::tcout << "URL Decoded : " << url_decoded << std::endl;
 
-  vu::byte data_test_find_pattern[] =
-  {
-    0x77,
-    0x11, 0x77, 0x33, 0x77, 0x44, 0x77, 0x55, // 0x01
-    0x77, 0x77,
-    0x11, 0x77, 0x33, 0x77, 0x44, 0x77, 0x55, // 0x0A
-    0x77, 0x77, 0x77,
-    0x11, 0x77, 0x33, 0x77, 0x44, 0x77, 0x55, // 0x14
-  };
-  vu::Buffer data(data_test_find_pattern, sizeof(data_test_find_pattern));
-  auto offsets = vu::find_pattern(data, ts("11 ?? 33 ?? 44 ?? 55"), false);
-  for (auto& offset : offsets)
-  {
-    std::tcout << ts("Found at ") << offset << std::endl;
-  }
-
   std::string s = "0123456789";
   vu::Buffer  slicer(s.data(), s.size());
 
