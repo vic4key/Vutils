@@ -119,6 +119,7 @@ The minimum version of the following IDEs are supported `C++ 11`
 * [Test\Sample.WMHooking.h](Test/Sample.WMHooking.h)
 * [Test\Sample.INLHooking.h](Test/Sample.INLHooking.h)
 * [Test\Sample.IATHooking.h](Test/Sample.IATHooking.h)
+* [Test\Sample.AOBScanning.h](Test/Sample.AOBScanning.h)
 * See more examples in the [`Test`](Test/) project
 
 ## Contact

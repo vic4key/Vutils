@@ -3009,6 +3009,7 @@ public:
     std::vector<size_t>& addresses,
     const std::string& pattern,
     const std::string& module_name = "",
+    const bool first_match_only = false,
     const ulong state = DEF_SM_STATE,
     const ulong type = DEF_SM_PAGE,
     const ulong protection = DEF_SM_PROTECTION);
@@ -3070,6 +3071,7 @@ public:
     std::vector<size_t>& addresses,
     const std::wstring& pattern,
     const std::wstring& module_name = L"",
+    const bool first_match_only = false,
     const ulong state = DEF_SM_STATE,
     const ulong type = DEF_SM_PAGE,
     const ulong protection = DEF_SM_PROTECTION);

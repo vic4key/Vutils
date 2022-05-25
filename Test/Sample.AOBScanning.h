@@ -41,7 +41,7 @@ DEF_SAMPLE(AOBScanning)
   #endif
 
   std::vector<size_t> addresses;
-  process.scan_memory(addresses, pattern);
+  process.scan_memory(addresses, pattern, ts("combase.dll"));
 
   std::cout << "number of found addresses " << addresses.size() << std::endl;
   for (auto& e : addresses) std::cout << vu::format_A("%p", e) << std::endl;

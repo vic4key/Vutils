@@ -1242,6 +1242,7 @@ bool process_scan_memory(
   ProcessX& process,
   const std::wstring& pattern,
   const std::pair<byte*, ulong>& module,
+  const bool first_match_only,
   const ulong state = DEF_SM_STATE,
   const ulong type = DEF_SM_PAGE,
   const ulong protection = DEF_SM_PROTECTION)
@@ -1280,11 +1281,16 @@ bool process_scan_memory(
       num = remote_copied_mem_block.get_size();
     }
 
-    auto offsets = find_pattern_W(ptr, num, pattern, false);
+    auto offsets = find_pattern_W(ptr, num, pattern, first_match_only);
     if (!offsets.empty())
     {
       for (auto& offset : offsets) offset += ulongptr(mem.BaseAddress);
       addresses.insert(addresses.end(), offsets.begin(), offsets.end());
+    }
+
+    if (first_match_only && !addresses.empty())
+    {
+      break;
     }
   }
 
@@ -1478,6 +1484,7 @@ bool ProcessA::scan_memory(
   std::vector<size_t>& addresses,
   const std::string& pattern,
   const std::string& module_name,
+  const bool first_match_only,
   const ulong state,
   const ulong type,
   const ulong protection)
@@ -1499,7 +1506,8 @@ bool ProcessA::scan_memory(
     }
   }
 
-  return process_scan_memory(addresses, *this, to_string_W(pattern), module, state, type, protection);
+  return process_scan_memory(
+    addresses, *this, to_string_W(pattern), module, first_match_only, state, type, protection);
 }
 
 #pragma pop_macro("MODULEENTRY32")
@@ -1688,6 +1696,7 @@ bool ProcessW::scan_memory(
   std::vector<size_t>& addresses,
   const std::wstring& pattern,
   const std::wstring& module_name,
+  const bool first_match_only,
   const ulong state,
   const ulong type,
   const ulong protection)
@@ -1709,7 +1718,8 @@ bool ProcessW::scan_memory(
     }
   }
 
-  return process_scan_memory(addresses, *this, pattern, module, state, type, protection);
+  return process_scan_memory(
+    addresses, *this, pattern, module, first_match_only, state, type, protection);
 }
 
 /**
