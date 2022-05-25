@@ -2248,21 +2248,21 @@ private:
  * CriticalSection
  */
 
-typedef CRITICAL_SECTION    TCriticalSection, *PCriticalSection;
-
 class CriticalSection
 {
 public:
   CriticalSection();
   virtual ~CriticalSection();
 
+  void vuapi lock();
+  void vuapi unlock();
+
+private:
   void vuapi initialize();
-  void vuapi enter();
-  void vuapi leave();
   void vuapi destroy();
 
 private:
-  TCriticalSection m_cs;
+  CRITICAL_SECTION m_cs;
 };
 
 /**

@@ -23,12 +23,12 @@ void vuapi CriticalSection::initialize()
   InitializeCriticalSection(&m_cs);
 }
 
-void vuapi CriticalSection::enter()
+void vuapi CriticalSection::lock()
 {
   EnterCriticalSection(&m_cs);
 }
 
-void vuapi CriticalSection::leave()
+void vuapi CriticalSection::unlock()
 {
   LeaveCriticalSection(&m_cs);
 }
