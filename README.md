@@ -73,18 +73,25 @@ The minimum version of the following IDEs are supported `C++ 11`
 
 * Build
 
-  * MS Visual Studio C++
-    * Run the batch file `tools\VS<version>.Build.Static.Library.CMD` (`<version>` is your Visual Studio version)
-  * GNU MinGW
-    * Run the batch file `tools\MinGW.Build.Static.Library.CMD`
+  <details open>
+  <summary>MS Visual Studio C++</summary>
+
+    >* Run the batch file `tools\VS<version>.Build.Static.Library.CMD` (`<version>` is your Visual Studio version)
+  </details>
+
+  <details>
+  <summary>GNU MinGW</summary>
+
+    >* Run the batch file `tools\MinGW.Build.Static.Library.CMD`
+  </details>
 
 * Configuration
 
-  <details>
+  <details open>
   <summary>MS Visual Studio C++</summary>
 
     >* If you are using `Visual Studio 2012~2015`, you don't need to do anything, it automatic included in the global settings.
-    >* If you are using `Visual Studio 2017` or later, you have to copy `Directory.Build.props` file to your solution folder that contains the `.sln` file.
+    >* If you are using `Visual Studio 2017 or later`, you have to copy `Directory.Build.props` file to your solution folder that contains the `.sln` file.
   </details>
 
   <details>
