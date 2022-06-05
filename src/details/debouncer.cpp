@@ -88,7 +88,7 @@ void Debouncer::debounce(ulongptr id, ulong elapse, std::function<void()> fn)
   ptr_timer->m_handle = ::SetTimer(0, m_using_timer_id, elapse, fn_timer_proc);
 }
 
-VOID Debouncer::fn_timer_proc(HWND hWnd, UINT message, UINT_PTR idTimer, DWORD dwTime)
+VOID CALLBACK Debouncer::fn_timer_proc(HWND hWnd, UINT message, UINT_PTR idTimer, DWORD dwTime)
 {
   auto it = m_timers.find(m_using_timer_id);
   if (it == m_timers.cend())

@@ -3457,7 +3457,7 @@ public:
 private:
   static ulongptr m_using_timer_id;
   static std::unordered_map<ulongptr, Timer*> m_timers;
-  static void fn_timer_proc(HWND hWnd, UINT message, UINT_PTR idTimer, DWORD dwTime);
+  static VOID CALLBACK fn_timer_proc(HWND hWnd, UINT message, UINT_PTR idTimer, DWORD dwTime);
 };
 
 /*------------ The definition of common Class(es) which compatible both ANSI & UNICODE -----------*/
