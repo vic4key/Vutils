@@ -281,6 +281,9 @@
     <ClCompile Include="src\details\deconsts.cpp">
       <Filter>Source Files\details</Filter>
     </ClCompile>
+    <ClCompile Include="src\details\debouncer.cpp">
+      <Filter>Source Files\details</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\Vu">

@@ -94,6 +94,7 @@
 #include <cassert>
 #include <functional>
 #include <type_traits>
+#include <unordered_map>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -3433,6 +3434,31 @@ private:
 };
 
 #endif // VU_INET_ENABLED
+
+/**
+ * Debouncer
+ */
+
+class Debouncer : public SingletonT<Debouncer>
+{
+public:
+  struct Timer
+  {
+    ulongptr m_handle;
+    std::function<void()> m_function;
+    Timer() : m_handle(0), m_function(nullptr) {}
+  };
+
+  void debounce(ulongptr id, ulong elapse, std::function<void()> fn);
+  bool exists(ulongptr id);
+  void remove(ulongptr id);
+  void cleanup();
+
+private:
+  static ulongptr m_using_timer_id;
+  static std::unordered_map<ulongptr, Timer*> m_timers;
+  static void fn_timer_proc(HWND hWnd, UINT message, UINT_PTR idTimer, DWORD dwTime);
+};
 
 /*------------ The definition of common Class(es) which compatible both ANSI & UNICODE -----------*/
 
