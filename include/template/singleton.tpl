@@ -19,7 +19,15 @@ public:
 
   virtual ~SingletonT()
   {
+    if (SingletonT<T>::m_ptr_instance != nullptr)
+    {
+      delete SingletonT<T>::m_ptr_instance;
+      SingletonT<T>::m_ptr_instance = nullptr;
+    }
   }
+
+  SingletonT(SingletonT&) = delete;
+  void operator=(const SingletonT&) = delete;
 
   static T& instance()
   {
@@ -29,15 +37,6 @@ public:
     }
 
     return *m_ptr_instance;
-  }
-
-  static void destroy()
-  {
-    if (SingletonT<T>::m_ptr_instance != nullptr)
-    {
-      delete SingletonT<T>::m_ptr_instance;
-      SingletonT<T>::m_ptr_instance = nullptr;
-    }
   }
 
 protected:
