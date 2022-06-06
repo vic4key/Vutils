@@ -26,8 +26,8 @@ public:
     }
   }
 
-  SingletonT(SingletonT&) = delete;
-  void operator=(const SingletonT&) = delete;
+  // SingletonT(SingletonT&) = delete;
+  // void operator=(const SingletonT&) = delete;
 
   static T& instance()
   {
