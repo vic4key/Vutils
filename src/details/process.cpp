@@ -1064,6 +1064,39 @@ bool ProcessX::write_memory(const ulongptr address, const void* ptr_data, const 
   return result;
 }
 
+void ProcessX::execute_code_at(const ulongptr address, void* ptr_params, const bool wait_completed)
+{
+  if (!m_attached)
+  {
+    throw "process is not attached";
+  }
+
+  if (address == 0)
+  {
+    throw "invalid address";
+  }
+
+  HANDLE thread_handle = nullptr;
+
+  if (this->pid() != GetCurrentProcessId())
+  {
+    thread_handle = CreateRemoteThread(
+      this->handle(), nullptr, 0, LPTHREAD_START_ROUTINE(address), ptr_params, 0, nullptr);
+  }
+  else
+  {
+    thread_handle = CreateThread(
+      nullptr, 0, LPTHREAD_START_ROUTINE(address), ptr_params, 0, nullptr);
+  }
+
+  if (wait_completed && thread_handle != nullptr)
+  {
+    WaitForSingleObject(thread_handle, INFINITE);
+  }
+
+  // CloseHandle(thread_handle);
+}
+
 double ProcessX::get_cpu_percent_usage()
 {
   const auto fn_file_time_to_UTC = [](const FILETIME * file_time) -> uint64_t
@@ -1489,6 +1522,11 @@ bool ProcessA::scan_memory(
   const ulong type,
   const ulong protection)
 {
+  if (!m_attached)
+  {
+    throw "process is not attached";
+  }
+
   std::pair<byte*, ulong> module(nullptr, 0);
 
   if (!module_name.empty())
@@ -1701,6 +1739,11 @@ bool ProcessW::scan_memory(
   const ulong type,
   const ulong protection)
 {
+  if (!m_attached)
+  {
+    throw "process is not attached";
+  }
+
   std::pair<byte*, ulong> module(nullptr, 0);
 
   if (!module_name.empty())
