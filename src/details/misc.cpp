@@ -509,4 +509,50 @@ vu::VUResult create_shortcut_lnk_W(const std::wstring& lnk_file_path, const LNKW
 
 #endif // LNK
 
+template <class std_string_t>
+bool copy_to_clipboard_T(const std_string_t& text, const ulong format)
+{
+  if (text.empty())
+  {
+    return false;
+  }
+
+  size_t text_size = sizeof(typename std_string_t::value_type) * (text.length() + 1);
+
+  HGLOBAL hga = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, text_size);
+  if (hga == nullptr)
+  {
+    return false;
+  }
+
+  LPVOID ptr = ::GlobalLock(hga);
+  if (ptr == nullptr)
+  {
+    return false;
+  }
+
+  ::CopyMemory(ptr, text.data(), text_size);
+
+  ::GlobalUnlock(hga);
+
+  ::OpenClipboard(0);
+  ::EmptyClipboard();
+  ::SetClipboardData(format, hga);
+  ::CloseClipboard();
+
+  ::GlobalFree(hga);
+
+  return true;
+}
+
+bool copy_to_clipboard_A(const std::string& text)
+{
+  return copy_to_clipboard_T<std::string>(text, CF_TEXT);
+}
+
+bool copy_to_clipboard_W(const std::wstring& text)
+{
+  return copy_to_clipboard_T<std::wstring>(text, CF_UNICODETEXT);
+}
+
 } // namespace vu
