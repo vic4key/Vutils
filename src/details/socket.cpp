@@ -28,7 +28,7 @@ Socket::Socket(
   const protocol_t proto,
   const bool wsa,
   const Options* options
-) : LastError(), m_af(af), m_type(type), m_proto(proto), m_self(false)
+) : LastError(), m_af(af), m_type(type), m_proto(proto), m_wsa(wsa), m_self(false)
 {
   ZeroMemory(&m_wsa_data, sizeof(m_wsa_data));
   ZeroMemory(&m_sai, sizeof(m_sai));
