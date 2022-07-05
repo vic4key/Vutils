@@ -17,8 +17,9 @@ namespace vu
 AsyncSocket::AsyncSocket(
   const vu::Socket::address_family_t af,
   const vu::Socket::type_t type,
-  const vu::Socket::protocol_t proto)
-  : m_socket(af, type, proto), m_thread(INVALID_HANDLE_VALUE), LastError()
+  const vu::Socket::protocol_t proto,
+  const vu::Socket::Options* options
+) : m_socket(af, type, proto, true, options), m_thread(INVALID_HANDLE_VALUE), LastError()
 {
   UNREFERENCED_PARAMETER(m_side);
 

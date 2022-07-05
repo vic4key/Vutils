@@ -1081,6 +1081,9 @@ private:
 #define MSG_NONE 0
 #endif // MSG_NONE
 
+#define VU_DEFAULT_SEND_RECV_TIMEOUT 3 // 3 seconds
+#define VU_DEFAULT_SEND_RECV_BLOCK_SIZE KiB // 1 KiB
+
 class Socket : public LastError
 {
 public:
@@ -1105,16 +1108,31 @@ public:
     Endpoint(const std::string& host, const ushort port) : host(host), port(port) {}
   };
 
+  struct Options
+  {
+    struct
+    {
+      int recv;
+    } timeout; // in seconds
+
+    Options()
+    {
+      this->timeout.recv = VU_DEFAULT_SEND_RECV_TIMEOUT;
+    }
+  };
+
 public:
   Socket(
     const address_family_t af = AF_INET,
     const type_t type = SOCK_STREAM,
     const protocol_t proto = IPPROTO_IP,
-    bool  wsa = true);
+    const bool wsa = true,
+    const Options* options = nullptr
+  );
   virtual ~Socket();
 
   SOCKET& vuapi handle();
-  const WSADATA& vuapi wsa() const;
+  const WSADATA& vuapi wsa_data() const;
   const address_family_t vuapi af() const;
   const type_t vuapi type() const;
   const protocol_t vuapi  protocol() const;
@@ -1156,7 +1174,9 @@ public:
   const sockaddr_in vuapi get_remote_sai();
   std::string vuapi get_host_name();
 
-  VUResult vuapi set_option(const int level, const int opt, const std::string& val, const int size);
+  Options& options();
+
+  VUResult vuapi set_option(const int level, const int option, const void* value, const int size);
   VUResult vuapi enable_non_blocking(bool state = true);
 
 private:
@@ -1173,6 +1193,7 @@ private:
   protocol_t m_proto;
   sockaddr_in m_sai;
   SOCKET m_socket;
+  Options m_options;
   bool m_self;
 };
 
@@ -1200,7 +1221,9 @@ public:
   AsyncSocket(
     const vu::Socket::address_family_t af = AF_INET,
     const vu::Socket::type_t type = SOCK_STREAM,
-    const vu::Socket::protocol_t proto = IPPROTO_IP);
+    const vu::Socket::protocol_t proto = IPPROTO_IP,
+    const vu::Socket::Options* options = nullptr
+  );
   virtual ~AsyncSocket();
 
   side_type vuapi side();

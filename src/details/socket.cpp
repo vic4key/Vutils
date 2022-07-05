@@ -22,17 +22,21 @@ namespace vu
 
 #ifdef VU_INET_ENABLED
 
-const size_t VU_DEF_BLOCK_SIZE = KiB;
-
 Socket::Socket(
   const address_family_t af,
   const type_t type,
   const protocol_t proto,
-  bool  wsa
-) : LastError(), m_af(af), m_type(type), m_proto(proto), m_wsa(wsa), m_self(false)
+  const bool wsa,
+  const Options* options
+) : LastError(), m_af(af), m_type(type), m_proto(proto), m_self(false)
 {
   ZeroMemory(&m_wsa_data, sizeof(m_wsa_data));
   ZeroMemory(&m_sai, sizeof(m_sai));
+
+  if (options != nullptr)
+  {
+    m_options = *options;
+  }
 
   if (m_wsa)
   {
@@ -88,7 +92,12 @@ void vuapi Socket::detach()
   ZeroMemory(&m_sai, sizeof(m_sai));
 }
 
-const WSADATA& vuapi Socket::wsa() const
+Socket::Options& Socket::options()
+{
+  return m_options;
+}
+
+const WSADATA& vuapi Socket::wsa_data() const
 {
   return m_wsa_data;
 }
@@ -141,8 +150,8 @@ const sockaddr_in vuapi Socket::get_remote_sai()
 
 VUResult vuapi Socket::set_option(
   const int level,
-  const int opt,
-  const std::string& val,
+  const int option,
+  const void* value,
   const int size)
 {
   if (!this->available())
@@ -150,12 +159,7 @@ VUResult vuapi Socket::set_option(
     return 1;
   }
 
-  if (val.empty())
-  {
-    return 2;
-  }
-
-  if (::setsockopt(m_socket, level, opt, val.c_str(), size) != 0)
+  if (::setsockopt(m_socket, level, option, static_cast<const char*>(value), size) != 0)
   {
     m_last_error_code = GetLastError();
     return 3;
@@ -314,6 +318,24 @@ IResult vuapi Socket::recv(char* ptr_data, int size, const flags_t flags)
     return SOCKET_ERROR;
   }
 
+  fd_set fds_read = { 0 };
+  FD_ZERO(&fds_read);
+  FD_SET(m_socket, &fds_read);
+
+  timeval timeout = { 0 };
+  timeout.tv_usec = 0;
+  timeout.tv_sec  = m_options.timeout.recv;
+
+  int status = select(0, &fds_read, nullptr, nullptr, &timeout);
+  if (status == SOCKET_ERROR)
+  {
+    return SOCKET_ERROR;
+  }
+  else if (status == 0)
+  {
+    return VU_OK;
+  }
+
   IResult z = ::recv(m_socket, ptr_data, size, flags);
   if (z == SOCKET_ERROR)
   {
@@ -345,23 +367,19 @@ IResult vuapi Socket::recv_all(Buffer& buffer, const flags_t flags)
 
   do
   {
-    block.resize(VU_DEF_BLOCK_SIZE);
+    block.resize(VU_DEFAULT_SEND_RECV_BLOCK_SIZE);
     IResult z = this->recv(block, flags);
-    if (z <= 0)
+    if (z <= 0) // error or completed
     {
       block.reset();
     }
-    else
+    else // in-progress
     {
       if (z < static_cast<int>(block.get_size()))
       {
         block.resize(z);
       }
       buffer.append(block);
-      if (z < VU_DEF_BLOCK_SIZE)
-      {
-        block.reset();
-      }
     }
   } while (!block.empty());
 
@@ -435,23 +453,19 @@ IResult vuapi Socket::recv_all_from(Buffer& buffer, const Handle& socket)
 
   do
   {
-    block.resize(VU_DEF_BLOCK_SIZE);
+    block.resize(VU_DEFAULT_SEND_RECV_BLOCK_SIZE);
     IResult z = this->recv_from(block, socket);
-    if (z <= 0)
+    if (z <= 0) // error or completed
     {
       block.reset();
     }
-    else
+    else // in-progress
     {
-      if (z < static_cast<int>(block.get_size()))
+      if (z < static_cast<int>(block.get_size())) // last recv
       {
         block.resize(z);
       }
       buffer.append(block);
-      if (z < VU_DEF_BLOCK_SIZE)
-      {
-        block.reset();
-      }
     }
   } while (!block.empty());
 
