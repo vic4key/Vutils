@@ -422,8 +422,8 @@ IResult vuapi Socket::send_to(const char* ptr_data, const int size, const Handle
   {
     IResult z = ::sendto(
       m_socket,
-      ptr_data,
-      size,
+      sent_ptr_data,
+      size - sent_bytes,
       0,
       (const struct sockaddr*)&socket.sai,
       sizeof(socket.sai)
