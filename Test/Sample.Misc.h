@@ -206,5 +206,20 @@ DEF_SAMPLE(Misc)
 
   #endif // LNK
 
+  // Debouncer
+  // - Call the lambda function 5 times, and 0.1 second per each call
+  // - But just once call is really executed after 1 second passed from the last call
+  for (int i = 1; i <= 5; i++)
+  {
+    vu::Debouncer::instance().debounce(0x1234, 1000, []() -> void
+    {
+      std::tcout << ts("This message printed once by Debouncer after 1 second passed") << std::endl;
+    });
+
+    std::tcout << ts("Called #") << i << std::endl; Sleep(100);
+  }
+
+  MessageBoxA(nullptr, "This message box just keep for the program running...", "", MB_OK);
+
   return vu::VU_OK;
 }
