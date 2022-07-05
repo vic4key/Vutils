@@ -211,7 +211,7 @@ DEF_SAMPLE(Misc)
   // - But just once call is really executed after 1 second passed from the last call
   for (int i = 1; i <= 5; i++)
   {
-    vu::Debouncer::instance().debounce(0x1234, 1000, []() -> void
+    vu::Debouncer::instance().debounce(__LINE__, 1000, []() -> void
     {
       std::tcout << ts("This message printed once by Debouncer after 1 second passed") << std::endl;
     });
