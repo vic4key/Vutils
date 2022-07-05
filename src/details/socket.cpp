@@ -297,13 +297,23 @@ IResult vuapi Socket::send(const char* ptr_data, int size, const flags_t flags)
     return SOCKET_ERROR;
   }
 
-  IResult z = ::send(m_socket, ptr_data, size, flags);
-  if (z == SOCKET_ERROR)
-  {
-    m_last_error_code = GetLastError();
-  }
+  int  sent_bytes = 0;
+  auto sent_ptr_data = ptr_data;
 
-  return z;
+  do
+  {
+    IResult z = ::send(m_socket, sent_ptr_data, size - sent_bytes, 0);
+    if (z == SOCKET_ERROR)
+    {
+      m_last_error_code = GetLastError();
+      return SOCKET_ERROR;
+    }
+
+    sent_bytes += z;
+    sent_ptr_data += z;
+  } while (sent_bytes < size);
+
+  return sent_bytes;
 }
 
 IResult vuapi Socket::send(const Buffer& buffer, const flags_t flags)
@@ -326,9 +336,10 @@ IResult vuapi Socket::recv(char* ptr_data, int size, const flags_t flags)
   timeout.tv_usec = 0;
   timeout.tv_sec  = m_options.timeout.recv;
 
-  int status = select(0, &fds_read, nullptr, nullptr, &timeout);
+  int status = ::select(0, &fds_read, nullptr, nullptr, &timeout);
   if (status == SOCKET_ERROR)
   {
+    m_last_error_code = GetLastError();
     return SOCKET_ERROR;
   }
   else if (status == 0)
@@ -371,6 +382,12 @@ IResult vuapi Socket::recv_all(Buffer& buffer, const flags_t flags)
     IResult z = this->recv(block, flags);
     if (z <= 0) // error or completed
     {
+      if (z == SOCKET_ERROR)
+      {
+        m_last_error_code = GetLastError();
+        return SOCKET_ERROR;
+      }
+
       block.reset();
     }
     else // in-progress
@@ -391,28 +408,37 @@ IResult vuapi Socket::send_to(const Buffer& buffer, const Handle& socket)
   return this->send_to((const char*)buffer.get_ptr(), int(buffer.get_size()), socket);
 }
 
-IResult vuapi Socket::send_to(const char* lpData, const int size, const Handle& socket)
+IResult vuapi Socket::send_to(const char* ptr_data, const int size, const Handle& socket)
 {
   if (!this->available())
   {
     return SOCKET_ERROR;
   }
 
-  IResult z = ::sendto(
-    m_socket,
-    lpData,
-    size,
-    0,
-    (const struct sockaddr*)&socket.sai,
-    sizeof(socket.sai)
-  );
+  int  sent_bytes = 0;
+  auto sent_ptr_data = ptr_data;
 
-  if (z == SOCKET_ERROR)
+  do
   {
-    m_last_error_code = GetLastError();
-  }
+    IResult z = ::sendto(
+      m_socket,
+      ptr_data,
+      size,
+      0,
+      (const struct sockaddr*)&socket.sai,
+      sizeof(socket.sai)
+    );
+    if (z == SOCKET_ERROR)
+    {
+      m_last_error_code = GetLastError();
+      return SOCKET_ERROR;
+    }
 
-  return z;
+    sent_bytes += z;
+    sent_ptr_data += z;
+  } while (sent_bytes < size);
+
+  return sent_bytes;
 }
 
 IResult vuapi Socket::recv_from(Buffer& buffer, const Handle& socket)
@@ -457,6 +483,12 @@ IResult vuapi Socket::recv_all_from(Buffer& buffer, const Handle& socket)
     IResult z = this->recv_from(block, socket);
     if (z <= 0) // error or completed
     {
+      if (z == SOCKET_ERROR)
+      {
+        m_last_error_code = GetLastError();
+        return SOCKET_ERROR;
+      }
+
       block.reset();
     }
     else // in-progress
