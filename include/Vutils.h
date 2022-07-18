@@ -2326,12 +2326,12 @@ public:
   ScopeStopWatchX();
   virtual ~ScopeStopWatchX();
 
+  void lap();
   void active(bool state = true);
-  void reset();
 
 protected:
-  virtual void start(bool reset = false);
-  virtual void stop();
+  void start(bool reset = false);
+  void stop();
 
 protected:
   bool m_activated;
@@ -2341,36 +2341,40 @@ protected:
 class ScopeStopWatchA : public ScopeStopWatchX
 {
 public:
-  typedef std::function<void(const std::string& id, const StopWatch::TDuration& duration)> FnLogging;
+  typedef std::function<void(const std::string& text, const StopWatch::TDuration& duration)> FnLogging;
 
-  ScopeStopWatchA(const std::string& prefix, const FnLogging fn_logging = message);
+  ScopeStopWatchA(
+    const std::string& prefix, const std::string& suffix = " ", const FnLogging fn_logging = message);
   virtual ~ScopeStopWatchA();
 
-  void log(const std::string& id = "");
+  void log(const std::string& text);
 
-  static void message(const std::string& id, const StopWatch::TDuration& duration);
-  static void console(const std::string& id, const StopWatch::TDuration& duration);
+  static void message(const std::string& text, const StopWatch::TDuration& duration);
+  static void console(const std::string& text, const StopWatch::TDuration& duration);
 
 private:
   std::string m_prefix;
+  std::string m_suffix;
   FnLogging m_fn_logging;
 };
 
 class ScopeStopWatchW : public ScopeStopWatchX
 {
 public:
-  typedef std::function<void(const std::wstring& id, const StopWatch::TDuration& duration)> FnLogging;
+  typedef std::function<void(const std::wstring& text, const StopWatch::TDuration& duration)> FnLogging;
 
-  ScopeStopWatchW(const std::wstring& prefix, const FnLogging fn_logging = message);
+  ScopeStopWatchW(
+    const std::wstring& prefix, const std::wstring& suffix = L" ", const FnLogging fn_logging = message);
   virtual ~ScopeStopWatchW();
 
-  void log(const std::wstring& id = L"");
+  void log(const std::wstring& text);
 
-  static void message(const std::wstring& id, const StopWatch::TDuration& duration);
-  static void console(const std::wstring& id, const StopWatch::TDuration& duration);
+  static void message(const std::wstring& text, const StopWatch::TDuration& duration);
+  static void console(const std::wstring& text, const StopWatch::TDuration& duration);
 
 private:
   std::wstring m_prefix;
+  std::wstring m_suffix;
   FnLogging m_fn_logging;
 };
 

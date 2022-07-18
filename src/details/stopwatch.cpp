@@ -93,14 +93,19 @@ void ScopeStopWatchX::active(bool state)
   m_activated = state;
 }
 
-void ScopeStopWatchX::reset()
+void ScopeStopWatchX::lap()
 {
   this->stop();
   this->start(false);
 }
 
-ScopeStopWatchA::ScopeStopWatchA(const std::string& prefix, const FnLogging fn_logging)
-  : ScopeStopWatchX(), m_prefix(prefix + ' '), m_fn_logging(fn_logging)
+/**
+ * ScopeStopWatchA
+ */
+
+ScopeStopWatchA::ScopeStopWatchA(
+  const std::string& prefix, const std::string& suffix, const FnLogging fn_logging)
+  : ScopeStopWatchX(), m_prefix(prefix + ' '), m_suffix(suffix), m_fn_logging(fn_logging)
 {
 }
 
@@ -110,37 +115,42 @@ ScopeStopWatchA::~ScopeStopWatchA()
 
   if (m_activated)
   {
-    m_fn_logging(m_prefix + "TOTAL : ", m_watcher.total());
+    m_fn_logging(m_prefix + "TOTAL" + m_suffix, m_watcher.total());
   }
 }
 
-void ScopeStopWatchA::log(const std::string& id)
+void ScopeStopWatchA::log(const std::string& text)
 {
   this->stop();
 
   if (m_activated)
   {
-    m_fn_logging(m_prefix + id, m_watcher.duration());
+    m_fn_logging(m_prefix + text + m_suffix, m_watcher.duration());
   }
 
   this->start(false);
 }
 
-void ScopeStopWatchA::message(const std::string& id, const StopWatch::TDuration& duration)
+void ScopeStopWatchA::message(const std::string& text, const StopWatch::TDuration& duration)
 {
-  vu::msg_debug_A(id + "%.3fs", duration.second);
+  vu::msg_debug_A(text + "%.3f", duration.second);
 }
 
-void ScopeStopWatchA::console(const std::string& id, const StopWatch::TDuration& duration)
+void ScopeStopWatchA::console(const std::string& text, const StopWatch::TDuration& duration)
 {
-  char s[KB] = { 0 };
-  memset(s, 0, sizeof(s));
-  sprintf_s(s, lengthof(s), "%.3fs", duration.second);
-  std::cout << id << s << std::endl;
+  char time[KB] = { 0 };
+  memset(time, 0, sizeof(time));
+  sprintf_s(time, lengthof(time), "%.3f", duration.second);
+  std::cout << text << time << std::endl;
 }
 
-ScopeStopWatchW::ScopeStopWatchW(const std::wstring& prefix, const FnLogging fn_logging)
-  : ScopeStopWatchX(), m_prefix(prefix + L' '),m_fn_logging(fn_logging)
+/**
+ * ScopeStopWatchW
+ */
+
+ScopeStopWatchW::ScopeStopWatchW(
+  const std::wstring& prefix, const std::wstring& suffix, const FnLogging fn_logging)
+  : ScopeStopWatchX(), m_prefix(prefix + L' '), m_suffix(suffix), m_fn_logging(fn_logging)
 {
 }
 
@@ -150,33 +160,33 @@ ScopeStopWatchW::~ScopeStopWatchW()
 
   if (m_activated)
   {
-    m_fn_logging(m_prefix + L"TOTAL : ", m_watcher.total());
+    m_fn_logging(m_prefix + L"TOTAL" + m_suffix, m_watcher.total());
   }
 }
 
-void ScopeStopWatchW::log(const std::wstring& id)
+void ScopeStopWatchW::log(const std::wstring& text)
 {
   this->stop();
 
   if (m_activated)
   {
-    m_fn_logging(m_prefix + id, m_watcher.duration());
+    m_fn_logging(m_prefix + text + m_suffix, m_watcher.duration());
   }
 
   this->start(false);
 }
 
-void ScopeStopWatchW::message(const std::wstring& id, const StopWatch::TDuration& duration)
+void ScopeStopWatchW::message(const std::wstring& text, const StopWatch::TDuration& duration)
 {
-  vu::msg_debug_W(id + L"%.3fs", duration.second);
+  vu::msg_debug_W(text + L"%.3f", duration.second);
 }
 
-void ScopeStopWatchW::console(const std::wstring& id, const StopWatch::TDuration& duration)
+void ScopeStopWatchW::console(const std::wstring& text, const StopWatch::TDuration& duration)
 {
-  wchar_t s[KB] = { 0 };
-  memset(s, 0, sizeof(s));
-  swprintf_s(s, lengthof(s), L"%.3fs", duration.second);
-  std::wcout << id << s << std::endl;
+  wchar_t time[KB] = { 0 };
+  memset(time, 0, sizeof(time));
+  swprintf_s(time, lengthof(time), L"%.3f", duration.second);
+  std::wcout << text << time << std::endl;
 }
 
 } // namespace vu
