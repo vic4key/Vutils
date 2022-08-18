@@ -4,7 +4,7 @@
 
 DEF_SAMPLE(StopWatch)
 {
-  vu::ScopeStopWatch logger(ts("StopWatch ->"), vu::ScopeStopWatch::console);
+  vu::ScopeStopWatch logger(ts("StopWatch ->"), ts(" "), vu::ScopeStopWatch::console);
 
   Sleep(200);
   logger.log(ts("Test 1 : "));

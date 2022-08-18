@@ -2330,6 +2330,7 @@ public:
   ScopeStopWatchX();
   virtual ~ScopeStopWatchX();
 
+  void reset();
   void lap();
   void active(bool state = true);
 

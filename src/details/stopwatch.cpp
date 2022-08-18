@@ -93,6 +93,12 @@ void ScopeStopWatchX::active(bool state)
   m_activated = state;
 }
 
+void ScopeStopWatchX::reset()
+{
+  this->stop();
+  this->start(true);
+}
+
 void ScopeStopWatchX::lap()
 {
   this->stop();

@@ -503,8 +503,8 @@ std::string vuapi format_bytes_A(long long bytes, data_unit_type dut, int digits
 
   const auto log2l = [](long double v) -> long double
   {
-    const long double M_LOG2E = 1.44269504088896340736;
-    return logl(v) * M_LOG2E;
+    const long double M_LOG_2E = 1.44269504088896340736;
+    return logl(v) * M_LOG_2E;
   };
 
   const auto logn = [&](long double v, long double n) -> long double

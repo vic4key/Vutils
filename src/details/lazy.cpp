@@ -271,25 +271,35 @@ VUResult vuapi Initialize_DLL_MISC()
     return VU_OK;
   }
 
-  VU_GET_API(msvcrt.dll, _vscwprintf);
+  #ifdef _MSC_VER
+    #ifdef _DEBUG
+    #define msvcrt msvcrtd.dll
+    #else
+    #define msvcrt msvcrt.dll
+    #endif // _DEBUG
+  #else
+    #define msvcrt msvcrt.dll
+  #endif // _MSC_VER
+
+  VU_GET_API(msvcrt, _vscwprintf);
   if (pfn_vscwprintf == nullptr)
   {
     return ERROR_CODE(__LINE__);
   }
 
-  VU_GET_API(msvcrt.dll, _vscprintf);
+  VU_GET_API(msvcrt, _vscprintf);
   if (pfn_vscprintf == nullptr)
   {
     return ERROR_CODE(__LINE__);
   }
 
-  VU_GET_API(msvcrt.dll, _vscwprintf);
+  VU_GET_API(msvcrt, _vscwprintf);
   if (pfn_vscwprintf == nullptr)
   {
     return ERROR_CODE(__LINE__);
   }
 
-  VU_GET_API(msvcrt.dll, _vsnprintf);
+  VU_GET_API(msvcrt, _vsnprintf);
   if (pfn_vsnprintf == nullptr)
   {
     return ERROR_CODE(__LINE__);
