@@ -52,6 +52,10 @@
 
 #endif // VU_NO_EX
 
+#if defined(min) || defined(max)
+#define VU_min_max_macro_defined
+#endif
+
 /* Header Inclusions */
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -2347,7 +2351,7 @@ public:
     const std::string& prefix, const std::string& suffix = " ", const FnLogging fn_logging = message);
   virtual ~ScopeStopWatchA();
 
-  void log(const std::string& text);
+  void log(const std::string format, ...);
 
   static void message(const std::string& text, const StopWatch::TDuration& duration);
   static void console(const std::string& text, const StopWatch::TDuration& duration);
@@ -2367,7 +2371,7 @@ public:
     const std::wstring& prefix, const std::wstring& suffix = L" ", const FnLogging fn_logging = message);
   virtual ~ScopeStopWatchW();
 
-  void log(const std::wstring& text);
+  void log(const std::wstring format, ...);
 
   static void message(const std::wstring& text, const StopWatch::TDuration& duration);
   static void console(const std::wstring& text, const StopWatch::TDuration& duration);
@@ -3544,5 +3548,10 @@ private:
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif // _MSC_VER
+
+#ifndef VU_min_max_macro_defined
+#undef min
+#undef max
+#endif // !VU_min_max_macro_defined
 
 #endif // VUTILS_H

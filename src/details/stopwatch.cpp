@@ -119,12 +119,19 @@ ScopeStopWatchA::~ScopeStopWatchA()
   }
 }
 
-void ScopeStopWatchA::log(const std::string& text)
+extern std::string vuapi format_vl_A(const std::string format, va_list args);
+
+void ScopeStopWatchA::log(const std::string format, ...)
 {
   this->stop();
 
   if (m_activated)
   {
+    va_list args;
+    va_start(args, format);
+    auto text = format_vl_A(format, args);
+    va_end(args);
+
     m_fn_logging(m_prefix + text + m_suffix, m_watcher.duration());
   }
 
@@ -164,12 +171,19 @@ ScopeStopWatchW::~ScopeStopWatchW()
   }
 }
 
-void ScopeStopWatchW::log(const std::wstring& text)
+extern std::wstring vuapi format_vl_W(const std::wstring format, va_list args);
+
+void ScopeStopWatchW::log(const std::wstring format, ...)
 {
   this->stop();
 
   if (m_activated)
   {
+    va_list args;
+    va_start(args, format);
+    auto text = format_vl_W(format, args);
+    va_end(args);
+
     m_fn_logging(m_prefix + text + m_suffix, m_watcher.duration());
   }
 
