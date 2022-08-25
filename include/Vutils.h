@@ -455,6 +455,8 @@ typedef std::vector<MONITORINFOEXW> Monitors_W;
 
 HWND vuapi get_console_window();
 HWND vuapi find_top_window(ulong pid);
+HWND vuapi find_top_window(HWND hwnd);
+HWND vuapi find_main_window(ulong pid);
 HWND vuapi find_main_window(HWND hwnd);
 FontA vuapi get_font_A(HWND hwnd);
 FontW vuapi get_font_W(HWND hwnd);

@@ -37,7 +37,7 @@ BOOL CALLBACK fnFindTopWindowCallback(HWND hwnd, LPARAM lp)
 {
   auto& params = *(PairPIDHWND*)lp;
 
-  DWORD pid = 0;
+  DWORD pid = INVALID_PID_VALUE;
 
   if (GetWindowThreadProcessId(hwnd, &pid) && pid == params.first)
   {
@@ -55,6 +55,24 @@ HWND vuapi find_top_window(ulong pid)
   auto ret = EnumWindows(fnFindTopWindowCallback, (LPARAM)&params);
 
   return params.second;
+}
+
+HWND vuapi find_top_window(HWND hwnd)
+{
+  DWORD pid = INVALID_PID_VALUE;
+  GetWindowThreadProcessId(hwnd, &pid);
+  if (pid == INVALID_PID_VALUE)
+  {
+    return nullptr;
+  }
+
+  return find_top_window(pid);
+}
+
+HWND vuapi find_main_window(ulong pid)
+{
+  HWND hwnd = find_top_window(pid);
+  return find_main_window(hwnd);
 }
 
 HWND vuapi find_main_window(HWND hwnd)
