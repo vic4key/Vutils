@@ -34,8 +34,8 @@ namespace std { namespace op {
 
 static auto in = base::make_named_operator(op_impl::in_t());
 
-#define VU_HAS_STD_OP
-
 }} // std::op
+
+#define VU_HAS_STD_OP
 
 #endif
