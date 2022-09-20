@@ -328,6 +328,8 @@
     <ClInclude Include="3rdparty\UND\include\undname.h" />
     <ClInclude Include="3rdparty\WHW\WinHttpWrapper.h" />
     <ClInclude Include="include\3rdparty\BI\BigInt.hpp" />
+    <ClInclude Include="include\3rdparty\NO\include\base\named_operator.hpp" />
+    <ClInclude Include="include\3rdparty\NO\include\util\io_helpers.hpp" />
     <ClInclude Include="include\3rdparty\WHW\Types.h" />
     <ClInclude Include="include\Vu.h" />
     <ClInclude Include="include\Vutils.h" />
@@ -397,6 +399,7 @@
     <None Include="include\inline\spechrs.inl" />
     <None Include="include\template\math.tpl" />
     <None Include="include\template\misc.tpl" />
+    <None Include="include\template\nameop.tpl" />
     <None Include="include\template\singleton.tpl" />
     <None Include="include\template\stlthread.tpl" />
     <None Include="include\Vu" />

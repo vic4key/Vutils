@@ -51,6 +51,7 @@ It helps your programming go easier, faster and simpler.
 * File/Directory, Window, Process, Math Manipulation
 * Shorten Formatting for Date/Time, String, Message Box, Debug Message
 * Decode Constants like Window Message, HTTP Status, etc
+* Name Operator for STL Container (Eg. `2 <in> {1, 2, 3}`, etc)
 * Miscellaneous
 
 ## License

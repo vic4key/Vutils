@@ -206,6 +206,23 @@ DEF_SAMPLE(Misc)
 
   #endif // LNK
 
+  #if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201402L) || (__cplusplus >= 201402L))
+  {
+    #define container vector
+    container<int>    l_int = { 1, 2, 3, 4, 5 
+    container<char>   l_chr = { '1', '2', '3', '4', '5' };};
+    container<float>  l_flt = { 1.F, 2.F, 3.F, 4.F, 5.F };
+    container<double> l_dbl = { 1.0, 2.0, 3.0, 4.0, 5.0 };
+    container<string> l_str = { "1", "2", "3", "4", "5" };
+    using namespace std::op;
+    cout << (1   <in> l_int) << endl;
+    cout << ('1' <in> l_chr) << endl;
+    cout << (1.F <in> l_flt) << endl;
+    cout << (1.0 <in> l_dbl) << endl;
+    cout << ("1" <in> l_str) << endl;
+  }
+  #endif
+
   // Debouncer
   // - Call the lambda function 5 times, and 0.1 second per each call
   // - But just once call is really executed after 1 second passed from the last call

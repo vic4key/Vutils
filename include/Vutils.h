@@ -153,6 +153,10 @@ namespace WinHttpWrapper
 
 using namespace WinHttpWrapper;
 
+// Name Operator
+
+#include "template/nameop.tpl"
+
 namespace vu
 {
 

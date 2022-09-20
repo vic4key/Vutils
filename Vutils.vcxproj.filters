@@ -55,6 +55,9 @@
     <Filter Include="Header Files\Third Files\WHW">
       <UniqueIdentifier>{86898ad2-6ff1-46a0-9826-ebaab5fd5920}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Third Files\NO">
+      <UniqueIdentifier>{eefff9c3-29b0-45a8-9e82-0c20dfe7509a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Vutils.h">
@@ -134,6 +137,12 @@
     </ClInclude>
     <ClInclude Include="include\3rdparty\WHW\Types.h">
       <Filter>Header Files\Third Files\WHW</Filter>
+    </ClInclude>
+    <ClInclude Include="include\3rdparty\NO\include\base\named_operator.hpp">
+      <Filter>Header Files\Third Files\NO</Filter>
+    </ClInclude>
+    <ClInclude Include="include\3rdparty\NO\include\util\io_helpers.hpp">
+      <Filter>Header Files\Third Files\NO</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -323,6 +332,9 @@
       <Filter>Header Files</Filter>
     </None>
     <None Include="include\template\misc.tpl">
+      <Filter>Header Files\Template Files</Filter>
+    </None>
+    <None Include="include\template\nameop.tpl">
       <Filter>Header Files\Template Files</Filter>
     </None>
   </ItemGroup>
