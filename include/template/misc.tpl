@@ -6,7 +6,8 @@
 
 // Misc
 
-#if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || (__cplusplus >= 201703L))
+// C++14 (MSVC 2015+ or MinGW 5.1+)
+#if (defined(_MSC_VER) && _MSC_VER >= 1900) || (defined(__MINGW32__) && __cplusplus >= 201402L)
 
 #include <iostream>
 
@@ -41,5 +42,7 @@ void print_W(Head&& head, Tail&&... tail)
 #else
 #define print print_A
 #endif
+
+#define VU_HAS_PRINT
 
 #endif

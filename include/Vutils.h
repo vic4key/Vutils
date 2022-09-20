@@ -31,6 +31,11 @@
 
 #ifndef __cplusplus
 #error Vutils required C++ compiler
+#elif (defined(_MSC_VER) && _MSC_VER < 1700) || (defined(__MINGW32__) && __cplusplus < 201103L)
+// C++11 (MSVC 2012+ or MinGW 4.6+)
+// https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B#Internal_version_numbering
+// https://en.cppreference.com/w/cpp/preprocessor/replace#Predefined_macros
+#error Vutils required C++11 or newer
 #endif
 
 /* Vutils Configurations */

@@ -206,20 +206,24 @@ DEF_SAMPLE(Misc)
 
   #endif // LNK
 
-  #if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201402L) || (__cplusplus >= 201402L))
+  #ifdef VU_HAS_PRINT
+  vu::print(1, 2.3F, 3.4, ts('C'), ts("this is a string"));
+  #endif
+
+  #ifdef VU_HAS_STD_OP
   {
     #define container std::vector // std::list // std::set // etc
-    container<int> l_int = { 1, 2, 3, 4, 5 
-    container<char> l_chr = { '1', '2', '3', '4', '5' };};
+    container<int> l_int = { 1, 2, 3, 4, 5 };
+    container<char> l_chr = { '1', '2', '3', '4', '5' };
     container<float> l_flt = { 1.F, 2.F, 3.F, 4.F, 5.F };
     container<double> l_dbl = { 1.0, 2.0, 3.0, 4.0, 5.0 };
     container<std::string> l_str = { "1", "2", "3", "4", "5" };
     using namespace std::op;
-    std::tcout << (1   <in> l_int) << std::endl;
-    std::tcout << ('1' <in> l_chr) << std::endl;
-    std::tcout << (1.F <in> l_flt) << std::endl;
-    std::tcout << (1.0 <in> l_dbl) << std::endl;
-    std::tcout << ("1" <in> l_str) << std::endl;
+    std::tcout << ( 1   <in> l_int) << std::endl;
+    std::tcout << ('1'  <in> l_chr) << std::endl;
+    std::tcout << ( 1.F <in> l_flt) << std::endl;
+    std::tcout << ( 1.0 <in> l_dbl) << std::endl;
+    std::tcout << ("1"  <in> l_str) << std::endl;
   }
   #endif
 
