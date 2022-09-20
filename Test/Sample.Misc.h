@@ -215,11 +215,11 @@ DEF_SAMPLE(Misc)
     container<double> l_dbl = { 1.0, 2.0, 3.0, 4.0, 5.0 };
     container<string> l_str = { "1", "2", "3", "4", "5" };
     using namespace std::op;
-    cout << (1   <in> l_int) << endl;
-    cout << ('1' <in> l_chr) << endl;
-    cout << (1.F <in> l_flt) << endl;
-    cout << (1.0 <in> l_dbl) << endl;
-    cout << ("1" <in> l_str) << endl;
+    std::tcout << (1   <in> l_int) << std::endl;
+    std::tcout << ('1' <in> l_chr) << std::endl;
+    std::tcout << (1.F <in> l_flt) << std::endl;
+    std::tcout << (1.0 <in> l_dbl) << std::endl;
+    std::tcout << ("1" <in> l_str) << std::endl;
   }
   #endif
 
