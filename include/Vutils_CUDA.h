@@ -116,6 +116,30 @@ __host__ float calcuate_occupancy(int block_size, Fn fn)
 }
 
 template <typename Fn>
+__host__ std::pair<dim3, dim3> calculate_execution_configuration_3d(int width, int height, int depth, Fn fn)
+{
+  int min_grid_size = 0;
+  int num_threads_per_block = 0;
+  cudaOccupancyMaxPotentialBlockSize(&min_grid_size, &num_threads_per_block, static_cast<void*>(fn));
+
+  cudaDeviceProp prop = { 0 };
+  cudaGetDeviceProperties(&prop, host::device_id());
+
+  num_threads_per_block = static_cast<int>(sqrt(num_threads_per_block));
+  num_threads_per_block = VU_ALIGN_UP(num_threads_per_block, prop.warpSize);
+  dim3 block_size(num_threads_per_block, num_threads_per_block, 1);
+  dim3 grid_size(width / num_threads_per_block + 1, height / num_threads_per_block + 1, depth);
+
+  return { grid_size, block_size };
+}
+
+template <typename Fn>
+__host__ std::pair<dim3, dim3> calculate_execution_configuration_2d(int width, int height, Fn fn)
+{
+  return calculate_execution_configuration_3d(width, height, 1, fn);
+}
+
+template <typename Fn>
 __host__ std::pair<int, int> calculate_execution_configuration_1d(int num_elements, Fn fn)
 {
   int grid_size = 0;
@@ -131,24 +155,6 @@ template <typename Fn>
 __host__ std::pair<int, int> calculate_execution_configuration_1d(int width, int height, Fn fn)
 {
   return calculate_execution_configuration_1d(width * height, fn);
-}
-
-template <typename Fn>
-__host__ std::pair<dim3, dim3> calculate_execution_configuration_2d(int width, int height, Fn fn)
-{
-  int min_grid_size = 0;
-  int num_threads_per_block = 0;
-  cudaOccupancyMaxPotentialBlockSize(&min_grid_size, &num_threads_per_block, static_cast<void*>(fn));
-
-  cudaDeviceProp prop = { 0 };
-  cudaGetDeviceProperties(&prop, host::device_id());
-
-  num_threads_per_block = static_cast<int>(sqrt(num_threads_per_block));
-  num_threads_per_block = VU_ALIGN_UP(num_threads_per_block, prop.warpSize);
-  dim3 block_size(num_threads_per_block, num_threads_per_block, 1);
-  dim3 grid_size(width / num_threads_per_block + 1, height / num_threads_per_block + 1, 1);
-
-  return { grid_size, block_size };
 }
 
 } // namespace host
@@ -184,6 +190,14 @@ __device__ void current_element_position_2d(dim3& position)
 __device__ int current_element_index_2d(int width, int height = NULL)
 {
   return (blockIdx.y * blockDim.y + threadIdx.y) * width + (blockIdx.x * blockDim.x + threadIdx.x);
+}
+
+__device__ int current_element_index_3d(int width, int height, int depth)
+{
+  unsigned int xIndex = blockDim.x * blockIdx.x + threadIdx.x;
+  unsigned int yIndex = blockDim.y * blockIdx.y + threadIdx.y;
+  unsigned int zIndex = blockDim.z * blockIdx.z + threadIdx.z;
+  return xIndex + width * yIndex + width * height * zIndex;
 }
 
 #endif // __CUDACC__
