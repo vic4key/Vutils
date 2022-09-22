@@ -147,7 +147,7 @@ __host__ std::pair<int, int> calculate_execution_configuration_1d(int num_elemen
   int min_grid_size = 0;
   cudaOccupancyMaxPotentialBlockSize(&min_grid_size, &block_size, static_cast<void*>(fn));
   grid_size = (num_elements + block_size - 1) / block_size;
-  grid_size = max(min_grid_size, grid_size);
+  grid_size = std::max(min_grid_size, grid_size);
   return { grid_size, block_size };
 }
 
