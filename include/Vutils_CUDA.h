@@ -124,17 +124,27 @@ __host__ float calcuate_occupancy(int block_size, Fn fn)
   return occupancy;
 }
 
+enum block_size_t : int
+{
+  _auto  = 0,
+  _fixed = 256,
+};
+
 template <typename Fn>
-__host__ std::pair<dim3, dim3> calculate_execution_configuration_3d(int width, int height, int depth, Fn fn)
+__host__ std::pair<dim3, dim3> calculate_execution_configuration_3d(
+  int width, int height, int depth, Fn fn, block_size_t threads_per_block = block_size_t::_fixed)
 {
   int min_grid_size = 0;
-  int num_threads_per_block = 0;
-  cudaOccupancyMaxPotentialBlockSize(&min_grid_size, &num_threads_per_block, static_cast<void*>(fn));
+  int num_threads_per_block = block_size_t::_fixed;
+
+  if (threads_per_block == block_size_t::_auto)
+  {
+    cudaOccupancyMaxPotentialBlockSize(&min_grid_size, &num_threads_per_block, static_cast<void*>(fn));
+    num_threads_per_block = static_cast<int>(sqrt(num_threads_per_block));
+  }
 
   cudaDeviceProp prop = { 0 };
   cudaGetDeviceProperties(&prop, host::device_id());
-
-  num_threads_per_block = static_cast<int>(sqrt(num_threads_per_block));
   num_threads_per_block = VU_ALIGN_UP(num_threads_per_block, prop.warpSize);
 
   int num_elements = width * height * depth;
@@ -151,21 +161,24 @@ __host__ std::pair<dim3, dim3> calculate_execution_configuration_3d(int width, i
 }
 
 template <typename Fn>
-__host__ std::pair<dim3, dim3> calculate_execution_configuration_2d(int width, int height, Fn fn)
+__host__ std::pair<dim3, dim3> calculate_execution_configuration_2d(
+  int width, int height, Fn fn, block_size_t threads_per_block = block_size_t::_fixed)
 {
-  return calculate_execution_configuration_3d(width, height, 1, fn);
+  return calculate_execution_configuration_3d(width, height, 1, fn, threads_per_block);
 }
 
 template <typename Fn>
-__host__ std::pair<dim3, dim3> calculate_execution_configuration_1d(int num_elements, Fn fn)
+__host__ std::pair<dim3, dim3> calculate_execution_configuration_1d(
+  int num_elements, Fn fn, block_size_t threads_per_block = block_size_t::_fixed)
 {
-  return calculate_execution_configuration_3d(num_elements, 1, 1, fn);
+  return calculate_execution_configuration_3d(num_elements, 1, 1, fn, threads_per_block);
 }
 
 template <typename Fn>
-__host__ std::pair<dim3, dim3> calculate_execution_configuration_1d(int width, int height, Fn fn)
+__host__ std::pair<dim3, dim3> calculate_execution_configuration_1d(
+  int width, int height, Fn fn, block_size_t threads_per_block = block_size_t::_fixed)
 {
-  return calculate_execution_configuration_1d(width * height, fn);
+  return calculate_execution_configuration_1d(width * height, fn, threads_per_block);
 }
 
 } // namespace host
