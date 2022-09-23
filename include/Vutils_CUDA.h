@@ -35,8 +35,8 @@
 #define vu_cuda_max max
 #define vu_cuda_min min
 #else  // std::max/min
-#define vu_cuda_max max
-#define vu_cuda_min min
+#define vu_cuda_max std::max
+#define vu_cuda_min std::min
 #endif // max/min
 
 namespace vu
@@ -138,13 +138,14 @@ __host__ std::pair<dim3, dim3> calculate_execution_configuration_3d(int width, i
   num_threads_per_block = VU_ALIGN_UP(num_threads_per_block, prop.warpSize);
 
   int num_elements = width * height * depth;
-  int num_blocks_per_grid = (num_elements + num_threads_per_block - 1) / num_threads_per_block;
+  int num_blocks_per_grid = num_elements / num_threads_per_block + 1;
+  num_blocks_per_grid = vu_cuda_max(min_grid_size, num_blocks_per_grid);
 
   // dim3 block_size(num_threads_per_block, num_threads_per_block, 1);
   // dim3 grid_size(width / num_threads_per_block + 1, height / num_threads_per_block + 1, depth);
 
-  dim3 block_size(num_threads_per_block);
   dim3 grid_size(num_blocks_per_grid);
+  dim3 block_size(num_threads_per_block);
 
   return { grid_size, block_size };
 }
@@ -156,19 +157,13 @@ __host__ std::pair<dim3, dim3> calculate_execution_configuration_2d(int width, i
 }
 
 template <typename Fn>
-__host__ std::pair<int, int> calculate_execution_configuration_1d(int num_elements, Fn fn)
+__host__ std::pair<dim3, dim3> calculate_execution_configuration_1d(int num_elements, Fn fn)
 {
-  int grid_size = 0;
-  int block_size = 0;
-  int min_grid_size = 0;
-  cudaOccupancyMaxPotentialBlockSize(&min_grid_size, &block_size, static_cast<void*>(fn));
-  grid_size = (num_elements + block_size - 1) / block_size;
-  grid_size = vu_cuda_max(min_grid_size, grid_size);
-  return { grid_size, block_size };
+  return calculate_execution_configuration_3d(num_elements, 1, 1, fn);
 }
 
 template <typename Fn>
-__host__ std::pair<int, int> calculate_execution_configuration_1d(int width, int height, Fn fn)
+__host__ std::pair<dim3, dim3> calculate_execution_configuration_1d(int width, int height, Fn fn)
 {
   return calculate_execution_configuration_1d(width * height, fn);
 }
