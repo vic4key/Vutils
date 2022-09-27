@@ -202,6 +202,7 @@ std::vector<size_t> find_pattern_A(
   const void* ptr, const size_t size, const std::string& pattern, const bool first_match_only);
 std::vector<size_t> find_pattern_W(
   const void* ptr, const size_t size, const std::wstring& pattern, const bool first_match_only);
+bool vuapi use_std_io_console_window();
 
 #include "template/misc.tpl"
 

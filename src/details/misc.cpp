@@ -555,4 +555,67 @@ bool copy_to_clipboard_W(const std::wstring& text)
   return copy_to_clipboard_T<std::wstring>(text, CF_UNICODETEXT);
 }
 
+bool use_std_io_console_window()
+{
+  static bool console_displayed = false;
+  if (console_displayed)
+  {
+    return true;
+  }
+
+  if (!AllocConsole())
+  {
+    return false;
+  }
+
+  FILE* std_con_in_out = nullptr;
+  freopen_s(&std_con_in_out, "CONOUT$", "w", stdout);
+  freopen_s(&std_con_in_out, "CONOUT$", "w", stderr);
+  freopen_s(&std_con_in_out, "CONIN$", "r", stdin);
+
+  std::cin.clear();
+  std::cout.clear();
+  std::clog.clear();
+  std::cerr.clear();
+
+  HANDLE std_con_in = CreateFile(
+    _T("CONOUT$"),
+    GENERIC_READ | GENERIC_WRITE,
+    FILE_SHARE_READ | FILE_SHARE_WRITE,
+    NULL,
+    OPEN_EXISTING,
+    FILE_ATTRIBUTE_NORMAL,
+    NULL);
+  if (std_con_in == INVALID_HANDLE_VALUE)
+  {
+    return false;
+  }
+
+  HANDLE std_con_out = CreateFile(
+    _T("CONIN$"),
+    GENERIC_READ | GENERIC_WRITE,
+    FILE_SHARE_READ | FILE_SHARE_WRITE,
+    NULL,
+    OPEN_EXISTING,
+    FILE_ATTRIBUTE_NORMAL,
+    NULL);
+  if (std_con_out == INVALID_HANDLE_VALUE)
+  {
+    return false;
+  }
+
+  SetStdHandle(STD_OUTPUT_HANDLE, std_con_in);
+  SetStdHandle(STD_ERROR_HANDLE, std_con_in);
+  SetStdHandle(STD_INPUT_HANDLE, std_con_out);
+
+  std::wcin.clear();
+  std::wcout.clear();
+  std::wclog.clear();
+  std::wcerr.clear();
+
+  console_displayed = true;
+
+  return console_displayed;
+}
+
 } // namespace vu
