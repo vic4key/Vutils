@@ -3139,7 +3139,8 @@ protected:
  * Single Process
  */
 
-#define VU_SINGLE_PROCESS(app) vu::SingleProcess::instance().initialize(STRINGIZE(app))
+#define VU_SINGLE_PROCESS(app) vu::SingleProcess::instance().initialize(STRINGIZE(app));
+#define VU_SINGLE_PROCESS_EX(app, fn) vu::SingleProcess::instance().initialize(STRINGIZE(app), fn);
 
 class SingleProcess : public SingletonT<SingleProcess>
 {
@@ -3147,10 +3148,15 @@ public:
   SingleProcess();
   virtual ~SingleProcess();
 
-  static void fn_default(bool running);
+  static void fn_default_ask_to_launch_new_instance(bool running);
+  static void fn_default_allow_only_single_instance(bool running);
 
-  bool initialize(const std::string&  name, const std::function<void(bool running)> fn = fn_default);
-  bool initialize(const std::wstring& name, const std::function<void(bool running)> fn = fn_default);
+  bool initialize(
+    const std::string& name,
+    const std::function<void(bool running)> fn = fn_default_ask_to_launch_new_instance);
+  bool initialize(
+    const std::wstring& name,
+    const std::function<void(bool running)> fn = fn_default_ask_to_launch_new_instance);
   void finalize();
   bool running();
 

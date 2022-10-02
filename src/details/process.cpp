@@ -1827,7 +1827,7 @@ bool SingleProcess::running()
   return false;
 }
 
-void SingleProcess::fn_default(bool running)
+void SingleProcess::fn_default_ask_to_launch_new_instance(bool running)
 {
   if (running)
   {
@@ -1838,6 +1838,17 @@ void SingleProcess::fn_default(bool running)
     {
       ExitProcess(0);
     }
+  }
+}
+
+void SingleProcess::fn_default_allow_only_single_instance(bool running)
+{
+  if (running)
+  {
+    const std::wstring title = extract_file_name_W(get_current_file_path_W());
+    const std::wstring text = L"The application is running.";
+    MessageBoxW(GetActiveWindow(), text.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
+    ExitProcess(0);
   }
 }
 
