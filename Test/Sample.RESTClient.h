@@ -14,7 +14,7 @@ DEF_SAMPLE(RESTClient)
   header.append(ts("Connection: keep-alive\r\n"));
   header.append(ts("\r\n"));
 
-  http_response response;
+  vu::http_response response;
   vu::RESTClient rest_client(vu::protocol_scheme::https, ts("5f9c32b6856f4c00168c7da2.mockapi.io"), 443);
 
   // get all
