@@ -132,7 +132,7 @@ std::wstring vuapi upper_string_W(const std::wstring& string)
   return s;
 }
 
-std::string vuapi to_string_A(const std::wstring& string)
+std::string vuapi to_string_A(const std::wstring& string, const bool utf8)
 {
   std::string s;
   s.clear();
@@ -142,7 +142,14 @@ std::string vuapi to_string_A(const std::wstring& string)
     return s;
   }
 
-  int N = (int)string.length() + 1;
+  int N = (int)string.length();
+
+  if (utf8)
+  {
+    N = WideCharToMultiByte(CP_UTF8, 0, string.c_str(), int(string.length()), NULL, 0, NULL, NULL);
+  }
+
+  N += 1;
 
   std::unique_ptr<char[]> p(new char [N]);
   if (p == nullptr)
@@ -152,14 +159,14 @@ std::string vuapi to_string_A(const std::wstring& string)
 
   ZeroMemory(p.get(), N);
 
-  WideCharToMultiByte(CP_ACP, WC_COMPOSITECHECK, string.c_str(), -1, p.get(), N, NULL, NULL);
+  WideCharToMultiByte(utf8 ? CP_UTF8 : CP_ACP, WC_COMPOSITECHECK, string.c_str(), -1, p.get(), N, NULL, NULL);
 
   s.assign(p.get());
 
   return s;
 }
 
-std::wstring vuapi to_string_W(const std::string& string)
+std::wstring vuapi to_string_W(const std::string& string, const bool utf8)
 {
   std::wstring s;
   s.clear();
@@ -169,7 +176,14 @@ std::wstring vuapi to_string_W(const std::string& string)
     return s;
   }
 
-  int N = (int)string.length() + 1;
+  int N = (int)string.length();
+
+  if (utf8)
+  {
+    N = MultiByteToWideChar(CP_UTF8, 0, string.c_str(), int(string.length()), NULL, 0);
+  }
+
+  N += 1;
 
   std::unique_ptr<wchar[]> p(new wchar [N]);
   if (p == nullptr)
@@ -179,7 +193,7 @@ std::wstring vuapi to_string_W(const std::string& string)
 
   ZeroMemory(p.get(), 2*N);
 
-  MultiByteToWideChar(CP_ACP, 0, string.c_str(), -1, p.get(), 2*N);
+  MultiByteToWideChar(utf8 ? CP_UTF8 : CP_ACP, 0, string.c_str(), -1, p.get(), 2*N);
 
   s.assign(p.get());
 

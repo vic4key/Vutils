@@ -283,8 +283,8 @@ std::string vuapi lower_string_A(const std::string& string);
 std::wstring vuapi lower_string_W(const std::wstring& string);
 std::string vuapi upper_string_A(const std::string& string);
 std::wstring vuapi upper_string_W(const std::wstring& string);
-std::string vuapi to_string_A(const std::wstring& string);
-std::wstring vuapi to_string_W(const std::string& string);
+std::string vuapi to_string_A(const std::wstring& string, const bool utf8 = false); // ANSI or UTF-8
+std::wstring vuapi to_string_W(const std::string& string, const bool utf8 = false); // ANSI or UTF-8
 std::vector<std::string> vuapi split_string_A(
   const std::string& string, const std::string& separator, bool remove_empty = false);
 std::vector<std::wstring> vuapi split_string_W(
