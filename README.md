@@ -42,7 +42,7 @@ It helps your programming go easier, faster and simpler.
 * [Windows Message Hooking](<https://docs.microsoft.com/en-us/windows/win32/winmsg/hooks>)
 * [Critical Section](<https://en.wikipedia.org/wiki/Critical_section>)
 * [Debouncer](<https://www.educative.io/edpresso/how-to-use-the-debounce-function-in-javascript>)
-* [Smart Singleton DP Template](<https://en.wikipedia.org/wiki/Singleton_pattern>)
+* [Singleton Template](<https://en.wikipedia.org/wiki/Singleton_pattern>)
 * [Input Dialog](<https://www.google.com/search?q=input+dialog&source=lnms&tbm=isch>)
 * [In-Memory Dialog](<https://docs.microsoft.com/en-us/cpp/mfc/using-a-dialog-template-in-memory>)
 * [AOB Find Pattern](<https://wiki.cheatengine.org/index.php?title=Tutorials:AOBs>)
