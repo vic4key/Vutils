@@ -21,6 +21,7 @@ It helps your programming go easier, faster and simpler.
   - [x] for 64-bit application
 
 ## Features
+* [GP-GPU CUDA Programming (in-progress)](<https://developer.nvidia.com/blog/even-easier-introduction-cuda/#exercises>)
 * [GUID - Globally/Universally Unique Identifier](<https://en.wikipedia.org/wiki/Universally_unique_identifier>)
 * [WMI - Windows Management Instrumentation](<https://docs.microsoft.com/en-us/windows/win32/wmisdk/wmi-start-page>)
 * [Smart Buffer Memory](<https://www.google.com/search?q=buffer+class>)
