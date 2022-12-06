@@ -113,6 +113,7 @@ The minimum version of the following IDEs are supported `C++ 11`
 
 ## Examples
 
+* [Vutils CUDA](https://github.com/vic4key/Vutils/blob/master/include/Vutils_CUDA.h) @ [https://github.com/vic4key/gpu-cuda-3rd-benchmark.git](https://github.com/vic4key/gpu-cuda-3rd-benchmark/blob/master/gpu-cuda-3rd-benchmark/kernel.cu)
 * [Test\Sample.Misc.h](Test/Sample.Misc.h)
 * [Test\Sample.WMI.h](Test/Sample.WMI.h)
 * [Test\Sample.Crypt.h](Test/Sample.Crypt.h)
