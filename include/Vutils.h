@@ -868,6 +868,18 @@ void vuapi crypt_sha_buffer(
 #define crypt_sha_file crypt_sha_file_A
 #endif
 
+/* Debug Assertion */
+
+#ifdef _DEBUG
+void _required(const bool s, const std::string& m = "");
+std::string _required_info(const char* m, const char* f, unsigned int n, const char* s);
+#define vu_required_with_message(s, m) vu::_required((s), vu::_required_info(m, __FILE__, __LINE__, VU_FUNC_INFO))
+#else  // _DEBUG
+#define vu_required_with_message(s, m) static_cast<void>(0)
+#endif // _DEBUG
+
+#define vu_required(c) vu_required_with_message((c), "<none>")
+
 /* -------------------------------------- Public Class(es) -------------------------------------- */
 
 /**

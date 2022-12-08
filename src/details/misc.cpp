@@ -618,4 +618,46 @@ bool use_std_io_console_window()
   return console_displayed;
 }
 
+void _required(const bool succeed, const std::string& message)
+{
+  if (succeed)
+  {
+    return;
+  }
+
+  const int error_code = GetLastError();
+
+  static HWND w = nullptr;
+  if (w == nullptr)
+  {
+    w = vu::get_console_window();
+    if (w == nullptr || w == INVALID_HANDLE_VALUE)
+    {
+      w = vu::find_main_window(GetCurrentProcessId());
+    }
+  }
+
+  const std::string s = message + " (Last Error - " + vu::get_last_error_A(error_code) + ")";
+  int response = MessageBoxA(w, s.c_str(), "Debug Assertion", MB_ICONERROR | MB_ABORTRETRYIGNORE);
+  if (response == IDABORT)
+  {
+    TerminateProcess(GetCurrentProcess(), 0);
+  }
+  else if (response == IDRETRY)
+  {
+    __debugbreak();
+  }
+  else
+  {
+    // ignore and do nothing
+  }
+}
+
+std::string _required_info(const char* m, const char* f, unsigned int n, const char* s)
+{
+  std::stringstream ss;
+  ss << "[FILE]\n" << f << "\n\n[LINE]\n" << n << "\n\n[FUNCTION]\n" << s << "\n\n[MESSAGE]\n" << m;
+  return ss.str();
+}
+
 } // namespace vu
