@@ -67,35 +67,42 @@ std::wstring vuapi get_file_type_W(const std::wstring& file_path)
   return s;
 }
 
+std::string vuapi clean_file_name_A(
+  const std::string& file_name, const bool include_space_char, const char replacement_char)
+{
+  auto file_name_W = to_string_W(file_name);
+  file_name_W = clean_file_name(file_name_W, include_space_char, wchar_t(replacement_char));
+  return to_string_A(file_name_W);
+}
+
+std::wstring vuapi clean_file_name_W(
+  const std::wstring& file_name, const bool include_space_char, const wchar_t replacement_char)
+{
+  std::wstring forbidden_chars(L"\\/:?\"<>|");
+  if (include_space_char)
+  {
+    forbidden_chars += L" ";
+  }
+
+  std::wstring tmp = file_name;
+  std::replace_if(tmp.begin(), tmp.end(), [&](wchar_t c) -> bool
+  {
+    return std::wstring::npos != forbidden_chars.find(c);
+  }, replacement_char);
+
+  return tmp;
+}
+
 bool vuapi read_file_binary_A(const std::string& file_path, std::vector<byte>& data)
 {
-  FILE* file = nullptr;
-  fopen_s(&file, file_path.c_str(), "rb");
-  if (file == nullptr)
-  {
-    return false;
-  }
-
-  fseek(file, 0, SEEK_END);
-  size_t file_size = ftell(file);
-  fseek(file, 0, SEEK_SET);
-
-  if (data.empty() || data.size() > file_size)
-  {
-    data.resize(file_size);
-  }
-
-  std::fill(data.begin(), data.end(), 0);
-
-  size_t read_bytes = fread(&data[0], 1, data.size(), file);
-
-  fclose(file);
-
-  return read_bytes == data.size();
+  auto file_path_W = to_string_W(file_path);
+  return read_file_binary_W(file_path_W, data);
 }
 
 bool vuapi read_file_binary_W(const std::wstring& file_path, std::vector<byte>& data)
 {
+  data.clear();
+
   FILE* file = nullptr;
   _wfopen_s(&file, file_path.c_str(), L"rb");
   if (file == nullptr)
@@ -121,32 +128,51 @@ bool vuapi read_file_binary_W(const std::wstring& file_path, std::vector<byte>& 
   return read_bytes == data.size();
 }
 
-bool vuapi write_file_binary_A(const std::string& file_path, const std::vector<byte>& data)
+std::unique_ptr<std::vector<vu::byte>> vuapi read_file_binary_A(const std::string& file_path)
 {
+  auto file_path_W = to_string_W(file_path);
+  return read_file_binary_W(file_path_W);
+}
+
+std::unique_ptr<std::vector<vu::byte>> vuapi read_file_binary_W(const std::wstring& file_path)
+{
+  std::vector<vu::byte> data;
+  read_file_binary_W(file_path, data);
   if (data.empty())
   {
-    return false;
+    nullptr;
   }
 
-  FILE* file = nullptr;
-  fopen_s(&file, file_path.c_str(), "wb");
-  if (file == nullptr)
-  {
-    return false;
-  }
+  std::unique_ptr<std::vector<vu::byte>> ptr(new std::vector<vu::byte>);
+  ptr->swap(data);
+  return ptr;
+}
 
-  fseek(file, 0, SEEK_END);
-
-  size_t written_bytes = fwrite(&data[0], 1, data.size(), file);
-
-  fclose(file);
-
-  return written_bytes == data.size();
+bool vuapi write_file_binary_A(const std::string& file_path, const byte* data, const size_t size)
+{
+  auto file_path_W = to_string_W(file_path);
+  return write_file_binary_W(file_path_W, data, size);
 }
 
 bool vuapi write_file_binary_W(const std::wstring& file_path, const std::vector<byte>& data)
 {
   if (data.empty())
+  {
+    return false;
+  }
+
+  return write_file_binary_W(file_path , &data[0], data.size());
+}
+
+bool vuapi write_file_binary_A(const std::string& file_path, const std::vector<byte>& data)
+{
+  auto file_path_W = to_string_W(file_path);
+  return write_file_binary_W(file_path_W, data);
+}
+
+bool vuapi write_file_binary_W(const std::wstring& file_path, const byte* data, const size_t size)
+{
+  if (data == nullptr || size == 0)
   {
     return false;
   }
@@ -160,11 +186,11 @@ bool vuapi write_file_binary_W(const std::wstring& file_path, const std::vector<
 
   fseek(file, 0, SEEK_END);
 
-  size_t written_bytes = fwrite(&data[0], 1, data.size(), file);
+  size_t written_bytes = fwrite(data, 1, size, file);
 
   fclose(file);
 
-  return written_bytes == data.size();
+  return written_bytes == size;
 }
 
 bool vuapi is_file_exists_A(const std::string& file_path)
