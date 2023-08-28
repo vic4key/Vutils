@@ -12,6 +12,8 @@
 #include <comdef.h>
 #include <wbemidl.h>
 
+static const std::wstring FILE_NAME_FORBIDDEN_CHARS = L"\\/:?\"<>|";
+
 namespace vu
 {
 
@@ -67,27 +69,38 @@ std::wstring vuapi get_file_type_W(const std::wstring& file_path)
   return s;
 }
 
-std::string vuapi clean_file_name_A(
-  const std::string& file_name, const bool include_space_char, const char replacement_char)
+bool vuapi is_file_name_valid_A(const std::string& file_name)
 {
   auto file_name_W = to_string_W(file_name);
-  file_name_W = clean_file_name(file_name_W, include_space_char, wchar_t(replacement_char));
+  return is_file_name_valid_W(file_name_W);
+}
+
+bool vuapi is_file_name_valid_W(const std::wstring& file_name)
+{
+  for (auto c : FILE_NAME_FORBIDDEN_CHARS)
+  {
+    if (file_name.find(c) != std::wstring::npos)
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+std::string vuapi correct_file_name_A(const std::string& file_name, const char replacement_char)
+{
+  auto file_name_W = to_string_W(file_name);
+  file_name_W = correct_file_name_W(file_name_W, wchar_t(replacement_char));
   return to_string_A(file_name_W);
 }
 
-std::wstring vuapi clean_file_name_W(
-  const std::wstring& file_name, const bool include_space_char, const wchar_t replacement_char)
+std::wstring vuapi correct_file_name_W(const std::wstring& file_name, const wchar_t replacement_char)
 {
-  std::wstring forbidden_chars(L"\\/:?\"<>|");
-  if (include_space_char)
-  {
-    forbidden_chars += L" ";
-  }
-
   std::wstring tmp = file_name;
   std::replace_if(tmp.begin(), tmp.end(), [&](wchar_t c) -> bool
   {
-    return std::wstring::npos != forbidden_chars.find(c);
+    return std::wstring::npos != FILE_NAME_FORBIDDEN_CHARS.find(c);
   }, replacement_char);
 
   return tmp;

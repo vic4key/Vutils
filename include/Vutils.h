@@ -617,10 +617,10 @@ bool vuapi write_file_binary_A(const std::string& file_path, const std::vector<b
 bool vuapi write_file_binary_W(const std::wstring& file_path, const std::vector<byte>& data);
 bool vuapi write_file_binary_A(const std::string& file_path, const byte* data, const size_t size);
 bool vuapi write_file_binary_W(const std::wstring& file_path, const byte* data, const size_t size);
-std::string vuapi clean_file_name_A(
-  const std::string& file_name, const bool include_space_char = false, const char replacement_char = '-');
-std::wstring vuapi clean_file_name_W(
-  const std::wstring& file_name, const bool include_space_char = false, const wchar_t replacement_char = L'-');
+bool vuapi is_file_name_valid_A(const std::string& file_name);
+bool vuapi is_file_name_valid_W(const std::wstring& file_name);
+std::string vuapi correct_file_name_A(const std::string& file_name, const char replacement_char = '-');
+std::wstring vuapi correct_file_name_W(const std::wstring& file_name, const wchar_t replacement_char = L'-');
 std::string vuapi get_file_type_A(const std::string& file_path);
 std::wstring vuapi get_file_type_W(const std::wstring& file_path);
 std::string vuapi extract_file_directory_A(const std::string& file_path, bool last_slash = true);
@@ -776,7 +776,8 @@ void vuapi crypt_sha_buffer(
 #define is_directory_exists is_directory_exists_W
 #define is_file_exists is_file_exists_W
 #define get_file_type get_file_type_W
-#define clean_file_name clean_file_name_W
+#define is_file_name_valid is_file_name_valid_W
+#define correct_file_name correct_file_name_W
 #define read_file_binary read_file_binary_W
 #define write_file_binary write_file_binary_W
 #define extract_file_directory extract_file_directory_W
@@ -848,7 +849,8 @@ void vuapi crypt_sha_buffer(
 #define is_directory_exists is_directory_exists_A
 #define is_file_exists is_file_exists_A
 #define get_file_type get_file_type_A
-#define clean_file_name clean_file_name_A
+#define is_file_name_valid is_file_name_valid_A
+#define correct_file_name correct_file_name_A
 #define read_file_binary read_file_binary_A
 #define write_file_binary write_file_binary_A
 #define extract_file_directory extract_file_directory_A
