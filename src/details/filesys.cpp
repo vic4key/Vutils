@@ -121,7 +121,8 @@ ulong vuapi FileSystemX::get_file_size()
   return result;
 }
 
-bool vuapi FileSystemX::io_control(ulong code, void* ptr_send_buffer, ulong send_size, void* ptr_recv_buffer, ulong recv_size)
+bool vuapi FileSystemX::io_control(
+  ulong code, void* ptr_send_buffer, ulong send_size, void* ptr_recv_buffer, ulong recv_size)
 {
   ulong return_length = 0;
 
@@ -179,7 +180,13 @@ FileSystemA::FileSystemA() : FileSystemX()
 {
 }
 
-FileSystemA::FileSystemA(const std::string& file_path, fs_mode fm_flags, fs_generic fg_flags, fs_share fs_flags, fs_attribute fa_flags) : FileSystemX()
+FileSystemA::FileSystemA(
+  const std::string& file_path,
+  fs_mode fm_flags,
+  fs_generic fg_flags,
+  fs_share fs_flags,
+  fs_attribute fa_flags)
+  : FileSystemX()
 {
   this->initialize(file_path, fm_flags, fg_flags, fs_flags, fa_flags);
 }
@@ -188,7 +195,12 @@ FileSystemA::~FileSystemA()
 {
 }
 
-bool vuapi FileSystemA::initialize(const std::string& file_path, fs_mode fm_flags, fs_generic fg_flags, fs_share fs_flags, fs_attribute fa_flags)
+bool vuapi FileSystemA::initialize(
+  const std::string& file_path,
+  fs_mode fm_flags,
+  fs_generic fg_flags,
+  fs_share fs_flags,
+  fs_attribute fa_flags)
 {
   m_handle = CreateFileA(file_path.c_str(), fg_flags, fs_flags, NULL, fm_flags, fa_flags, NULL);
   if (!this->valid(m_handle))
@@ -200,35 +212,38 @@ bool vuapi FileSystemA::initialize(const std::string& file_path, fs_mode fm_flag
   return true;
 }
 
-const std::string vuapi FileSystemA::read_as_string(bool remove_bom)
+std::unique_ptr<std::string> vuapi FileSystemA::read_as_string()
 {
-  std::string result("");
-
   auto buffer = this->read_as_buffer();
-  auto p = (char*)buffer->pointer();
+  if (buffer == nullptr)
+  {
+    return nullptr;
+  }
 
   auto text_encoding = detect_text_encoding(buffer->pointer(), buffer->size());
   if (text_encoding == text_encoding::TE_UNKNOWN)
   {
-    assert(0);
-    return result;
+    return nullptr;
   }
 
-  if (remove_bom && text_encoding == text_encoding::TE_UTF8_BOM)
+  auto p = (char*)buffer->pointer();
+
+  if (text_encoding == text_encoding::TE_UTF8_BOM)
   {
     p += 3; /* remove BOM */
   }
 
-  result.assign(p);
+  std::unique_ptr<std::string> result(new std::string);
+
+  result->assign(p);
 
   return result;
 }
 
-const std::string vuapi FileSystemA::quick_read_as_string(const std::string& file_path, bool remove_bom)
+std::unique_ptr<std::string> vuapi FileSystemA::quick_read_as_string(const std::string& file_path)
 {
   FileSystemA file(file_path, vu::fs_mode::FM_OPENEXISTING, fs_generic::FG_READ, fs_share::FS_READ);
-  auto result = file.read_as_string(remove_bom);
-  return result;
+  return file.read_as_string();
 }
 
 std::unique_ptr<Buffer> FileSystemA::quick_read_as_buffer(const std::string& file_path)
@@ -242,7 +257,10 @@ std::unique_ptr<Buffer> FileSystemA::quick_read_as_buffer(const std::string& fil
   return fs.read_as_buffer();
 }
 
-bool FileSystemA::iterate(const std::string& path, const std::string& pattern, const std::function<bool(const FSObjectA& fso)> fn_callback)
+bool FileSystemA::iterate(
+  const std::string& path,
+  const std::string& pattern,
+  const std::function<bool(const FSObjectA& fso)> fn_callback)
 {
   auto the_path = vu::trim_string_A(path);
   if (the_path.empty())
@@ -304,7 +322,13 @@ FileSystemW::FileSystemW() : FileSystemX()
 {
 }
 
-FileSystemW::FileSystemW(const std::wstring& file_path, fs_mode fm_flags, fs_generic fg_flags, fs_share fs_flags, fs_attribute fa_flags) : FileSystemX()
+FileSystemW::FileSystemW(
+  const std::wstring& file_path,
+  fs_mode fm_flags,
+  fs_generic fg_flags,
+  fs_share fs_flags,
+  fs_attribute fa_flags)
+  : FileSystemX()
 {
   this->initialize(file_path, fm_flags, fg_flags, fs_flags, fa_flags);
 }
@@ -313,7 +337,12 @@ FileSystemW::~FileSystemW()
 {
 }
 
-bool vuapi FileSystemW::initialize(const std::wstring& file_path, fs_mode fm_flags, fs_generic fg_flags, fs_share fs_flags, fs_attribute fa_flags)
+bool vuapi FileSystemW::initialize(
+  const std::wstring& file_path,
+  fs_mode fm_flags,
+  fs_generic fg_flags,
+  fs_share fs_flags,
+  fs_attribute fa_flags)
 {
   m_handle = CreateFileW(file_path.c_str(), fg_flags, fs_flags, NULL, fm_flags, fa_flags, NULL);
   if (!this->valid(m_handle))
@@ -325,35 +354,38 @@ bool vuapi FileSystemW::initialize(const std::wstring& file_path, fs_mode fm_fla
   return true;
 }
 
-const std::wstring vuapi FileSystemW::read_as_string(bool remove_bom)
+std::unique_ptr<std::wstring> vuapi FileSystemW::read_as_string()
 {
-  std::wstring result(L"");
-
   auto buffer = this->read_as_buffer();
-  auto p = (wchar*)buffer->pointer();
+  if (buffer == nullptr)
+  {
+    return nullptr;
+  }
 
   auto text_encoding = detect_text_encoding(buffer->pointer(), buffer->size());
   if (text_encoding == text_encoding::TE_UNKNOWN)
   {
-    assert(0);
-    return result;
+    return nullptr;
   }
 
-  if (remove_bom && (text_encoding == text_encoding::TE_UTF16_LE_BOM || text_encoding == text_encoding::TE_UTF16_BE_BOM))
+  auto p = (wchar*)buffer->pointer();
+
+  if (text_encoding == text_encoding::TE_UTF16_LE_BOM || text_encoding == text_encoding::TE_UTF16_BE_BOM)
   {
     p = (wchar*)((char*)buffer->pointer() + 2); /* remove BOM */
   }
 
-  result.assign(p);
+  std::unique_ptr<std::wstring> result(new std::wstring);
+
+  result->assign(p);
 
   return result;
 }
 
-const std::wstring vuapi FileSystemW::quick_read_as_string(const std::wstring& file_path, bool remove_bom)
+std::unique_ptr<std::wstring> vuapi FileSystemW::quick_read_as_string(const std::wstring& file_path)
 {
   FileSystemW file(file_path, vu::fs_mode::FM_OPENEXISTING, fs_generic::FG_READ, fs_share::FS_READ);
-  auto result = file.read_as_string(remove_bom);
-  return result;
+  return file.read_as_string();
 }
 
 std::unique_ptr<Buffer> FileSystemW::quick_read_as_buffer(const std::wstring& file_path)
@@ -367,7 +399,10 @@ std::unique_ptr<Buffer> FileSystemW::quick_read_as_buffer(const std::wstring& fi
   return fs.read_as_buffer();
 }
 
-bool FileSystemW::iterate(const std::wstring& path, const std::wstring& pattern, const std::function<bool(const FSObjectW& FSObject)> fn_callback)
+bool FileSystemW::iterate(
+  const std::wstring& path,
+  const std::wstring& pattern,
+  const std::function<bool(const FSObjectW& FSObject)> fn_callback)
 {
   auto the_path = vu::trim_string_W(path);
   if (the_path.empty())

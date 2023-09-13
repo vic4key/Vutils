@@ -1718,10 +1718,9 @@ public:
     fs_share fs_flags = fs_share::FS_ALLACCESS,
     fs_attribute fa_flags = fs_attribute::FA_NORMAL);
 
-  const std::string vuapi read_as_string(bool remove_bom = true);
+  std::unique_ptr<std::string> vuapi read_as_string();
 
-  static const std::string vuapi quick_read_as_string(
-    const std::string& file_path, bool force_bom = true);
+  static std::unique_ptr<std::string> vuapi quick_read_as_string(const std::string& file_path);
 
   static std::unique_ptr<Buffer> quick_read_as_buffer(const std::string& file_path);
 
@@ -1750,10 +1749,9 @@ public:
     fs_share fs_flags = fs_share::FS_ALLACCESS,
     fs_attribute fa_flags = fs_attribute::FA_NORMAL);
 
-  const std::wstring vuapi read_as_string(bool remove_bom = true);
+  std::unique_ptr<std::wstring> vuapi read_as_string();
 
-  static const std::wstring vuapi quick_read_as_string(
-    const std::wstring& file_path, bool remove_bom = true);
+  static std::unique_ptr<std::wstring>vuapi quick_read_as_string(const std::wstring& file_path);
 
   static std::unique_ptr<Buffer> vuapi quick_read_as_buffer(const std::wstring& file_path);
 
