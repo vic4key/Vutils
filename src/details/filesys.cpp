@@ -248,7 +248,7 @@ std::unique_ptr<std::string> vuapi FileSystemA::read_as_string()
   }
   else
   {
-    assert(0);
+    assert(0 && "the text encoding is not yet implemented to read");
   }
 
   return result;
@@ -395,16 +395,16 @@ std::unique_ptr<std::wstring> vuapi FileSystemW::read_as_string()
   else if (text_encoding == text_encoding::TE_UTF8)
   {
     std::string tmp((char*)buffer->bytes(), buffer->size());
-    result->assign(std::move(to_string_W(tmp)));
+    result->assign(std::move(to_string_W(tmp, true)));
   }
   else if (text_encoding == text_encoding::TE_UTF8_BOM)
   {
     std::string tmp((char*)buffer->bytes() + 3, buffer->size() - 3); // remove bom
-    result->assign(std::move(to_string_W(tmp)));
+    result->assign(std::move(to_string_W(tmp, true)));
   }
   else
   {
-    assert(0);
+    assert(0 && "the text encoding is not yet implemented to read");
   }
 
   return result;
