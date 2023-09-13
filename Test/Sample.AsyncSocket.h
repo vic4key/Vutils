@@ -68,7 +68,7 @@ void example_inheritance(const vu::Socket::Endpoint& endpoint)
     {
       vu::Buffer data(KiB);
       client.recv(data);
-      std::string s(reinterpret_cast<char*>(data.get_ptr_bytes()));
+      std::string s(reinterpret_cast<char*>(data.bytes()));
       printf("client %d recv `%s`\n", client.get_remote_sai().sin_port, s.c_str());
     }
   };

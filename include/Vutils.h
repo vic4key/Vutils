@@ -1031,9 +1031,9 @@ public:
   byte& operator[](const size_t offset);
   Buffer operator()(int begin, int end) const;
 
-  byte*  get_ptr_bytes() const;
-  void*  get_ptr() const;
-  size_t get_size() const;
+  byte*  bytes() const;
+  void*  pointer() const;
+  size_t size() const;
 
   bool empty() const;
 
@@ -1679,7 +1679,7 @@ public:
   virtual bool vuapi valid(HANDLE handle);
   virtual ulong vuapi get_file_size();
 
-  virtual const Buffer vuapi read_as_buffer();
+  virtual std::unique_ptr<Buffer> vuapi read_as_buffer();
   virtual bool vuapi read(void* ptr_buffer, ulong size);
   virtual bool vuapi read(
     ulong offset, void* ptr_buffer, ulong size, fs_position_at flags = fs_position_at::PA_BEGIN);
@@ -1717,11 +1717,14 @@ public:
     fs_generic fg_flags = fs_generic::FG_READWRITE,
     fs_share fs_flags = fs_share::FS_ALLACCESS,
     fs_attribute fa_flags = fs_attribute::FA_NORMAL);
+
   const std::string vuapi read_as_string(bool remove_bom = true);
 
   static const std::string vuapi quick_read_as_string(
     const std::string& file_path, bool force_bom = true);
-  static Buffer quick_read_as_buffer(const std::string& file_path);
+
+  static std::unique_ptr<Buffer> quick_read_as_buffer(const std::string& file_path);
+
   static bool iterate(
     const std::string& path,
     const std::string& pattern,
@@ -1746,11 +1749,14 @@ public:
     fs_generic fg_flags = fs_generic::FG_READWRITE,
     fs_share fs_flags = fs_share::FS_ALLACCESS,
     fs_attribute fa_flags = fs_attribute::FA_NORMAL);
+
   const std::wstring vuapi read_as_string(bool remove_bom = true);
 
   static const std::wstring vuapi quick_read_as_string(
     const std::wstring& file_path, bool remove_bom = true);
-  static Buffer vuapi quick_read_as_buffer(const std::wstring& file_path);
+
+  static std::unique_ptr<Buffer> vuapi quick_read_as_buffer(const std::wstring& file_path);
+
   static bool vuapi iterate(
     const std::wstring& path,
     const std::wstring& pattern,

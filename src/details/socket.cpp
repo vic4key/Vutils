@@ -318,7 +318,7 @@ IResult vuapi Socket::send(const char* ptr_data, int size, const flags_t flags)
 
 IResult vuapi Socket::send(const Buffer& buffer, const flags_t flags)
 {
-  return this->send((const char*)buffer.get_ptr(), int(buffer.get_size()), flags);
+  return this->send((const char*)buffer.pointer(), int(buffer.size()), flags);
 }
 
 IResult vuapi Socket::recv(char* ptr_data, int size, const flags_t flags)
@@ -363,7 +363,7 @@ IResult vuapi Socket::recv(Buffer& buffer, const flags_t flags)
     return SOCKET_ERROR;
   }
 
-  auto z = this->recv((char*)buffer.get_ptr(), int(buffer.get_size()), flags);
+  auto z = this->recv((char*)buffer.pointer(), int(buffer.size()), flags);
   if (z != SOCKET_ERROR)
   {
     buffer.resize(z);
@@ -392,7 +392,7 @@ IResult vuapi Socket::recv_all(Buffer& buffer, const flags_t flags)
     }
     else // in-progress
     {
-      if (z < static_cast<int>(block.get_size()))
+      if (z < static_cast<int>(block.size()))
       {
         block.resize(z);
       }
@@ -400,12 +400,12 @@ IResult vuapi Socket::recv_all(Buffer& buffer, const flags_t flags)
     }
   } while (!block.empty());
 
-  return IResult(buffer.get_size());
+  return IResult(buffer.size());
 }
 
 IResult vuapi Socket::send_to(const Buffer& buffer, const Handle& socket)
 {
-  return this->send_to((const char*)buffer.get_ptr(), int(buffer.get_size()), socket);
+  return this->send_to((const char*)buffer.pointer(), int(buffer.size()), socket);
 }
 
 IResult vuapi Socket::send_to(const char* ptr_data, const int size, const Handle& socket)
@@ -443,7 +443,7 @@ IResult vuapi Socket::send_to(const char* ptr_data, const int size, const Handle
 
 IResult vuapi Socket::recv_from(Buffer& buffer, const Handle& socket)
 {
-  auto z = this->recv_from((char*)buffer.get_ptr(), int(buffer.get_size()), socket);
+  auto z = this->recv_from((char*)buffer.pointer(), int(buffer.size()), socket);
   if (z != SOCKET_ERROR)
   {
     buffer.resize(z);
@@ -493,7 +493,7 @@ IResult vuapi Socket::recv_all_from(Buffer& buffer, const Handle& socket)
     }
     else // in-progress
     {
-      if (z < static_cast<int>(block.get_size())) // last recv
+      if (z < static_cast<int>(block.size())) // last recv
       {
         block.resize(z);
       }
@@ -501,7 +501,7 @@ IResult vuapi Socket::recv_all_from(Buffer& buffer, const Handle& socket)
     }
   } while (!block.empty());
 
-  return IResult(buffer.get_size());
+  return IResult(buffer.size());
 }
 
 VUResult vuapi Socket::close()

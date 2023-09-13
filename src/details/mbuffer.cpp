@@ -94,7 +94,7 @@ size_t Buffer::find(const void* ptr, const size_t size) const
     return result;
   }
 
-  const auto ptr_bytes = this->get_ptr_bytes();
+  const auto ptr_bytes = this->bytes();
 
   for (size_t i = 0; i <= m_size - size; i++)
   {
@@ -157,22 +157,22 @@ Buffer Buffer::slice(int begin, int end) const
     return result;
   }
 
-  result.create(this->get_ptr_bytes() + begin, size);
+  result.create(this->bytes() + begin, size);
 
   return result;
 }
 
-byte* Buffer::get_ptr_bytes() const
+byte* Buffer::bytes() const
 {
   return static_cast<byte*>(m_ptr);
 }
 
-void* Buffer::get_ptr() const
+void* Buffer::pointer() const
 {
   return m_ptr;
 }
 
-size_t Buffer::get_size() const
+size_t Buffer::size() const
 {
   return m_size;
 }
@@ -266,7 +266,7 @@ bool Buffer::replace(const void* ptr, const size_t size)
 
 bool Buffer::replace(const Buffer& right)
 {
-  return this->replace(right.get_ptr(), right.get_size());
+  return this->replace(right.pointer(), right.size());
 }
 
 bool Buffer::empty() const
@@ -285,14 +285,14 @@ bool Buffer::append(const void* ptr, const size_t size)
 
   this->resize(m_size + size);
 
-  memcpy_s(this->get_ptr_bytes() + prev_size, size, ptr, size);
+  memcpy_s(this->bytes() + prev_size, size, ptr, size);
 
   return true;
 }
 
 bool Buffer::append(const Buffer& right)
 {
-  return this->append(right.get_ptr(), right.get_size());
+  return this->append(right.pointer(), right.size());
 }
 
 std::string Buffer::to_string_A() const

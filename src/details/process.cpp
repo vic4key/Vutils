@@ -1023,12 +1023,12 @@ void ProcessX::parse()
 
 bool ProcessX::read_memory(const ulongptr address, Buffer& buffer, const bool force)
 {
-  if (address == 0 || buffer.get_size() == 0)
+  if (address == 0 || buffer.size() == 0)
   {
     return false;
   }
 
-  return this->read_memory(address, buffer.get_ptr(), buffer.get_size(), force);
+  return this->read_memory(address, buffer.pointer(), buffer.size(), force);
 }
 
 bool ProcessX::read_memory(const ulongptr address, void* ptr_data, const size_t size, const bool force)
@@ -1047,7 +1047,7 @@ bool ProcessX::read_memory(const ulongptr address, void* ptr_data, const size_t 
 
 bool ProcessX::write_memory(const ulongptr address, const Buffer& buffer, const bool force)
 {
-  return this->write_memory(address, buffer.get_ptr(), buffer.get_size(), force);
+  return this->write_memory(address, buffer.pointer(), buffer.size(), force);
 }
 
 bool ProcessX::write_memory(const ulongptr address, const void* ptr_data, const size_t size, const bool force)
@@ -1310,8 +1310,8 @@ bool process_scan_memory(
         continue;
       }
 
-      ptr = remote_copied_mem_block.get_ptr();
-      num = remote_copied_mem_block.get_size();
+      ptr = remote_copied_mem_block.pointer();
+      num = remote_copied_mem_block.size();
     }
 
     auto offsets = find_pattern_W(ptr, num, pattern, first_match_only);

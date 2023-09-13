@@ -65,7 +65,7 @@ DEF_SAMPLE(Socket)
     std::cout << std::tab << e << std::endl;
   }
 
-  vu::Buffer buffer(response.get_ptr_bytes() + response_header.length(), N - response_header.length());
+  vu::Buffer buffer(response.bytes() + response_header.length(), N - response_header.length());
 
   // receive file chunks and append to the file buffer
 
@@ -82,7 +82,7 @@ DEF_SAMPLE(Socket)
       << std::left
       << "Downloaded: "
       << std::setw(15)
-      << vu::format_bytes_A(file.get_size())
+      << vu::format_bytes_A(file.size())
       << std::cr
       << std::flush;
   }

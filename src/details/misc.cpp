@@ -217,13 +217,13 @@ std::vector<size_t> find_pattern_A(
 {
   std::vector<size_t> result;
 
-  if (buffer.get_ptr() == nullptr || pattern.empty())
+  if (buffer.pointer() == nullptr || pattern.empty())
   {
     return result;
   }
 
-  const auto pointer = static_cast<const byte*>(buffer.get_ptr());
-  const size_t size = buffer.get_size();
+  const auto pointer = static_cast<const byte*>(buffer.pointer());
+  const size_t size = buffer.size();
 
   return find_pattern_A(pointer, size, pattern, first_match_only);
 }

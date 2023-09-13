@@ -158,19 +158,17 @@ bool vuapi FileSystemX::close()
   return true;
 }
 
-const Buffer vuapi FileSystemX::read_as_buffer()
+std::unique_ptr<Buffer> vuapi FileSystemX::read_as_buffer()
 {
-  Buffer buffer(0);
-
   auto size = this->get_file_size();
   if (size == 0)
   {
-    return buffer;
+    return nullptr;
   }
 
-  buffer.resize(size);
+  std::unique_ptr<Buffer> buffer(new Buffer(size));
 
-  this->read(0, buffer.get_ptr(), size, fs_position_at::PA_BEGIN);
+  this->read(0, buffer->pointer(), size, fs_position_at::PA_BEGIN);
 
   return buffer;
 }
@@ -207,9 +205,9 @@ const std::string vuapi FileSystemA::read_as_string(bool remove_bom)
   std::string result("");
 
   auto buffer = this->read_as_buffer();
-  auto p = (char*)buffer.get_ptr();
+  auto p = (char*)buffer->pointer();
 
-  auto encoding = determine_encoding_type(buffer.get_ptr(), buffer.get_size());
+  auto encoding = determine_encoding_type(buffer->pointer(), buffer->size());
   if (encoding == encoding_type::ET_UNKNOWN)
   {
     assert(0);
@@ -233,11 +231,11 @@ const std::string vuapi FileSystemA::quick_read_as_string(const std::string& fil
   return result;
 }
 
-Buffer FileSystemA::quick_read_as_buffer(const std::string& file_path)
+std::unique_ptr<Buffer> FileSystemA::quick_read_as_buffer(const std::string& file_path)
 {
   if (!is_file_exists_A(file_path))
   {
-    return Buffer();
+    return nullptr;
   }
 
   FileSystemA fs(file_path, fs_mode::FM_OPENEXISTING, fs_generic::FG_READ, fs_share::FS_READ);
@@ -332,9 +330,9 @@ const std::wstring vuapi FileSystemW::read_as_string(bool remove_bom)
   std::wstring result(L"");
 
   auto buffer = this->read_as_buffer();
-  auto p = (wchar*)buffer.get_ptr();
+  auto p = (wchar*)buffer->pointer();
 
-  auto encoding = determine_encoding_type(buffer.get_ptr(), buffer.get_size());
+  auto encoding = determine_encoding_type(buffer->pointer(), buffer->size());
   if (encoding == encoding_type::ET_UNKNOWN)
   {
     assert(0);
@@ -343,7 +341,7 @@ const std::wstring vuapi FileSystemW::read_as_string(bool remove_bom)
 
   if (remove_bom && (encoding == encoding_type::ET_UTF16_LE_BOM || encoding == encoding_type::ET_UTF16_BE_BOM))
   {
-    p = (wchar*)((char*)buffer.get_ptr() + 2); /* remove BOM */
+    p = (wchar*)((char*)buffer->pointer() + 2); /* remove BOM */
   }
 
   result.assign(p);
@@ -358,11 +356,11 @@ const std::wstring vuapi FileSystemW::quick_read_as_string(const std::wstring& f
   return result;
 }
 
-Buffer FileSystemW::quick_read_as_buffer(const std::wstring& file_path)
+std::unique_ptr<Buffer> FileSystemW::quick_read_as_buffer(const std::wstring& file_path)
 {
   if (!is_file_exists_W(file_path))
   {
-    return Buffer();
+    return nullptr;
   }
 
   FileSystemW fs(file_path, fs_mode::FM_OPENEXISTING, fs_generic::FG_READ, fs_share::FS_READ);
