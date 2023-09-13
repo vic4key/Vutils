@@ -221,20 +221,20 @@ void vuapi hex_dump(const void* data, int size);
  * String Formatting
  */
 
-enum class encoding_type : int
+enum class text_encoding : int
 {
-  ET_UNKNOWN      = -1,
-  ET_UTF8         = 0, // "ANSI/UTF-8", "ANSI/UTF-8"
-  ET_UTF8_BOM     = 1, // "UTF-8 BOM", "UTF-8 BOM"
-  ET_UTF16_LE     = 2, // "Unicode", "UTF-16 Little Endian"
-  ET_UTF16_BE     = 3, // "Unicode BE", "UTF-16 Big Endian"
-  ET_UTF16_LE_BOM = 4, // "Unicode BOM", "UTF-16 Little Endian BOM"
-  ET_UTF16_BE_BOM = 5, // "Unicode BE BOM", "UTF-16 Big Endian BOM"
-  ET_UTF32_LE_BOM = 6, // "UTF-32 LE BOM", "UTF-32 Little Endian BOM"
-  ET_UTF32_BE_BOM = 7, // "UTF-32 BE BOM", "UTF-32 Big Endian BOM"
+  TE_UNKNOWN      = -1,
+  TE_UTF8         = 0, // "ANSI/UTF-8", "ANSI/UTF-8"
+  TE_UTF8_BOM     = 1, // "UTF-8 BOM", "UTF-8 BOM"
+  TE_UTF16_LE     = 2, // "Unicode", "UTF-16 Little Endian"
+  TE_UTF16_BE     = 3, // "Unicode BE", "UTF-16 Big Endian"
+  TE_UTF16_LE_BOM = 4, // "Unicode BOM", "UTF-16 Little Endian BOM"
+  TE_UTF16_BE_BOM = 5, // "Unicode BE BOM", "UTF-16 Big Endian BOM"
+  TE_UTF32_LE_BOM = 6, // "UTF-32 LE BOM", "UTF-32 Little Endian BOM"
+  TE_UTF32_BE_BOM = 7, // "UTF-32 BE BOM", "UTF-32 Big Endian BOM"
 };
 
-enum class data_unit_type : int
+enum class data_unit : int
 {
   SI  = 1000, // 1 KB  = 1000 bytes
   IEC = 1024, // 1 KiB = 1024 bytes
@@ -256,9 +256,9 @@ std::string vuapi format_date_time_A(const time_t t, const std::string format);
 std::wstring vuapi format_date_time_W(const time_t t, const std::wstring format);
 std::string vuapi date_time_to_string_A(const time_t t);
 std::wstring vuapi date_time_to_string_W(const time_t t);
-encoding_type vuapi determine_encoding_type(const void* data, const size_t size);
-std::string vuapi format_bytes_A(long long bytes, data_unit_type dut = data_unit_type::IEC, int digits = 2);
-std::wstring vuapi format_bytes_W(long long bytes, data_unit_type dut = data_unit_type::IEC, int digits = 2);
+text_encoding vuapi detect_text_encoding(const void* data, const size_t size);
+std::string vuapi format_bytes_A(long long bytes, data_unit unit = data_unit::IEC, int digits = 2);
+std::wstring vuapi format_bytes_W(long long bytes, data_unit unit = data_unit::IEC, int digits = 2);
 std::string vuapi to_hex_string_A(const byte* ptr, const size_t size);
 std::wstring vuapi to_hex_string_W(const byte* ptr, const size_t size);
 bool vuapi to_hex_bytes_A(const std::string& text, std::vector<byte>& bytes);

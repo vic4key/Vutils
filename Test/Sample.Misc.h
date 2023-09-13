@@ -95,9 +95,9 @@ DEF_SAMPLE(Misc)
     auto file_path = fso.directory + fso.name;
     auto data = vu::FileSystem::quick_read_as_buffer(file_path);
 
-    auto result = vu::determine_encoding_type(data->pointer(), data->size());
-    auto es = result == vu::encoding_type::ET_UNKNOWN ? L"Unknown" : LES[int(result)];
-    auto el = result == vu::encoding_type::ET_UNKNOWN ? L"Unknown" : LEL[int(result)];
+    auto result = vu::detect_text_encoding(data->pointer(), data->size());
+    auto es = result == vu::text_encoding::TE_UNKNOWN ? L"Unknown" : LES[int(result)];
+    auto el = result == vu::text_encoding::TE_UNKNOWN ? L"Unknown" : LEL[int(result)];
 
     std::wcout
       << std::left
@@ -111,7 +111,7 @@ DEF_SAMPLE(Misc)
     return true;
   });
 
-  auto type = vu::data_unit_type::SI;
+  auto type = vu::data_unit::SI;
   auto digits = 2;
   std::tcout << vu::format_bytes(912, type, digits) << std::endl; // B/Bi
   std::tcout << vu::format_bytes(91234, type, digits) << std::endl; // KB/KiB

@@ -27,16 +27,16 @@ namespace vu
 #define UCHAR_MAX     255  // maximum unsigned char value
 #endif
 
-encoding_type vuapi determine_encoding_type(const void* data, const size_t size)
+text_encoding vuapi detect_text_encoding(const void* data, const size_t size)
 {
-  if (data == nullptr || size == 0) return encoding_type::ET_UNKNOWN;
+  if (data == nullptr || size == 0) return text_encoding::TE_UNKNOWN;
 
   auto p = (uchar*)data;
 
   if (size == 1)
   {
     /* UTF-8 */
-    if (p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) return encoding_type::ET_UTF8_BOM;
+    if (p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) return text_encoding::TE_UTF8_BOM;
   }
 
   signal(SIGSEGV, [](int signal)
@@ -49,57 +49,57 @@ encoding_type vuapi determine_encoding_type(const void* data, const size_t size)
     /* UTF-8 BOM */
     if (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)
     {
-      return encoding_type::ET_UTF8_BOM;
+      return text_encoding::TE_UTF8_BOM;
     }
 
     /* UTF-32 LE BOM */
     if (p[0] == 0xFF && p[1] == 0xFE && p[2] == 0x00 && p[3] == 0x00)
     {
-      return encoding_type::ET_UTF32_LE_BOM;
+      return text_encoding::TE_UTF32_LE_BOM;
     }
 
     /* UTF-32 BE BOM */
     if (p[0] == 0x00 && p[1] == 0x00 && p[2] == 0xFE && p[3] == 0xFF)
     {
-      return encoding_type::ET_UTF32_BE_BOM;
+      return text_encoding::TE_UTF32_BE_BOM;
     }
 
     /* UTF-16 LE BOM */
     if (p[0] == 0xFF && p[1] == 0xFE)
     {
-      return encoding_type::ET_UTF16_LE_BOM;
+      return text_encoding::TE_UTF16_LE_BOM;
     }
 
     /* UTF-16 BE BOM */
     if (p[0] == 0xFE && p[1] == 0xFF)
     {
-      return encoding_type::ET_UTF16_BE_BOM;
+      return text_encoding::TE_UTF16_BE_BOM;
     }
 
     /* UTF-16 LE */
     if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && p[1] == 0x00)
     {
-      return encoding_type::ET_UTF16_LE;
+      return text_encoding::TE_UTF16_LE;
     }
 
     /* UTF-16 BE */
     if ((p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX) && p[0] == 0x00)
     {
-      return encoding_type::ET_UTF16_BE;
+      return text_encoding::TE_UTF16_BE;
     }
 
     /* UTF-8 */
     if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && (p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX))
     {
-      return encoding_type::ET_UTF8;
+      return text_encoding::TE_UTF8;
     }
   }
   catch (int)
   {
-    return encoding_type::ET_UNKNOWN;
+    return text_encoding::TE_UNKNOWN;
   }
 
-  return encoding_type::ET_UNKNOWN;
+  return text_encoding::TE_UNKNOWN;
 }
 
 /* ------------------------------------------------ String Working ------------------------------------------------- */

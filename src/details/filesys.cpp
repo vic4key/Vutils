@@ -207,14 +207,14 @@ const std::string vuapi FileSystemA::read_as_string(bool remove_bom)
   auto buffer = this->read_as_buffer();
   auto p = (char*)buffer->pointer();
 
-  auto encoding = determine_encoding_type(buffer->pointer(), buffer->size());
-  if (encoding == encoding_type::ET_UNKNOWN)
+  auto text_encoding = detect_text_encoding(buffer->pointer(), buffer->size());
+  if (text_encoding == text_encoding::TE_UNKNOWN)
   {
     assert(0);
     return result;
   }
 
-  if (remove_bom && encoding == encoding_type::ET_UTF8_BOM)
+  if (remove_bom && text_encoding == text_encoding::TE_UTF8_BOM)
   {
     p += 3; /* remove BOM */
   }
@@ -332,14 +332,14 @@ const std::wstring vuapi FileSystemW::read_as_string(bool remove_bom)
   auto buffer = this->read_as_buffer();
   auto p = (wchar*)buffer->pointer();
 
-  auto encoding = determine_encoding_type(buffer->pointer(), buffer->size());
-  if (encoding == encoding_type::ET_UNKNOWN)
+  auto text_encoding = detect_text_encoding(buffer->pointer(), buffer->size());
+  if (text_encoding == text_encoding::TE_UNKNOWN)
   {
     assert(0);
     return result;
   }
 
-  if (remove_bom && (encoding == encoding_type::ET_UTF16_LE_BOM || encoding == encoding_type::ET_UTF16_BE_BOM))
+  if (remove_bom && (text_encoding == text_encoding::TE_UTF16_LE_BOM || text_encoding == text_encoding::TE_UTF16_BE_BOM))
   {
     p = (wchar*)((char*)buffer->pointer() + 2); /* remove BOM */
   }
