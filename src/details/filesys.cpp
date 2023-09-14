@@ -228,22 +228,25 @@ std::unique_ptr<std::string> vuapi FileSystemA::read_as_text()
 
   std::unique_ptr<std::string> result(new std::string);
 
-  if (text_encoding == text_encoding::TE_UTF16_LE ||
-      text_encoding == text_encoding::TE_UTF16_BE ||
-      text_encoding == text_encoding::TE_UTF16_LE_BOM ||
-      text_encoding == text_encoding::TE_UTF16_BE_BOM)
+  if (text_encoding == text_encoding::TE_UTF16_LE_BOM)
   {
-    std::wstring tmp((wchar*)(buffer->bytes() + 2), (buffer->size() - 2) / 2);
-    result->assign(std::move(to_string_A(tmp, true))); // remove bom
+    std::wstring tmp((wchar*)(buffer->bytes() + 2), (buffer->size() - 2) / 2); // remove bom chars
+    result->assign(std::move(to_string_A(tmp, true)));
+  }
+  else if (text_encoding == text_encoding::TE_UTF16_BE_BOM)
+  {
+    std::wstring tmp((wchar*)(buffer->bytes() + 2), (buffer->size() - 2) / 2); // remove bom chars
+    for (auto& c : tmp) c = c << 8 & 0xff00 | c >> 8;
+    result->assign(std::move(to_string_A(tmp, true)));
+  }
+  else if (text_encoding == text_encoding::TE_UTF8_BOM)
+  {
+    std::string tmp((char*)buffer->bytes() + 3, buffer->size() - 3); // remove bom chars
+    result->assign(std::move(tmp));
   }
   else if (text_encoding == text_encoding::TE_UTF8)
   {
     std::string tmp((char*)buffer->bytes(), buffer->size());
-    result->assign(std::move(tmp));
-  }
-  else if (text_encoding == text_encoding::TE_UTF8_BOM)
-  {
-    std::string tmp((char*)buffer->bytes() + 3, buffer->size() - 3); // remove bom
     result->assign(std::move(tmp));
   }
   else
@@ -384,22 +387,25 @@ std::unique_ptr<std::wstring> vuapi FileSystemW::read_as_text()
 
   std::unique_ptr<std::wstring> result(new std::wstring);
 
-  if (text_encoding == text_encoding::TE_UTF16_LE ||
-      text_encoding == text_encoding::TE_UTF16_BE ||
-      text_encoding == text_encoding::TE_UTF16_LE_BOM ||
-      text_encoding == text_encoding::TE_UTF16_BE_BOM)
+  if (text_encoding == text_encoding::TE_UTF16_LE_BOM)
   {
     std::wstring tmp((wchar*)(buffer->bytes() + 2), (buffer->size() - 2) / 2);
     result->assign(std::move(tmp)); // remove bom
   }
-  else if (text_encoding == text_encoding::TE_UTF8)
+  else if (text_encoding == text_encoding::TE_UTF16_BE_BOM)
   {
-    std::string tmp((char*)buffer->bytes(), buffer->size());
-    result->assign(std::move(to_string_W(tmp, true)));
+    std::wstring tmp((wchar*)(buffer->bytes() + 2), (buffer->size() - 2) / 2);
+    for (auto& c : tmp) c = c << 8 & 0xff00 | c >> 8;
+    result->assign(std::move(tmp)); // remove bom
   }
   else if (text_encoding == text_encoding::TE_UTF8_BOM)
   {
     std::string tmp((char*)buffer->bytes() + 3, buffer->size() - 3); // remove bom
+    result->assign(std::move(to_string_W(tmp, true)));
+  }
+  else if (text_encoding == text_encoding::TE_UTF8)
+  {
+    std::string tmp((char*)buffer->bytes(), buffer->size());
     result->assign(std::move(to_string_W(tmp, true)));
   }
   else

@@ -10,51 +10,6 @@ DEF_SAMPLE(Misc)
   // vu::msg_box(vu::get_console_window(), ts("I'm %s. I'm %d years old."), ts("Vic P"), 26);
   // vu::msg_debug(ts("I'm %s. I'm %d years old."), ts("Vic P"), 26);
 
-  std::tcout << vu::lower_string(ts("I Love You")) << std::endl;
-  std::tcout << vu::upper_string(ts("I Love You")) << std::endl;
-
-  std::tcout << vu::trim_string(ts("   THIS IS A TRIM STRING   ")) << std::endl;
-
-  std::tcout << vu::get_last_error() << std::endl;
-
-  std::vector<std::tstring> l;
-
-  l.clear();
-  l = vu::split_string(ts("THIS IS A SPLIT STRING"), ts(" "));
-  for (auto e : l) std::tcout << e << ts("|");
-  std::tcout << std::endl;
-
-  l.clear();
-  l = vu::multi_string_to_list(ts("THIS\0IS\0A\0MULTI\0STRING\0\0"));
-  for (auto& e : l) std::tcout << e << ts("|");
-  std::tcout << std::endl;
-
-  std::tcout << vu::date_time_to_string(time(NULL)) << std::endl;
-
-  std::cout << vu::to_string_A(L"THIS IS A WIDE STRING") << std::endl;
-  std::wcout << vu::to_string_W("THIS IS AN ANSI STRING") << std::endl;
-
-  std::tcout << ts("Environment `PATH`") << std::endl;
-  std::tstring envValue = vu::get_env(ts("PATH"));
-  auto env = vu::split_string(envValue, ts(";"));
-  for (auto e : env) {
-    std::tcout << '\t' << e << std::endl;
-  }
-
-  std::tcout << vu::replace_string(ts("Written in C++ and for C++"), ts("C++"), ts("Cpp")) << std::endl;
-
-  std::tcout << vu::starts_with(ts("Written in C++ and for C++"), ts("C++")) << std::endl;
-  std::tcout << vu::starts_with(ts("Written in C++ and for C++"), ts("Written")) << std::endl;
-
-  std::tcout << vu::ends_with(ts("Written in C++ and for C++"), ts("C++")) << std::endl;
-  std::tcout << vu::ends_with(ts("Written in C++ and for C++"), ts("Written")) << std::endl;
-
-  std::tcout << vu::contains_string(ts("Written in C++ and for C++"), ts("c++"), false) << std::endl;
-  std::tcout << vu::contains_string(ts("Written in C++ and for C++"), ts("c++"), true)  << std::endl;
-
-  std::tcout << vu::compare_string(ts("C++"), ts("c++"), false) << std::endl;
-  std::tcout << vu::compare_string(ts("C++"), ts("c++"), true)  << std::endl;
-
   std::vector<vu::ulong> pids;
   pids.clear();
 
@@ -76,38 +31,10 @@ DEF_SAMPLE(Misc)
   // vu::inject_dll(pids.back(), ts("path\\to\\32-bit-dll"), true);
   // vu::inject_dll(pids.back(), ts("path\\to\\64-bit-dll"), true);
 
-  static std::wstring LES[] = { // List Encoding Short
-    L"ANSI/UTF-8", L"UTF-8 BOM",
-    L"Unicode", L"Unicode BE",
-    L"Unicode BOM", L"Unicode BE BOM",
-    L"UTF-32 LE BOM", L"UTF-32 BE BOM"
-  };
-
-  static std::wstring LEL[] = { // List Encoding Long
-    L"ANSI/UTF-8", L"UTF-8 BOM",
-    L"UTF-16 Little Endian", L"UTF-16 Big Endian",
-    L"UTF-16 Little Endian BOM", L"UTF-16 Big Endian BOM",
-    L"UTF-32 Little Endian BOM", L"UTF-32 Big Endian BOM"
-  };
-
-  vu::FileSystem::iterate(ts("path\\to\\example"), ts("*.txt"), [](const vu::FSObject& fso) -> bool
+  vu::FileSystem::iterate(ts(".\\Text.Encoding"), ts("*.txt"), [](const vu::FSObject& fso) -> bool
   {
     auto file_path = fso.directory + fso.name;
-    auto data = vu::FileSystem::quick_read_as_buffer(file_path);
-
-    auto result = vu::detect_text_encoding(data->pointer(), data->size());
-    auto es = result == vu::text_encoding::TE_UNKNOWN ? L"Unknown" : LES[int(result)];
-    auto el = result == vu::text_encoding::TE_UNKNOWN ? L"Unknown" : LEL[int(result)];
-
-    std::wcout
-      << std::left
-      << std::setw(15) << es
-      << " | "
-      << std::setw(25) << el
-      << " | "
-      << fso.name.c_str()
-      << std::endl;
-
+    std::wcout << file_path << std::endl;
     return true;
   });
 

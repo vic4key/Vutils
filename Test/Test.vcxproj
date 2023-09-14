@@ -171,6 +171,7 @@
     <ClInclude Include="Sample.Socket.h" />
     <ClInclude Include="Sample.GUID.h" />
     <ClInclude Include="Sample.StopWatch.h" />
+    <ClInclude Include="Sample.String.h" />
     <ClInclude Include="Sample.Template.h" />
     <ClInclude Include="Sample.ThreadPool.h" />
     <ClInclude Include="Sample.Window.h" />

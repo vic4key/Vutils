@@ -30,6 +30,7 @@ G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_INET_ENABLE
 
 #include "Sample.Manager.h"
 #include "Sample.Misc.h"
+#include "Sample.String.h"
 #include "Sample.Math.h"
 #include "Sample.DF.h"
 #include "Sample.Socket.h"
@@ -80,6 +81,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
   // VU_SM_ADD_SAMPLE(Misc);
   // VU_SM_ADD_SAMPLE(Math);
+  // VU_SM_ADD_SAMPLE(String);
   // VU_SM_ADD_SAMPLE(DF);
   // VU_SM_ADD_SAMPLE(Picker);
   // VU_SM_ADD_SAMPLE(Socket);
