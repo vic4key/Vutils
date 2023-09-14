@@ -76,22 +76,26 @@ text_encoding vuapi detect_text_encoding(const void* data, const size_t size)
       return text_encoding::TE_UTF16_BE_BOM;
     }
 
-    /* UTF-16 LE */
-    if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && p[1] == 0x00)
+    /* Without BOM */
+    if (p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX)
     {
-      return text_encoding::TE_UTF16_LE;
-    }
+      // /* UTF-16 LE */
+      // ...
+      // {
+      //   return text_encoding::TE_UTF16_LE;
+      // }
 
-    /* UTF-16 BE */
-    if ((p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX) && p[0] == 0x00)
-    {
-      return text_encoding::TE_UTF16_BE;
-    }
+      // /* UTF-16 BE */
+      // ...
+      // {
+      //   return text_encoding::TE_UTF16_BE;
+      // }
 
-    /* UTF-8 */
-    if ((p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) && (p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX))
-    {
-      return text_encoding::TE_UTF8;
+      /* UTF-8 */
+      if (p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX)
+      {
+        return text_encoding::TE_UTF8;
+      }
     }
   }
   catch (int)

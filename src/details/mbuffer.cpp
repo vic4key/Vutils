@@ -80,7 +80,7 @@ byte& Buffer::operator[](const size_t offset)
   return static_cast<byte*>(m_ptr)[offset];
 }
 
-Buffer Buffer::operator()(int begin, int end) const
+std::unique_ptr<Buffer> Buffer::operator()(int begin, int end) const
 {
   return this->slice(begin, end);
 }
@@ -113,26 +113,24 @@ bool Buffer::match(const void* ptr, const size_t size) const
   return this->find(ptr, size) != -1;
 }
 
-Buffer Buffer::till(const void* ptr, const size_t size) const
+std::unique_ptr<Buffer> Buffer::till(const void* ptr, const size_t size) const
 {
-  Buffer result;
-
   size_t offset = this->find(ptr, size);
-  if (offset > 0)
+  if (offset == 0)
   {
-    result.create(m_ptr, offset);
+    return nullptr;
   }
 
+  std::unique_ptr<Buffer> result(new Buffer);
+  result->create(m_ptr, offset);
   return result;
 }
 
-Buffer Buffer::slice(int begin, int end) const
+std::unique_ptr<Buffer> Buffer::slice(int begin, int end) const
 {
-  Buffer result;
-
   if (m_ptr == nullptr || m_size == 0)
   {
-    return result;
+    return nullptr;
   }
 
   if (begin < 0)
@@ -147,17 +145,18 @@ Buffer Buffer::slice(int begin, int end) const
 
   if (begin < 0 || end < 0 || begin > int(m_size) || end > int(m_size) || begin > end)
   {
-    return result;
+    return nullptr;
   }
 
   int size = end - begin;
 
   if (size <= 0 || size > int(m_size))
   {
-    return result;
+    return nullptr;
   }
 
-  result.create(this->bytes() + begin, size);
+  std::unique_ptr<Buffer> result(new Buffer);
+  result->create(this->bytes() + begin, size);
 
   return result;
 }
@@ -295,14 +294,28 @@ bool Buffer::append(const Buffer& right)
   return this->append(right.pointer(), right.size());
 }
 
-std::string Buffer::to_string_A() const
+std::unique_ptr<std::string> Buffer::to_string_A() const
 {
-  return std::string(reinterpret_cast<const char*>(m_ptr), m_size / sizeof(char));
+  std::unique_ptr<std::string> result(new std::string);
+  if (m_ptr == nullptr || m_size == 0)
+  {
+    return result;
+  }
+
+  result.reset(new std::string(reinterpret_cast<const char*>(m_ptr), m_size / sizeof(char)));
+  return result;
 }
 
-std::wstring Buffer::to_string_W() const
+std::unique_ptr<std::wstring> Buffer::to_string_W() const
 {
-  return std::wstring(reinterpret_cast<const wchar*>(m_ptr), m_size / sizeof(wchar));
+  std::unique_ptr<std::wstring> result(new std::wstring);
+  if (m_ptr == nullptr || m_size == 0)
+  {
+    return result;
+  }
+
+  result.reset(new std::wstring(reinterpret_cast<const wchar*>(m_ptr), m_size / sizeof(wchar)));
+  return result;
 }
 
 bool Buffer::save_to_file(const std::string& file_path)
@@ -323,8 +336,18 @@ bool Buffer::save_to_file(const std::string& file_path)
 
 bool Buffer::save_to_file(const std::wstring& file_path)
 {
-  const auto s = vu::to_string_A(file_path);
-  return this->save_to_file(s);
+  if (file_path.empty())
+  {
+    return false;
+  }
+
+  bool result = true;
+
+  FileSystemW file(file_path, fs_mode::FM_CREATEALWAY);
+  result &= file.write(m_ptr, ulong(m_size));
+  result &= file.close();
+
+  return result;
 }
 
 } // namespace vu

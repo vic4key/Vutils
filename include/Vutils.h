@@ -1029,7 +1029,7 @@ public:
   bool  operator==(const Buffer& right) const;
   bool  operator!=(const Buffer& right) const;
   byte& operator[](const size_t offset);
-  Buffer operator()(int begin, int end) const;
+  std::unique_ptr<Buffer> operator()(int begin, int end) const;
 
   byte*  bytes() const;
   void*  pointer() const;
@@ -1044,14 +1044,14 @@ public:
   bool replace(const Buffer& right);
   bool match(const void* ptr, const size_t size) const;
   size_t find(const void* ptr, const size_t size) const;
-  Buffer till(const void* ptr, const size_t size) const;
-  Buffer slice(int begin, int end) const;
+  std::unique_ptr<Buffer> till(const void* ptr, const size_t size) const;
+  std::unique_ptr<Buffer> slice(int begin, int end) const;
 
   bool append(const void* ptr, const size_t size);
   bool append(const Buffer& right);
 
-  std::string  to_string_A() const;
-  std::wstring to_string_W() const;
+  std::unique_ptr<std::string>  to_string_A() const;
+  std::unique_ptr<std::wstring> to_string_W() const;
 
   bool save_to_file(const std::string&  file_path);
   bool save_to_file(const std::wstring& file_path);
@@ -1718,9 +1718,9 @@ public:
     fs_share fs_flags = fs_share::FS_ALLACCESS,
     fs_attribute fa_flags = fs_attribute::FA_NORMAL);
 
-  std::unique_ptr<std::string> vuapi read_as_string();
+  std::unique_ptr<std::string> vuapi read_as_text();
 
-  static std::unique_ptr<std::string> vuapi quick_read_as_string(const std::string& file_path);
+  static std::unique_ptr<std::string> vuapi quick_read_as_text(const std::string& file_path);
 
   static std::unique_ptr<Buffer> quick_read_as_buffer(const std::string& file_path);
 
@@ -1749,9 +1749,9 @@ public:
     fs_share fs_flags = fs_share::FS_ALLACCESS,
     fs_attribute fa_flags = fs_attribute::FA_NORMAL);
 
-  std::unique_ptr<std::wstring> vuapi read_as_string();
+  std::unique_ptr<std::wstring> vuapi read_as_text();
 
-  static std::unique_ptr<std::wstring>vuapi quick_read_as_string(const std::wstring& file_path);
+  static std::unique_ptr<std::wstring>vuapi quick_read_as_text(const std::wstring& file_path);
 
   static std::unique_ptr<Buffer> vuapi quick_read_as_buffer(const std::wstring& file_path);
 

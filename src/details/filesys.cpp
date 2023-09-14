@@ -212,7 +212,7 @@ bool vuapi FileSystemA::initialize(
   return true;
 }
 
-std::unique_ptr<std::string> vuapi FileSystemA::read_as_string()
+std::unique_ptr<std::string> vuapi FileSystemA::read_as_text()
 {
   auto buffer = this->read_as_buffer();
   if (buffer == nullptr)
@@ -254,10 +254,10 @@ std::unique_ptr<std::string> vuapi FileSystemA::read_as_string()
   return result;
 }
 
-std::unique_ptr<std::string> vuapi FileSystemA::quick_read_as_string(const std::string& file_path)
+std::unique_ptr<std::string> vuapi FileSystemA::quick_read_as_text(const std::string& file_path)
 {
   FileSystemA file(file_path, vu::fs_mode::FM_OPENEXISTING, fs_generic::FG_READ, fs_share::FS_READ);
-  return file.read_as_string();
+  return file.read_as_text();
 }
 
 std::unique_ptr<Buffer> FileSystemA::quick_read_as_buffer(const std::string& file_path)
@@ -368,7 +368,7 @@ bool vuapi FileSystemW::initialize(
   return true;
 }
 
-std::unique_ptr<std::wstring> vuapi FileSystemW::read_as_string()
+std::unique_ptr<std::wstring> vuapi FileSystemW::read_as_text()
 {
   auto buffer = this->read_as_buffer();
   if (buffer == nullptr)
@@ -410,10 +410,10 @@ std::unique_ptr<std::wstring> vuapi FileSystemW::read_as_string()
   return result;
 }
 
-std::unique_ptr<std::wstring> vuapi FileSystemW::quick_read_as_string(const std::wstring& file_path)
+std::unique_ptr<std::wstring> vuapi FileSystemW::quick_read_as_text(const std::wstring& file_path)
 {
   FileSystemW file(file_path, vu::fs_mode::FM_OPENEXISTING, fs_generic::FG_READ, fs_share::FS_READ);
-  return file.read_as_string();
+  return file.read_as_text();
 }
 
 std::unique_ptr<Buffer> FileSystemW::quick_read_as_buffer(const std::wstring& file_path)

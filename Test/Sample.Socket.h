@@ -50,7 +50,7 @@ DEF_SAMPLE(Socket)
 
   // extract response header & body
 
-  const std::string first_response = response.to_string_A();
+  const std::string first_response = response.to_string_A()->c_str();
   const std::string http_header_sep = std::crlf;
   const std::string http_header_end = http_header_sep + http_header_sep;
 

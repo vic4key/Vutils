@@ -154,22 +154,22 @@ DEF_SAMPLE(Misc)
   std::string s = "0123456789";
   vu::Buffer  slicer(s.data(), s.size());
 
-  std::cout << slicer(0, 0).to_string_A() << std::endl;
-  std::cout << slicer(9, 9).to_string_A() << std::endl;
-  std::cout << slicer(0, 9).to_string_A() << std::endl;
+  //std::cout << slicer(0, 0)->to_string_A()->c_str() << std::endl;
+  //std::cout << slicer(9, 9)->to_string_A()->c_str() << std::endl;
+  std::cout << slicer(0, 9)->to_string_A()->c_str() << std::endl;
 
-  std::cout << slicer(3, 7).to_string_A() << std::endl;
+  std::cout << slicer(3, 7)->to_string_A()->c_str() << std::endl;
 
-  std::cout << slicer(-7, -2).to_string_A() << std::endl;
-  std::cout << slicer(2, -2).to_string_A() << std::endl;
+  std::cout << slicer(-7, -2)->to_string_A()->c_str() << std::endl;
+  std::cout << slicer(2, -2)->to_string_A()->c_str() << std::endl;
 
-  std::cout << slicer(0, -8).to_string_A() << std::endl;
-  std::cout << slicer(0, -9).to_string_A() << std::endl;
-  std::cout << slicer(0, -10).to_string_A() << std::endl;
+  std::cout << slicer(0, -8)->to_string_A()->c_str() << std::endl;
+  std::cout << slicer(0, -9)->to_string_A()->c_str() << std::endl;
+  //std::cout << slicer(0, -10)->to_string_A()->c_str() << std::endl;
 
-  std::cout << slicer(-8, 10).to_string_A() << std::endl;
-  std::cout << slicer(-9, 10).to_string_A() << std::endl;
-  std::cout << slicer(-10, 10).to_string_A() << std::endl;
+  std::cout << slicer(-8, 10)->to_string_A()->c_str() << std::endl;
+  std::cout << slicer(-9, 10)->to_string_A()->c_str() << std::endl;
+  std::cout << slicer(-10, 10)->to_string_A()->c_str() << std::endl;
 
   std::tcout << vu::undecorate_cpp_symbol(ts("?func1@a@@AAEXH@Z")) << std::endl;
 
