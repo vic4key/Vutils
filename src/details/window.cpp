@@ -477,7 +477,7 @@ void InputDialog::label(const std::wstring& label)
   m_label = label;
 }
 
-vu::FundamentalW& InputDialog::input()
+vu::VariantW& InputDialog::input()
 {
   return m_input;
 }

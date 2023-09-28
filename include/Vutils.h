@@ -2748,17 +2748,17 @@ private:
 };
 
 /**
- * Fundamental
+ * Variant
  */
 
-class FundamentalA
+class VariantA
 {
 public:
-  FundamentalA();
-  virtual ~FundamentalA();
+  VariantA();
+  virtual ~VariantA();
 
   template<typename T>
-  friend FundamentalA& operator<<(FundamentalA& stream, T v)
+  friend VariantA& operator<<(VariantA& stream, T v)
   {
     stream.m_data << v;
     return stream;
@@ -2776,14 +2776,14 @@ private:
   std::stringstream m_data;
 };
 
-class FundamentalW
+class VariantW
 {
 public:
-  FundamentalW();
-  virtual ~FundamentalW();
+  VariantW();
+  virtual ~VariantW();
 
   template<typename T>
-  friend FundamentalW& operator<<(FundamentalW& stream, T v)
+  friend VariantW& operator<<(VariantW& stream, T v)
   {
     stream.m_data << v;
     return stream;
@@ -2892,7 +2892,7 @@ public:
 
   void placeholder(const std::wstring& pl);
   void label(const std::wstring& label);
-  FundamentalW& input();
+  VariantW& input();
 
   INT_PTR do_modal();
 
@@ -2901,7 +2901,7 @@ public:
 private:
   std::wstring m_placeholder;
   std::wstring m_label;
-  FundamentalW m_input;
+  VariantW m_input;
   bool m_number_only;
 };
 
@@ -3562,7 +3562,7 @@ private:
 #define Path PathW
 #define ScopeStopWatch ScopeStopWatchW
 #define WMIProvider WMIProviderW
-#define Fundamental FundamentalW
+#define Variant VariantW
 #define Picker PickerW
 #define RESTClient RESTClientW
 #else // _UNICODE
@@ -3581,7 +3581,7 @@ private:
 #define Path PathA
 #define ScopeStopWatch ScopeStopWatchA
 #define WMIProvider WMIProviderA
-#define Fundamental FundamentalA
+#define Variant VariantA
 #define Picker PickerA
 #define RESTClient RESTClientA
 #endif // _UNICODE

@@ -654,93 +654,97 @@ void vuapi url_decode_W(const std::wstring& text, std::wstring& result)
 }
 
 /**
- * FundamentalA
+ * VariantA
  */
 
-FundamentalA::FundamentalA()
+VariantA::VariantA()
 {
   m_data.clear();
 }
 
-FundamentalA::~FundamentalA()
+VariantA::~VariantA()
 {
 }
 
-std::stringstream& FundamentalA::data()
+std::stringstream& VariantA::data()
 {
   return m_data;
 }
 
-std::string FundamentalA::to_string() const
+std::string VariantA::to_string() const
 {
   return m_data.str();
 }
 
-bool FundamentalA::to_boolean() const
+bool VariantA::to_boolean() const
 {
   return to_integer() != 0;
 }
 
-int FundamentalA::to_integer() const
+int VariantA::to_integer() const
 {
   return atoi(m_data.str().c_str());
 }
 
-long FundamentalA::to_long() const
+long VariantA::to_long() const
 {
   return atol(m_data.str().c_str());
 }
 
-float FundamentalA::to_float() const
+float VariantA::to_float() const
 {
   return float(to_double());
 }
 
-double FundamentalA::to_double() const
+double VariantA::to_double() const
 {
   return atof(m_data.str().c_str());
 }
 
-FundamentalW::FundamentalW()
+/**
+ * VariantW
+ */
+
+VariantW::VariantW()
 {
   m_data.clear();
 }
 
-FundamentalW::~FundamentalW()
+VariantW::~VariantW()
 {
 }
 
-std::wstringstream& FundamentalW::data()
+std::wstringstream& VariantW::data()
 {
   return m_data;
 }
 
-std::wstring FundamentalW::to_string() const
+std::wstring VariantW::to_string() const
 {
   return m_data.str();
 }
 
-bool FundamentalW::to_boolean() const
+bool VariantW::to_boolean() const
 {
   return to_integer() != 0;
 }
 
-int FundamentalW::to_integer() const
+int VariantW::to_integer() const
 {
   return atoi(to_string_A(m_data.str()).c_str());
 }
 
-long FundamentalW::to_long() const
+long VariantW::to_long() const
 {
   return atol(to_string_A(m_data.str()).c_str());
 }
 
-float FundamentalW::to_float() const
+float VariantW::to_float() const
 {
   return float(to_double());
 }
 
-double FundamentalW::to_double() const
+double VariantW::to_double() const
 {
   return atof(to_string_A(m_data.str()).c_str());
 }
