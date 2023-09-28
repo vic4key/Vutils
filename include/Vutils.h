@@ -2755,14 +2755,17 @@ class VariantA
 {
 public:
   VariantA();
+  VariantA(VariantA& right);
   virtual ~VariantA();
 
   template<typename T>
   friend VariantA& operator<<(VariantA& stream, T v)
   {
-    stream.m_data << v;
+    *stream.m_data << v;
     return stream;
   }
+
+  VariantA& operator=(VariantA& right);
 
   std::stringstream& vuapi data();
   std::string vuapi to_string() const;
@@ -2773,19 +2776,22 @@ public:
   double vuapi to_double() const;
 
 private:
-  std::stringstream m_data;
+  std::unique_ptr<std::stringstream> m_data;
 };
 
 class VariantW
 {
 public:
   VariantW();
+  VariantW(VariantW& right);
   virtual ~VariantW();
+
+  VariantW& operator=(VariantW& right);
 
   template<typename T>
   friend VariantW& operator<<(VariantW& stream, T v)
   {
-    stream.m_data << v;
+    *stream.m_data << v;
     return stream;
   }
 
@@ -2798,7 +2804,7 @@ public:
   double vuapi to_double() const;
 
 private:
-  std::wstringstream m_data;
+  std::unique_ptr<std::wstringstream> m_data;
 };
 
 /**

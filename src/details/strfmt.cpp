@@ -659,21 +659,38 @@ void vuapi url_decode_W(const std::wstring& text, std::wstring& result)
 
 VariantA::VariantA()
 {
-  m_data.clear();
+  m_data.reset(new std::stringstream);
+}
+
+VariantA::VariantA(VariantA& right)
+{
+  *this = right;
 }
 
 VariantA::~VariantA()
 {
 }
 
+VariantA& VariantA::operator=(VariantA& right)
+{
+  if (this != &right)
+  {
+    auto ptr = new std::stringstream();
+    *ptr << right.m_data->str();
+    this->m_data.reset(ptr);
+  }
+
+  return *this;
+}
+
 std::stringstream& VariantA::data()
 {
-  return m_data;
+  return *m_data;
 }
 
 std::string VariantA::to_string() const
 {
-  return m_data.str();
+  return m_data->str();
 }
 
 bool VariantA::to_boolean() const
@@ -683,12 +700,12 @@ bool VariantA::to_boolean() const
 
 int VariantA::to_integer() const
 {
-  return atoi(m_data.str().c_str());
+  return atoi(m_data->str().c_str());
 }
 
 long VariantA::to_long() const
 {
-  return atol(m_data.str().c_str());
+  return atol(m_data->str().c_str());
 }
 
 float VariantA::to_float() const
@@ -698,7 +715,7 @@ float VariantA::to_float() const
 
 double VariantA::to_double() const
 {
-  return atof(m_data.str().c_str());
+  return atof(m_data->str().c_str());
 }
 
 /**
@@ -707,21 +724,38 @@ double VariantA::to_double() const
 
 VariantW::VariantW()
 {
-  m_data.clear();
+  m_data.reset(new std::wstringstream);
+}
+
+VariantW::VariantW(VariantW& right)
+{
+  *this = right;
 }
 
 VariantW::~VariantW()
 {
 }
 
+VariantW& VariantW::operator=(VariantW& right)
+{
+  if (this != &right)
+  {
+    auto ptr = new std::wstringstream();
+    *ptr << right.m_data->str();
+    this->m_data.reset(ptr);
+  }
+
+  return *this;
+}
+
 std::wstringstream& VariantW::data()
 {
-  return m_data;
+  return *m_data;
 }
 
 std::wstring VariantW::to_string() const
 {
-  return m_data.str();
+  return m_data->str();
 }
 
 bool VariantW::to_boolean() const
@@ -731,12 +765,12 @@ bool VariantW::to_boolean() const
 
 int VariantW::to_integer() const
 {
-  return atoi(to_string_A(m_data.str()).c_str());
+  return atoi(to_string_A(m_data->str()).c_str());
 }
 
 long VariantW::to_long() const
 {
-  return atol(to_string_A(m_data.str()).c_str());
+  return atol(to_string_A(m_data->str()).c_str());
 }
 
 float VariantW::to_float() const
@@ -746,7 +780,7 @@ float VariantW::to_float() const
 
 double VariantW::to_double() const
 {
-  return atof(to_string_A(m_data.str()).c_str());
+  return atof(to_string_A(m_data->str()).c_str());
 }
 
 #ifdef _MSC_VER
