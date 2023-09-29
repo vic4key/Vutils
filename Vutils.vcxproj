@@ -322,6 +322,7 @@
     <ClInclude Include="3rdparty\Others\md5.h" />
     <ClInclude Include="3rdparty\Others\sha.h" />
     <ClInclude Include="3rdparty\Others\sha3_impl.h" />
+    <ClInclude Include="3rdparty\TE\include\text_encoding_detect.h" />
     <ClInclude Include="3rdparty\TP11\include\threadpool11\Pool.h" />
     <ClInclude Include="3rdparty\TP11\include\threadpool11\threadpool11.h" />
     <ClInclude Include="3rdparty\TP11\include\threadpool11\Worker.h" />
@@ -354,6 +355,7 @@
     <ClCompile Include="3rdparty\Others\sha2_512.cpp" />
     <ClCompile Include="3rdparty\Others\sha3_impl.cpp" />
     <ClCompile Include="3rdparty\Others\sha3.cpp" />
+    <ClCompile Include="3rdparty\TE\src\text_encoding_detect.cpp" />
     <ClCompile Include="3rdparty\TP11\src\Pool.cpp" />
     <ClCompile Include="3rdparty\TP11\src\Worker.cpp" />
     <ClCompile Include="3rdparty\UND\src\undname.cpp" />

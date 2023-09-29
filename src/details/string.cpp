@@ -5,9 +5,12 @@
  */
 
 #include "Vutils.h"
+#include "defs.h"
 
 #include <csignal>
 #include <algorithm>
+
+#include VU_3RD_INCL(TE/include/text_encoding_detect.h)
 
 namespace vu
 {
@@ -27,83 +30,107 @@ namespace vu
 #define UCHAR_MAX     255  // maximum unsigned char value
 #endif
 
+// text_encoding vuapi _detect_text_encoding(const void* data, const size_t size)
+// {
+//   if (data == nullptr || size == 0) return text_encoding::TE_UNKNOWN;
+// 
+//   auto p = (uchar*)data;
+// 
+//   if (size == 1)
+//   {
+//     /* UTF-8 */
+//     if (p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) return text_encoding::TE_UTF8_BOM;
+//   }
+// 
+//   signal(SIGSEGV, [](int signal)
+//   {
+//     throw signal;
+//   });
+// 
+//   try
+//   {
+//     /* UTF-8 BOM */
+//     if (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)
+//     {
+//       return text_encoding::TE_UTF8_BOM;
+//     }
+// 
+//     /* UTF-32 LE BOM */
+//     if (p[0] == 0xFF && p[1] == 0xFE && p[2] == 0x00 && p[3] == 0x00)
+//     {
+//       return text_encoding::TE_UTF32_LE_BOM;
+//     }
+// 
+//     /* UTF-32 BE BOM */
+//     if (p[0] == 0x00 && p[1] == 0x00 && p[2] == 0xFE && p[3] == 0xFF)
+//     {
+//       return text_encoding::TE_UTF32_BE_BOM;
+//     }
+// 
+//     /* UTF-16 LE BOM */
+//     if (p[0] == 0xFF && p[1] == 0xFE)
+//     {
+//       return text_encoding::TE_UTF16_LE_BOM;
+//     }
+// 
+//     /* UTF-16 BE BOM */
+//     if (p[0] == 0xFE && p[1] == 0xFF)
+//     {
+//       return text_encoding::TE_UTF16_BE_BOM;
+//     }
+// 
+//     /* Without BOM */
+//     if (p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX)
+//     {
+//       // /* UTF-16 LE */
+//       // ...
+//       // {
+//       //   return text_encoding::TE_UTF16_LE;
+//       // }
+// 
+//       // /* UTF-16 BE */
+//       // ...
+//       // {
+//       //   return text_encoding::TE_UTF16_BE;
+//       // }
+// 
+//       /* UTF-8 */
+//       if (p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX)
+//       {
+//         return text_encoding::TE_UTF8;
+//       }
+//     }
+//   }
+//   catch (int)
+//   {
+//     return text_encoding::TE_UNKNOWN;
+//   }
+// 
+//   return text_encoding::TE_UNKNOWN;
+// }
+
 text_encoding vuapi detect_text_encoding(const void* data, const size_t size)
 {
-  if (data == nullptr || size == 0) return text_encoding::TE_UNKNOWN;
+  using namespace AutoIt::Common;
 
-  auto p = (uchar*)data;
-
-  if (size == 1)
+  static std::unordered_map<TextEncodingDetect::Encoding, vu::text_encoding> mapping_text_encodings;
+  if (mapping_text_encodings.empty())
   {
-    /* UTF-8 */
-    if (p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX) return text_encoding::TE_UTF8_BOM;
+    mapping_text_encodings[TextEncodingDetect::Encoding::None]  = vu::text_encoding::TE_UNKNOWN;
+    mapping_text_encodings[TextEncodingDetect::Encoding::ANSI]  = vu::text_encoding::TE_UTF8;
+    mapping_text_encodings[TextEncodingDetect::Encoding::ASCII] = vu::text_encoding::TE_UTF8;
+    mapping_text_encodings[TextEncodingDetect::Encoding::UTF8_BOM] = vu::text_encoding::TE_UTF8_BOM;
+    mapping_text_encodings[TextEncodingDetect::Encoding::UTF16_LE_NOBOM] = vu::text_encoding::TE_UTF16_LE;
+    mapping_text_encodings[TextEncodingDetect::Encoding::UTF16_BE_NOBOM] = vu::text_encoding::TE_UTF16_BE;
+    mapping_text_encodings[TextEncodingDetect::Encoding::UTF16_LE_BOM] = vu::text_encoding::TE_UTF16_LE_BOM;
+    mapping_text_encodings[TextEncodingDetect::Encoding::UTF16_BE_BOM] = vu::text_encoding::TE_UTF16_BE_BOM;
+    //mapping_text_encodings[{ TextEncodingDetect::Encoding::None] = vu::text_encoding::TE_UTF32_LE_BOM;
+    //mapping_text_encodings[{ TextEncodingDetect::Encoding::None] = vu::text_encoding::TE_UTF32_BE_BOM;
   }
 
-  signal(SIGSEGV, [](int signal)
-  {
-    throw signal;
-  });
-
-  try
-  {
-    /* UTF-8 BOM */
-    if (p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)
-    {
-      return text_encoding::TE_UTF8_BOM;
-    }
-
-    /* UTF-32 LE BOM */
-    if (p[0] == 0xFF && p[1] == 0xFE && p[2] == 0x00 && p[3] == 0x00)
-    {
-      return text_encoding::TE_UTF32_LE_BOM;
-    }
-
-    /* UTF-32 BE BOM */
-    if (p[0] == 0x00 && p[1] == 0x00 && p[2] == 0xFE && p[3] == 0xFF)
-    {
-      return text_encoding::TE_UTF32_BE_BOM;
-    }
-
-    /* UTF-16 LE BOM */
-    if (p[0] == 0xFF && p[1] == 0xFE)
-    {
-      return text_encoding::TE_UTF16_LE_BOM;
-    }
-
-    /* UTF-16 BE BOM */
-    if (p[0] == 0xFE && p[1] == 0xFF)
-    {
-      return text_encoding::TE_UTF16_BE_BOM;
-    }
-
-    /* Without BOM */
-    if (p[0] >= SCHAR_MIN && p[0] <= SCHAR_MAX)
-    {
-      // /* UTF-16 LE */
-      // ...
-      // {
-      //   return text_encoding::TE_UTF16_LE;
-      // }
-
-      // /* UTF-16 BE */
-      // ...
-      // {
-      //   return text_encoding::TE_UTF16_BE;
-      // }
-
-      /* UTF-8 */
-      if (p[1] >= SCHAR_MIN && p[1] <= SCHAR_MAX)
-      {
-        return text_encoding::TE_UTF8;
-      }
-    }
-  }
-  catch (int)
-  {
-    return text_encoding::TE_UNKNOWN;
-  }
-
-  return text_encoding::TE_UNKNOWN;
+  TextEncodingDetect ted;
+  auto autoit_encoding = ted.DetectEncoding(reinterpret_cast<const unsigned char*>(data), size);
+  return mapping_text_encodings[autoit_encoding];
 }
 
 /* ------------------------------------------------ String Working ------------------------------------------------- */

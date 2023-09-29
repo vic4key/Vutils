@@ -34,7 +34,7 @@ DEF_SAMPLE(Misc)
   vu::FileSystem::iterate(ts(".\\Text.Encoding"), ts("*.txt"), [](const vu::FSObject& fso) -> bool
   {
     auto file_path = fso.directory + fso.name;
-    std::wcout << file_path << std::endl;
+    std::tcout << file_path << std::endl;
     return true;
   });
 

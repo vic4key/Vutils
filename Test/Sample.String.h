@@ -58,8 +58,8 @@ DEF_SAMPLE(String)
   {
     { vu::text_encoding::TE_UTF8, "ansi.txt" },
     { vu::text_encoding::TE_UTF8_BOM, "utf-8-bom.txt" },
-    //{ vu::text_encoding::TE_UTF16_LE, "utf-16-le.txt" },
-    //{ vu::text_encoding::TE_UTF16_BE, "utf-16-be.txt" },
+    { vu::text_encoding::TE_UTF16_LE, "utf-16-le.txt" },
+    { vu::text_encoding::TE_UTF16_BE, "utf-16-be.txt" },
     { vu::text_encoding::TE_UTF16_LE_BOM, "utf-16-le-bom.txt" },
     { vu::text_encoding::TE_UTF16_BE_BOM, "utf-16-be-bom.txt" },
     //{ vu::text_encoding::TE_UTF32_LE_BOM, "utf-32-le-bom.txt" },
@@ -68,7 +68,7 @@ DEF_SAMPLE(String)
 
   for (auto& e : list_text_encodings)
   {
-    vu::PathA path = "Text.Encoding";
+    vu::PathA path = std::string("Text.Encoding");
     path.join(e.file_name).finalize();
     auto file_path = path.as_string();
     std::cout << file_path << std::endl;

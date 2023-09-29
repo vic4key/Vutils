@@ -58,6 +58,9 @@
     <Filter Include="Header Files\Third Files\NO">
       <UniqueIdentifier>{eefff9c3-29b0-45a8-9e82-0c20dfe7509a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Third Party Files\TE">
+      <UniqueIdentifier>{8ca70d61-cc68-42db-ad04-82ef7fe42ab8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Vutils.h">
@@ -143,6 +146,9 @@
     </ClInclude>
     <ClInclude Include="include\3rdparty\NO\include\util\io_helpers.hpp">
       <Filter>Header Files\Third Files\NO</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\TE\include\text_encoding_detect.h">
+      <Filter>Third Party Files\TE</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -292,6 +298,9 @@
     </ClCompile>
     <ClCompile Include="src\details\debouncer.cpp">
       <Filter>Source Files\details</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\TE\src\text_encoding_detect.cpp">
+      <Filter>Third Party Files\TE</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

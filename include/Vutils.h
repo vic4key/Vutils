@@ -230,8 +230,8 @@ enum class text_encoding : int
   TE_UTF16_BE     = 3, // "Unicode BE", "UTF-16 Big Endian"
   TE_UTF16_LE_BOM = 4, // "Unicode BOM", "UTF-16 Little Endian BOM"
   TE_UTF16_BE_BOM = 5, // "Unicode BE BOM", "UTF-16 Big Endian BOM"
-  TE_UTF32_LE_BOM = 6, // "UTF-32 LE BOM", "UTF-32 Little Endian BOM"
-  TE_UTF32_BE_BOM = 7, // "UTF-32 BE BOM", "UTF-32 Big Endian BOM"
+  //TE_UTF32_LE_BOM = 6, // "UTF-32 LE BOM", "UTF-32 Little Endian BOM"
+  //TE_UTF32_BE_BOM = 7, // "UTF-32 BE BOM", "UTF-32 Big Endian BOM"
 };
 
 enum class data_unit : int
