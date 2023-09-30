@@ -675,6 +675,12 @@ VariantT<T>::~VariantT()
 }
 
 template <class T>
+bool vu::VariantT<T>::empty() const
+{
+  return m_data->str().empty();
+}
+
+template <class T>
 VariantT<T>& VariantT<T>::operator=(VariantT<T>& right)
 {
   if (this != &right)

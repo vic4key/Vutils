@@ -2773,6 +2773,8 @@ public:
     return stream;
   }
 
+  bool empty() const;
+
   int to_int() const;
   unsigned int to_uint() const;
   __int64 to_int64() const;
