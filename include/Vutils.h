@@ -2751,60 +2751,63 @@ private:
  * Variant
  */
 
-class VariantA
+template <class T>
+class VariantT
+{
+public:
+  VariantT();
+  VariantT(VariantT& right);
+  virtual ~VariantT();
+
+  VariantT& operator=(VariantT& right);
+
+  T& data()
+  {
+    return *m_data;
+  }
+
+  template<typename T>
+  friend VariantT& operator<<(VariantT& stream, T v)
+  {
+    stream.data() << v;
+    return stream;
+  }
+
+  int to_int() const;
+  unsigned int to_uint() const;
+  __int64 to_int64() const;
+  unsigned __int64 to_uint64() const;
+  bool to_bool() const;
+  float to_float() const;
+  double to_double() const;
+  std::unique_ptr<byte[]> to_bytes() const;
+
+protected:
+  std::unique_ptr<T> m_data;
+};
+
+#define VariantTA VariantT<std::stringstream>
+
+class VariantA : public VariantTA
 {
 public:
   VariantA();
   VariantA(VariantA& right);
   virtual ~VariantA();
 
-  template<typename T>
-  friend VariantA& operator<<(VariantA& stream, T v)
-  {
-    *stream.m_data << v;
-    return stream;
-  }
-
-  VariantA& operator=(VariantA& right);
-
-  std::stringstream& vuapi data();
-  std::string vuapi to_string() const;
-  int vuapi to_integer() const;
-  long vuapi to_long() const;
-  bool vuapi to_boolean() const;
-  float vuapi to_float() const;
-  double vuapi to_double() const;
-
-private:
-  std::unique_ptr<std::stringstream> m_data;
+  std::string to_string() const;
 };
 
-class VariantW
+#define VariantTW VariantT<std::wstringstream>
+
+class VariantW : public VariantTW
 {
 public:
   VariantW();
   VariantW(VariantW& right);
   virtual ~VariantW();
 
-  VariantW& operator=(VariantW& right);
-
-  template<typename T>
-  friend VariantW& operator<<(VariantW& stream, T v)
-  {
-    *stream.m_data << v;
-    return stream;
-  }
-
-  std::wstringstream& vuapi data();
-  std::wstring vuapi to_string() const;
-  int vuapi to_integer() const;
-  long vuapi to_long() const;
-  bool vuapi to_boolean() const;
-  float vuapi to_float() const;
-  double vuapi to_double() const;
-
-private:
-  std::unique_ptr<std::wstringstream> m_data;
+  std::wstring to_string() const;
 };
 
 /**

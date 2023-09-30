@@ -654,28 +654,32 @@ void vuapi url_decode_W(const std::wstring& text, std::wstring& result)
 }
 
 /**
- * VariantA
+ * VariantX
  */
 
-VariantA::VariantA()
+template <class T>
+VariantT<T>::VariantT()
 {
-  m_data.reset(new std::stringstream);
+  m_data.reset(new T);
 }
 
-VariantA::VariantA(VariantA& right)
+template <class T>
+VariantT<T>::VariantT(VariantT& right)
 {
   *this = right;
 }
 
-VariantA::~VariantA()
+template <class T>
+VariantT<T>::~VariantT()
 {
 }
 
-VariantA& VariantA::operator=(VariantA& right)
+template <class T>
+VariantT<T>& VariantT<T>::operator=(VariantT<T>& right)
 {
   if (this != &right)
   {
-    auto ptr = new std::stringstream();
+    auto ptr = new T();
     *ptr << right.m_data->str();
     this->m_data.reset(ptr);
   }
@@ -683,9 +687,104 @@ VariantA& VariantA::operator=(VariantA& right)
   return *this;
 }
 
-std::stringstream& VariantA::data()
+template <class T>
+int VariantT<T>::to_int() const
 {
-  return *m_data;
+  int result = 0;
+  *m_data >> result;
+  return result;
+}
+
+template <class T>
+unsigned int VariantT<T>::to_uint() const
+{
+  unsigned int result = 0;
+  *m_data >> result;
+  return result;
+}
+
+template <class T>
+__int64 VariantT<T>::to_int64() const
+{
+  long long int result = 0;
+  *m_data >> result;
+  return result;
+}
+
+template <class T>
+unsigned __int64 VariantT<T>::to_uint64() const
+{
+  unsigned __int64 result = 0;
+  *m_data >> result;
+  return result;
+}
+
+template <class T>
+bool VariantT<T>::to_bool() const
+{
+  return to_int() != 0;
+}
+
+template <class T>
+float VariantT<T>::to_float() const
+{
+  float result = 0.F;
+  *m_data >> result;
+  return result;
+}
+
+template <class T>
+double VariantT<T>::to_double() const
+{
+  double result = 0.;
+  *m_data >> result;
+  return result;
+}
+
+template <class T>
+std::unique_ptr<byte[]> VariantT<T>::to_bytes() const
+{
+  std::vector<byte> bytes;
+
+  if (typeid(typename T) == typeid(std::stringstream))
+  {
+    to_hex_bytes_A((const char*)m_data->str().c_str(), bytes);
+  }
+  else if (typeid(typename T) == typeid(std::wstringstream))
+  {
+    to_hex_bytes_W((const wchar_t*)m_data->str().c_str(), bytes);
+  }
+  else
+  {
+    assert(0 && "invalid template class");
+  }
+
+  if (bytes.empty())
+  {
+    return nullptr;
+  }
+
+  std::unique_ptr<byte[]> result(new byte[bytes.size()]);
+  std::move(bytes.cbegin(), bytes.cend(), result.get());
+  return result;
+}
+
+/**
+ * VariantA
+ */
+
+template VariantTA;
+
+VariantA::VariantA() : VariantT()
+{
+}
+
+VariantA::VariantA(VariantA& right) : VariantT(right)
+{
+}
+
+VariantA::~VariantA()
+{
 }
 
 std::string VariantA::to_string() const
@@ -693,94 +792,27 @@ std::string VariantA::to_string() const
   return m_data->str();
 }
 
-bool VariantA::to_boolean() const
-{
-  return to_integer() != 0;
-}
-
-int VariantA::to_integer() const
-{
-  return atoi(m_data->str().c_str());
-}
-
-long VariantA::to_long() const
-{
-  return atol(m_data->str().c_str());
-}
-
-float VariantA::to_float() const
-{
-  return float(to_double());
-}
-
-double VariantA::to_double() const
-{
-  return atof(m_data->str().c_str());
-}
-
 /**
  * VariantW
  */
 
-VariantW::VariantW()
+template class VariantTW;
+
+VariantW::VariantW() : VariantT()
 {
-  m_data.reset(new std::wstringstream);
 }
 
-VariantW::VariantW(VariantW& right)
+VariantW::VariantW(VariantW& right) : VariantT(right)
 {
-  *this = right;
 }
 
 VariantW::~VariantW()
 {
 }
 
-VariantW& VariantW::operator=(VariantW& right)
-{
-  if (this != &right)
-  {
-    auto ptr = new std::wstringstream();
-    *ptr << right.m_data->str();
-    this->m_data.reset(ptr);
-  }
-
-  return *this;
-}
-
-std::wstringstream& VariantW::data()
-{
-  return *m_data;
-}
-
 std::wstring VariantW::to_string() const
 {
   return m_data->str();
-}
-
-bool VariantW::to_boolean() const
-{
-  return to_integer() != 0;
-}
-
-int VariantW::to_integer() const
-{
-  return atoi(to_string_A(m_data->str()).c_str());
-}
-
-long VariantW::to_long() const
-{
-  return atol(to_string_A(m_data->str()).c_str());
-}
-
-float VariantW::to_float() const
-{
-  return float(to_double());
-}
-
-double VariantW::to_double() const
-{
-  return atof(to_string_A(m_data->str()).c_str());
 }
 
 #ifdef _MSC_VER
