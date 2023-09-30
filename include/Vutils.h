@@ -1066,6 +1066,71 @@ private:
 };
 
 /**
+ * Variant
+ */
+
+template <class T>
+class VariantT
+{
+public:
+  VariantT();
+  VariantT(VariantT& right);
+  virtual ~VariantT();
+
+  VariantT& operator=(VariantT& right);
+
+  T& data()
+  {
+    return *m_data;
+  }
+
+  template<typename T>
+  friend VariantT& operator<<(VariantT& stream, T v)
+  {
+    stream.data() << v;
+    return stream;
+  }
+
+  bool empty() const;
+
+  int to_int() const;
+  unsigned int to_uint() const;
+  __int64 to_int64() const;
+  unsigned __int64 to_uint64() const;
+  bool to_bool() const;
+  float to_float() const;
+  double to_double() const;
+  std::unique_ptr<byte[]> to_bytes() const;
+
+protected:
+  std::unique_ptr<T> m_data;
+};
+
+#define VariantTA VariantT<std::stringstream>
+
+class VariantA : public VariantTA
+{
+public:
+  VariantA();
+  VariantA(VariantA& right);
+  virtual ~VariantA();
+
+  std::string to_string() const;
+};
+
+#define VariantTW VariantT<std::wstringstream>
+
+class VariantW : public VariantTW
+{
+public:
+  VariantW();
+  VariantW(VariantW& right);
+  virtual ~VariantW();
+
+  std::wstring to_string() const;
+};
+
+/**
  * Library
  */
 
@@ -2745,71 +2810,6 @@ public:
 private:
   std::wstring m_file_path;
   FileMappingW m_file_map;
-};
-
-/**
- * Variant
- */
-
-template <class T>
-class VariantT
-{
-public:
-  VariantT();
-  VariantT(VariantT& right);
-  virtual ~VariantT();
-
-  VariantT& operator=(VariantT& right);
-
-  T& data()
-  {
-    return *m_data;
-  }
-
-  template<typename T>
-  friend VariantT& operator<<(VariantT& stream, T v)
-  {
-    stream.data() << v;
-    return stream;
-  }
-
-  bool empty() const;
-
-  int to_int() const;
-  unsigned int to_uint() const;
-  __int64 to_int64() const;
-  unsigned __int64 to_uint64() const;
-  bool to_bool() const;
-  float to_float() const;
-  double to_double() const;
-  std::unique_ptr<byte[]> to_bytes() const;
-
-protected:
-  std::unique_ptr<T> m_data;
-};
-
-#define VariantTA VariantT<std::stringstream>
-
-class VariantA : public VariantTA
-{
-public:
-  VariantA();
-  VariantA(VariantA& right);
-  virtual ~VariantA();
-
-  std::string to_string() const;
-};
-
-#define VariantTW VariantT<std::wstringstream>
-
-class VariantW : public VariantTW
-{
-public:
-  VariantW();
-  VariantW(VariantW& right);
-  virtual ~VariantW();
-
-  std::wstring to_string() const;
 };
 
 /**
