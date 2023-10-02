@@ -6,66 +6,62 @@ DEF_SAMPLE(INIFile)
 {
   vu::INIFile ini(vu::get_current_file_path() + ts(".ini"));
 
-  ini.set_current_section(ts("Section"));
-
-  std::vector<std::tstring> l;
-  l.clear();
-
-  l = ini.read_section_names();
-  for (auto i = l.begin(); i != l.end(); i++)
-  {
-    _tprintf(ts("[%s]\n"), (*i).c_str());
-  }
-
-  std::cout << std::endl;
-
-  l = ini.read_current_section();
-  for (auto i = l.begin(); i != l.end(); i++)
-  {
-    _tprintf(ts("[%s]\n"), (*i).c_str());
-  }
-
-  printf("\n");
-
-  if (ini.write_integer(ts("KeyInt"), 702))
-  {
-    _tprintf(ts("KeyInt = %d\n"), ini.read_integer(ts("KeyInt"), 0));
-  }
-
-  if (ini.write_bool(ts("KeyBool"), true))
-  {
-    _tprintf(ts("KeyBool = %s\n"), ini.read_bool(ts("KeyBool"), 0) ? ts("True") : ts("False"));
-  }
-
-  if (ini.write_float(ts("KeyFloat"), 7.02f))
-  {
-    _tprintf(ts("KeyFloat = %.2f\n"), ini.read_float(ts("KeyFloat"), 0.F));
-  }
-
-  if (ini.write_string(ts("KeyString"), ts("Vic P.")))
-  {
-    std::tstring s = ini.read_string(ts("KeyString"), ts(""));
-    _tprintf(ts("KeyString = '%s'\n"), s.c_str());
-  }
-
-  struct sStruct
+  struct struct_t
   {
     char a;
     int b;
     float c;
-  } Input =
+  };
+
+  struct_t object =
   {
     'X',
     702,
     7.02f
   };
 
-  if (ini.write_struct(ts("KeyStruct"), &Input, sizeof(Input)))
+  if (auto section = ini.section(ts("section")))
   {
-    std::shared_ptr<void> p = ini.read_struct(ts("KeyStruct"), sizeof(sStruct));
-    auto output = (sStruct*)p.get();
-    _tprintf(ts("Value = [%c, %d, %.2f]\n"), output->a, output->b, output->c);
+    section->write(ts("int"), -32);
+    section->write(ts("uint"), 32);
+    section->write(ts("int64"), -64);
+    section->write(ts("uint64"), 64);
+    section->write(ts("bool"), true);
+    section->write(ts("float"), 7.02F);
+    section->write(ts("double"), 16.09);
+    section->write(ts("string"), ts("string"));
+    section->write(ts("object"), &object, sizeof(object));
   }
+
+  std::cout << std::endl;
+
+  std::vector<std::tstring> section_names;
+  if (ini.read_section_names(section_names))
+  {
+    for (auto& section_name : section_names)
+    {
+      std::tcout << section_name << std::endl;
+    }
+  }
+
+  std::cout << std::endl;
+
+  if (auto section = ini.section(ts("section")))
+  {
+    std::tcout << section->read(ts("int")).to_int() << std::endl;
+    std::tcout << section->read(ts("uint")).to_int() << std::endl;
+    std::tcout << section->read(ts("int64")).to_int64() << std::endl;
+    std::tcout << section->read(ts("uint64")).to_uint64() << std::endl;
+    std::tcout << section->read(ts("bool")).to_bool() << std::endl;
+    std::tcout << section->read(ts("float")).to_float() << std::endl;
+    std::tcout << section->read(ts("double")).to_double() << std::endl;
+    std::tcout << section->read(ts("string")).to_string() << std::endl;
+    auto pbytes = section->read(ts("object")).to_bytes();
+    auto object = *(struct_t*)pbytes.get();
+    std::tcout << object.a << ts("|") << object.b << ts("|") << object.c << std::endl;
+  }
+
+  std::cout << std::endl;
 
   return vu::VU_OK;
 }

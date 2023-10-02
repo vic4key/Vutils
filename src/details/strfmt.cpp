@@ -664,7 +664,7 @@ VariantT<T>::VariantT()
 }
 
 template <class T>
-VariantT<T>::VariantT(VariantT& right)
+VariantT<T>::VariantT(const VariantT& right)
 {
   *this = right;
 }
@@ -681,7 +681,7 @@ bool vu::VariantT<T>::empty() const
 }
 
 template <class T>
-VariantT<T>& VariantT<T>::operator=(VariantT<T>& right)
+VariantT<T>& VariantT<T>::operator=(const VariantT<T>& right)
 {
   if (this != &right)
   {
@@ -783,7 +783,7 @@ VariantA::VariantA() : VariantT()
 {
 }
 
-VariantA::VariantA(VariantA& right) : VariantT(right)
+VariantA::VariantA(const VariantA& right) : VariantT(right)
 {
 }
 
@@ -806,7 +806,7 @@ VariantW::VariantW() : VariantT()
 {
 }
 
-VariantW::VariantW(VariantW& right) : VariantT(right)
+VariantW::VariantW(const VariantW& right) : VariantT(right)
 {
 }
 

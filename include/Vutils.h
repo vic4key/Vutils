@@ -1074,10 +1074,10 @@ class VariantT
 {
 public:
   VariantT();
-  VariantT(VariantT& right);
+  VariantT(const VariantT& right);
   virtual ~VariantT();
 
-  VariantT& operator=(VariantT& right);
+  VariantT& operator=(const VariantT& right);
 
   T& data()
   {
@@ -1112,7 +1112,7 @@ class VariantA : public VariantTA
 {
 public:
   VariantA();
-  VariantA(VariantA& right);
+  VariantA(const VariantA& right);
   virtual ~VariantA();
 
   std::string to_string() const;
@@ -1124,7 +1124,7 @@ class VariantW : public VariantTW
 {
 public:
   VariantW();
-  VariantW(VariantW& right);
+  VariantW(const VariantW& right);
   virtual ~VariantW();
 
   std::wstring to_string() const;
@@ -2097,6 +2097,56 @@ public:
  * INI File
  */
 
+template <class INIFileX, class VariantX, class StringT>
+class INISectionT
+{
+public:
+  INISectionT(INIFileX& ini, const StringT& section) : m_ini(ini), m_section(section) {}
+  virtual ~INISectionT() {}
+
+  VariantX read(const StringT& key)
+  {
+    return m_ini.read(m_section, key);
+  }
+
+  template <typename T>
+  bool write(const StringT& key, const T val)
+  {
+    VariantX var;
+    var << val;
+    return this->write_variant(key, var);
+  }
+
+  template <typename Ptr>
+  bool write(const std::string& key, const Ptr ptr, const size_t size)
+  {
+    VariantA var;
+    var << to_hex_string_A((const byte*)ptr, size);
+    return this->write_variant(key, var);
+  }
+
+  template <typename Ptr>
+  bool write(const std::wstring& key, const Ptr ptr, const size_t size)
+  {
+    VariantW var;
+    var << to_hex_string_W((const byte*)ptr, size);
+    return this->write_variant(key, var);
+  }
+
+protected:
+  bool write_variant(const StringT& key, const VariantX& var)
+  {
+    return m_ini.write_string(m_section, key, var.to_string());
+  }
+
+protected:
+  INIFileX& m_ini;
+  StringT m_section;
+};
+
+#define INISectionTA INISectionT<INIFileA, VariantA, std::string>
+#define INISectionTW INISectionT<INIFileW, VariantW, std::wstring>
+
 class INIFileA : public LastError
 {
 public:
@@ -2104,48 +2154,27 @@ public:
   INIFileA(const std::string& file_path);
   virtual ~INIFileA();
 
-  void set_current_file_path(const std::string& file_path);
-  void set_current_section(const std::string& section);
+  class Section : public INISectionTA
+  {
+  public:
+    Section(INIFileA& ini, const std::string& section) : INISectionT(ini, section) {}
+    virtual ~Section() {}
+  };
 
-  std::vector<std::string> vuapi read_section(const std::string& section, ulong max_size = MAXBYTE);
-  std::vector<std::string> vuapi read_current_section(ulong max_size = MAXBYTE);
+  friend class INISectionTA;
 
-  std::vector<std::string> vuapi read_section_names(ulong max_size = MAXBYTE);
+  std::unique_ptr<Section> section(const std::string& name);
+  bool read_section_names(std::vector<std::string>& section_names, const ulong max_chars = KiB);
 
-  int vuapi read_integer(const std::string& section, const std::string& key, int default_value);
-  bool vuapi read_bool(const std::string& section, const std::string& key, bool default_value);
-  float vuapi read_float(const std::string& section, const std::string& key, float default_value);
-  std::string vuapi read_string(
-    const std::string& section, const std::string& key, const std::string& default_value);
-  std::unique_ptr<uchar[]> vuapi read_struct(
-    const std::string& section, const std::string& key, ulong size);
+  VariantA read(const std::string& section, const std::string& key);
+  bool write(const std::string& section, const std::string& key, const VariantA& var);
 
-  int vuapi read_integer(const std::string& key, int default_value);
-  bool vuapi read_bool(const std::string& key, bool default_value);
-  float vuapi read_float(const std::string& key, float default_value);
-  std::string vuapi read_string(const std::string& key, const std::string& default_value);
-  std::unique_ptr<uchar[]> vuapi read_struct(const std::string& key, ulong size);
+protected:
+  std::string read_string(const std::string& section, const std::string& key, const std::string& def);
+  bool write_string(const std::string& section, const std::string& key, const std::string& val);
 
-  bool vuapi write_integer(const std::string& section, const std::string& key, int value);
-  bool vuapi write_bool(const std::string& section, const std::string& key, bool value);
-  bool vuapi write_float(const std::string& section, const std::string& key, float value);
-  bool vuapi write_string(
-    const std::string& section, const std::string& key, const std::string& Value);
-  bool vuapi write_struct(
-    const std::string& section, const std::string& key, void* ptr_struct, ulong size);
-
-  bool vuapi write_integer(const std::string& key, int value);
-  bool vuapi write_bool(const std::string& key, bool value);
-  bool vuapi write_float(const std::string& key, float value);
-  bool vuapi write_string(const std::string& key, const std::string& value);
-  bool vuapi write_struct(const std::string& key, void* ptr_struct, ulong size);
-
-private:
-  void update_file_path();
-
-private:
+protected:
   std::string m_file_path;
-  std::string m_section;
 };
 
 class INIFileW : public LastError
@@ -2155,48 +2184,27 @@ public:
   INIFileW(const std::wstring& file_path);
   virtual ~INIFileW();
 
-  void set_current_file_path(const std::wstring& file_path);
-  void set_current_section(const std::wstring& section);
+  class Section : public INISectionTW
+  {
+  public:
+    Section(INIFileW& ini, const std::wstring& section) : INISectionT(ini, section) {}
+    virtual ~Section() {}
+  };
 
-  std::vector<std::wstring> vuapi read_section(const std::wstring& section, ulong max_size = MAXBYTE);
-  std::vector<std::wstring> vuapi read_current_section(ulong max_size = MAXBYTE);
+  friend class INISectionTW;
 
-  std::vector<std::wstring> vuapi read_section_names(ulong max_size = MAXBYTE);
+  std::unique_ptr<Section> section(const std::wstring& name);
+  bool read_section_names(std::vector<std::wstring>& section_names, const ulong max_chars = KiB);
 
-  int vuapi read_integer(const std::wstring& section, const std::wstring& key, int default_value);
-  bool vuapi read_bool(const std::wstring& section, const std::wstring& key, bool default_value);
-  float vuapi read_float(const std::wstring& section, const std::wstring& key, float default_value);
-  std::wstring vuapi read_string(
-    const std::wstring& section, const std::wstring& key, const std::wstring& default_value);
-  std::unique_ptr<uchar[]> vuapi read_struct(
-    const std::wstring& section, const std::wstring& key, ulong size);
+  VariantW read(const std::wstring& section, const std::wstring& key);
+  bool write(const std::wstring& section, const std::wstring& key, const VariantW& var);
 
-  int vuapi read_integer(const std::wstring& key, int default_value);
-  bool vuapi read_bool(const std::wstring& key, bool default_value);
-  float vuapi read_float(const std::wstring& key, float default_value);
-  std::wstring vuapi read_string(const std::wstring& key, const std::wstring& default_value);
-  std::unique_ptr<uchar[]> vuapi read_struct(const std::wstring& key, ulong size);
+protected:
+  std::wstring read_string(const std::wstring& section, const std::wstring& key, const std::wstring& def);
+  bool write_string(const std::wstring& section, const std::wstring& key, const std::wstring& val);
 
-  bool vuapi write_integer(const std::wstring& section, const std::wstring& key, int value);
-  bool vuapi write_bool(const std::wstring& section, const std::wstring& key, bool value);
-  bool vuapi write_float(const std::wstring& section, const std::wstring& key, float value);
-  bool vuapi write_string(
-    const std::wstring& section, const std::wstring& key, const std::wstring& value);
-  bool vuapi write_struct(
-    const std::wstring& section, const std::wstring& key, void* ptr_struct, ulong size);
-
-  bool vuapi write_integer(const std::wstring& key, int value);
-  bool vuapi write_bool(const std::wstring& key, bool value);
-  bool vuapi write_float(const std::wstring& key, float value);
-  bool vuapi write_string(const std::wstring& key, const std::wstring& value);
-  bool vuapi write_struct(const std::wstring& key, void* ptr_struct, ulong size);
-
-private:
-  void update_file_path();
-
-private:
+protected:
   std::wstring m_file_path;
-  std::wstring m_section;
 };
 
 /**
