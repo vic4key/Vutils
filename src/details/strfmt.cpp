@@ -712,7 +712,7 @@ unsigned int VariantT<T>::to_uint() const
 template <class T>
 __int64 VariantT<T>::to_int64() const
 {
-  long long int result = 0;
+  __int64 result = 0;
   *m_data >> result;
   return result;
 }
