@@ -1084,8 +1084,8 @@ public:
     return *m_data;
   }
 
-  template<typename T>
-  friend VariantT& operator<<(VariantT& stream, T v)
+  template<typename V>
+  friend VariantT& operator<<(VariantT& stream, V v)
   {
     stream.data() << v;
     return stream;

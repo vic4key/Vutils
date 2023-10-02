@@ -752,11 +752,11 @@ std::unique_ptr<byte[]> VariantT<T>::to_bytes() const
 {
   std::vector<byte> bytes;
 
-  if (typeid(typename T) == typeid(std::stringstream))
+  if (typeid(T) == typeid(std::stringstream))
   {
     to_hex_bytes_A((const char*)m_data->str().c_str(), bytes);
   }
-  else if (typeid(typename T) == typeid(std::wstringstream))
+  else if (typeid(T) == typeid(std::wstringstream))
   {
     to_hex_bytes_W((const wchar_t*)m_data->str().c_str(), bytes);
   }
@@ -779,8 +779,6 @@ std::unique_ptr<byte[]> VariantT<T>::to_bytes() const
  * VariantA
  */
 
-template VariantTA;
-
 VariantA::VariantA() : VariantT()
 {
 }
@@ -798,11 +796,11 @@ std::string VariantA::to_string() const
   return m_data->str();
 }
 
+template class VariantTA;
+
 /**
  * VariantW
  */
-
-template class VariantTW;
 
 VariantW::VariantW() : VariantT()
 {
@@ -820,6 +818,8 @@ std::wstring VariantW::to_string() const
 {
   return m_data->str();
 }
+
+template class VariantTW;
 
 #ifdef _MSC_VER
 #pragma warning(pop)
