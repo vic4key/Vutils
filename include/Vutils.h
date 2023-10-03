@@ -327,6 +327,10 @@ std::wstring vuapi regex_replace_string_W(
   const std::wregex& pattern,
   const std::wstring& replacement,
   std::regex_constants::match_flag_type flags = std::regex_constants::match_default);
+std::string vuapi find_closest_string_A(
+  const std::string& string, const std::vector<std::string>& string_list);
+std::wstring vuapi find_closest_string_W(
+  const std::wstring& string, const std::vector<std::wstring>& string_list);
 
 /**
  * Process Working
@@ -764,6 +768,7 @@ void vuapi crypt_sha_buffer(
 #define contains_string contains_string_W
 #define compare_string compare_string_W
 #define regex_replace_string regex_replace_string_W
+#define find_closest_string find_closest_string_W
 /* Window Working */
 #define get_font get_font_W
 #define get_monitors get_monitors_W
@@ -837,6 +842,7 @@ void vuapi crypt_sha_buffer(
 #define contains_string contains_string_A
 #define compare_string compare_string_A
 #define regex_replace_string regex_replace_string_A
+#define find_closest_string find_closest_string_A
 /* Window Working */
 #define get_font get_font_A
 #define get_monitors get_monitors_A

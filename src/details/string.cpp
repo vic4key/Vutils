@@ -653,6 +653,71 @@ std::wstring vuapi regex_replace_string_W(
   return result;
 }
 
+template<class StringT>
+StringT vuapi find_closest_string_T(const StringT& string, const std::vector<StringT>& string_list)
+{
+  if (string_list.empty())
+  {
+    return StringT();
+  }
+
+  auto fn_find_max_common_sub_string_length = [&](const StringT& a, const StringT& b) -> size_t
+  {
+    size_t result = 0;
+
+    size_t n = a.length();
+    size_t m = b.length();
+    std::vector<std::vector<size_t>> length_table(n + 1, std::vector<size_t>(m + 1, 0));
+
+    for (size_t i = 1; i <= n; i++)
+    {
+      for (size_t j = 1; j <= m; j++)
+      {
+        if (a[i - 1] == b[j - 1])
+        {
+          length_table[i][j] = length_table[i - 1][j - 1] + 1;
+          if (length_table[i][j] > result)
+          {
+            result = length_table[i][j];
+          }
+        }
+        else
+        {
+          length_table[i][j] = 0;
+        }
+      }
+    }
+
+    return result;
+  };
+
+  size_t max_val = 0;
+  size_t max_idx = 0;
+  for (size_t i = 0; i < string_list.size(); ++i)
+  {
+    size_t const dist = fn_find_max_common_sub_string_length(string_list[i], string);
+    if (dist > max_val)
+    {
+      max_val = dist;
+      max_idx = i;
+    }
+  }
+
+  return max_idx >= 0 ? string_list[max_idx] : string_list[0];
+}
+
+std::string vuapi find_closest_string_A(
+  const std::string& string, const std::vector<std::string>& string_list)
+{
+  return find_closest_string_T<std::string>(string, string_list);
+}
+
+std::wstring vuapi find_closest_string_W(
+  const std::wstring& string, const std::vector<std::wstring>& string_list)
+{
+  return find_closest_string_T<std::wstring>(string, string_list);
+}
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif // _MSC_VER
