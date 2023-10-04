@@ -15,17 +15,31 @@ jobs:
   build:
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+    - name: Restore MinGW Build Environment
+      id: Restore-MinGW-Build-Environment
+      uses: actions/cache/restore@v3
+      with:
+        path: C:\ProgramData\chocolatey\lib\mingw\tools\install
+        key: ${{ runner.os }}-MinGW
+        restore-keys: ${{ runner.os }}-MinGW
     - name: Setup MinGW Build Environment
+      if: steps.Restore-MinGW-Build-Environment.outputs.cache-hit != 'true'
       uses: egor-tensin/setup-mingw@v2
       with:
         platform: x64
         version: '12.2.0'
+    - name: Store MinGW Build Environment
+      if: steps.Restore-MinGW-Build-Environment.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v3
+      with:
+        path: C:\ProgramData\chocolatey\lib\mingw\tools\install
+        key: ${{ runner.os }}-MinGW
     - name: Verify MinGW Build Environment
       shell: cmd
       run: |
         ECHO.
-        g++ --version
+        G++ --version
     - name: Perform Building
       working-directory: ${{env.GITHUB_WORKSPACE}}
       shell: cmd
