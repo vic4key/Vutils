@@ -41,7 +41,7 @@ It helps your programming go easier, faster and simpler.
 * [File Mapping](<https://docs.microsoft.com/en-us/windows/win32/memory/file-mapping>)
 * [IAT/INL API Hooking](<https://en.wikipedia.org/wiki/Hooking>)
 * [Windows Message Hooking](<https://docs.microsoft.com/en-us/windows/win32/winmsg/hooks>)
-* [Critical Section](<https://en.wikipedia.org/wiki/Critical_section>)
+* [Thread Lock, Thread Signal](<https://en.wikipedia.org/wiki/Critical_section>)
 * [Debouncer](<https://www.educative.io/edpresso/how-to-use-the-debounce-function-in-javascript>)
 * [Singleton Template](<https://en.wikipedia.org/wiki/Singleton_pattern>)
 * [Input Dialog](<https://www.google.com/search?q=input+dialog&source=lnms&tbm=isch>)

@@ -90,6 +90,7 @@
 #endif // _WIN_SVC_
 
 #include <set>
+#include <map>
 #include <cmath>
 #include <ctime>
 #include <mutex>
@@ -2411,6 +2412,23 @@ public:
 private:
   CRITICAL_SECTION m_cs;
 };
+
+/**
+ * GlobalThreadLock
+ */
+
+class _GlobalThreadLock
+{
+public:
+  _GlobalThreadLock(int thread_lock_id);
+  virtual ~_GlobalThreadLock();
+
+private:
+  int m_thread_lock_id;
+  static std::map<int, std::unique_ptr<ThreadLock>> m_list;
+};
+
+#define ScopedThreadLock() _GlobalThreadLock _scoped_thread_lock(__COUNTER__)
 
 /**
  * ThreadSignal

@@ -9,6 +9,10 @@
 namespace vu
 {
 
+/**
+ * ThreadLock
+ */
+
 ThreadLock::ThreadLock()
 {
   memset(&m_cs, 0, sizeof(m_cs));
@@ -29,6 +33,37 @@ void vuapi ThreadLock::unlock()
 {
   LeaveCriticalSection(&m_cs);
 }
+
+/**
+ * GlobalThreadLock
+ */
+
+std::map<int, std::unique_ptr<ThreadLock>> _GlobalThreadLock::m_list;
+
+_GlobalThreadLock::_GlobalThreadLock(int thread_lock_id) : m_thread_lock_id(thread_lock_id)
+{
+  auto it = m_list.find(thread_lock_id);
+  if (it == m_list.cend())
+  {
+    m_thread_lock_id = thread_lock_id;
+    m_list[m_thread_lock_id].reset(new ThreadLock());
+  }
+
+  m_list[m_thread_lock_id]->lock();
+}
+
+_GlobalThreadLock::~_GlobalThreadLock()
+{
+  if (m_thread_lock_id != -1)
+  {
+    m_list[m_thread_lock_id]->unlock();
+    //m_list.erase(m_thread_lock_id);
+  }
+}
+
+/**
+ * ThreadSignal
+ */
 
 ThreadSignal::ThreadSignal(bool waiting)
 {
