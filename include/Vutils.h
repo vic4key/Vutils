@@ -2396,7 +2396,7 @@ private:
 };
 
 /**
- * CriticalSection
+ * ThreadLock
  */
 
 class ThreadLock
@@ -2410,6 +2410,35 @@ public:
 
 private:
   CRITICAL_SECTION m_cs;
+};
+
+/**
+ * ThreadSignal
+ */
+
+class ThreadSignal
+{
+public:
+  ThreadSignal(const bool waiting = false);
+  ThreadSignal(const ThreadSignal& right);
+
+  virtual ~ThreadSignal();
+
+  operator bool() const;
+  bool get() const;
+  void set(bool waiting);
+  void notify();
+  bool wait(ulong time_out = INFINITE) const;
+
+  bool operator==(ThreadSignal& right);
+  bool operator!=(ThreadSignal& right);
+  bool operator==(bool waiting);
+  bool operator!=(bool waiting);
+  const ThreadSignal& operator=(bool waiting);
+  const ThreadSignal& operator=(const ThreadSignal& right);
+
+private:
+  HANDLE m_event;
 };
 
 /**
