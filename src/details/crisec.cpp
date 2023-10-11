@@ -9,33 +9,25 @@
 namespace vu
 {
 
-CriticalSection::CriticalSection()
+ThreadLock::ThreadLock()
 {
   memset(&m_cs, 0, sizeof(m_cs));
-}
-
-CriticalSection::~CriticalSection()
-{
-}
-
-void vuapi CriticalSection::initialize()
-{
   InitializeCriticalSection(&m_cs);
 }
 
-void vuapi CriticalSection::lock()
+ThreadLock::~ThreadLock()
+{
+  DeleteCriticalSection(&m_cs);
+}
+
+void vuapi ThreadLock::lock()
 {
   EnterCriticalSection(&m_cs);
 }
 
-void vuapi CriticalSection::unlock()
+void vuapi ThreadLock::unlock()
 {
   LeaveCriticalSection(&m_cs);
-}
-
-void vuapi CriticalSection::destroy()
-{
-  DeleteCriticalSection(&m_cs);
 }
 
 } // namespace vu

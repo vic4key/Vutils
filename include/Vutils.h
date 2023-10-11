@@ -2399,18 +2399,14 @@ private:
  * CriticalSection
  */
 
-class CriticalSection
+class ThreadLock
 {
 public:
-  CriticalSection();
-  virtual ~CriticalSection();
+  ThreadLock();
+  virtual ~ThreadLock();
 
-  void vuapi lock();
-  void vuapi unlock();
-
-private:
-  void vuapi initialize();
-  void vuapi destroy();
+  void lock();
+  void unlock();
 
 private:
   CRITICAL_SECTION m_cs;
