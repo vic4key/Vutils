@@ -2962,7 +2962,7 @@ public:
   void label(const std::wstring& label);
   VariantW& input();
 
-  INT_PTR do_modal();
+  bool do_modal();
 
   static LRESULT CALLBACK DlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 

@@ -482,9 +482,9 @@ vu::VariantW& InputDialog::input()
   return m_input;
 }
 
-INT_PTR InputDialog::do_modal()
+bool InputDialog::do_modal()
 {
-  return WDTDialog::do_modal(DLGPROC(DlgProc), this);
+  return WDTDialog::do_modal(DLGPROC(DlgProc), this) == IDOK;
 }
 
 LRESULT CALLBACK InputDialog::DlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
