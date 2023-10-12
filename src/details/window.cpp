@@ -406,7 +406,7 @@ INT_PTR WDTDialog::do_modal(DLGPROC pfn_dlg_proc, WDTDialog* ptr_parent)
   GlobalUnlock(m_hglobal);
 
   auto ret = DialogBoxIndirectParamA(
-    GetModuleHandle(0), LPDLGTEMPLATE(m_hglobal), 0, pfn_dlg_proc, LPARAM(ptr_parent));
+    GetModuleHandle(0), LPDLGTEMPLATE(m_hglobal), m_hwnd_parent, pfn_dlg_proc, LPARAM(ptr_parent));
 
   m_last_error_code = GetLastError();
 
@@ -507,9 +507,23 @@ LRESULT CALLBACK InputDialog::DlgProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
     RECT rc = { 0 };
     GetWindowRect(hwnd, &rc);
-    int X = (GetSystemMetrics(SM_CXSCREEN) - rc.right)  / 2;
-    int Y = (GetSystemMetrics(SM_CYSCREEN) - rc.bottom) / 2;
-    SetWindowPos(hwnd, nullptr, X, Y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+    int x = -(rc.right  - rc.left) / 2;
+    int y = -(rc.bottom - rc.top)  / 2;
+
+    if (auto hwnd_parent = GetParent(hwnd))
+    {
+      RECT rc = { 0 };
+      GetWindowRect(hwnd_parent, &rc);
+      x += rc.left + (rc.right  - rc.left) / 2;
+      y += rc.top  + (rc.bottom - rc.top)  / 2;
+    }
+    else
+    {
+      x += GetSystemMetrics(SM_CXSCREEN) / 2;
+      y += GetSystemMetrics(SM_CYSCREEN) / 2;
+    }
+
+    SetWindowPos(hwnd, nullptr, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 
     SetFocus(GetDlgItem(hwnd, ptr_self->IDC_INPUT));
   }
