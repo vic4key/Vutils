@@ -346,5 +346,8 @@
     <None Include="include\template\nameop.tpl">
       <Filter>Header Files\Template Files</Filter>
     </None>
+    <None Include="include\template\handle.tpl">
+      <Filter>Header Files\Template Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

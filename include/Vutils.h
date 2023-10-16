@@ -3293,6 +3293,17 @@ private:
 #include "template/stlthread.tpl"
 
 /**
+ * Scoped_<handle>
+ */
+
+#if defined(_MSC_VER)
+#include "template/handle.tpl"
+ScopedHandleT_Define(HANDLE, HANDLE, INVALID_HANDLE_VALUE, { CloseHandle(h); });
+ScopedHandleT_Define(NULL_HANDLE, HANDLE, nullptr, { CloseHandle(h); });
+ScopedHandleT_Define(FILE, FILE*, nullptr, { fclose(h); });
+#endif // _MSC_VER
+
+/**
  * Path
  */
 

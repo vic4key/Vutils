@@ -399,6 +399,7 @@
     <None Include="include\inline\std.inl" />
     <None Include="include\inline\types.inl" />
     <None Include="include\inline\spechrs.inl" />
+    <None Include="include\template\handle.tpl" />
     <None Include="include\template\math.tpl" />
     <None Include="include\template\misc.tpl" />
     <None Include="include\template\nameop.tpl" />
