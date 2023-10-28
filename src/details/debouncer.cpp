@@ -12,6 +12,11 @@ namespace vu
 ulongptr Debouncer::m_using_timer_id;
 std::unordered_map<ulongptr, Debouncer::Timer*> Debouncer::m_timers;
 
+Debouncer::~Debouncer()
+{
+  this->cleanup();
+}
+
 bool Debouncer::exists(ulongptr id)
 {
   auto it = m_timers.find(id);

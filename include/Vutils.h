@@ -3612,6 +3612,8 @@ public:
     Timer() : m_handle(0), m_function(nullptr) {}
   };
 
+  virtual ~Debouncer();
+
   void debounce(ulongptr id, ulong elapse, std::function<void()> fn);
   bool exists(ulongptr id);
   void remove(ulongptr id);
