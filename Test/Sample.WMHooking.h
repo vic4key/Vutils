@@ -6,10 +6,7 @@
 
 DEF_SAMPLE(WMHooking)
 {
-  // extern "C" __declspec(dllexport) LRESULT CALLBACK fnXProc(int nCode, WPARAM wParam, LPARAM lParam)
-  // {
-  //   return CallNextHookEx(nullptr, nCode, wParam, lParam);
-  // }
+  // @refer to source codes of exported callback functions (fnXProc) in `Test/Test.WH.DLL/dllmain.cpp`
 
   #define VU_STRINGIZE(s) ts( #s )
 
@@ -36,15 +33,15 @@ DEF_SAMPLE(WMHooking)
 
   std::tcout << ts("Enter to start Window Message hooking ...") << std::endl; _getch();
 
-  assert(wh.install(WH_CBT, UND(fnCBTProc)) == vu::VU_OK);
-  assert(wh.install(WH_MOUSE, UND(fnMouseProc)) == vu::VU_OK);
-  assert(wh.install(WH_KEYBOARD, UND(fnKeyboardProc)) == vu::VU_OK);
+  wh.install(WH_CBT, UND(fnCBTProc));
+  wh.install(WH_MOUSE, UND(fnMouseProc));
+  wh.install(WH_KEYBOARD, UND(fnKeyboardProc));
 
   std::tcout << ts("Enter to stop Window Message hooking ...") << std::endl; _getch();
 
-  assert(wh.uninstall(WH_CBT) == vu::VU_OK);
-  assert(wh.uninstall(WH_MOUSE) == vu::VU_OK);
-  assert(wh.uninstall(WH_KEYBOARD) == vu::VU_OK);
+  wh.uninstall(WH_CBT);
+  wh.uninstall(WH_MOUSE);
+  wh.uninstall(WH_KEYBOARD);
 
   return vu::VU_OK;
 }
