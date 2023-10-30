@@ -3296,12 +3296,13 @@ private:
  * Scoped_<handle>
  */
 
-#if defined(_MSC_VER)
+// C++14 (MSVC 2015+ or MinGW 5.1+)
+#if (defined(_MSC_VER) && _MSC_VER >= 1900) || (defined(__MINGW32__) && __cplusplus >= 201402L)
 #include "template/handle.tpl"
 ScopedHandleT_Define(HANDLE, HANDLE, INVALID_HANDLE_VALUE, { CloseHandle(h); });
 ScopedHandleT_Define(NULL_HANDLE, HANDLE, nullptr, { CloseHandle(h); });
 ScopedHandleT_Define(FILE, FILE*, nullptr, { fclose(h); });
-#endif // _MSC_VER
+#endif
 
 /**
  * Path

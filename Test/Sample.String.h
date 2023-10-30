@@ -92,7 +92,13 @@ DEF_SAMPLE(String)
     }
   }
 
-  std::vector<std::tstring> strings = { ts("ape"), ts("apple"), ts("peach"), ts("puppy") };
+  std::vector<std::tstring> strings;
+  {
+    strings.push_back(ts("ape"));
+    strings.push_back(ts("apple"));
+    strings.push_back(ts("peach"));
+    strings.push_back(ts("puppy"));
+  }
   auto closest_string = vu::find_closest_string(ts("aple"), strings);
   assert(closest_string == ts("apple"));
 

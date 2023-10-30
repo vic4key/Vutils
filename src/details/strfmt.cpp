@@ -771,7 +771,7 @@ std::unique_ptr<byte[]> VariantT<T>::to_bytes() const
   }
 
   std::unique_ptr<byte[]> result(new byte[bytes.size()]);
-  std::move(bytes.cbegin(), bytes.cend(), result.get());
+  for (size_t i = 0; i < bytes.size(); i++) result.get()[i] = bytes[i]; // std::move(bytes.cbegin(), bytes.cend(), result.get());
   return result;
 }
 

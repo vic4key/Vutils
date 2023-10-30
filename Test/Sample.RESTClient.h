@@ -23,7 +23,7 @@ DEF_SAMPLE(RESTClient)
   std::cout << response.text << std::endl;
 
   // create one
-  rest_client.post(ts("/api/v1/customers"), response, R"({"name":"name 5","phone":"phone 5"})", header);
+  rest_client.post(ts("/api/v1/customers"), response, "{\"name\":\"name 5\",\"phone\":\"phone 5\"}", header);
   std::cout << vu::decode_const_http_status_A(response.status) << std::endl;
   std::cout << response.text << std::endl;
 
@@ -33,7 +33,7 @@ DEF_SAMPLE(RESTClient)
   std::cout << response.text << std::endl;
 
   // update one
-  rest_client.put(ts("/api/v1/customers/5"), response, R"({"name":"name 5-x","phone":"phone 5-x"})", header);
+  rest_client.put(ts("/api/v1/customers/5"), response, "{\"name\":\"name 5-x\",\"phone\":\"phone 5-x\"}", header);
   std::cout << vu::decode_const_http_status_A(response.status) << std::endl;
   std::cout << response.text << std::endl;
 
