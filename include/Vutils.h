@@ -3717,4 +3717,4 @@ private:
 #define Vutils_SHOWN_LINKING
 
 #endif // _MSC_VER || __BCPLUSPLUS__
-#endif // Vutils_EXPORTS
+#endif // Vutils_EXPORTS && Vutils_SHOWN_LINKING
