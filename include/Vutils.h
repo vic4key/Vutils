@@ -163,6 +163,10 @@ using namespace WinHttpWrapper;
 
 #include "template/nameop.tpl"
 
+// Easy Print
+
+#include "template/easyprint.tpl"
+
 namespace vu
 {
 

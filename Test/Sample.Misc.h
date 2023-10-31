@@ -169,5 +169,12 @@ DEF_SAMPLE(Misc)
 
   MessageBoxA(nullptr, "This message box just keep for the program running...", "", MB_OK);
 
+  // Easy Print
+  {
+    auto pids = vu::name_to_pid(ts("explorer.exe"));
+    auto string = std::ep::stringify_container(pids);
+    std::tcout << string << std::endl;
+  }
+
   return vu::VU_OK;
 }

@@ -61,6 +61,9 @@
     <Filter Include="Third Party Files\TE">
       <UniqueIdentifier>{8ca70d61-cc68-42db-ad04-82ef7fe42ab8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Third Files\EP">
+      <UniqueIdentifier>{0e80967e-0e61-4762-98d0-e9774dcee22f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Vutils.h">
@@ -149,6 +152,9 @@
     </ClInclude>
     <ClInclude Include="3rdparty\TE\include\text_encoding_detect.h">
       <Filter>Third Party Files\TE</Filter>
+    </ClInclude>
+    <ClInclude Include="include\3rdparty\EP\include\easyprint.hpp">
+      <Filter>Header Files\Third Files\EP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -347,6 +353,9 @@
       <Filter>Header Files\Template Files</Filter>
     </None>
     <None Include="include\template\handle.tpl">
+      <Filter>Header Files\Template Files</Filter>
+    </None>
+    <None Include="include\template\easyprint.tpl">
       <Filter>Header Files\Template Files</Filter>
     </None>
   </ItemGroup>
