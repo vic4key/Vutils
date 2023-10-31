@@ -3686,20 +3686,35 @@ private:
 #endif // VUTILS_H
 
 /**
- * Automatic linking Vutils library when compiler performs building
+ * Automatically linking Vutils library when compiler performs building
  */
+
+#if !defined(Vutils_EXPORTS) && !defined(Vutils_SHOWN_LINKING)
 #if defined(_MSC_VER) || defined(__BCPLUSPLUS__)
+
 #if defined(_DLL) // MD & MDd
 #ifdef _DEBUG     // MDd
-#pragma comment(lib, "Vutils-MDd.lib")
+#define Vutils_LIB_NAME "Vutils-MDd.lib"
 #else             // MD
-#pragma comment(lib, "Vutils-MD.lib")
+#define Vutils_LIB_NAME "Vutils-MD.lib"
 #endif // _DEBUG
 #else             // MT & MTd
 #ifdef _DEBUG     // MTd
-#pragma comment(lib, "Vutils-MTd.lib")
+#define Vutils_LIB_NAME "Vutils-MTd.lib"
 #else             // MT
-#pragma comment(lib, "Vutils-MT.lib")
+#define Vutils_LIB_NAME "Vutils-MT.lib"
 #endif // _DEBUG
-#endif
 #endif // _DLL
+#pragma comment(lib, Vutils_LIB_NAME)
+
+#if defined(_M_X64) || defined(__x86_64__) // 64-bit
+#define Vutils_ARCH_NAME "64-bit"
+#else  // 32-bit
+#define Vutils_ARCH_NAME "32-bit"
+#endif // _M_X64 || __x86_64__
+
+#pragma message("Automatically linking with Vutils library ('" Vutils_LIB_NAME "' " Vutils_ARCH_NAME ")")
+#define Vutils_SHOWN_LINKING
+
+#endif // _MSC_VER || __BCPLUSPLUS__
+#endif // Vutils_EXPORTS
