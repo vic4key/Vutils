@@ -22,6 +22,83 @@ namespace vu
 
 #ifdef VU_INET_ENABLED
 
+/**
+ * Endpoint
+ */
+
+Endpoint::Endpoint(const std::string& endpoint)
+{
+  auto l = split_string_A(endpoint, ":");
+  if (l.size() != 2)
+  {
+    throw "invalid endpoint";
+  }
+  else
+  {
+    m_host = l[0];
+    m_port = ushort(std::stoul(l[1]));
+  }
+}
+
+Endpoint::Endpoint(const std::wstring& endpoint)
+{
+  auto temp = to_string_A(endpoint);
+  auto l = split_string_A(temp, ":");
+  if (l.size() != 2)
+  {
+    throw "invalid endpoint";
+  }
+  else
+  {
+    m_host = l[0];
+    m_port = ushort(std::stoul(l[1]));
+  }
+}
+
+Endpoint::Endpoint(const std::wstring& host, const ushort port) : m_port(port)
+{
+  m_host = to_string_A(host);
+}
+
+Endpoint::Endpoint(const std::string& host, const ushort port) : m_host(host), m_port(port)
+{
+}
+
+bool Endpoint::operator==(const Endpoint& right)
+{
+  return m_host == right.m_host && m_port == right.m_port;
+}
+
+bool Endpoint::operator!=(const Endpoint& right)
+{
+  return !(*this == right);
+}
+
+const vu::Endpoint& Endpoint::operator=(const Endpoint& right)
+{
+  m_host = right.m_host;
+  m_port = right.m_port;
+  return *this;
+}
+
+const vu::Endpoint& Endpoint::operator=(const std::string& right)
+{
+  Endpoint endpoint(right);
+  *this = endpoint;
+  return *this;
+}
+
+const vu::Endpoint& Endpoint::operator=(const std::wstring& right)
+{
+  Endpoint endpoint(right);
+  *this = endpoint;
+  return *this;
+}
+
+/**
+ * Socket
+ */
+
 Socket::Socket(
   const address_family_t af,
   const type_t type,
@@ -117,7 +194,7 @@ const Socket::protocol_t vuapi Socket::protocol() const
   return m_proto;
 }
 
-SOCKET& vuapi Socket::handle()
+const SOCKET& vuapi Socket::handle() const
 {
   return m_socket;
 }
@@ -186,7 +263,7 @@ VUResult vuapi Socket::enable_non_blocking(bool state)
 
 VUResult vuapi Socket::bind(const Endpoint& endpoint)
 {
-  return this->bind(endpoint.host, endpoint.port);
+  return this->bind(endpoint.m_host, endpoint.m_port);
 }
 
 VUResult vuapi Socket::bind(const std::string& address, const ushort port)
@@ -255,20 +332,15 @@ VUResult vuapi Socket::accept(Handle& socket)
 
 VUResult vuapi Socket::connect(const Endpoint& endpoint)
 {
-  return this->connect(endpoint.host, endpoint.port);
-}
-
-VUResult vuapi Socket::connect(const std::string& address, ushort port)
-{
   std::string ip;
 
-  if (this->is_host_name(address) == true)
+  if (this->is_host_name(endpoint.m_host) == true)
   {
-    ip = this->get_host_address(address);
+    ip = this->get_host_address(endpoint.m_host);
   }
   else
   {
-    ip = address;
+    ip = endpoint.m_host;
   }
 
   if (ip.empty())
@@ -277,7 +349,7 @@ VUResult vuapi Socket::connect(const std::string& address, ushort port)
   }
 
   m_sai.sin_addr.S_un.S_addr = inet_addr(ip.c_str());
-  m_sai.sin_port = htons(port);
+  m_sai.sin_port = htons(endpoint.m_port);
 
   if (::connect(m_socket, (const struct sockaddr*)&m_sai, sizeof(m_sai)) == SOCKET_ERROR)
   {

@@ -61,9 +61,9 @@ bool vuapi AsyncSocket::running()
   return m_running;
 }
 
-VUResult vuapi AsyncSocket::bind(const Socket::Endpoint& endpoint)
+VUResult vuapi AsyncSocket::bind(const Endpoint& endpoint)
 {
-  return this->bind(endpoint.host, endpoint.port);
+  return this->bind(endpoint.m_host, endpoint.m_port);
 }
 
 VUResult vuapi AsyncSocket::bind(const std::string& address, const ushort port)
@@ -132,7 +132,7 @@ VUResult vuapi AsyncSocket::stop()
   return VU_OK;
 }
 
-VUResult vuapi AsyncSocket::connect(const Socket::Endpoint& endpoint)
+VUResult vuapi AsyncSocket::connect(const Endpoint& endpoint)
 {
   if (!m_socket.available())
   {
@@ -165,7 +165,7 @@ VUResult vuapi AsyncSocket::connect(const Socket::Endpoint& endpoint)
 
 VUResult vuapi AsyncSocket::connect(const std::string& address, const ushort port)
 {
-  Socket::Endpoint endpoint(address, port);
+  Endpoint endpoint(address, port);
   return this->connect(endpoint);
 }
 

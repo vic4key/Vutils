@@ -18,7 +18,7 @@ DEF_SAMPLE(Socket)
 
   vu::Socket socket;
 
-  if (socket.connect("ipv4.download.thinkbroadband.com", 80) != vu::VU_OK)
+  if (socket.connect(vu::Endpoint("ipv4.download.thinkbroadband.com", 80)) != vu::VU_OK)
   {
     std::tcout << ts("Socket -> Connect -> Failed") << std::endl;
     return 1;

@@ -1200,6 +1200,23 @@ private:
 #define VU_DEFAULT_SEND_RECV_TIMEOUT 3 // 3 seconds
 #define VU_DEFAULT_SEND_RECV_BLOCK_SIZE KiB // 1 KiB
 
+struct Endpoint
+{
+  std::string m_host;
+  ushort m_port;
+
+  Endpoint(const std::string&  endpoint);
+  Endpoint(const std::wstring& endpoint);
+  Endpoint(const std::string&  host, const ushort port);
+  Endpoint(const std::wstring& host, const ushort port);
+
+  bool operator==(const Endpoint& right);
+  bool operator!=(const Endpoint& right);
+  const Endpoint& operator=(const Endpoint& right);
+  const Endpoint& operator=(const std::string&  right);
+  const Endpoint& operator=(const std::wstring& right);
+};
+
 class Socket : public LastError
 {
 public:
@@ -1214,14 +1231,6 @@ public:
     SOCKET s;
     sockaddr_in sai;
     char ip[15];
-  };
-
-  struct Endpoint
-  {
-    std::string host;
-    ushort port;
-
-    Endpoint(const std::string& host, const ushort port) : host(host), port(port) {}
   };
 
   struct Options
@@ -1247,7 +1256,7 @@ public:
   );
   virtual ~Socket();
 
-  SOCKET& vuapi handle();
+  const SOCKET& vuapi handle() const;
   const WSADATA& vuapi wsa_data() const;
   const address_family_t vuapi af() const;
   const type_t vuapi type() const;
@@ -1266,8 +1275,6 @@ public:
   VUResult vuapi accept(Handle& socket);
 
   VUResult vuapi connect(const Endpoint& endpoint);
-  VUResult vuapi connect(const std::string& address, const ushort port);
-
   VUResult vuapi disconnect(const shutdowns_t flags = SD_BOTH);
 
   IResult vuapi send(const char* ptr_data, int size, const flags_t flags = MSG_NONE);
@@ -1351,10 +1358,10 @@ public:
    * https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsaeventselect?redirectedfrom=MSDN#return-value
    * Note: After connected (FD_CONNECT), client will be auto generated first event FD_WRITE.
    */
-  VUResult vuapi connect(const Socket::Endpoint& endpoint);
+  VUResult vuapi connect(const Endpoint& endpoint);
   VUResult vuapi connect(const std::string& address, const ushort port);
 
-  VUResult vuapi bind(const Socket::Endpoint& endpoint);
+  VUResult vuapi bind(const Endpoint& endpoint);
   VUResult vuapi bind(const std::string& address, const ushort port);
 
   /**
