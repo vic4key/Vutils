@@ -1256,6 +1256,10 @@ public:
   );
   virtual ~Socket();
 
+  bool  operator==(const Socket& right);
+  bool  operator!=(const Socket& right);
+  const Socket& operator=(const Socket& right);
+
   const SOCKET& vuapi handle() const;
   const WSADATA& vuapi wsa_data() const;
   const address_family_t vuapi af() const;

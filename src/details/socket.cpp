@@ -140,6 +140,36 @@ Socket::~Socket()
   m_last_error_code = GetLastError();
 }
 
+bool Socket::operator==(const Socket& right)
+{
+  return m_socket == m_socket;
+}
+
+bool Socket::operator!=(const Socket& right)
+{
+  return !(*this == right);
+}
+
+const vu::Socket& Socket::operator=(const Socket& right)
+{
+  if (this == &right)
+  {
+    return *this;
+  }
+
+  m_wsa = right.m_wsa;
+  m_type = right.m_type;
+  m_wsa_data = right.m_wsa_data;
+  m_af = right.m_af;
+  m_proto = right.m_proto;
+  m_sai = right.m_sai;
+  m_socket = right.m_socket;
+  m_options = right.m_options;
+  m_self = right.m_self;
+
+  return *this;
+}
+
 bool vuapi Socket::valid(const SOCKET& socket)
 {
   return !(socket == 0 || socket == INVALID_SOCKET);
