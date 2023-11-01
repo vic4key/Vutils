@@ -169,15 +169,13 @@ DEF_SAMPLE(Misc)
 
   MessageBoxA(nullptr, "This message box just keep for the program running...", "", MB_OK);
 
-  // Easy Print
-  // C++14 (MSVC 2015+ or MinGW 5.1+)
-  #if (defined(_MSC_VER) && _MSC_VER >= 1900) || (defined(__MINGW32__) && __cplusplus >= 201402L)
+  #ifdef VU_HAS_EASY_PRINT
   {
     auto pids = vu::name_to_pid(ts("explorer.exe"));
     auto string = std::ep::stringify_container(pids);
     std::tcout << string << std::endl;
   }
-  #endif // C++14 (MSVC 2015+ or MinGW 5.1+)
+  #endif // VU_HAS_EASY_PRINT
 
   return vu::VU_OK;
 }
