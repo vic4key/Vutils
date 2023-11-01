@@ -10,6 +10,9 @@
 
 #pragma once
 
+// C++14 (MSVC 2015+ or MinGW 5.1+)
+#if (defined(_MSC_VER) && _MSC_VER >= 1900) || (defined(__MINGW32__) && __cplusplus >= 201402L)
+
 #define EASY_PRINT_WINDOWS
 #include "3rdparty/EP/include/easyprint.hpp"
 
@@ -36,3 +39,5 @@ std::wstring stringify_container_W(const T& container)
 #else // _UNICODE
 #define stringify_container stringify_container_A
 #endif // _UNICODE
+
+#endif // C++14 (MSVC 2015+ or MinGW 5.1+)

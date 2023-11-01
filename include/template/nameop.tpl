@@ -38,4 +38,4 @@ static auto in = base::make_named_operator(op_impl::in_t());
 
 #define VU_HAS_STD_OP
 
-#endif
+#endif // C++14 (MSVC 2015+ or MinGW 5.1+)
