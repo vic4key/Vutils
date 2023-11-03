@@ -218,6 +218,7 @@ bool vuapi use_std_io_console_window();
 bool vuapi is_flag_on(ulongptr flags, ulongptr flag);
 intptr vuapi gcd(ulongptr count, ...); // UCLN
 intptr vuapi lcm(ulongptr count, ...); // BCNN
+float vuapi fast_sqrtf(const float number); // Estimates the square root of a 32-bit floating-point number (from Quake III Arena)
 void vuapi hex_dump(const void* data, int size);
 
 #include "template/math.tpl"
