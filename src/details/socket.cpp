@@ -623,17 +623,29 @@ VUResult vuapi Socket::close()
   return VU_OK;
 }
 
-VUResult vuapi Socket::disconnect(const shutdowns_t flags)
+VUResult vuapi Socket::disconnect(const shutdowns_t flags, const bool cleanup)
 {
   if (!this->available())
   {
     return 1;
   }
 
+  if (cleanup) // clean-up all remaining data in the socket
+  {
+    vu::Buffer temp;
+    this->recv_all(temp);
+  }
+
   if (::shutdown(m_socket, flags) == SOCKET_ERROR)
   {
     m_last_error_code = GetLastError();
     return 2;
+  }
+
+  if (closesocket(m_socket) == SOCKET_ERROR)
+  {
+    m_last_error_code = GetLastError();
+    return 3;
   }
 
   return VU_OK;

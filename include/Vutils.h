@@ -1280,7 +1280,7 @@ public:
   VUResult vuapi accept(Handle& socket);
 
   VUResult vuapi connect(const Endpoint& endpoint);
-  VUResult vuapi disconnect(const shutdowns_t flags = SD_BOTH);
+  VUResult vuapi disconnect(const shutdowns_t flags = SD_BOTH, const bool cleanup = true);
 
   IResult vuapi send(const char* ptr_data, int size, const flags_t flags = MSG_NONE);
   IResult vuapi send(const Buffer& data, const flags_t flags = MSG_NONE);
@@ -1382,7 +1382,7 @@ public:
   IResult  vuapi close();
 
   std::set<SOCKET> vuapi get_connections();
-  VUResult vuapi disconnect_connections(const Socket::shutdowns_t flags = SD_BOTH);
+  VUResult vuapi disconnect_connections(const Socket::shutdowns_t flags = SD_BOTH, const bool cleanup = true);
 
   IResult vuapi send(const SOCKET& connection, const char* ptr_data, int size, const Socket::flags_t flags = MSG_NONE);
   IResult vuapi send(const SOCKET& connection, const Buffer& data, const Socket::flags_t flags = MSG_NONE);

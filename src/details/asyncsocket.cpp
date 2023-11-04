@@ -194,14 +194,14 @@ std::set<SOCKET> vuapi AsyncSocket::get_connections()
   return result;
 }
 
-VUResult vuapi AsyncSocket::disconnect_connections(const Socket::shutdowns_t flags)
+VUResult vuapi AsyncSocket::disconnect_connections(const Socket::shutdowns_t flags, const bool cleanup)
 {
   auto connections = this->get_connections();
   for (const auto& e : connections)
   {
     vu::Socket socket;
     socket.attach(e);
-    socket.disconnect(flags);
+    socket.disconnect(flags, cleanup);
   }
 
   return VU_OK;
