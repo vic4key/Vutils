@@ -32,7 +32,7 @@ void example_binding(const vu::Endpoint& endpoint)
   {
     vu::Buffer data(KiB);
     client.recv(data);
-    printf("client %d recv `%s`\n", client.get_remote_sai().sin_port, data.to_string_A()->c_str());
+    printf("client %d recv `%s`\n", client.get_remote_sai().sin_port, data.as_string_A()->c_str());
   });
 
   server.bind(endpoint);

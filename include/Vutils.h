@@ -1062,8 +1062,8 @@ public:
   bool append(const void* ptr, const size_t size);
   bool append(const Buffer& right);
 
-  std::unique_ptr<std::string>  to_string_A() const;
-  std::unique_ptr<std::wstring> to_string_W() const;
+  std::unique_ptr<std::string>  as_string_A() const;
+  std::unique_ptr<std::wstring> as_string_W() const;
 
   bool save_to_file(const std::string&  file_path);
   bool save_to_file(const std::wstring& file_path);
@@ -1201,6 +1201,18 @@ private:
 #define VU_DEFAULT_SEND_RECV_TIMEOUT 3 // 3 seconds
 #define VU_DEFAULT_SEND_RECV_BLOCK_SIZE KiB // 1 KiB
 
+template<class stream_T>
+stream_T& operator<<(stream_T& ss, const sockaddr_in& sai)
+{
+  auto& S_un_b = sai.sin_addr.S_un.S_un_b;
+  ss << int(S_un_b.s_b1) << ".";
+  ss << int(S_un_b.s_b2) << ".";
+  ss << int(S_un_b.s_b3) << ".";
+  ss << int(S_un_b.s_b4) << ":";
+  ss << int(sai.sin_port);
+  return ss;
+}
+
 struct Endpoint
 {
   std::string m_host;
@@ -1255,6 +1267,7 @@ public:
     const bool wsa = true,
     const Options* options = nullptr
   );
+  Socket(const Socket& right);
   virtual ~Socket();
 
   bool  operator==(const Socket& right);
@@ -1267,7 +1280,7 @@ public:
   const type_t vuapi type() const;
   const protocol_t vuapi  protocol() const;
 
-  bool vuapi available();
+  bool vuapi available() const;
 
   void vuapi attach(const SOCKET&  socket);
   void vuapi attach(const Handle& socket);
@@ -1298,9 +1311,9 @@ public:
 
   IResult vuapi close();
 
-  const sockaddr_in vuapi get_local_sai();
-  const sockaddr_in vuapi get_remote_sai();
-  std::string vuapi get_host_name();
+  const sockaddr_in vuapi get_local_sai() const;
+  const sockaddr_in vuapi get_remote_sai() const;
+  std::string vuapi get_host_name() const;
 
   Options& options();
 
@@ -1308,10 +1321,10 @@ public:
   VUResult vuapi enable_non_blocking(bool state = true);
 
 private:
-  bool vuapi valid(const SOCKET& socket);
-  bool vuapi parse(const Handle& socket);
-  bool vuapi is_host_name(const std::string& s);
-  std::string vuapi get_host_address(const std::string& name);
+  bool vuapi valid(const SOCKET& socket) const;
+  bool vuapi parse(const Handle& socket) const;
+  bool vuapi is_host_name(const std::string& s) const;
+  std::string vuapi get_host_address(const std::string& name) const;
 
 private:
   bool m_wsa;
@@ -1354,10 +1367,10 @@ public:
   );
   virtual ~AsyncSocket();
 
-  side_type vuapi side();
+  side_type vuapi side() const;
 
-  bool vuapi available();
-  bool vuapi running();
+  bool vuapi available() const;
+  bool vuapi running() const;
 
   /**
    * https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsaeventselect?redirectedfrom=MSDN#return-value
@@ -1381,7 +1394,7 @@ public:
   VUResult vuapi stop();
   IResult  vuapi close();
 
-  std::set<SOCKET> vuapi get_connections();
+  std::set<SOCKET> vuapi get_connections() const;
   VUResult vuapi disconnect_connections(const Socket::shutdowns_t flags = SD_BOTH, const bool cleanup = true);
 
   IResult vuapi send(const SOCKET& connection, const char* ptr_data, int size, const Socket::flags_t flags = MSG_NONE);

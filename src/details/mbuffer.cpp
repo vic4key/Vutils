@@ -294,7 +294,7 @@ bool Buffer::append(const Buffer& right)
   return this->append(right.pointer(), right.size());
 }
 
-std::unique_ptr<std::string> Buffer::to_string_A() const
+std::unique_ptr<std::string> Buffer::as_string_A() const
 {
   std::unique_ptr<std::string> result(new std::string);
   if (m_ptr == nullptr || m_size == 0)
@@ -306,7 +306,7 @@ std::unique_ptr<std::string> Buffer::to_string_A() const
   return result;
 }
 
-std::unique_ptr<std::wstring> Buffer::to_string_W() const
+std::unique_ptr<std::wstring> Buffer::as_string_W() const
 {
   std::unique_ptr<std::wstring> result(new std::wstring);
   if (m_ptr == nullptr || m_size == 0)

@@ -128,6 +128,11 @@ Socket::Socket(
   m_sai.sin_family = m_af;
 }
 
+Socket::Socket(const Socket& right)
+{
+  *this = right;
+}
+
 Socket::~Socket()
 {
   this->close();
@@ -157,9 +162,11 @@ const vu::Socket& Socket::operator=(const Socket& right)
     return *this;
   }
 
-  m_wsa = right.m_wsa;
+  m_wsa = false;
+  // m_wsa = right.m_wsa;
+  // m_wsa_data = right.m_wsa_data;
+
   m_type = right.m_type;
-  m_wsa_data = right.m_wsa_data;
   m_af = right.m_af;
   m_proto = right.m_proto;
   m_sai = right.m_sai;
@@ -170,12 +177,12 @@ const vu::Socket& Socket::operator=(const Socket& right)
   return *this;
 }
 
-bool vuapi Socket::valid(const SOCKET& socket)
+bool vuapi Socket::valid(const SOCKET& socket) const
 {
   return !(socket == 0 || socket == INVALID_SOCKET);
 }
 
-bool vuapi Socket::available()
+bool vuapi Socket::available() const
 {
   return this->valid(m_socket);
 }
@@ -229,7 +236,7 @@ const SOCKET& vuapi Socket::handle() const
   return m_socket;
 }
 
-const sockaddr_in vuapi Socket::get_local_sai()
+const sockaddr_in vuapi Socket::get_local_sai() const
 {
   sockaddr_in result = { 0 };
 
@@ -242,7 +249,7 @@ const sockaddr_in vuapi Socket::get_local_sai()
   return result;
 }
 
-const sockaddr_in vuapi Socket::get_remote_sai()
+const sockaddr_in vuapi Socket::get_remote_sai() const
 {
   sockaddr_in result = { 0 };
 
@@ -651,7 +658,7 @@ VUResult vuapi Socket::disconnect(const shutdowns_t flags, const bool cleanup)
   return VU_OK;
 }
 
-std::string vuapi Socket::get_host_name()
+std::string vuapi Socket::get_host_name() const
 {
   std::string result = "";
 
@@ -669,7 +676,7 @@ std::string vuapi Socket::get_host_name()
   ZeroMemory(h.get(), MAXBYTE);
   if (::gethostname(h.get(), MAXBYTE) == SOCKET_ERROR)
   {
-    m_last_error_code = GetLastError();
+    //m_last_error_code = GetLastError();
     return result;
   }
 
@@ -678,7 +685,7 @@ std::string vuapi Socket::get_host_name()
   return result;
 }
 
-std::string vuapi Socket::get_host_address(const std::string& name)
+std::string vuapi Socket::get_host_address(const std::string& name) const
 {
   std::string result = "";
 
@@ -718,7 +725,7 @@ std::string vuapi Socket::get_host_address(const std::string& name)
   return result;
 }
 
-bool vuapi Socket::is_host_name(const std::string& s)
+bool vuapi Socket::is_host_name(const std::string& s) const
 {
   bool result = false;
   const std::string MASK = "01234567890.";
@@ -745,7 +752,7 @@ bool vuapi Socket::is_host_name(const std::string& s)
   return result;
 }
 
-bool vuapi Socket::parse(const Handle& socket)
+bool vuapi Socket::parse(const Handle& socket) const
 {
   if (sprintf(
     (char*)socket.ip,

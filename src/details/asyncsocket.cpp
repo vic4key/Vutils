@@ -46,17 +46,17 @@ void vuapi AsyncSocket::initialze()
   m_running = false;
 }
 
-AsyncSocket::side_type vuapi AsyncSocket::side()
+AsyncSocket::side_type vuapi AsyncSocket::side() const
 {
   return m_side;
 }
 
-bool vuapi AsyncSocket::available()
+bool vuapi AsyncSocket::available() const
 {
   return m_socket.available();
 }
 
-bool vuapi AsyncSocket::running()
+bool vuapi AsyncSocket::running() const
 {
   return m_running;
 }
@@ -169,7 +169,7 @@ VUResult vuapi AsyncSocket::connect(const std::string& address, const ushort por
   return this->connect(endpoint);
 }
 
-std::set<SOCKET> vuapi AsyncSocket::get_connections()
+std::set<SOCKET> vuapi AsyncSocket::get_connections() const
 {
   std::set<SOCKET> result;
 
@@ -197,10 +197,10 @@ std::set<SOCKET> vuapi AsyncSocket::get_connections()
 VUResult vuapi AsyncSocket::disconnect_connections(const Socket::shutdowns_t flags, const bool cleanup)
 {
   auto connections = this->get_connections();
-  for (const auto& e : connections)
+  for (const auto& connection : connections)
   {
-    vu::Socket socket;
-    socket.attach(e);
+    Socket socket(m_socket);
+    socket.attach(connection);
     socket.disconnect(flags, cleanup);
   }
 
@@ -334,7 +334,7 @@ IResult vuapi AsyncSocket::do_connect(WSANETWORKEVENTS& events, SOCKET& connecti
     return events.iErrorCode[FD_CONNECT_BIT];
   }
 
-  Socket socket(m_socket.af(), m_socket.type(), m_socket.protocol(), false);
+  Socket socket(m_socket);
   socket.attach(connection);
   this->on_connect(socket);
   socket.detach();
@@ -365,7 +365,7 @@ IResult vuapi AsyncSocket::do_open(WSANETWORKEVENTS& events, SOCKET& connection)
   m_connections[m_n_events] = obj.s;
   m_n_events++;
 
-  Socket socket(m_socket.af(), m_socket.type(), m_socket.protocol(), false);
+  Socket socket(m_socket);
   socket.attach(obj);
   this->on_open(socket);
   socket.detach();
@@ -380,7 +380,7 @@ IResult vuapi AsyncSocket::do_recv(WSANETWORKEVENTS& events, SOCKET& connection)
     return events.iErrorCode[FD_READ_BIT];
   }
 
-  Socket socket(m_socket.af(), m_socket.type(), m_socket.protocol(), false);
+  Socket socket(m_socket);
   socket.attach(connection);
   this->on_recv(socket);
   socket.detach();
@@ -395,7 +395,7 @@ IResult vuapi AsyncSocket::do_send(WSANETWORKEVENTS& events, SOCKET& connection)
     return events.iErrorCode[FD_WRITE_BIT];
   }
 
-  Socket socket(m_socket.af(), m_socket.type(), m_socket.protocol(), false);
+  Socket socket(m_socket);
   socket.attach(connection);
   this->on_send(socket);
   socket.detach();
@@ -438,7 +438,7 @@ IResult vuapi AsyncSocket::do_close(WSANETWORKEVENTS& events, SOCKET& connection
     m_n_events++;
   }
 
-  Socket socket(m_socket.af(), m_socket.type(), m_socket.protocol(), false);
+  Socket socket(m_socket);
   socket.attach(connection);
   this->on_close(socket);
   socket.detach();
@@ -504,7 +504,7 @@ IResult vuapi AsyncSocket::send(
   int size,
   const Socket::flags_t flags)
 {
-  vu::Socket socket;
+  Socket socket(m_socket);
   socket.attach(connection);
   return socket.send(ptr_data, size, flags);
 }
@@ -514,7 +514,7 @@ IResult vuapi AsyncSocket::send(
   const Buffer& data,
   const Socket::flags_t flags)
 {
-  vu::Socket socket;
+  Socket socket(m_socket);
   socket.attach(connection);
   return socket.send(data, flags);
 }
