@@ -18,49 +18,59 @@ namespace vu
 #endif // _MSC_VER
 
 /**
- * IATElement
+ * IATHookingA::Entry
  */
 
-struct IATElement
+IATHookingA::Entry::Entry()
+  : target(""), module(""), function("")
+  , original(nullptr), replacement(nullptr)
 {
-  std::string target;
-  std::string module;
-  std::string function;
-  const void* original;
-  const void* replacement;
+}
 
-  IATElement() : target(""), module(""), function(""), original(nullptr), replacement(nullptr) {}
+IATHookingA::Entry::Entry(
+  const std::string& t, const std::string& m, const std::string& f,
+  void* o, void* r)
+  : target(t), module(m), function(f)
+  , original(o), replacement(r)
+{
+}
 
-  IATElement(
-    const std::string& t,
-    const std::string& m,
-    const std::string& f,
-    const void* o = 0,
-    const void* r = 0) : target(t), module(m), function(f), original(o), replacement(r) {}
+IATHookingA::Entry::Entry(const Entry& right)
+{
+  *this = right;
+}
 
-  const IATElement& operator=(const IATElement& right)
+const IATHookingA::Entry& IATHookingA::Entry::operator=(const Entry& right)
+{
+  if (this != &right)
   {
-    target = right.target;
-    module = right.module;
-    function = right.function;
-    original = right.original;
+    target      = right.target;
+    module      = right.module;
+    function    = right.function;
+    original    = right.original;
     replacement = right.replacement;
-    return *this;
   }
 
-  bool operator==(const IATElement& right) const
+  return *this;
+}
+
+bool IATHookingA::Entry::operator==(const Entry& right) const
+{
+  if (this == &right)
   {
-    return\
-      upper_string_A(target) == upper_string_A(right.target) &&
-      upper_string_A(module) == upper_string_A(right.module) &&
-      upper_string_A(function) == upper_string_A(right.function);
+    return true;
   }
 
-  bool operator!=(const IATElement& right) const
-  {
-    return !(*this == right);
-  }
-};
+  return\
+    upper_string_A(target)   == upper_string_A(right.target) &&
+    upper_string_A(module)   == upper_string_A(right.module) &&
+    upper_string_A(function) == upper_string_A(right.function);
+}
+
+bool IATHookingA::Entry::operator!=(const Entry& right) const
+{
+  return !(*this == right);
+}
 
 /**
  * IATHookingA
@@ -74,52 +84,69 @@ IATHookingA::~IATHookingA()
 {
 }
 
-IATHookingA::IATElements::iterator IATHookingA::find(
+IATHookingA::EntryList::iterator IATHookingA::find(
   const std::string& target,
   const std::string& module,
   const std::string& function)
 {
-  return std::find(m_iat_elements.begin(), m_iat_elements.end(), IATElement(target, module, function));
+  if (module.empty() || function.empty())
+  {
+    return m_iat_entry_list.end();
+  }
+
+  return std::find(m_iat_entry_list.begin(), m_iat_entry_list.end(), Entry(target, module, function));
 }
 
-IATHookingA::IATElements::iterator IATHookingA::find(const IATElement& element)
+IATHookingA::EntryList::iterator IATHookingA::find(const Entry& entry)
 {
-  return this->find(element.target, element.module, element.function);
+  return this->find(entry.target, entry.module, entry.function);
 }
 
 bool IATHookingA::exist(
   const std::string& target,
   const std::string& module,
-  const std::string& function)
+  const std::string& function,
+  Entry* ptr_entry)
 {
-  return this->find(target, module, function) != m_iat_elements.end();
+  auto it = this->find(target, module, function);
+  if (it == m_iat_entry_list.end())
+  {
+    return false;
+  }
+
+  if (ptr_entry != nullptr)
+  {
+    *ptr_entry = *it;
+  }
+
+  return true;
 }
 
 VUResult IATHookingA::install(
   const std::string& target,
   const std::string& module,
   const std::string& function,
-  const void* replacement,
-  const void** original)
+  void* replacement,
+  void** original)
 {
   if (this->exist(target, module, function))
   {
     return 1;
   }
 
-  auto element = IATElement(target, module, function, nullptr, replacement);
+  Entry entry(target, module, function, nullptr, replacement);
 
-  if (this->perform(iat_action::IAT_INSTALL, element) != VU_OK)
+  if (this->perform(iat_action::IAT_INSTALL, entry) != VU_OK)
   {
     return 2;
   }
 
   if (original != nullptr)
   {
-    *original = element.original;
+    *original = entry.original;
   }
 
-  m_iat_elements.emplace_back(element);
+  m_iat_entry_list.emplace_back(entry);
 
   return VU_OK;
 }
@@ -128,56 +155,54 @@ VUResult IATHookingA::uninstall(
   const std::string& target,
   const std::string& module,
   const std::string& function,
-  const void** replacement)
+  void** replacement)
 {
   auto it = this->find(target, module, function);
-  if (it == m_iat_elements.end())
+  if (it == m_iat_entry_list.end())
   {
     return 1;
   }
 
-  auto element = *it;
+  auto& entry = *it;
 
-  if (this->perform(iat_action::IAT_UNINSTALL, element) != VU_OK)
+  if (this->perform(iat_action::IAT_UNINSTALL, entry) != VU_OK)
   {
     return 2;
   }
 
   if (replacement != nullptr)
   {
-    *replacement = element.replacement;
+    *replacement = entry.replacement;
   }
 
-  m_iat_elements.erase(it);
+  m_iat_entry_list.erase(it);
 
   return VU_OK;
 }
 
-VUResult IATHookingA::perform(const iat_action action, IATElement& element)
+VUResult IATHookingA::perform(const iat_action action, Entry& entry)
 {
-  if (element.target.empty() || element.module.empty() || element.function.empty())
+  if (entry.target.empty() || entry.module.empty() || entry.function.empty())
   {
     return 1;
   }
 
-  this->iterate(element.target, [&](
+  this->iterate(entry.target, [&](
     const std::string& m, const std::string& f, PIMAGE_THUNK_DATA& ptr_iat, PIMAGE_THUNK_DATA& ptr_int)
   {
-    // msg_debug_A("[%p] [%p] %s!%s\n", ptr_iat->u1.Function, ptr_int->u1.Function, m.c_str(), f.c_str());
-  
-    if (element == IATElement(element.target, m, f))
+    if (entry == Entry(entry.target, m, f))
     {
       const void* address = 0;
 
       if (action == iat_action::IAT_INSTALL)
       {
-        element.original = reinterpret_cast<const void*>(ptr_iat->u1.Function);
-        address = element.replacement;
+        entry.original = reinterpret_cast<void*>(ptr_iat->u1.Function);
+        address = entry.replacement;
       }
       else if (action == iat_action::IAT_UNINSTALL)
       {
-        element.replacement = reinterpret_cast<const void*>(ptr_iat->u1.Function);
-        address = element.original;
+        entry.replacement = reinterpret_cast<void*>(ptr_iat->u1.Function);
+        address = entry.original;
       }
 
       if (address != 0)
@@ -282,8 +307,8 @@ VUResult IATHookingW::install(
   const std::wstring& target,
   const std::wstring& module,
   const std::wstring& function,
-  const void* replacement,
-  const void** original)
+  void* replacement,
+  void** original)
 {
   return IATHookingA::instance().install(
     to_string_A(target), to_string_A(module), to_string_A(function), replacement, original);
@@ -293,7 +318,7 @@ VUResult IATHookingW::uninstall(
   const std::wstring& target,
   const std::wstring& module,
   const std::wstring& function,
-  const void** replacement)
+  void** replacement)
 {
   return IATHookingA::instance().uninstall(
     to_string_A(target), to_string_A(module), to_string_A(function), replacement);

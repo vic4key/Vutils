@@ -1436,18 +1436,6 @@ protected:
  * API Hooking - Inline
  */
 
- /**
- * @brief Hook/Unhook a function in a module by name.
- * @define The prefix of redirection function must be  : Hfn
- * @define The prefix of real function pointer must be : pfn
- * @param[in] O The INLHooking instance.
- * @param[in] M The module name.
- * @param[in] F The function name.
- * @return  true if the function succeeds. Otherwise false.
- */
-#define VU_API_INL_OVERRIDE(O, M, F) O.install(ts( # M ),  ts( # F ), (void*)&Hfn ## F, (void**)&pfn ## F)
-#define VU_API_INL_RESTORE(O, M, F) O.uninstall(ts( # M ), ts( # F ), (void**)&pfn ## F)
-
 enum class memory_address_type
 {
   MAT_NONE = 0,
@@ -1551,21 +1539,28 @@ public:
  * API Hooking - IAT
  */
 
-#define VU_API_IAT_OVERRIDE(O, M, F)\
-  vu::IATHooking::instance().install(\
-    _T( # O ), _T( # M ), _T( # F ),\
-    (const void*)(reinterpret_cast<void*>(&Hfn ## F)),\
-    (const void**)(reinterpret_cast<void**>(&pfn ## F)))
-
-#define VU_API_IAT_RESTORE(O, M, F)\
-  vu::IATHooking::instance().uninstall(\
-    _T( # O ), _T( # M ), _T( # F ))
-
-struct IATElement;
-
 class IATHookingA : public SingletonT<IATHookingA>
 {
 public:
+  struct Entry
+  {
+    std::string target;
+    std::string module;
+    std::string function;
+    void* original;
+    void* replacement;
+
+    Entry();
+    Entry(
+      const std::string& t, const std::string& m, const std::string& f,
+      void* o = nullptr, void* r = nullptr);
+
+    Entry(const Entry& right);
+    const Entry& operator=(const Entry& right);
+    bool operator==(const Entry& right) const;
+    bool operator!=(const Entry& right) const;
+  };
+
   IATHookingA();
   virtual ~IATHookingA();
 
@@ -1573,17 +1568,24 @@ public:
     const std::string& target,
     const std::string& module,
     const std::string& function,
-    const void* replacement = nullptr,
-    const void** original = nullptr
+    void* replacement = nullptr,
+    void** original = nullptr
   );
 
   VUResult uninstall(
     const std::string& target,
     const std::string& module,
     const std::string& function,
-    const void** replacement = nullptr
+    void** replacement = nullptr
   );
 
+  bool exist(
+    const std::string& target,
+    const std::string& module,
+    const std::string& function,
+    Entry* ptr_entry = nullptr);
+
+private:
   /**
    * Iterate all imported-functions in a module.
    * @param[out] module   The imported-module name.
@@ -1598,31 +1600,20 @@ public:
     PIMAGE_THUNK_DATA& ptr_iat,
     PIMAGE_THUNK_DATA& ptr_int)> fn);
 
-private:
   enum iat_action
   {
     IAT_INSTALL,
     IAT_UNINSTALL,
   };
 
-  typedef std::vector<IATElement> IATElements;
+  typedef std::vector<Entry> EntryList;
 
-  IATElements m_iat_elements;
+  EntryList m_iat_entry_list;
 
 private:
-  IATElements::iterator find(const IATElement& element);
-
-  IATElements::iterator find(
-    const std::string& target,
-    const std::string& module,
-    const std::string& function);
-
-  bool exist(
-    const std::string& target,
-    const std::string& module,
-    const std::string& function);
-
-  VUResult perform(const iat_action action, IATElement& element);
+  VUResult perform(const iat_action action, Entry& entry);
+  EntryList::iterator find(const Entry& entry);
+  EntryList::iterator find(const std::string& target, const std::string& module, const std::string& function);
 };
 
 class IATHookingW : public SingletonT<IATHookingW>
@@ -1635,15 +1626,15 @@ public:
     const std::wstring& target,
     const std::wstring& module,
     const std::wstring& function,
-    const void* replacement = nullptr,
-    const void** original = nullptr
+    void* replacement,
+    void** original
   );
 
   VUResult uninstall(
     const std::wstring& target,
     const std::wstring& module,
     const std::wstring& function,
-    const void** replacement = nullptr
+    void** replacement
   );
 };
 

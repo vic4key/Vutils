@@ -17,16 +17,16 @@ DEF_SAMPLE(INLHooking)
 {
   vu::INLHooking inl[2];
 
-  VU_API_INL_OVERRIDE(inl[0], user32.dll, MessageBoxA);
-  VU_API_INL_OVERRIDE(inl[1], user32.dll, MessageBoxW);
+  inl[0].install(ts("user32.dll"), ts("MessageBoxA"), HfnMessageBoxA, (void**)&pfnMessageBoxA);
+  inl[1].install(ts("user32.dll"), ts("MessageBoxW"), HfnMessageBoxW, (void**)&pfnMessageBoxW);
 
   MessageBoxA(vu::get_console_window(),  "The first message.",  "A", MB_OK);
   MessageBoxW(vu::get_console_window(), L"The first message.", L"W", MB_OK);
 
-  VU_API_INL_RESTORE(inl[0], user32.dll, MessageBoxA);
-  VU_API_INL_RESTORE(inl[1], user32.dll, MessageBoxW);
+  inl[0].uninstall(ts("user32.dll"), ts("MessageBoxA"), (void**)&pfnMessageBoxA);
+  inl[1].uninstall(ts("user32.dll"), ts("MessageBoxW"), (void**)&pfnMessageBoxW);
 
-  MessageBoxA(vu::get_console_window(), "The second message.", "A", MB_OK);
+  MessageBoxA(vu::get_console_window(),  "The second message.", "A", MB_OK);
   MessageBoxW(vu::get_console_window(), L"The second message.", L"W", MB_OK);
 
   return vu::VU_OK;

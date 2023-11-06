@@ -22,14 +22,18 @@ int WINAPI HfnMessageBoxW(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uTy
 
 DEF_SAMPLE(IATHooking)
 {
-  VU_API_IAT_OVERRIDE(Test.exe, user32.dll, MessageBoxA);
-  VU_API_IAT_OVERRIDE(Test.exe, user32.dll, MessageBoxW);
+  vu::Process process;
+  process.attach(GetCurrentProcess());
+  auto process_name = process.name();
+
+  vu::IATHooking::instance().install(process_name, ts("user32.dll"), ts("MessageBoxA"), HfnMessageBoxA, (void**)&pfnMessageBoxA);
+  vu::IATHooking::instance().install(process_name, ts("user32.dll"), ts("MessageBoxW"), HfnMessageBoxW, (void**)&pfnMessageBoxW);
 
   MessageBoxA(vu::get_console_window(), "The first message.", "A", MB_OK);
   MessageBoxW(vu::get_console_window(), L"The first message.", L"W", MB_OK);
 
-  VU_API_IAT_RESTORE(Test.exe, user32.dll, MessageBoxA);
-  VU_API_IAT_RESTORE(Test.exe, user32.dll, MessageBoxW);
+  vu::IATHooking::instance().uninstall(process_name, ts("user32.dll"), ts("MessageBoxA"), (void**)&pfnMessageBoxA);
+  vu::IATHooking::instance().uninstall(process_name, ts("user32.dll"), ts("MessageBoxW"), (void**)&pfnMessageBoxW);
 
   MessageBoxA(vu::get_console_window(),  "The second message.",  "A", MB_OK);
   MessageBoxW(vu::get_console_window(), L"The second message.", L"W", MB_OK);
