@@ -36,7 +36,7 @@ namespace vu
  * @param[out] instructions List instructions.
  * @return  True if current instruction is a memory struction, False if it is not.
  */
-bool vuapi GetAssembleInstruction(
+bool vuapi get_assemble_instruction(
   const HDE::tagHDE& hde,
   const ulong offset,
   std::vector<MemoryInstruction>& instructions
@@ -166,6 +166,18 @@ bool vuapi GetAssembleInstruction(
   return result;
 }
 
+INLHookingX::INLHookingX(const INLHookingX& right)
+{
+  *this = right;
+}
+
+const INLHookingX& INLHookingX::operator=(const INLHookingX& right)
+{
+  m_hooked = right.m_hooked;
+  m_memory_instructions = right.m_memory_instructions;
+  return *this;
+}
+
 bool vuapi INLHookingX::attach(void* ptr_function, void* ptr_hook_function, void** pptr_old_function)
 {
   /*
@@ -194,7 +206,7 @@ bool vuapi INLHookingX::attach(void* ptr_function, void* ptr_hook_function, void
     }
     else
     {
-      GetAssembleInstruction(hde, trampoline_size, m_memory_instructions);
+      get_assemble_instruction(hde, trampoline_size, m_memory_instructions);
     }
 
     trampoline_size += hde.len;
@@ -252,7 +264,7 @@ bool vuapi INLHookingX::attach(void* ptr_function, void* ptr_hook_function, void
   // Write the jump code (original -> new) on the top of the target function
   memcpy(ptr_function, (void*)&O2N, sizeof(O2N));
 
-  return true;
+  return m_hooked = true;
 }
 
 bool vuapi INLHookingX::detach(void* ptr_function, void** pptr_old_function)
@@ -295,9 +307,7 @@ bool vuapi INLHookingA::install(
     return false;
   }
 
-  m_hooked = this->attach(ptr_function, ptr_hook_function, pptr_old_function);
-
-  return m_hooked;
+  return this->attach(ptr_function, ptr_hook_function, pptr_old_function);
 }
 
 bool vuapi INLHookingA::uninstall(

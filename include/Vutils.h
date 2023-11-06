@@ -1445,8 +1445,8 @@ protected:
  * @param[in] F The function name.
  * @return  true if the function succeeds. Otherwise false.
  */
-#define VU_API_INL_OVERRIDE(O, M, F) O.install(_T( # M ), _T( # F ), (void*)&Hfn ## F, (void**)&pfn ## F)
-#define VU_API_INL_RESTORE(O, M, F) O.uninstall(_T( # M ), _T( # F ), (void**)&pfn ## F)
+#define VU_API_INL_OVERRIDE(O, M, F) O.install(ts( # M ),  ts( # F ), (void*)&Hfn ## F, (void**)&pfn ## F)
+#define VU_API_INL_RESTORE(O, M, F) O.uninstall(ts( # M ), ts( # F ), (void**)&pfn ## F)
 
 enum class memory_address_type
 {
@@ -1502,6 +1502,9 @@ protected:
 public:
   INLHookingX() : m_hooked(false) {};
   virtual ~INLHookingX() {};
+
+  INLHookingX(const INLHookingX& right);
+  const INLHookingX& operator=(const INLHookingX& right);
 
   bool vuapi attach(void* ptr_function, void* ptr_hook_function, void** pptr_old_function);
   bool vuapi detach(void* ptr_function, void** pptr_old_function);
