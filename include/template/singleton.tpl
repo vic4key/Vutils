@@ -27,12 +27,12 @@ public:
   }
 
   // C++14 (MSVC 2013+ or MinGW 4.6+)
-  #if (defined(_MSC_VER) && _MSC_VER >= 1800) || (defined(__MINGW32__) && __cplusplus >= 201103L)
+  #if (defined(_MSC_VER) && _MSVC_LANG >= 201402L) || (defined(__MINGW32__) && __cplusplus >= 201103L)
   SingletonT(SingletonT&&) = delete;
   SingletonT(SingletonT const&) = delete;
   SingletonT& operator=(SingletonT&&) = delete;
   SingletonT& operator=(SingletonT const&) = delete;
-  #endif
+  #endif // C++14 (MSVC 2013+ or MinGW 4.6+)
 
   static T& instance()
   {

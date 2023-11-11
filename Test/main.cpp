@@ -3,11 +3,11 @@
 
 /* MinGW build EXE with static library
 
-G++ main.cpp -std=c++0x -lVutils -lgdi32 -lole32 -lcomdlg32 -o Test.exe && Test.exe
-G++ main.cpp -std=c++0x -lVutils -DVU_INET_ENABLED -DVU_GUID_ENABLED -DVU_WMI_ENABLED -lws2_32 -lgdi32 -lrpcrt4 -lole32 -loleaut32 -lwbemuuid -lcomdlg32 -lwinhttp -o Test.exe && Test.exe
+G++ main.cpp -std=c++0x -fpermissive -lVutils -lgdi32 -lole32 -lcomdlg32 -o Test.exe && Test.exe
+G++ main.cpp -std=c++0x -fpermissive -lVutils -DVU_INET_ENABLED -DVU_GUID_ENABLED -DVU_WMI_ENABLED -lws2_32 -lgdi32 -lrpcrt4 -lole32 -loleaut32 -lwbemuuid -lcomdlg32 -lwinhttp -o Test.exe && Test.exe
 
-G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -lgdi32 -lole32 -lcomdlg32 -o Test.exe && Test.exe
-G++ main.cpp -std=c++0x -municode -lVutils -DUNICODE -D_UNICODE -DVU_INET_ENABLED -DVU_GUID_ENABLED -DVU_WMI_ENABLED -lws2_32 -lgdi32 -lrpcrt4 -lole32 -loleaut32 -lwbemuuid -lcomdlg32 -lwinhttp -o Test.exe && Test.exe
+G++ main.cpp -std=c++0x -fpermissive -municode -lVutils -DUNICODE -D_UNICODE -lgdi32 -lole32 -lcomdlg32 -o Test.exe && Test.exe
+G++ main.cpp -std=c++0x -fpermissive -municode -lVutils -DUNICODE -D_UNICODE -DVU_INET_ENABLED -DVU_GUID_ENABLED -DVU_WMI_ENABLED -lws2_32 -lgdi32 -lrpcrt4 -lole32 -loleaut32 -lwbemuuid -lcomdlg32 -lwinhttp -o Test.exe && Test.exe
 
 */
 

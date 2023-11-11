@@ -11,7 +11,7 @@
 #pragma once
 
 // C++14 (MSVC 2015+ or MinGW 5.1+)
-#if (defined(_MSC_VER) && _MSC_VER >= 1900) || (defined(__MINGW32__) && __cplusplus >= 201402L)
+#if (defined(_MSC_VER) && _MSVC_LANG >= 201402L) || (defined(__MINGW32__) && __cplusplus >= 201402L)
 
 #include "3rdparty/NO/include/base/named_operator.hpp"
 #include "3rdparty/NO/include/util/io_helpers.hpp"
