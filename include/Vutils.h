@@ -38,6 +38,16 @@
 #error Vutils required C++11 or newer
 #endif
 
+// C++14 (MSVC 2015+ or MinGW 5.1+)
+#if (defined(_MSC_VER) && _MSVC_LANG >= 201402L) || (defined(__MINGW32__) && __cplusplus >= 201402L)
+#define VU_HAS_CXX14
+#endif // C++17 (MSVC 2017+ or MinGW 7.1+)
+
+// C++17 (MSVC 2017+ or MinGW 7.1+)
+#if (defined(_MSC_VER) && _MSVC_LANG >= 201703L) || (defined(__MINGW32__) && __cplusplus >= 201703L)
+#define VU_HAS_CXX17
+#endif // C++17 (MSVC 2017+ or MinGW 7.1+)
+
 /* Vutils Configurations */
 
 // VU_NO_EX - To disable all extended utilities
@@ -105,6 +115,9 @@
 #include <functional>
 #include <type_traits>
 #include <unordered_map>
+#if defined(VU_HAS_CXX17)
+#include <any>
+#endif // VU_HAS_CXX17
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -3694,6 +3707,10 @@ private:
 #define Picker PickerA
 #define RESTClient RESTClientA
 #endif // _UNICODE
+
+// C++ Hooking
+
+#include "template/fnhooking.tpl"
 
 } // namespace vu
 

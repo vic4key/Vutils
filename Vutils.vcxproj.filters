@@ -64,6 +64,9 @@
     <Filter Include="Header Files\Third Files\EP">
       <UniqueIdentifier>{0e80967e-0e61-4762-98d0-e9774dcee22f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Third Files\CH">
+      <UniqueIdentifier>{09804e65-3ba8-4b2d-ac74-8f7e22ab2be0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Vutils.h">
@@ -155,6 +158,21 @@
     </ClInclude>
     <ClInclude Include="include\3rdparty\EP\include\easyprint.hpp">
       <Filter>Header Files\Third Files\EP</Filter>
+    </ClInclude>
+    <ClInclude Include="include\3rdparty\CH\cpp-hooking\common.h">
+      <Filter>Header Files\Third Files\CH</Filter>
+    </ClInclude>
+    <ClInclude Include="include\3rdparty\CH\cpp-hooking\hooking.h">
+      <Filter>Header Files\Third Files\CH</Filter>
+    </ClInclude>
+    <ClInclude Include="include\3rdparty\CH\cpp-hooking\iat_hooking.h">
+      <Filter>Header Files\Third Files\CH</Filter>
+    </ClInclude>
+    <ClInclude Include="include\3rdparty\CH\cpp-hooking\inl_hooking.h">
+      <Filter>Header Files\Third Files\CH</Filter>
+    </ClInclude>
+    <ClInclude Include="include\3rdparty\CH\cpp-hooking\invokable.h">
+      <Filter>Header Files\Third Files\CH</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -356,6 +374,9 @@
       <Filter>Header Files\Template Files</Filter>
     </None>
     <None Include="include\template\easyprint.tpl">
+      <Filter>Header Files\Template Files</Filter>
+    </None>
+    <None Include="include\template\fnhooking.tpl">
       <Filter>Header Files\Template Files</Filter>
     </None>
   </ItemGroup>
