@@ -234,9 +234,9 @@ intptr vuapi lcm(ulongptr count, ...); // BCNN
 void vuapi hex_dump(const void* data, int size);
 float vuapi fast_sqrtf(const float number); // Estimates the square root of a 32-bit floating-point number (from Quake III Arena)
 void divide_items_into_pieces(const size_t num_items, const size_t num_pieces,
-  std::function<void(size_t idx, size_t f, size_t end, size_t num)> fn);
+  std::function<void(size_t idx, size_t beg, size_t end, size_t num)> fn);
 size_t divide_items_into_num_items_per_piece(const size_t num_items, const size_t num_items_per_piece,
-  std::function<void(size_t idx, size_t f, size_t end, size_t num)> fn);
+  std::function<void(size_t idx, size_t beg, size_t end, size_t num)> fn);
 
 #include "template/math.tpl"
 

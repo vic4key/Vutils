@@ -145,7 +145,7 @@ float vuapi fast_sqrtf(const float number)
  *  (4, 5) => (1, 1, 1, 1, 0)
  */
 void divide_items_into_pieces(const size_t num_items, const size_t num_pieces,
-  std::function<void(size_t idx, size_t f, size_t end, size_t num)> fn)
+  std::function<void(size_t idx, size_t beg, size_t end, size_t num)> fn)
 {
   if (fn == nullptr)
   {
@@ -186,7 +186,7 @@ void divide_items_into_pieces(const size_t num_items, const size_t num_pieces,
  *  (4, 5) => (4)
  */
 size_t divide_items_into_num_items_per_piece(const size_t num_items, const size_t num_items_per_piece,
-  std::function<void(size_t idx, size_t f, size_t end, size_t num)> fn)
+  std::function<void(size_t idx, size_t beg, size_t end, size_t num)> fn)
 {
   if (fn == nullptr)
   {
