@@ -3339,7 +3339,9 @@ private:
 // C++14 (MSVC 2015+ or MinGW 5.1+)
 #if (defined(_MSC_VER) && _MSVC_LANG >= 201402L) || (defined(__MINGW32__) && __cplusplus >= 201402L)
 #include "template/handle.tpl"
-ScopedHandleT_Define(HANDLE, HANDLE, INVALID_HANDLE_VALUE, { CloseHandle(h); });
+#ifndef __MINGW32__ // `error: 'reinterpret_cast' from integer to pointer`
+ScopedHandleT_Define(HANDLE, HANDLE, HANDLE(INVALID_HANDLE_VALUE), { CloseHandle(h); });
+#endif // __MINGW32__
 ScopedHandleT_Define(NULL_HANDLE, HANDLE, nullptr, { CloseHandle(h); });
 ScopedHandleT_Define(FILE, FILE*, nullptr, { fclose(h); });
 #endif // C++14 (MSVC 2015+ or MinGW 5.1+)
