@@ -32,22 +32,22 @@ IF [%confirm%]==[1] (
 	CALL "%VU_VSDEV%"
 	CD ..
 	:: 64-bit
-	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MD  /p:Platform=x64 /p:PlatformToolset=%VU_TSVER% -m
+	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MD  /p:Platform=x64 /p:LanguageStandard="stdcpp17" /p:PlatformToolset=%VU_TSVER% -m
 	IF [%VU_CI_BUILD%]==[] (
-		MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MDd /p:Platform=x64 /p:PlatformToolset=%VU_TSVER% -m
+		MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MDd /p:Platform=x64 /p:LanguageStandard="stdcpp17" /p:PlatformToolset=%VU_TSVER% -m
 	)
-	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MT  /p:Platform=x64 /p:PlatformToolset=%VU_TSVER% -m
+	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MT  /p:Platform=x64 /p:LanguageStandard="stdcpp17" /p:PlatformToolset=%VU_TSVER% -m
 	IF [%VU_CI_BUILD%]==[] (
-		MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MTd /p:Platform=x64 /p:PlatformToolset=%VU_TSVER% -m
+		MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MTd /p:Platform=x64 /p:LanguageStandard="stdcpp17" /p:PlatformToolset=%VU_TSVER% -m
 	)
 	:: 32-bit
-	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MD  /p:Platform=x86 /p:PlatformToolset=%VU_TSVER% -m
+	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MD  /p:Platform=x86 /p:LanguageStandard="stdcpp17" /p:PlatformToolset=%VU_TSVER% -m
 	IF [%VU_CI_BUILD%]==[] (
-		MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MDd /p:Platform=x86 /p:PlatformToolset=%VU_TSVER% -m
+		MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MDd /p:Platform=x86 /p:LanguageStandard="stdcpp17" /p:PlatformToolset=%VU_TSVER% -m
 	)
-	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MT  /p:Platform=x86 /p:PlatformToolset=%VU_TSVER% -m
+	MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MT  /p:Platform=x86 /p:LanguageStandard="stdcpp17" /p:PlatformToolset=%VU_TSVER% -m
 	IF [%VU_CI_BUILD%]==[] (
-		MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MTd /p:Platform=x86 /p:PlatformToolset=%VU_TSVER% -m
+		MSBuild %VU_NAME%.sln /t:%VU_NAME% /p:Configuration=MTd /p:Platform=x86 /p:LanguageStandard="stdcpp17" /p:PlatformToolset=%VU_TSVER% -m
 	)
 ) ELSE (
   ECHO Canceled

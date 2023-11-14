@@ -4,7 +4,7 @@ SETLOCAL EnableDelayedExpansion
 
 SET VU_NAME=Vutils
 SET VU_DIR=..
-SET VU_CFG=-c -std=c++0x -Wa,-mbig-obj
+SET VU_CFG=-c -std=c++17 -Wa,-mbig-obj
 SET VU_3RD=%VU_DIR%\3rdparty
 SET VU_LIB=%VU_DIR%\lib
 SET VU_SRC=%VU_DIR%\src
