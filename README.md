@@ -6,8 +6,8 @@ It helps your programming go easier, faster and simpler.
 
 ## Status
 
-![](https://github.com/vic4key/Vutils/workflows/MSVC/badge.svg)
-![](https://github.com/vic4key/Vutils/workflows/MINGW/badge.svg)
+[![MSVC](https://github.com/vic4key/Vutils/actions/workflows/msvc.yml/badge.svg?branch=master)](https://github.com/vic4key/Vutils/actions/workflows/msvc.yml)
+[![MINGW](https://github.com/vic4key/Vutils/actions/workflows/mingw.yml/badge.svg?branch=master)](https://github.com/vic4key/Vutils/actions/workflows/mingw.yml)
 
 ## Information
 
