@@ -148,7 +148,5 @@ public:
     {
       return hooked.m_invoker->invoke<Return>(std::forward<Args>(args)...);
     }
-
-    return 0;
   }
 };
