@@ -133,10 +133,10 @@ float vuapi fast_sqrtf(const float number)
  * @param[in] num_items  The number of items.
  * @param[in] num_pieces The number of pieces.
  * @param[in] fn The function that apply to each piece.
- *    idx The piece index.
- *    beg The index of the begin item in piece.
- *    end The index of the end item in piece.
- *    num The number of items in piece.
+ *    piece.idx The piece index.
+ *    piece.beg The index of the begin item in piece.
+ *    piece.end The index of the end item in piece.
+ *    piece.num The number of items in piece.
  * Eg. In these cases, the number of items of each piece as the following:
  *  (4, 1) => (4)
  *  (4, 2) => (2, 2)
@@ -145,7 +145,7 @@ float vuapi fast_sqrtf(const float number)
  *  (4, 5) => (1, 1, 1, 1, 0)
  */
 void divide_items_into_pieces(const size_t num_items, const size_t num_pieces,
-  std::function<void(size_t idx, size_t beg, size_t end, size_t num)> fn)
+  std::function<void(const piece_t& piece)> fn)
 {
   if (fn == nullptr)
   {
@@ -154,17 +154,20 @@ void divide_items_into_pieces(const size_t num_items, const size_t num_pieces,
 
   size_t num_items_per_piece = std::max(1, int(num_items / float(num_pieces) + 0.5F));
 
+  piece_t piece;
+
   for (size_t idx = 0; idx < num_pieces; ++idx)
   {
     size_t beg = idx * num_items_per_piece;
     size_t end = idx == num_pieces - 1 ? num_items : (idx + 1) * num_items_per_piece;
     size_t num = end - beg;
 
-    beg = idx < num_items ? beg : -1;
-    end = idx < num_items ? end - 1 : -1;
-    num = idx < num_items ? num : 0;
+    piece.idx = idx;
+    piece.beg = idx < num_items ? beg : -1;
+    piece.end = idx < num_items ? end - 1 : -1;
+    piece.num = idx < num_items ? num : 0;
 
-    fn(idx, beg, end, num);
+    fn(piece);
   }
 }
 
@@ -173,40 +176,48 @@ void divide_items_into_pieces(const size_t num_items, const size_t num_pieces,
  * @param[in] num_items  The number of items.
  * @param[in] num_pieces The number of item per piece.
  * @param[in] fn The function that apply to each piece.
- *    idx The piece index.
- *    beg The index of the begin item in piece.
- *    end The index of the end item in piece.
- *    num The number of items in piece.
+ *    piece.idx The piece index.
+ *    piece.beg The index of the begin item in piece.
+ *    piece.end The index of the end item in piece.
+ *    piece.num The number of items in piece.
  * @return The number of pieces.
  * Eg. The number of items of each piece as the following.
  *  (4, 1) => (1, 1, 1, 1)
  *  (4, 2) => (2, 2)
- *  (4, 3) => (3, 1, 1)
+ *  (4, 3) => (3, 1)
  *  (4, 4) => (4)
  *  (4, 5) => (4)
  */
 size_t divide_items_into_num_items_per_piece(const size_t num_items, const size_t num_items_per_piece,
-  std::function<void(size_t idx, size_t beg, size_t end, size_t num)> fn)
+  std::function<void(const piece_t& piece)> fn)
 {
   if (fn == nullptr)
   {
     return 0;
   }
 
+  piece_t piece;
+
   size_t result = 0;
 
-  std::vector<size_t> piece;
+  std::vector<size_t> temp;
 
   for (size_t j = 1; j <= num_items; j++)
   {
     size_t i = j - 1;
 
-    piece.push_back(i);
+    temp.push_back(i);
 
     if (j % num_items_per_piece == 0 || i == num_items - 1)
     {
-      fn(result, piece.front(), piece.back(), piece.size());
-      piece.clear();
+      piece.idx = result;
+      piece.beg = temp.front();
+      piece.end = temp.back();
+      piece.num = temp.size();
+
+      fn(piece);
+
+      temp.clear();
       result += 1;
     }
   }
