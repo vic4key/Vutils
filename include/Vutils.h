@@ -664,6 +664,8 @@ std::string vuapi extract_file_directory_A(const std::string& file_path, bool la
 std::wstring vuapi extract_file_directory_W(const std::wstring& file_path, bool last_slash = true);
 std::string vuapi extract_file_name_A(const std::string& file_path, bool extension = true);
 std::wstring vuapi extract_file_name_W(const std::wstring& file_path, bool extension = true);
+std::string vuapi extract_file_extension_A(const std::string& file_path);
+std::wstring vuapi extract_file_extension_W(const std::wstring& file_path);
 std::string vuapi get_current_file_path_A();
 std::wstring vuapi get_current_file_path_W();
 std::string vuapi get_current_directory_A(bool last_slash = true);
@@ -820,6 +822,7 @@ void vuapi crypt_sha_buffer(
 #define write_file_binary write_file_binary_W
 #define extract_file_directory extract_file_directory_W
 #define extract_file_name extract_file_name_W
+#define extract_file_extension extract_file_extension_W
 #define get_current_file_path get_current_file_path_W
 #define get_current_directory get_current_directory_W
 #define get_contain_directory get_contain_directory_W
@@ -894,6 +897,7 @@ void vuapi crypt_sha_buffer(
 #define write_file_binary write_file_binary_A
 #define extract_file_directory extract_file_directory_A
 #define extract_file_name extract_file_name_A
+#define extract_file_extension extract_file_extension_A
 #define get_current_file_path get_current_file_path_A
 #define get_current_directory get_current_directory_A
 #define get_contain_directory get_contain_directory_A
