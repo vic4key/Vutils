@@ -221,7 +221,7 @@ static DWORD WINAPI AsyncSocket_Threading(LPVOID lpParam)
   auto ptr = reinterpret_cast<vu::AsyncSocket*>(lpParam);
   assert(ptr != nullptr);
 
-  ptr->run();
+  ptr->run(false);
 
   return 0;
 }
