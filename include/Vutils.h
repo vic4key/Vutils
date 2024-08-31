@@ -1324,7 +1324,7 @@ public:
   VUResult vuapi accept(Handle& socket);
 
   VUResult vuapi connect(const Endpoint& endpoint);
-  VUResult vuapi disconnect(const shutdowns_t flags = SD_BOTH, const bool cleanup = true);
+  VUResult vuapi disconnect(const shutdowns_t flags = SD_BOTH, const bool cleanup = false);
 
   IResult vuapi send(const char* ptr_data, int size, const flags_t flags = MSG_NONE);
   IResult vuapi send(const Buffer& data, const flags_t flags = MSG_NONE);
@@ -1376,11 +1376,11 @@ public:
 
   enum function : uint
   {
-    CONNECT,
-    OPEN,
-    CLOSE,
-    RECV,
-    SEND,
+    CONNECT,  // for only client side
+    OPEN,     // for only server side
+    CLOSE,    // for both server & client
+    RECV,     // for both server & client
+    SEND,     // for both server & client (should not use except required a special case)
     UNDEFINED,
   };
 
@@ -1404,12 +1404,16 @@ public:
   bool vuapi running() const;
 
   /**
+   * for client side
    * https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsaeventselect?redirectedfrom=MSDN#return-value
    * Note: After connected (FD_CONNECT), client will be auto generated first event FD_WRITE.
    */
   VUResult vuapi connect(const Endpoint& endpoint);
   VUResult vuapi connect(const std::string& address, const ushort port);
 
+  /**
+   * for server side
+   */
   VUResult vuapi bind(const Endpoint& endpoint);
   VUResult vuapi bind(const std::string& address, const ushort port);
 
@@ -1419,14 +1423,13 @@ public:
    */
   VUResult vuapi listen(const int maxcon = SOMAXCONN);
 
-  VUResult vuapi run();
-  VUResult vuapi run_in_thread();
+  VUResult vuapi run(const bool in_worker_thread = false);
 
   VUResult vuapi stop();
-  IResult  vuapi close();
+  IResult  vuapi close(const Socket::shutdowns_t flags = SD_BOTH, const bool cleanup = false);
 
-  std::set<SOCKET> vuapi get_connections() const;
-  VUResult vuapi disconnect_connections(const Socket::shutdowns_t flags = SD_BOTH, const bool cleanup = true);
+  void vuapi get_connections(std::set<SOCKET>& connections);
+  VUResult vuapi disconnect_connections(const Socket::shutdowns_t flags = SD_BOTH, const bool cleanup = false);
 
   IResult vuapi send(const SOCKET& connection, const char* ptr_data, int size, const Socket::flags_t flags = MSG_NONE);
   IResult vuapi send(const SOCKET& connection, const Buffer& data, const Socket::flags_t flags = MSG_NONE);
@@ -1442,6 +1445,7 @@ public:
 protected:
   void vuapi initialze();
   VUResult vuapi loop();
+  VUResult vuapi run_loop();
 
   IResult vuapi do_connect(WSANETWORKEVENTS& events, SOCKET& connection);
   IResult vuapi do_open(WSANETWORKEVENTS&  events, SOCKET& connection);
@@ -1455,6 +1459,7 @@ protected:
   bool m_running;
   DWORD m_n_events;
   SOCKET m_connections[WSA_MAXIMUM_WAIT_EVENTS];
+  std::recursive_mutex m_mutex_client_list;
   WSAEVENT m_events[WSA_MAXIMUM_WAIT_EVENTS];
   fn_prototype_t m_functions[function::UNDEFINED];
   std::mutex m_mutex;

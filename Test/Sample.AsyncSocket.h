@@ -21,12 +21,12 @@ void example_binding(const vu::Endpoint& endpoint)
     printf("client %d closed\n", client.get_remote_sai().sin_port);
   });
 
-  server.on(vu::AsyncSocket::SEND, [](vu::Socket& client) -> void
-  {
-    std::string s = "hello from server";
-    client.send(s.data(), int(s.size()));
-    printf("client %d send `%s`\n", client.get_remote_sai().sin_port, s.c_str());
-  });
+  //server.on(vu::AsyncSocket::SEND, [](vu::Socket& client) -> void
+  //{
+  //  std::string s = "hello from server";
+  //  client.send(s.data(), int(s.size()));
+  //  printf("client %d send `%s`\n", client.get_remote_sai().sin_port, s.c_str());
+  //});
 
   server.on(vu::AsyncSocket::RECV, [](vu::Socket& client) -> void
   {
@@ -57,12 +57,12 @@ void example_inheritance(const vu::Endpoint& endpoint)
       printf("client %d closed\n", client.get_remote_sai().sin_port);
     }
 
-    virtual void on_send(vu::Socket& client)
-    {
-      std::string s = "hello from server";
-      client.send(s.data(), int(s.size()));
-      printf("client %d send `%s`\n", client.get_remote_sai().sin_port, s.c_str());
-    }
+    //virtual void on_send(vu::Socket& client)
+    //{
+    //  std::string s = "hello from server";
+    //  client.send(s.data(), int(s.size()));
+    //  printf("client %d send `%s`\n", client.get_remote_sai().sin_port, s.c_str());
+    //}
 
     virtual void on_recv(vu::Socket& client)
     {

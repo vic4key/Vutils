@@ -637,7 +637,7 @@ VUResult vuapi Socket::disconnect(const shutdowns_t flags, const bool cleanup)
     return 1;
   }
 
-  if (cleanup) // clean-up all remaining data in the socket
+  if (cleanup) // clean-up all remaining data in the socket (does not need with the SD_BOTH flag)
   {
     vu::Buffer temp;
     this->recv_all(temp);
