@@ -664,8 +664,8 @@ std::string vuapi extract_file_directory_A(const std::string& file_path, bool la
 std::wstring vuapi extract_file_directory_W(const std::wstring& file_path, bool last_slash = true);
 std::string vuapi extract_file_name_A(const std::string& file_path, bool extension = true);
 std::wstring vuapi extract_file_name_W(const std::wstring& file_path, bool extension = true);
-std::string vuapi extract_file_extension_A(const std::string& file_path);
-std::wstring vuapi extract_file_extension_W(const std::wstring& file_path);
+std::string vuapi extract_file_extension_A(const std::string& file_path, bool dot = true);
+std::wstring vuapi extract_file_extension_W(const std::wstring& file_path, bool dot = true);
 std::string vuapi get_current_file_path_A();
 std::wstring vuapi get_current_file_path_W();
 std::string vuapi get_current_directory_A(bool last_slash = true);

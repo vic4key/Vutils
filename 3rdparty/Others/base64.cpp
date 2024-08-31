@@ -125,9 +125,9 @@ base64_decode(const char *in, unsigned int inlen, unsigned char *out)
 	unsigned int j;
 	unsigned char c;
 
-	if (inlen & 0x3) {
-		return 0;
-	}
+	//if (inlen & 0x3) {
+	//	return 0;
+	//}
 
 	for (i = j = 0; i < inlen; i++) {
 		if (in[i] == BASE64_PAD) {

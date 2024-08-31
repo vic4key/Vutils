@@ -264,26 +264,28 @@ std::wstring vuapi extract_file_directory_W(const std::wstring& file_path, bool 
   return result;
 }
 
-std::string vuapi extract_file_extension_A(const std::string& file_path)
+std::string vuapi extract_file_extension_A(const std::string& file_path, bool dot)
 {
   std::string result;
 
   size_t pos_dot = file_path.find_last_of('.');
   if (pos_dot != std::string::npos)
   {
+    pos_dot += dot ? 0 : 1;
     result = file_path.substr(pos_dot);
   }
 
   return result;
 }
 
-std::wstring vuapi extract_file_extension_W(const std::wstring& file_path)
+std::wstring vuapi extract_file_extension_W(const std::wstring& file_path, bool dot)
 {
   std::wstring result;
 
   size_t pos_dot = file_path.find_last_of('.');
   if (pos_dot != std::wstring::npos)
   {
+    pos_dot += dot ? 0 : 1;
     result = file_path.substr(pos_dot);
   }
 

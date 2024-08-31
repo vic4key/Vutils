@@ -41,16 +41,20 @@ uint b64_calc_decode_size(const std::string& text)
   // https://en.wikipedia.org/wiki/Base64#Decoding_Base64_with_padding
 
   const auto size = strlen(text.c_str());
-  if (size < 3)
+  if (size < 2 || size % 4 != 0)
   {
     return 0;
   }
 
-  int n_padding = 0;
-  if (text[size - 1] == '=') n_padding++;
-  if (text[size - 2] == '=') n_padding++;
+  size_t result = BASE64_DECODE_OUT_SIZE(size);
 
-  return uint(size * (3.F / 4.F)) - n_padding;
+  if (size >= 2)
+  {
+    if (text[size - 1] == '=') result -= 1;
+    if (text[size - 2] == '=') result -= 1;
+  }
+
+  return result;
 }
 
 bool crypt_b64encode_A(const std::vector<vu::byte>& data, std::string& text)
@@ -62,10 +66,14 @@ bool crypt_b64encode_A(const std::vector<vu::byte>& data, std::string& text)
     return true;
   }
 
-  const auto decoded_size = uint(data.size());
   const auto encoded_size = b64_calc_encode_size(data);
-  text.resize(encoded_size); text.reserve(decoded_size + 1); // padding 1 null byte
+  if (encoded_size == 0)
+  {
+    return false;
+  }
 
+  const auto decoded_size = uint(data.size());
+  text.resize(encoded_size); text.reserve(decoded_size + 1); // padding 1 null byte
   return base64_encode(data.data(), decoded_size, &text[0]) == encoded_size;
 }
 
@@ -78,10 +86,14 @@ bool crypt_b64decode_A(const std::string& text, std::vector<vu::byte>& data)
     return true;
   }
 
-  const auto encoded_size = uint(strlen(text.c_str()));
   const auto decoded_size = b64_calc_decode_size(text);
-  data.resize(decoded_size); data.reserve(decoded_size + 1); // padding 1 null byte
+  if (decoded_size == 0)
+  {
+    return false;
+  }
 
+  const auto encoded_size = uint(strlen(text.c_str()));
+  data.resize(decoded_size); data.reserve(decoded_size + 1); // padding 1 null byte
   return base64_decode(text.data(), encoded_size, &data[0]) == decoded_size;
 }
 
