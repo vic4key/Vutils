@@ -46,7 +46,7 @@ uint b64_calc_decode_size(const std::string& text)
     return 0;
   }
 
-  size_t result = BASE64_DECODE_OUT_SIZE(size);
+  uint result = BASE64_DECODE_OUT_SIZE(size);
 
   if (size >= 2)
   {
