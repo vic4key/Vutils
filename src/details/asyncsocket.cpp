@@ -21,8 +21,6 @@ AsyncSocket::AsyncSocket(
   const vu::Socket::Options* options
 ) : m_socket(af, type, proto, options), m_thread(INVALID_HANDLE_VALUE), LastError()
 {
-  UNREFERENCED_PARAMETER(m_side);
-
   this->initialze();
 
   for (uint i = 0; i < function::UNDEFINED; i++)
@@ -45,9 +43,10 @@ void vuapi AsyncSocket::initialze()
   m_running = false;
 }
 
-AsyncSocket::side_type vuapi AsyncSocket::side() const
+
+Socket::side_type vuapi AsyncSocket::side() const
 {
-  return m_side;
+  return m_socket.side();
 }
 
 bool vuapi AsyncSocket::available() const
@@ -68,13 +67,7 @@ VUResult vuapi AsyncSocket::bind(const Endpoint& endpoint)
 VUResult vuapi AsyncSocket::bind(const std::string& address, const ushort port)
 {
   auto result = m_socket.bind(address, port);
-  if (result == VU_OK)
-  {
-    m_side = side_type::SERVER;
-  }
-
   this->set_last_error_code(m_socket.get_last_error_code());
-
   return result;
 }
 
@@ -144,7 +137,6 @@ VUResult vuapi AsyncSocket::connect(const Endpoint& endpoint)
   if (result == VU_OK)
   {
     m_last_error_code = ERROR_SUCCESS;
-    m_side = side_type::CLIENT;
     m_connections[m_n_events] = m_socket.handle();
     m_events[m_n_events] = event;
     m_n_events++;
@@ -177,7 +169,7 @@ void vuapi AsyncSocket::get_connections(std::set<SOCKET>& connections)
       continue;
     }
 
-    if (m_side == side_type::SERVER && socket == m_socket.handle()) // ignore server socket handle
+    if (m_socket.side() == Socket::side_type::SERVER && socket == m_socket.handle()) // ignore server socket handle
     {
       continue;
     }

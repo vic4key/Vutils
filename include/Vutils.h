@@ -1271,6 +1271,13 @@ public:
   typedef int flags_t;
   typedef int shutdowns_t;
 
+  enum class side_type : uint
+  {
+    SERVER,
+    CLIENT,
+    UNDEFINED,
+  };
+
   struct Handle
   {
     SOCKET s;
@@ -1305,6 +1312,7 @@ public:
   bool  operator!=(const Socket& right);
   const Socket& operator=(const Socket& right);
 
+  side_type vuapi side() const;
   const SOCKET& vuapi handle() const;
   const address_family_t vuapi af() const;
   const type_t vuapi type() const;
@@ -1357,6 +1365,7 @@ private:
   std::string vuapi get_host_address(const std::string& name) const;
 
 private:
+  side_type m_side;
   type_t m_type;
   WSADATA m_wsa_data;
   address_family_t m_af;
@@ -1382,12 +1391,6 @@ public:
     UNDEFINED,
   };
 
-  enum class side_type : uint
-  {
-    SERVER,
-    CLIENT,
-  };
-
   AsyncSocket(
     const vu::Socket::address_family_t af = AF_INET,
     const vu::Socket::type_t type = SOCK_STREAM,
@@ -1396,8 +1399,7 @@ public:
   );
   virtual ~AsyncSocket();
 
-  side_type vuapi side() const;
-
+  Socket::side_type vuapi side() const;
   bool vuapi available() const;
   bool vuapi running() const;
 
@@ -1453,9 +1455,7 @@ protected:
   HANDLE m_thread;
   std::atomic<bool> m_running;
 
-  side_type  m_side;
   vu::Socket m_socket;
-
   DWORD  m_n_events;
   SOCKET m_connections[WSA_MAXIMUM_WAIT_EVENTS];
   WSAEVENT m_events[WSA_MAXIMUM_WAIT_EVENTS];

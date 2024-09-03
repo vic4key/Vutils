@@ -104,7 +104,8 @@ Socket::Socket(
   const type_t type,
   const protocol_t proto,
   const Options* options
-) : LastError(), m_af(af), m_type(type), m_proto(proto), m_attached(false)
+) : LastError(), m_af(af), m_type(type), m_proto(proto)
+  , m_attached(false), m_side(Socket::side_type::UNDEFINED)
 {
   ZeroMemory(&m_wsa_data, sizeof(m_wsa_data));
   if (WSAStartup(MAKEWORD(2, 2), &m_wsa_data) == INVALID_SOCKET)
@@ -141,11 +142,14 @@ Socket::~Socket()
     return; // ignore if the connection is attached from outside
   }
 
-  if (::closesocket(m_socket) == INVALID_SOCKET)
+  if (this->available())
   {
-    assert("close socket failed.");
-    m_last_error_code = GetLastError();
-    m_socket = INVALID_SOCKET;
+    if (::closesocket(m_socket) == INVALID_SOCKET)
+    {
+      assert("close socket failed.");
+      m_last_error_code = GetLastError();
+      m_socket = INVALID_SOCKET;
+    }
   }
 
   if (WSACleanup() == INVALID_SOCKET)
@@ -181,6 +185,11 @@ const vu::Socket& Socket::operator=(const Socket& right)
   m_attached = right.m_attached;
 
   return *this;
+}
+
+Socket::side_type vuapi Socket::side() const
+{
+  return m_side;
 }
 
 bool vuapi Socket::valid(const SOCKET& socket) const
@@ -330,6 +339,8 @@ VUResult vuapi Socket::bind(const std::string& address, const ushort port)
     return 3;
   }
 
+  m_side = side_type::SERVER;
+
   return VU_OK;
 }
 
@@ -393,13 +404,16 @@ VUResult vuapi Socket::connect(const Endpoint& endpoint)
   m_sai.sin_addr.S_un.S_addr = inet_addr(ip.c_str());
   m_sai.sin_port = htons(endpoint.m_port);
 
+  VUResult result = VU_OK;
+
   if (::connect(m_socket, (const struct sockaddr*)&m_sai, sizeof(m_sai)) == SOCKET_ERROR)
   {
-    m_last_error_code = GetLastError();
-    return m_last_error_code == WSAEWOULDBLOCK ? VU_OK : 2;
+    result = GetLastError() == WSAEWOULDBLOCK ? VU_OK : 2; // ignore 'A non-blocking socket operation could not be completed immediately.'
   }
 
-  return VU_OK;
+  m_side = side_type::CLIENT;
+
+  return result;
 }
 
 IResult vuapi Socket::send(const char* ptr_data, int size, const flags_t flags)
