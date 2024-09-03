@@ -109,6 +109,7 @@
 #include <vector>
 #include <thread>
 #include <memory>
+#include <atomic>
 #include <numeric>
 #include <sstream>
 #include <cassert>
@@ -1295,7 +1296,6 @@ public:
     const address_family_t af = AF_INET,
     const type_t type = SOCK_STREAM,
     const protocol_t proto = IPPROTO_IP,
-    const bool wsa = true,
     const Options* options = nullptr
   );
   Socket(const Socket& right);
@@ -1306,7 +1306,6 @@ public:
   const Socket& operator=(const Socket& right);
 
   const SOCKET& vuapi handle() const;
-  const WSADATA& vuapi wsa_data() const;
   const address_family_t vuapi af() const;
   const type_t vuapi type() const;
   const protocol_t vuapi  protocol() const;
@@ -1342,9 +1341,9 @@ public:
 
   IResult vuapi close();
 
-  const sockaddr_in vuapi get_local_sai() const;
-  const sockaddr_in vuapi get_remote_sai() const;
-  std::string vuapi get_host_name() const;
+  const sockaddr_in vuapi get_local_sai();
+  const sockaddr_in vuapi get_remote_sai();
+  std::string vuapi get_host_name();
 
   Options& options();
 
@@ -1358,7 +1357,6 @@ private:
   std::string vuapi get_host_address(const std::string& name) const;
 
 private:
-  bool m_wsa;
   type_t m_type;
   WSADATA m_wsa_data;
   address_family_t m_af;
@@ -1366,7 +1364,7 @@ private:
   sockaddr_in m_sai;
   SOCKET m_socket;
   Options m_options;
-  bool m_self;
+  bool m_attached;
 };
 
 class AsyncSocket : public LastError
@@ -1424,9 +1422,7 @@ public:
   VUResult vuapi listen(const int maxcon = SOMAXCONN);
 
   VUResult vuapi run(const bool in_worker_thread = false);
-
-  VUResult vuapi stop();
-  IResult  vuapi close(const Socket::shutdowns_t flags = SD_BOTH, const bool cleanup = false);
+  VUResult vuapi stop(const Socket::shutdowns_t flags = SD_BOTH, const bool cleanup = false);
 
   void vuapi get_connections(std::set<SOCKET>& connections);
   VUResult vuapi disconnect_connections(const Socket::shutdowns_t flags = SD_BOTH, const bool cleanup = false);
@@ -1454,16 +1450,18 @@ protected:
   IResult vuapi do_close(WSANETWORKEVENTS& events, SOCKET& connection);
 
 protected:
-  vu::Socket m_socket;
-  side_type m_side;
-  bool m_running;
-  DWORD m_n_events;
-  SOCKET m_connections[WSA_MAXIMUM_WAIT_EVENTS];
-  std::recursive_mutex m_mutex_client_list;
-  WSAEVENT m_events[WSA_MAXIMUM_WAIT_EVENTS];
-  fn_prototype_t m_functions[function::UNDEFINED];
-  std::mutex m_mutex;
   HANDLE m_thread;
+  std::atomic<bool> m_running;
+
+  side_type  m_side;
+  vu::Socket m_socket;
+
+  DWORD  m_n_events;
+  SOCKET m_connections[WSA_MAXIMUM_WAIT_EVENTS];
+  WSAEVENT m_events[WSA_MAXIMUM_WAIT_EVENTS];
+  std::recursive_mutex m_mutex_client_list;
+
+  fn_prototype_t m_functions[function::UNDEFINED];
 };
 
 #endif // VU_INET_ENABLED

@@ -103,29 +103,30 @@ Socket::Socket(
   const address_family_t af,
   const type_t type,
   const protocol_t proto,
-  const bool wsa,
   const Options* options
-) : LastError(), m_af(af), m_type(type), m_proto(proto), m_wsa(wsa), m_self(false)
+) : LastError(), m_af(af), m_type(type), m_proto(proto), m_attached(false)
 {
   ZeroMemory(&m_wsa_data, sizeof(m_wsa_data));
-  ZeroMemory(&m_sai, sizeof(m_sai));
+  if (WSAStartup(MAKEWORD(2, 2), &m_wsa_data) == INVALID_SOCKET)
+  {
+    m_last_error_code = GetLastError();
+    assert("start wsa failed.");
+  }
 
   if (options != nullptr)
   {
     m_options = *options;
   }
 
-  if (m_wsa)
-  {
-    if (WSAStartup(MAKEWORD(2, 2), &m_wsa_data) != 0)
-    {
-      m_last_error_code = GetLastError();
-    }
-  }
+  ZeroMemory(&m_sai, sizeof(m_sai));
+  m_sai.sin_family = m_af;
 
   m_socket = ::socket(m_af, m_type, m_proto);
-
-  m_sai.sin_family = m_af;
+  if (m_socket == INVALID_SOCKET)
+  {
+    m_last_error_code = GetLastError();
+    assert("open socket failed.");
+  }
 }
 
 Socket::Socket(const Socket& right)
@@ -135,14 +136,23 @@ Socket::Socket(const Socket& right)
 
 Socket::~Socket()
 {
-  this->close();
-
-  if (m_wsa)
+  if (m_attached)
   {
-    WSACleanup();
+    return; // ignore if the connection is attached from outside
   }
 
-  m_last_error_code = GetLastError();
+  if (::closesocket(m_socket) == INVALID_SOCKET)
+  {
+    assert("close socket failed.");
+    m_last_error_code = GetLastError();
+    m_socket = INVALID_SOCKET;
+  }
+
+  if (WSACleanup() == INVALID_SOCKET)
+  {
+    assert("clean wsa failed.");
+    m_last_error_code = GetLastError();
+  }
 }
 
 bool Socket::operator==(const Socket& right)
@@ -162,17 +172,13 @@ const vu::Socket& Socket::operator=(const Socket& right)
     return *this;
   }
 
-  m_wsa = false;
-  // m_wsa = right.m_wsa;
-  // m_wsa_data = right.m_wsa_data;
-
   m_type = right.m_type;
   m_af = right.m_af;
   m_proto = right.m_proto;
   m_sai = right.m_sai;
   m_socket = right.m_socket;
   m_options = right.m_options;
-  m_self = right.m_self;
+  m_attached = right.m_attached;
 
   return *this;
 }
@@ -198,6 +204,7 @@ void vuapi Socket::attach(const Handle& socket)
 {
   m_socket = socket.s;
   m_sai = socket.sai;
+  m_attached = true;
 }
 
 void vuapi Socket::detach()
@@ -209,11 +216,6 @@ void vuapi Socket::detach()
 Socket::Options& Socket::options()
 {
   return m_options;
-}
-
-const WSADATA& vuapi Socket::wsa_data() const
-{
-  return m_wsa_data;
 }
 
 const Socket::address_family_t vuapi Socket::af() const
@@ -236,7 +238,7 @@ const SOCKET& vuapi Socket::handle() const
   return m_socket;
 }
 
-const sockaddr_in vuapi Socket::get_local_sai() const
+const sockaddr_in vuapi Socket::get_local_sai()
 {
   sockaddr_in result = { 0 };
 
@@ -244,12 +246,13 @@ const sockaddr_in vuapi Socket::get_local_sai() const
   {
     auto size = int(sizeof(result));
     ::getsockname(m_socket, (struct sockaddr*)&result, &size);
+    m_last_error_code = GetLastError();
   }
 
   return result;
 }
 
-const sockaddr_in vuapi Socket::get_remote_sai() const
+const sockaddr_in vuapi Socket::get_remote_sai()
 {
   sockaddr_in result = { 0 };
 
@@ -257,6 +260,7 @@ const sockaddr_in vuapi Socket::get_remote_sai() const
   {
     auto size = int(sizeof(result));
     ::getpeername(m_socket, (struct sockaddr*)&result, &size);
+    m_last_error_code = GetLastError();
   }
 
   return result;
@@ -273,7 +277,7 @@ VUResult vuapi Socket::set_option(
     return 1;
   }
 
-  if (::setsockopt(m_socket, level, option, static_cast<const char*>(value), size) != 0)
+  if (::setsockopt(m_socket, level, option, static_cast<const char*>(value), size) == INVALID_SOCKET)
   {
     m_last_error_code = GetLastError();
     return 3;
@@ -292,6 +296,7 @@ VUResult vuapi Socket::enable_non_blocking(bool state)
   ulong non_block = state ? 1 : 0;
   if (::ioctlsocket(m_socket, FIONBIO, &non_block) == SOCKET_ERROR)
   {
+    m_last_error_code = GetLastError();
     return 2;
   }
 
@@ -393,8 +398,6 @@ VUResult vuapi Socket::connect(const Endpoint& endpoint)
     m_last_error_code = GetLastError();
     return m_last_error_code == WSAEWOULDBLOCK ? VU_OK : 2;
   }
-
-  m_self = true;
 
   return VU_OK;
 }
@@ -620,10 +623,7 @@ VUResult vuapi Socket::close()
     return 1;
   }
 
-  if (m_self)
-  {
-    ::closesocket(m_socket);
-  }
+  ::closesocket(m_socket);
 
   m_socket = INVALID_SOCKET;
 
@@ -649,16 +649,18 @@ VUResult vuapi Socket::disconnect(const shutdowns_t flags, const bool cleanup)
     return 2;
   }
 
-  if (closesocket(m_socket) == SOCKET_ERROR)
+  if (::closesocket(m_socket) == SOCKET_ERROR)
   {
     m_last_error_code = GetLastError();
     return 3;
   }
 
+  m_socket = INVALID_SOCKET;
+
   return VU_OK;
 }
 
-std::string vuapi Socket::get_host_name() const
+std::string vuapi Socket::get_host_name()
 {
   std::string result = "";
 
@@ -676,7 +678,7 @@ std::string vuapi Socket::get_host_name() const
   ZeroMemory(h.get(), MAXBYTE);
   if (::gethostname(h.get(), MAXBYTE) == SOCKET_ERROR)
   {
-    //m_last_error_code = GetLastError();
+    m_last_error_code = GetLastError();
     return result;
   }
 

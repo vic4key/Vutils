@@ -38,7 +38,7 @@ void example_binding(const vu::Endpoint& endpoint)
   server.bind(endpoint);
   server.listen();
   server.run();
-  server.close();
+  // server.stop();
 }
 
 void example_inheritance(const vu::Endpoint& endpoint)
@@ -77,7 +77,7 @@ void example_inheritance(const vu::Endpoint& endpoint)
   server.bind(endpoint);
   server.listen();
   server.run();
-  server.close();
+  // server.stop();
 }
 
 #endif // VU_INET_ENABLED
