@@ -37,8 +37,6 @@ void vuapi AsyncSocket::initialze()
 {
   m_n_events = 0;
 
-  //std::lock_guard<std::recursive_mutex> lg(m_mutex_client_list);
-
   memset(m_connections, int(INVALID_SOCKET), sizeof(m_connections));
   memset(m_events, int(0), sizeof(m_events));
 
@@ -89,8 +87,6 @@ VUResult vuapi AsyncSocket::listen(const int maxcon)
     return 2;
   }
 
-  //std::lock_guard<std::recursive_mutex> lg(m_mutex_client_list);
-
   m_connections[m_n_events] = m_socket.handle();
   m_events[m_n_events] = event;
   m_n_events++;
@@ -138,8 +134,6 @@ VUResult vuapi AsyncSocket::connect(const Endpoint& endpoint)
     return 2;
   }
 
-  //std::lock_guard<std::recursive_mutex> lg(m_mutex_client_list);
-
   auto result = m_socket.connect(endpoint);
   if (result == VU_OK)
   {
@@ -169,8 +163,6 @@ void vuapi AsyncSocket::get_connections(std::set<SOCKET>& connections)
     return;
   }
 
-  //std::lock_guard<std::recursive_mutex> lg(m_mutex_client_list);
-
   for (auto& socket : m_connections)
   {
     if (socket == INVALID_SOCKET) // ignore invalid socket handle
@@ -189,8 +181,6 @@ void vuapi AsyncSocket::get_connections(std::set<SOCKET>& connections)
 
 VUResult vuapi AsyncSocket::disconnect_connections(const Socket::shutdowns_t flags, const bool cleanup)
 {
-  //std::lock_guard<std::recursive_mutex> lg(m_mutex_client_list);
-
   std::set<SOCKET> connections;
   this->get_connections(connections);
   for (const auto& connection : connections)
@@ -352,8 +342,6 @@ IResult vuapi AsyncSocket::do_open(WSANETWORKEVENTS& events, SOCKET& connection)
     return events.iErrorCode[FD_ACCEPT_BIT];
   }
 
-  //std::lock_guard<std::recursive_mutex> lg(m_mutex_client_list);
-
   Socket::Handle obj = { 0 };
   int n = static_cast<int>(sizeof(obj.sai));
 
@@ -385,8 +373,6 @@ IResult vuapi AsyncSocket::do_recv(WSANETWORKEVENTS& events, SOCKET& connection)
     return events.iErrorCode[FD_READ_BIT];
   }
 
-  //std::lock_guard<std::recursive_mutex> lg(m_mutex_client_list);
-
   Socket socket;
   socket.attach(connection);
   this->on_recv(socket);
@@ -401,8 +387,6 @@ IResult vuapi AsyncSocket::do_send(WSANETWORKEVENTS& events, SOCKET& connection)
   {
     return events.iErrorCode[FD_WRITE_BIT];
   }
-
-  //std::lock_guard<std::recursive_mutex> lg(m_mutex_client_list);
 
   Socket socket;
   socket.attach(connection);
@@ -421,8 +405,6 @@ IResult vuapi AsyncSocket::do_close(WSANETWORKEVENTS& events, SOCKET& connection
   // {
   //   return events.iErrorCode[FD_CLOSE_BIT];
   // }
-
-  //std::lock_guard<std::recursive_mutex> lg(m_mutex_client_list);
 
   std::vector<std::pair<SOCKET, HANDLE>> in_used_connections;
 
