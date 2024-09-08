@@ -115,7 +115,8 @@ IResult vuapi AsyncSocket::stop(const Socket::shutdowns_t flags, const bool clea
 
   if (m_thread != INVALID_HANDLE_VALUE)
   {
-    TerminateThread(m_thread, 0); // CloseHandle(m_thread);
+    // TerminateThread(m_thread, 0); // CloseHandle(m_thread);
+    // Using atomic for `m_running = false`. So, the thread will be closed after set `m_running = false` to exit looping
   }
 
   return VU_OK;
@@ -194,7 +195,7 @@ VUResult vuapi AsyncSocket::disconnect_connections(const Socket::shutdowns_t fla
   this->get_connections(connections);
   for (const auto& connection : connections)
   {
-    Socket socket(m_socket);
+    Socket socket;
     socket.attach(connection);
     socket.disconnect(flags, cleanup);
   }
@@ -336,7 +337,7 @@ IResult vuapi AsyncSocket::do_connect(WSANETWORKEVENTS& events, SOCKET& connecti
     return events.iErrorCode[FD_CONNECT_BIT];
   }
 
-  Socket socket(m_socket);
+  Socket socket;
   socket.attach(connection);
   this->on_connect(socket);
   socket.detach();
@@ -369,7 +370,7 @@ IResult vuapi AsyncSocket::do_open(WSANETWORKEVENTS& events, SOCKET& connection)
   m_connections[m_n_events] = obj.s;
   m_n_events++;
 
-  Socket socket(m_socket);
+  Socket socket;
   socket.attach(obj);
   this->on_open(socket);
   socket.detach();
@@ -386,7 +387,7 @@ IResult vuapi AsyncSocket::do_recv(WSANETWORKEVENTS& events, SOCKET& connection)
 
   //std::lock_guard<std::recursive_mutex> lg(m_mutex_client_list);
 
-  Socket socket(m_socket);
+  Socket socket;
   socket.attach(connection);
   this->on_recv(socket);
   socket.detach();
@@ -403,7 +404,7 @@ IResult vuapi AsyncSocket::do_send(WSANETWORKEVENTS& events, SOCKET& connection)
 
   //std::lock_guard<std::recursive_mutex> lg(m_mutex_client_list);
 
-  Socket socket(m_socket);
+  Socket socket;
   socket.attach(connection);
   this->on_send(socket);
   socket.detach();
@@ -451,12 +452,11 @@ IResult vuapi AsyncSocket::do_close(WSANETWORKEVENTS& events, SOCKET& connection
     m_n_events++;
   }
 
-  Socket socket(m_socket);
+  Socket socket;
   socket.attach(connection);
   this->on_close(socket);
+  socket.close();
   socket.detach();
-
-  ::closesocket(connection);
 
   connection = INVALID_SOCKET;
 
@@ -517,7 +517,7 @@ IResult vuapi AsyncSocket::send(
   int size,
   const Socket::flags_t flags)
 {
-  Socket socket(m_socket);
+  Socket socket;
   socket.attach(connection);
   return socket.send(ptr_data, size, flags);
 }
@@ -527,7 +527,7 @@ IResult vuapi AsyncSocket::send(
   const Buffer& data,
   const Socket::flags_t flags)
 {
-  Socket socket(m_socket);
+  Socket socket;
   socket.attach(connection);
   return socket.send(data, flags);
 }

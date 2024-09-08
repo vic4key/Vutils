@@ -1271,11 +1271,11 @@ public:
   typedef int flags_t;
   typedef int shutdowns_t;
 
-  enum class side_type : uint
+  enum class side_type : int
   {
+    UNDEFINED = -1,
     SERVER,
     CLIENT,
-    UNDEFINED,
   };
 
   struct Handle
@@ -1347,7 +1347,7 @@ public:
   IResult vuapi recv_from(Buffer& data, const Handle& socket);
   IResult vuapi recv_all_from(Buffer& data, const Handle& socket);
 
-  IResult vuapi close();
+  IResult vuapi close(const Socket::shutdowns_t flags = SD_BOTH, const bool cleanup = false);
 
   const sockaddr_in vuapi get_local_sai();
   const sockaddr_in vuapi get_remote_sai();

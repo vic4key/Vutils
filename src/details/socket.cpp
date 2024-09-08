@@ -144,12 +144,7 @@ Socket::~Socket()
 
   if (this->available())
   {
-    if (::closesocket(m_socket) == INVALID_SOCKET)
-    {
-      assert("close socket failed.");
-      m_last_error_code = GetLastError();
-      m_socket = INVALID_SOCKET;
-    }
+    this->close();
   }
 
   if (WSACleanup() == INVALID_SOCKET)
@@ -460,7 +455,7 @@ IResult vuapi Socket::recv(char* ptr_data, int size, const flags_t flags)
 
   timeval timeout = { 0 };
   timeout.tv_usec = 0;
-  timeout.tv_sec  = m_options.timeout.recv;
+  timeout.tv_sec = m_options.timeout.recv;
 
   int status = ::select(0, &fds_read, nullptr, nullptr, &timeout);
   if (status == SOCKET_ERROR)
@@ -586,7 +581,7 @@ IResult vuapi Socket::recv_from(char* ptr_data, int size, const Handle& socket)
   }
 
   int n = sizeof(socket.sai);
-  IResult z = ::recvfrom(m_socket, ptr_data, size, 0, (struct sockaddr *)&socket.sai, &n);
+  IResult z = ::recvfrom(m_socket, ptr_data, size, 0, (struct sockaddr*)&socket.sai, &n);
   if (z == SOCKET_ERROR)
   {
     m_last_error_code = GetLastError();
@@ -630,21 +625,7 @@ IResult vuapi Socket::recv_all_from(Buffer& buffer, const Handle& socket)
   return IResult(buffer.size());
 }
 
-VUResult vuapi Socket::close()
-{
-  if (!this->available())
-  {
-    return 1;
-  }
-
-  ::closesocket(m_socket);
-
-  m_socket = INVALID_SOCKET;
-
-  return VU_OK;
-}
-
-VUResult vuapi Socket::disconnect(const shutdowns_t flags, const bool cleanup)
+VUResult vuapi Socket::close(const shutdowns_t flags, const bool cleanup)
 {
   if (!this->available())
   {
@@ -659,8 +640,8 @@ VUResult vuapi Socket::disconnect(const shutdowns_t flags, const bool cleanup)
 
   if (::shutdown(m_socket, flags) == SOCKET_ERROR)
   {
-    m_last_error_code = GetLastError();
-    return 2;
+    // m_last_error_code = GetLastError();
+    // return 2;
   }
 
   if (::closesocket(m_socket) == SOCKET_ERROR)
@@ -670,6 +651,21 @@ VUResult vuapi Socket::disconnect(const shutdowns_t flags, const bool cleanup)
   }
 
   m_socket = INVALID_SOCKET;
+
+  return VU_OK;
+}
+
+VUResult vuapi Socket::disconnect(const shutdowns_t flags, const bool cleanup)
+{
+  if (!this->available())
+  {
+    return 1;
+  }
+
+  if (this->close(flags, cleanup) != VU_OK)
+  {
+    return 2;
+  }
 
   return VU_OK;
 }
